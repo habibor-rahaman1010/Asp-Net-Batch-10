@@ -108,11 +108,11 @@ namespace CustomJsonFormatter
             PropertyInfo[] properties = objType.GetProperties();
 
             jsonBuilder.Append("{");
-            bool flag = true;
+            bool isFirst = true;
 
             foreach (PropertyInfo property in properties)
             {
-                if (!flag)
+                if (!isFirst)
                 {
                     jsonBuilder.Append(",");
                 }
@@ -120,24 +120,16 @@ namespace CustomJsonFormatter
                 jsonBuilder.Append('"').Append(property.Name).Append("\":");
 
                 object? propertyValue = property.GetValue(obj, null);
-
                 if (propertyValue != null)
                 {
-                    if (property.PropertyType == typeof(string) || property.PropertyType.IsEnum)
-                    {
-                        jsonBuilder.Append('"').Append(propertyValue).Append('"');
-                    }
-                    else
-                    {
-                        ConvertObjectToJson(propertyValue, jsonBuilder);
-                    }
+                    ConvertObjectToJson(propertyValue, jsonBuilder);
                 }
                 else
                 {
                     jsonBuilder.Append("null");
                 }
 
-                flag = false;
+                isFirst = false;
             }
 
             jsonBuilder.Append("}");
