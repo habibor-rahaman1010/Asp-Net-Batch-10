@@ -27,7 +27,7 @@ namespace CustomJsonFormatter
 
             Type itemType = item.GetType();
 
-            if (IsPrimitive(itemType) || itemType == typeof(string) || itemType == typeof(DateTime))
+            if (IsPrimitive(itemType) || itemType == typeof(string) || itemType == typeof(DateTime) || itemType.IsEnum)
             {
                 AppendToPrimitiveValueInjsonBuilder(item, jsonBuilder);
             }
@@ -39,7 +39,7 @@ namespace CustomJsonFormatter
             {
                 ConvertToCollection(enumerable, jsonBuilder);
             }
-            else
+            else if(itemType.IsClass)
             {
                 ConvertToObject(item, jsonBuilder);
             }
@@ -122,7 +122,14 @@ namespace CustomJsonFormatter
                 object? propertyValue = property.GetValue(obj, null);
                 if (propertyValue != null)
                 {
-                    ConvertObjectToJson(propertyValue, jsonBuilder);
+                    if (property.PropertyType == typeof(string) || property.PropertyType.IsEnum)
+                    {
+                        jsonBuilder.Append('"').Append(propertyValue).Append('"');
+                    }
+                    else
+                    {
+                        ConvertObjectToJson(propertyValue, jsonBuilder);
+                    }
                 }
                 else
                 {
