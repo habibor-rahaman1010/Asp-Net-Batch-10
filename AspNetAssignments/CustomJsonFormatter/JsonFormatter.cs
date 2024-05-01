@@ -108,11 +108,11 @@ namespace CustomJsonFormatter
             PropertyInfo[] properties = objType.GetProperties();
 
             jsonBuilder.Append("{");
-            bool isFirst = true;
+            bool flag = true;
 
             foreach (PropertyInfo property in properties)
             {
-                if (!isFirst)
+                if (!flag)
                 {
                     jsonBuilder.Append(",");
                 }
@@ -129,7 +129,7 @@ namespace CustomJsonFormatter
                     jsonBuilder.Append("null");
                 }
 
-                isFirst = false;
+                flag = false;
             }
 
             jsonBuilder.Append("}");
