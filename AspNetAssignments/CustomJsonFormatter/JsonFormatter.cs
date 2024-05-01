@@ -27,7 +27,7 @@ namespace CustomJsonFormatter
 
             Type itemType = item.GetType();
 
-            if (IsPrimitive(itemType) || itemType == typeof(string) || itemType == typeof(DateTime) || itemType.IsEnum)
+            if (IsPrimitive(itemType) || itemType == typeof(string) || itemType == typeof(DateTime))
             {
                 AppendToPrimitiveValueInjsonBuilder(item, jsonBuilder);
             }
@@ -69,16 +69,16 @@ namespace CustomJsonFormatter
         private static void ConvertToArray(Array array, StringBuilder jsonBuilder)
         {
             jsonBuilder.Append("[");
-            bool isFirst = true;
+            bool flag = true;
 
             foreach (var item in array)
             {
-                if (!isFirst)
+                if (!flag)
                 {
                     jsonBuilder.Append(",");
                 }
                 ConvertObjectToJson(item, jsonBuilder);
-                isFirst = false;
+                flag = false;
             }
 
             jsonBuilder.Append("]");
@@ -87,16 +87,16 @@ namespace CustomJsonFormatter
         private static void ConvertToCollection(IEnumerable collection, StringBuilder jsonBuilder)
         {
             jsonBuilder.Append("[");
-            bool isFirst = true;
+            bool flag = true;
 
             foreach (var item in collection)
             {
-                if (!isFirst)
+                if (!flag)
                 {
                     jsonBuilder.Append(",");
                 }
                 ConvertObjectToJson(item, jsonBuilder);
-                isFirst = false;
+                flag = false;
             }
 
             jsonBuilder.Append("]");
@@ -108,11 +108,11 @@ namespace CustomJsonFormatter
             PropertyInfo[] properties = objType.GetProperties();
 
             jsonBuilder.Append("{");
-            bool isFirst = true;
+            bool flag = true;
 
             foreach (PropertyInfo property in properties)
             {
-                if (!isFirst)
+                if (!flag)
                 {
                     jsonBuilder.Append(",");
                 }
@@ -136,7 +136,7 @@ namespace CustomJsonFormatter
                     jsonBuilder.Append("null");
                 }
 
-                isFirst = false;
+                flag = false;
             }
 
             jsonBuilder.Append("}");
