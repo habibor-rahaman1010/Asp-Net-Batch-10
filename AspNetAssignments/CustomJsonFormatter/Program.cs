@@ -2,4 +2,4 @@
 
 using CustomJsonFormatter;
 
-Console.WriteLine();
+Console.WriteLine("Hello Programmer!");
