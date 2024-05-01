@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CustomJsonFormatter
 {
-    public static class JsonFormatter
+    public class JsonFormatter
     {
         public static string Convert(object item)
         {
