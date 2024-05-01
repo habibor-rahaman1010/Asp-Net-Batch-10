@@ -10,38 +10,38 @@ namespace CustomJsonFormatter
 {
     public class JsonFormatter
     {
-        public static string Convert(object item)
+        public static string Convert(object obj)
         {
             var jsonBuilder = new StringBuilder();
-            ConvertObjectToJson(item, jsonBuilder);
+            ConvertObjectToJson(obj, jsonBuilder);
             return jsonBuilder.ToString();
         }
 
-        private static void ConvertObjectToJson(object item, StringBuilder jsonBuilder)
+        private static void ConvertObjectToJson(object obj, StringBuilder jsonBuilder)
         {
-            if (item == null)
+            if (obj == null)
             {
                 jsonBuilder.Append("null");
                 return;
             }
 
-            Type itemType = item.GetType();
+            Type objType = obj.GetType();
 
-            if (IsPrimitive(itemType) || itemType == typeof(string) || itemType == typeof(DateTime))
+            if (IsPrimitive(objType) || objType == typeof(string) || objType == typeof(DateTime))
             {
-                AppendToPrimitiveValueInjsonBuilder(item, jsonBuilder);
+                AppendToPrimitiveValueInjsonBuilder(obj, jsonBuilder);
             }
-            else if (itemType.IsArray)
+            else if (objType.IsArray)
             {
-                ConvertToArray((Array)item, jsonBuilder);
+                ConvertToArray((Array)obj, jsonBuilder);
             }
-            else if (item is IEnumerable enumerable)
+            else if (obj is IEnumerable enumerable)
             {
                 ConvertToCollection(enumerable, jsonBuilder);
             }
-            else if(itemType.IsClass)
+            else if(objType.IsClass)
             {
-                ConvertToObject(item, jsonBuilder);
+                ConvertToObject(obj, jsonBuilder);
             }
         }
 
@@ -71,13 +71,13 @@ namespace CustomJsonFormatter
             jsonBuilder.Append("[");
             bool flag = true;
 
-            foreach (var item in array)
+            foreach (var obj in array)
             {
                 if (!flag)
                 {
                     jsonBuilder.Append(",");
                 }
-                ConvertObjectToJson(item, jsonBuilder);
+                ConvertObjectToJson(obj, jsonBuilder);
                 flag = false;
             }
 
@@ -89,13 +89,13 @@ namespace CustomJsonFormatter
             jsonBuilder.Append("[");
             bool flag = true;
 
-            foreach (var item in collection)
+            foreach (var obj in collection)
             {
                 if (!flag)
                 {
                     jsonBuilder.Append(",");
                 }
-                ConvertObjectToJson(item, jsonBuilder);
+                ConvertObjectToJson(obj, jsonBuilder);
                 flag = false;
             }
 
@@ -120,6 +120,7 @@ namespace CustomJsonFormatter
                 jsonBuilder.Append('"').Append(property.Name).Append("\":");
 
                 object? propertyValue = property.GetValue(obj, null);
+
                 if (propertyValue != null)
                 {
                     if (property.PropertyType == typeof(string) || property.PropertyType.IsEnum)
