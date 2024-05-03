@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CustomJsonFormatter
+namespace JsonFormattingAssignment
 {
     public class JsonFormatter
     {
@@ -39,7 +39,7 @@ namespace CustomJsonFormatter
             {
                 ConvertCollectionToJsonString(enumerable, jsonBuilder);
             }
-            else if(objType.IsClass)
+            else if (objType.IsClass)
             {
                 ConvertToObject(obj, jsonBuilder);
             }
