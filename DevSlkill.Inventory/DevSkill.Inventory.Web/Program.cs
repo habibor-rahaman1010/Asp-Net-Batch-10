@@ -13,27 +13,37 @@ namespace DevSkill.Inventory.Web
     {
         public static void Main(string[] args)
         {
+            var builder = WebApplication.CreateBuilder(args);
+
             ConfigurationBuilder configuration = new ConfigurationBuilder();
             IConfigurationBuilder configurationBuilder = configuration.SetBasePath(Directory.GetCurrentDirectory());
             IConfigurationBuilder configurationBuilder1 = configurationBuilder.AddJsonFile("appsettings.json");
             IConfigurationRoot configurationRoot = configurationBuilder1.Build();
 
-            Log.Logger = new LoggerConfiguration()
-                        .ReadFrom.Configuration(configurationRoot).CreateBootstrapLogger();
+            string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
+            string? tableName = "Logs";
+            Log.Logger = new LoggerConfiguration().MinimumLevel
+                .Debug().WriteTo.MSSqlServer(
+                      connectionString: connection,
+                      tableName: tableName,
+                      autoCreateSqlTable: true)
+                .ReadFrom.Configuration(configurationRoot).CreateBootstrapLogger();
            
 
             try
             {
-                Log.Information("Application Starting...");
-                var builder = WebApplication.CreateBuilder(args);
-
+                Log.Information("Application");
+              
                 IHostBuilder hostBuilder = builder.Host.UseSerilog((ctx, lc) =>
-                    lc.MinimumLevel.Debug()
+                    lc.MinimumLevel.Debug().WriteTo.MSSqlServer(
+                      connectionString: connection,
+                      tableName: tableName,
+                      autoCreateSqlTable: true)
                     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                     .Enrich.FromLogContext()
-                    .ReadFrom.Configuration(builder.Configuration)
+                    .ReadFrom.Configuration(builder.Configuration)                 
                 );
-
+               
                 // Add services to the container.
                 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
                 builder.Services.AddDbContext<ApplicationDbContext>(options =>

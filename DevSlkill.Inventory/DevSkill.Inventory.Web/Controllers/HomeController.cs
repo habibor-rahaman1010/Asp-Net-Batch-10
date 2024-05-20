@@ -1,6 +1,7 @@
 using DevSkill.Inventory.Web.Models;
 using DevSkill.Inventory.Web.Service;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using System.Diagnostics;
 
 namespace DevSkill.Inventory.Web.Controllers
@@ -25,6 +26,9 @@ namespace DevSkill.Inventory.Web.Controllers
         {
             string text = _emailService.SendEmail("habibor.rahaman1010@gmail.com", "Joniur Software Developer", "hello, i am a c# developper");
             ViewBag.data = text;
+            Log.Information(text);
+            Log.Warning(text);
+            Log.Debug(text);
             return View();
         }
 
