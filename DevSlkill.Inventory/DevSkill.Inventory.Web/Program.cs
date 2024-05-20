@@ -20,6 +20,7 @@ namespace DevSkill.Inventory.Web
 
             Log.Logger = new LoggerConfiguration()
                         .ReadFrom.Configuration(configurationRoot).CreateBootstrapLogger();
+           
 
             try
             {
@@ -92,3 +93,4 @@ namespace DevSkill.Inventory.Web
         }
     }
 }
+
