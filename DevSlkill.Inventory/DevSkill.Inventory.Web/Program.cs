@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
+using Serilog.Sinks.MSSqlServer;
 
 namespace DevSkill.Inventory.Web
 {
@@ -25,20 +26,18 @@ namespace DevSkill.Inventory.Web
             Log.Logger = new LoggerConfiguration().MinimumLevel
                 .Debug().WriteTo.MSSqlServer(
                       connectionString: connection,
-                      tableName: tableName,
-                      autoCreateSqlTable: true)
+                      sinkOptions: new MSSqlServerSinkOptions { TableName = tableName, AutoCreateSqlTable = true })
                 .ReadFrom.Configuration(configurationRoot).CreateBootstrapLogger();
            
 
             try
             {
-                Log.Information("Application");
+                Log.Information("Application Starting...");
               
                 IHostBuilder hostBuilder = builder.Host.UseSerilog((ctx, lc) =>
                     lc.MinimumLevel.Debug().WriteTo.MSSqlServer(
                       connectionString: connection,
-                      tableName: tableName,
-                      autoCreateSqlTable: true)
+                      sinkOptions: new MSSqlServerSinkOptions { TableName = tableName, AutoCreateSqlTable = true })
                     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                     .Enrich.FromLogContext()
                     .ReadFrom.Configuration(builder.Configuration)                 
