@@ -8,6 +8,6 @@ namespace DevSkill.Inventory.Domain.Entities
 {
     public interface IEntity<T> where T : IComparable
     {
-        public T Entity { get; set; }
+        public T Id { get; set; }
     }
 }
