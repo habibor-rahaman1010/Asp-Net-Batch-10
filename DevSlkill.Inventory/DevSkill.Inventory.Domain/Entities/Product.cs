@@ -13,5 +13,10 @@ namespace DevSkill.Inventory.Domain.Entities
         public string Description { get; set; } = string.Empty ;
         public decimal Price { get; set; }
         public decimal Ratings { get; set; }
+
+        public Product()
+        {
+
+        }
     }
 }
