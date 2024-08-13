@@ -25,7 +25,7 @@ namespace DevSkill.Inventory.Web.WebModules
         {
             builder.RegisterType<EmailService>().As<IEmailService>().InstancePerLifetimeScope();
 
-            builder.RegisterType<ProductDbContext>().AsSelf()
+            builder.RegisterType<InventoryDbContext>().AsSelf()
                 .WithParameter("connectionString", _connectionString)
                 .WithParameter("migrationAssembly", _migrationAssembly)
                 .InstancePerLifetimeScope();
@@ -39,7 +39,7 @@ namespace DevSkill.Inventory.Web.WebModules
                 .InstancePerLifetimeScope();
 
             builder.RegisterType<ProductUnitOfWork>()
-                .As<IProductUnitOfWork>()
+                .As<IInventoryUnitOfWork>()
                 .InstancePerLifetimeScope();
         }
     }

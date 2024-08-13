@@ -11,9 +11,9 @@ namespace DevSkill.Inventory.Application.Services
 {
     public class ProductManagementService : IProductManagementService
     {
-        private readonly IProductUnitOfWork _productUnitOfWork;
+        private readonly IInventoryUnitOfWork _productUnitOfWork;
 
-        public ProductManagementService(IProductUnitOfWork productUnitOfWork)
+        public ProductManagementService(IInventoryUnitOfWork productUnitOfWork)
         {
             _productUnitOfWork = productUnitOfWork;
         }

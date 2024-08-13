@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DevSkill.Inventory.Web.Data.Migrations
 {
-    [DbContext(typeof(ProductDbContext))]
+    [DbContext(typeof(InventoryDbContext))]
     partial class ProductDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

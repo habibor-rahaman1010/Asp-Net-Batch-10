@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace DevSkill.Inventory.Infrastructure.UnitOfWork
 {
-    public class ProductUnitOfWork : UnitOfWork, IProductUnitOfWork
+    public class ProductUnitOfWork : UnitOfWork, IInventoryUnitOfWork
     {
         public IProductRepository ProductRepository { get; private set; }
 
-        public ProductUnitOfWork(ProductDbContext productDbContext, IProductRepository productRepository) : base(productDbContext) 
+        public ProductUnitOfWork(InventoryDbContext productDbContext, IProductRepository productRepository) : base(productDbContext) 
         {
             ProductRepository = productRepository;
         }

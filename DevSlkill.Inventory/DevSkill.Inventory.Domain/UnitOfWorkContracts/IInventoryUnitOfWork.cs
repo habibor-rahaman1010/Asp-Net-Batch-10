@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DevSkill.Inventory.Domain.UnitOfWorkContracts
 {
-    public interface IProductUnitOfWork : IUnitOfWork
+    public interface IInventoryUnitOfWork : IUnitOfWork
     {
         IProductRepository ProductRepository { get; }
     }

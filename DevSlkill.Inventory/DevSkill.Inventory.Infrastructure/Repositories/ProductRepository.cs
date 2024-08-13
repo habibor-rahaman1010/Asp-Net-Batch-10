@@ -11,7 +11,7 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
 {
     public class ProductRepository : Repository<Product, Guid>, IProductRepository
     {
-        public ProductRepository(ProductDbContext productDbContext) : base(productDbContext) 
+        public ProductRepository(InventoryDbContext productDbContext) : base(productDbContext) 
         {
         }
     }
