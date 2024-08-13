@@ -7,19 +7,18 @@ using System.Threading.Tasks;
 
 namespace Assignment4.DbContextUtility
 {
-    public class ApplicationDbContext
+    public class AdoNetUtility
     {
         private readonly string _connectionString;
 
-        public ApplicationDbContext(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
-        public ApplicationDbContext()
+        public AdoNetUtility()
         {
             _connectionString = ConnectionInfo.ConnectionString;
         }
 
-       
+        public AdoNetUtility(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
     }
 }

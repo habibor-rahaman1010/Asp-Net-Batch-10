@@ -8,7 +8,9 @@ namespace Assignment4
         {
             string connection = ConnectionInfo.ConnectionString;
 
-            ApplicationDbContext context = new ApplicationDbContext(connection);
+            AdoNetUtility context = new AdoNetUtility(connection);
+
+
         }
     }
 }
