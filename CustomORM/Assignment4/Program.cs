@@ -1,10 +1,14 @@
-﻿namespace Assignment4
+﻿using Assignment4.DbContextUtility;
+
+namespace Assignment4
 {
-    internal class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            string connection = ConnectionInfo.ConnectionString;
+
+            ApplicationDbContext context = new ApplicationDbContext(connection);
         }
     }
 }
