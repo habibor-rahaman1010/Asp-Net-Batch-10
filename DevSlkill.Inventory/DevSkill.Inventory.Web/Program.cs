@@ -1,5 +1,7 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using DevSkill.Inventory.Domain.Entities;
+using DevSkill.Inventory.Infrastructure.Data;
 using DevSkill.Inventory.Web.Data;
 using DevSkill.Inventory.Web.WebModules;
 using Microsoft.AspNetCore.Identity;
@@ -7,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
+using System.Reflection;
 
 namespace DevSkill.Inventory.Web
 {
@@ -45,14 +48,24 @@ namespace DevSkill.Inventory.Web
                
                 // Add services to the container.
                 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+                var migrationAssembly = Assembly.GetExecutingAssembly().FullName;
+                if (string.IsNullOrEmpty(migrationAssembly))
+                {
+                    throw new InvalidOperationException("Migration assembly not found.");
+                }
+
                 builder.Services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlServer(connectionString));
+
+                builder.Services.AddDbContext<InventoryDbContext>(options =>
+                options.UseSqlServer(connectionString, (x) => x.MigrationsAssembly(migrationAssembly)));
+
                 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
                 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
                 builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
                 {
-                    containerBuilder.RegisterModule(new WebModule());
+                    containerBuilder.RegisterModule(new WebModule(connectionString, migrationAssembly));
                 });
 
 
