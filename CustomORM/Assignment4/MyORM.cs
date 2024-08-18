@@ -3,13 +3,11 @@ using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
+using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Assignment4
 {
- 
     public class MyORM<G, T> : IMyORM<G, T> where T : class, IEntity<G>, new()
     {
         private readonly string _connectionString;
@@ -39,24 +37,27 @@ namespace Assignment4
                     }
                     else if (typeof(IEnumerable<IEntity<G>>).IsAssignableFrom(prop.PropertyType))
                     {
-                        // Handle nested collections
-                        var nestedOrm = new MyORM<G, IEntity<G>>(_connectionString);
-                        foreach (var nestedItem in (IEnumerable<IEntity<G>>)propValue)
+                        var nestedItems = (IEnumerable<IEntity<G>>)propValue;
+                        if (nestedItems != null)
                         {
-                            nestedOrm.Insert(nestedItem);
+                            foreach (var nestedItem in nestedItems)
+                            {
+                                InvokeNestedOrmMethod("Insert", nestedItem);
+                            }
                         }
                     }
                     else if (typeof(IEntity<G>).IsAssignableFrom(prop.PropertyType))
                     {
-                        // Handle nested objects
-                        var nestedOrm = new MyORM<G, IEntity<G>>(_connectionString);
-                        nestedOrm.Insert((IEntity<G>)propValue);
+                        var nestedItem = (IEntity<G>)propValue;
+                        if (nestedItem != null)
+                        {
+                            InvokeNestedOrmMethod("Insert", nestedItem);
+                        }
                     }
                 }
 
-                // Remove the trailing comma and space
-                columnNames.Length -= 2;
-                values.Length -= 2;
+                if (columnNames.Length > 0) columnNames.Length -= 2;
+                if (values.Length > 0) values.Length -= 2;
 
                 command.CommandText = $"INSERT INTO {typeof(T).Name} ({columnNames}) VALUES ({values})";
                 command.ExecuteNonQuery();
@@ -79,10 +80,28 @@ namespace Assignment4
                         setClauses.Append($"{prop.Name} = @{prop.Name}, ");
                         command.Parameters.AddWithValue($"@{prop.Name}", propValue ?? DBNull.Value);
                     }
+                    else if (typeof(IEnumerable<IEntity<G>>).IsAssignableFrom(prop.PropertyType))
+                    {
+                        var nestedItems = (IEnumerable<IEntity<G>>)propValue;
+                        if (nestedItems != null)
+                        {
+                            foreach (var nestedItem in nestedItems)
+                            {
+                                InvokeNestedOrmMethod("Update", nestedItem);
+                            }
+                        }
+                    }
+                    else if (typeof(IEntity<G>).IsAssignableFrom(prop.PropertyType))
+                    {
+                        var nestedItem = (IEntity<G>)propValue;
+                        if (nestedItem != null)
+                        {
+                            InvokeNestedOrmMethod("Update", nestedItem);
+                        }
+                    }
                 }
 
-                // Remove the trailing comma and space
-                setClauses.Length -= 2;
+                if (setClauses.Length > 0) setClauses.Length -= 2;
 
                 command.CommandText = $"UPDATE {typeof(T).Name} SET {setClauses} WHERE Id = @Id";
                 command.Parameters.AddWithValue("@Id", item.Id);
@@ -160,10 +179,24 @@ namespace Assignment4
             return item;
         }
 
+        private void InvokeNestedOrmMethod(string methodName, IEntity<G> nestedItem)
+        {
+            try
+            {
+                var nestedOrmType = typeof(MyORM<,>).MakeGenericType(typeof(G), nestedItem.GetType());
+                var nestedOrm = Activator.CreateInstance(nestedOrmType, _connectionString);
+                nestedOrmType.GetMethod(methodName).Invoke(nestedOrm, new object[] { nestedItem });
+            }
+            catch (TargetInvocationException ex)
+            {
+                Console.WriteLine($"Exception in {methodName} for {nestedItem.GetType().Name}: {ex.InnerException?.Message}");
+                Console.WriteLine($"Stack Trace: {ex.InnerException?.StackTrace}");
+            }
+        }
+
         IEnumerable<T> IMyORM<G, T>.GetAll()
         {
-            throw new NotImplementedException();
+            return GetAll();
         }
     }
 }
-
