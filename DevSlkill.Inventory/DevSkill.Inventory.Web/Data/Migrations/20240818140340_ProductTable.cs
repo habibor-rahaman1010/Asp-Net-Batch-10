@@ -18,8 +18,8 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Ratings = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    Price = table.Column<int>(type: "int", nullable: false),
+                    Ratings = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
