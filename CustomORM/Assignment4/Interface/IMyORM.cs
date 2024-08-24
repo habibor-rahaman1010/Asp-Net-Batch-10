@@ -16,4 +16,3 @@ namespace Assignment4.Interface
         void Delete(G id);
     }
 }
-
