@@ -9,11 +9,11 @@ namespace Assignment4.Interface
     public interface IMyORM<G, T> where T : class, IEntity<G>, new()
     {
         void Insert(T item);
+        IEnumerable<T> GetAll();
+        T GetById(G id);
         void Update(T item);
         void Delete(T item);
         void Delete(G id);
-        T GetById(G id);
-        IEnumerable<T> GetAll();
     }
 }
 

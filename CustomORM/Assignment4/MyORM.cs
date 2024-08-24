@@ -1,10 +1,10 @@
-﻿using Assignment4.Interface;
-using Microsoft.Data.SqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Text;
+using Assignment4.Interface;
+using Microsoft.Data.SqlClient;
 
 namespace Assignment4
 {
@@ -62,6 +62,46 @@ namespace Assignment4
                 command.CommandText = $"INSERT INTO {typeof(T).Name} ({columnNames}) VALUES ({values})";
                 command.ExecuteNonQuery();
             }
+        }
+
+        public List<T> GetAll()
+        {
+            var list = new List<T>();
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = $"SELECT * FROM {typeof(T).Name}";
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        list.Add(MapReaderToEntity(reader));
+                    }
+                }
+            }
+            return list;
+        }
+
+        public T GetById(G id)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = $"SELECT * FROM {typeof(T).Name} WHERE Id = @Id";
+                command.Parameters.AddWithValue("@Id", id);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return MapReaderToEntity(reader);
+                    }
+                }
+            }
+            return null;
         }
 
         public void Update(T item)
@@ -126,57 +166,69 @@ namespace Assignment4
             }
         }
 
-        public T GetById(G id)
-        {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = $"SELECT * FROM {typeof(T).Name} WHERE Id = @Id";
-                command.Parameters.AddWithValue("@Id", id);
-
-                using (var reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        return MapReaderToEntity(reader);
-                    }
-                }
-            }
-            return null;
-        }
-
-        public List<T> GetAll()
-        {
-            var list = new List<T>();
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = $"SELECT * FROM {typeof(T).Name}";
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        list.Add(MapReaderToEntity(reader));
-                    }
-                }
-            }
-            return list;
-        }
-
         private T MapReaderToEntity(IDataRecord record)
         {
             var item = new T();
+
             foreach (var prop in typeof(T).GetProperties())
             {
-                if (record[prop.Name] != DBNull.Value)
+                Type propType = prop.PropertyType;
+
+                var underlyingType = Nullable.GetUnderlyingType(propType) ?? propType;
+
+                if (underlyingType.IsPrimitive || underlyingType == typeof(string) || underlyingType == typeof(Guid) || underlyingType == typeof(double) || underlyingType == typeof(DateTime) || underlyingType.IsEnum)
                 {
-                    prop.SetValue(item, record[prop.Name]);
+                    if (record[prop.Name] != DBNull.Value)
+                    {
+                        object value = Convert.ChangeType(record[prop.Name], underlyingType);
+                        prop.SetValue(item, value);
+                    }
+                }
+                else if (typeof(IEntity<G>).IsAssignableFrom(propType))
+                {
+                    var foreignKeyName = $"{prop.Name}Id";
+
+                    if (ColumnExists(record, foreignKeyName) && record[foreignKeyName] != DBNull.Value)
+                    {
+                        var nestedId = (G)Convert.ChangeType(record[foreignKeyName], typeof(G));
+                        var nestedOrmType = typeof(MyORM<,>).MakeGenericType(typeof(G), propType);
+                        var nestedOrm = Activator.CreateInstance(nestedOrmType, _connectionString);
+                        var getByIdMethod = nestedOrmType.GetMethod("GetById");
+                        var nestedEntity = getByIdMethod.Invoke(nestedOrm, new object[] { nestedId });
+
+                        prop.SetValue(item, nestedEntity);
+                    }
+                }
+                else if (typeof(IEnumerable<IEntity<G>>).IsAssignableFrom(propType))
+                {
+                    var elementType = propType.GetGenericArguments()[0];
+                    var nestedOrmType = typeof(MyORM<,>).MakeGenericType(typeof(G), elementType);
+                    var nestedOrm = Activator.CreateInstance(nestedOrmType, _connectionString);
+                    var getAllMethod = nestedOrmType.GetMethod("GetAll");
+                    var nestedEntities = getAllMethod.Invoke(nestedOrm, null);
+
+                    prop.SetValue(item, nestedEntities);
+                }
+                else if (propType.IsClass && propType != typeof(string))
+                {
+                    var complexTypeInstance = Activator.CreateInstance(propType);
+                    prop.SetValue(item, complexTypeInstance);
                 }
             }
+
             return item;
+        }
+
+        private bool ColumnExists(IDataRecord record, string columnName)
+        {
+            try
+            {
+                return record.GetOrdinal(columnName) >= 0;
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return false;
+            }
         }
 
         private void InvokeNestedOrmMethod(string methodName, IEntity<G> nestedItem)
