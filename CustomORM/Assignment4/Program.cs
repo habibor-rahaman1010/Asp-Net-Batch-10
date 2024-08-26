@@ -91,7 +91,7 @@ namespace Assignment4
             };
 
 
-            var myOrm = new MyORM<Guid, Course>(connection);
+            /*var myOrm = new MyORM<Guid, Course>(connection);
             List<Course> courses = myOrm.GetAll();
 
             foreach (var course in courses)
@@ -118,7 +118,11 @@ namespace Assignment4
                 {
                     Console.WriteLine("Teacher information not available for this course.");
                 }
-            }
+            }*/
+
+
+            var myOrm = new MyORM<Guid, Course>(connection);
+            myOrm.Delete(new Guid("9106fa9b-bb19-4158-83b0-720c6b42b8c1"));
 
         }
     }

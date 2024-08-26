@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Text;
+using Assignment4.DatabaseSchemaClass;
+using Assignment4;
 using Assignment4.Interface;
 using Microsoft.Data.SqlClient;
 
@@ -158,13 +160,34 @@ namespace Assignment4
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = $"DELETE FROM {typeof(T).Name} WHERE Id = @Id";
-                command.Parameters.AddWithValue("@Id", id);
-                command.ExecuteNonQuery();
+                try
+                {
+                    connection.Open();
+
+                    // Delete related records first
+                    var deleteRelatedCommand = connection.CreateCommand();
+                    deleteRelatedCommand.CommandText = "DELETE FROM AdmissionTest WHERE CourseId = @Id";
+                    deleteRelatedCommand.Parameters.AddWithValue("@Id", id);
+                    deleteRelatedCommand.ExecuteNonQuery();
+
+                    // Then delete the main record
+                    var deleteCommand = connection.CreateCommand();
+                    deleteCommand.CommandText = $"DELETE FROM {typeof(T).Name} WHERE Id = @Id";
+                    deleteCommand.Parameters.AddWithValue("@Id", id);
+                    int rowsAffected = deleteCommand.ExecuteNonQuery();
+
+                    if (rowsAffected == 0)
+                    {
+                        Console.WriteLine("No row was deleted. Check if the ID exists.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An error occurred: {ex.Message}");
+                }
             }
         }
+
 
         private T MapReaderToEntity(IDataRecord record)
         {
@@ -252,3 +275,4 @@ namespace Assignment4
         }
     }
 }
+
