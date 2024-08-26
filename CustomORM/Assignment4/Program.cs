@@ -61,8 +61,7 @@ namespace Assignment4
                 Description = "An introduction to C# programming language.",
                 Sessions = sessions
             };
-
-   
+ 
             List<AdmissionTest> tests = new List<AdmissionTest>
             {
                 new AdmissionTest
