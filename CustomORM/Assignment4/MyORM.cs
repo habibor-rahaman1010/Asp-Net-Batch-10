@@ -66,6 +66,7 @@ namespace Assignment4
             }
         }
 
+
         public List<T> GetAll()
         {
             var list = new List<T>();
@@ -86,6 +87,7 @@ namespace Assignment4
             return list;
         }
 
+
         public T GetById(G id)
         {
             using (var connection = new SqlConnection(_connectionString))
@@ -105,6 +107,7 @@ namespace Assignment4
             }
             return null;
         }
+
 
         public void Update(T item)
         {
@@ -151,10 +154,12 @@ namespace Assignment4
             }
         }
 
+
         public void Delete(T item)
         {
             Delete(item.Id);
         }
+
 
         public void Delete(G id)
         {
@@ -163,14 +168,11 @@ namespace Assignment4
                 try
                 {
                     connection.Open();
-
-                    // Delete related records first
                     var deleteRelatedCommand = connection.CreateCommand();
                     deleteRelatedCommand.CommandText = "DELETE FROM AdmissionTest WHERE CourseId = @Id";
                     deleteRelatedCommand.Parameters.AddWithValue("@Id", id);
                     deleteRelatedCommand.ExecuteNonQuery();
 
-                    // Then delete the main record
                     var deleteCommand = connection.CreateCommand();
                     deleteCommand.CommandText = $"DELETE FROM {typeof(T).Name} WHERE Id = @Id";
                     deleteCommand.Parameters.AddWithValue("@Id", id);
@@ -242,6 +244,7 @@ namespace Assignment4
             return item;
         }
 
+
         private bool ColumnExists(IDataRecord record, string columnName)
         {
             try
@@ -253,6 +256,7 @@ namespace Assignment4
                 return false;
             }
         }
+
 
         private void InvokeNestedOrmMethod(string methodName, IEntity<G> nestedItem)
         {
@@ -268,6 +272,7 @@ namespace Assignment4
                 Console.WriteLine($"Stack Trace: {ex.InnerException?.StackTrace}");
             }
         }
+
 
         IEnumerable<T> IMyORM<G, T>.GetAll()
         {
