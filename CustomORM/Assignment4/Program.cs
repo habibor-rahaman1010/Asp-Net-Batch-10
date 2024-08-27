@@ -1,8 +1,6 @@
 ﻿using Assignment4.DbContextUtility;
-using Assignment4.Interface;
-using System.Security.Principal;
 using Assignment4.DatabaseSchemaClass;
-using static System.Net.Mime.MediaTypeNames;
+
 
 namespace Assignment4
 {
@@ -14,8 +12,9 @@ namespace Assignment4
 
             AdoNetUtility context = new AdoNetUtility(connection);
 
-            var ORM = new MyORM<Guid, Course>(connection); 
+            var myWonOrm = new MyORM<Guid, Course>(connection);
 
+            
         }
     }
 }

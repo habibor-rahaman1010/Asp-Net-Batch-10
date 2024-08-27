@@ -173,39 +173,15 @@ namespace Assignment4
         }
 
 
+        // I'm try but i dit not complete the delete mehtod so i pass this..
         public void Delete(T item)
         {
-            Delete(item.Id);
+            throw new NotImplementedException();
         }
-
 
         public void Delete(G id)
         {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                try
-                {
-                    connection.Open();
-                    var deleteRelatedCommand = connection.CreateCommand();
-                    deleteRelatedCommand.CommandText = "DELETE FROM AdmissionTest WHERE CourseId = @Id";
-                    deleteRelatedCommand.Parameters.AddWithValue("@Id", id);
-                    deleteRelatedCommand.ExecuteNonQuery();
-
-                    var deleteCommand = connection.CreateCommand();
-                    deleteCommand.CommandText = $"DELETE FROM {typeof(T).Name} WHERE Id = @Id";
-                    deleteCommand.Parameters.AddWithValue("@Id", id);
-                    int rowsAffected = deleteCommand.ExecuteNonQuery();
-
-                    if (rowsAffected == 0)
-                    {
-                        Console.WriteLine("No row was deleted. Check if the ID exists.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"An error occurred: {ex.Message}");
-                }
-            }
+            throw new NotImplementedException ();
         }
 
 
