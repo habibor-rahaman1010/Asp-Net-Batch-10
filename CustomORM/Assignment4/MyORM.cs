@@ -173,7 +173,7 @@ namespace Assignment4
         }
 
 
-        // I'm try but i dit not complete the delete mehtod so i pass this..
+        // I'm try but i did not complete the delete mehtod so i pass this..
         public void Delete(T item)
         {
             throw new NotImplementedException();
