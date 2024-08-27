@@ -31,30 +31,15 @@ namespace Assignment4
                 foreach (var prop in typeof(T).GetProperties())
                 {
                     var propValue = prop.GetValue(item);
-                    if (prop.PropertyType.IsPrimitive || prop.PropertyType == typeof(string) || prop.PropertyType == typeof(Guid) || prop.PropertyType == typeof(double))
+                    if (IsSimpleType(prop.PropertyType))
                     {
                         columnNames.Append($"{prop.Name}, ");
                         values.Append($"@{prop.Name}, ");
-                        command.Parameters.AddWithValue($"@{prop.Name}", propValue ?? DBNull.Value);
+                        AddSimplePropertyToCommand(command, prop, propValue);
                     }
-                    else if (typeof(IEnumerable<IEntity<G>>).IsAssignableFrom(prop.PropertyType))
+                    else
                     {
-                        var nestedItems = (IEnumerable<IEntity<G>>)propValue;
-                        if (nestedItems != null)
-                        {
-                            foreach (var nestedItem in nestedItems)
-                            {
-                                InvokeNestedOrmMethod("Insert", nestedItem);
-                            }
-                        }
-                    }
-                    else if (typeof(IEntity<G>).IsAssignableFrom(prop.PropertyType))
-                    {
-                        var nestedItem = (IEntity<G>)propValue;
-                        if (nestedItem != null)
-                        {
-                            InvokeNestedOrmMethod("Insert", nestedItem);
-                        }
+                        HandleNestedEntities("Insert", prop, propValue);
                     }
                 }
 
@@ -65,7 +50,6 @@ namespace Assignment4
                 command.ExecuteNonQuery();
             }
         }
-
 
         public List<T> GetAll()
         {
@@ -87,7 +71,6 @@ namespace Assignment4
             return list;
         }
 
-
         public T GetById(G id)
         {
             using (var connection = new SqlConnection(_connectionString))
@@ -108,7 +91,6 @@ namespace Assignment4
             return null;
         }
 
-
         public void Update(T item)
         {
             using (var connection = new SqlConnection(_connectionString))
@@ -120,29 +102,14 @@ namespace Assignment4
                 foreach (var prop in typeof(T).GetProperties())
                 {
                     var propValue = prop.GetValue(item);
-                    if (prop.PropertyType.IsPrimitive || prop.PropertyType == typeof(string) || prop.PropertyType == typeof(Guid) || prop.PropertyType == typeof(double))
+                    if (IsSimpleType(prop.PropertyType))
                     {
                         setClauses.Append($"{prop.Name} = @{prop.Name}, ");
-                        command.Parameters.AddWithValue($"@{prop.Name}", propValue ?? DBNull.Value);
+                        AddSimplePropertyToCommand(command, prop, propValue);
                     }
-                    else if (typeof(IEnumerable<IEntity<G>>).IsAssignableFrom(prop.PropertyType))
+                    else
                     {
-                        var nestedItems = (IEnumerable<IEntity<G>>)propValue;
-                        if (nestedItems != null)
-                        {
-                            foreach (var nestedItem in nestedItems)
-                            {
-                                InvokeNestedOrmMethod("Update", nestedItem);
-                            }
-                        }
-                    }
-                    else if (typeof(IEntity<G>).IsAssignableFrom(prop.PropertyType))
-                    {
-                        var nestedItem = (IEntity<G>)propValue;
-                        if (nestedItem != null)
-                        {
-                            InvokeNestedOrmMethod("Update", nestedItem);
-                        }
+                        HandleNestedEntities("Update", prop, propValue);
                     }
                 }
 
@@ -154,12 +121,10 @@ namespace Assignment4
             }
         }
 
-
         public void Delete(T item)
         {
             Delete(item.Id);
         }
-
 
         public void Delete(G id)
         {
@@ -168,11 +133,14 @@ namespace Assignment4
                 try
                 {
                     connection.Open();
+
+                    // Delete related entries (e.g., foreign key relationships)
                     var deleteRelatedCommand = connection.CreateCommand();
                     deleteRelatedCommand.CommandText = "DELETE FROM AdmissionTest WHERE CourseId = @Id";
                     deleteRelatedCommand.Parameters.AddWithValue("@Id", id);
                     deleteRelatedCommand.ExecuteNonQuery();
 
+                    // Delete main entry
                     var deleteCommand = connection.CreateCommand();
                     deleteCommand.CommandText = $"DELETE FROM {typeof(T).Name} WHERE Id = @Id";
                     deleteCommand.Parameters.AddWithValue("@Id", id);
@@ -190,7 +158,6 @@ namespace Assignment4
             }
         }
 
-
         private T MapReaderToEntity(IDataRecord record)
         {
             var item = new T();
@@ -198,10 +165,9 @@ namespace Assignment4
             foreach (var prop in typeof(T).GetProperties())
             {
                 Type propType = prop.PropertyType;
-
                 var underlyingType = Nullable.GetUnderlyingType(propType) ?? propType;
 
-                if (underlyingType.IsPrimitive || underlyingType == typeof(string) || underlyingType == typeof(Guid) || underlyingType == typeof(double) || underlyingType == typeof(DateTime) || underlyingType.IsEnum)
+                if (IsSimpleType(underlyingType))
                 {
                     if (record[prop.Name] != DBNull.Value)
                     {
@@ -244,7 +210,6 @@ namespace Assignment4
             return item;
         }
 
-
         private bool ColumnExists(IDataRecord record, string columnName)
         {
             try
@@ -257,6 +222,38 @@ namespace Assignment4
             }
         }
 
+        private bool IsSimpleType(Type type)
+        {
+            return type.IsPrimitive || type == typeof(string) || type == typeof(Guid) || type == typeof(double) || type == typeof(DateTime) || type.IsEnum;
+        }
+
+        private void AddSimplePropertyToCommand(SqlCommand command, PropertyInfo prop, object value)
+        {
+            command.Parameters.AddWithValue($"@{prop.Name}", value ?? DBNull.Value);
+        }
+
+        private void HandleNestedEntities(string methodName, PropertyInfo prop, object propValue)
+        {
+            if (typeof(IEnumerable<IEntity<G>>).IsAssignableFrom(prop.PropertyType))
+            {
+                var nestedItems = (IEnumerable<IEntity<G>>)propValue;
+                if (nestedItems != null)
+                {
+                    foreach (var nestedItem in nestedItems)
+                    {
+                        InvokeNestedOrmMethod(methodName, nestedItem);
+                    }
+                }
+            }
+            else if (typeof(IEntity<G>).IsAssignableFrom(prop.PropertyType))
+            {
+                var nestedItem = (IEntity<G>)propValue;
+                if (nestedItem != null)
+                {
+                    InvokeNestedOrmMethod(methodName, nestedItem);
+                }
+            }
+        }
 
         private void InvokeNestedOrmMethod(string methodName, IEntity<G> nestedItem)
         {
@@ -272,7 +269,6 @@ namespace Assignment4
                 Console.WriteLine($"Stack Trace: {ex.InnerException?.StackTrace}");
             }
         }
-
 
         IEnumerable<T> IMyORM<G, T>.GetAll()
         {
