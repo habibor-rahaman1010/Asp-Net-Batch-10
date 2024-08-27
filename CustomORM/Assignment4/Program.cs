@@ -14,17 +14,7 @@ namespace Assignment4
 
             AdoNetUtility context = new AdoNetUtility(connection);
 
-            Course updatedCourse = new Course
-            {
-                Title = "Updated Course Title",
-            };
-
-            var myOrm = new MyORM<Guid, Course>(connection);
-            updatedCourse.Title = "Demo";
-            myOrm.Update(updatedCourse);
-
-            
-
+            var ORM = new MyORM<Guid, Course>(connection); 
 
         }
     }

@@ -109,6 +109,7 @@ namespace Assignment4
         }
 
 
+
         public void Update(T item)
         {
             using (var connection = new SqlConnection(_connectionString))
@@ -116,14 +117,23 @@ namespace Assignment4
                 connection.Open();
                 var command = connection.CreateCommand();
                 var setClauses = new StringBuilder();
+                int parameterIndex = 0;
 
                 foreach (var prop in typeof(T).GetProperties())
                 {
                     var propValue = prop.GetValue(item);
+
+                    if (prop.Name.Equals("Id", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
                     if (prop.PropertyType.IsPrimitive || prop.PropertyType == typeof(string) || prop.PropertyType == typeof(Guid) || prop.PropertyType == typeof(double))
                     {
-                        setClauses.Append($"{prop.Name} = @{prop.Name}, ");
-                        command.Parameters.AddWithValue($"@{prop.Name}", propValue ?? DBNull.Value);
+                        string paramName = $"@param{parameterIndex}";
+                        setClauses.Append($"{prop.Name} = {paramName}, ");
+                        command.Parameters.AddWithValue(paramName, propValue ?? DBNull.Value);
+                        parameterIndex++;
                     }
                     else if (typeof(IEnumerable<IEntity<G>>).IsAssignableFrom(prop.PropertyType))
                     {
@@ -148,8 +158,16 @@ namespace Assignment4
 
                 if (setClauses.Length > 0) setClauses.Length -= 2;
 
-                command.CommandText = $"UPDATE {typeof(T).Name} SET {setClauses} WHERE Id = @Id";
-                command.Parameters.AddWithValue("@Id", item.Id);
+                string idParamName = $"@param{parameterIndex}";
+                command.CommandText = $"UPDATE {typeof(T).Name} SET {setClauses} WHERE Id = {idParamName}";
+                command.Parameters.AddWithValue(idParamName, item.Id);
+
+                Console.WriteLine($"SQL Command: {command.CommandText}");
+                foreach (SqlParameter parameter in command.Parameters)
+                {
+                    Console.WriteLine($"Parameter: {parameter.ParameterName}, Value: {parameter.Value}");
+                }
+
                 command.ExecuteNonQuery();
             }
         }
