@@ -12,9 +12,9 @@ namespace Assignment4
 
             AdoNetUtility context = new AdoNetUtility(connection);
 
-            var myWonOrm = new MyORM<Guid, Course>(connection);
-
-            
+            var orm = new MyORM<Guid, Course>(connection);
+            IList<Course> courses = orm.GetAll();
+        
         }
     }
 }
