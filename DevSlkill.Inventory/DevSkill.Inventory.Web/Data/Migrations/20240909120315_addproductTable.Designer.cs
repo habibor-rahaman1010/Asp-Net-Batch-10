@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevSkill.Inventory.Web.Data.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    [Migration("20240818140340_ProductTable")]
-    partial class ProductTable
+    [Migration("20240909120315_addproductTable")]
+    partial class addproductTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

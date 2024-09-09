@@ -372,7 +372,7 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
 
         public virtual (IList<TEntity> data, int total, int totalDisplay) GetDynamic(
             Expression<Func<TEntity, bool>> filter = null,
-            string orderBy = null,
+            string? orderBy = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
             int pageIndex = 1, int pageSize = 10, bool isTrackingOff = false)
         {

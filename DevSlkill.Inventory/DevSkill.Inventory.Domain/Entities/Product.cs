@@ -13,10 +13,5 @@ namespace DevSkill.Inventory.Domain.Entities
         public string Description { get; set; } = string.Empty ;
         public int Price { get; set; }
         public int Ratings { get; set; }
-
-        public Product()
-        {
-
-        }
     }
 }

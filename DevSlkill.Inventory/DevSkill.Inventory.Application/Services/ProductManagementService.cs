@@ -1,4 +1,5 @@
 ﻿using DevSkill.Inventory.Application.ServicesContract;
+using DevSkill.Inventory.Domain;
 using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Domain.UnitOfWorkContracts;
 using System;
@@ -22,6 +23,11 @@ namespace DevSkill.Inventory.Application.Services
         {
             _productUnitOfWork.ProductRepository.Add(product);
             _productUnitOfWork.Save();
+        }
+
+        public (IList<Product> data, int total, int totalDisplay) GetProducts(int pageIndex, int pageSize, DataTablesSearch search, string? order)
+        {
+            return _productUnitOfWork.ProductRepository.GetPagedProducts(pageIndex, pageSize, search, order);
         }
     }
 }
