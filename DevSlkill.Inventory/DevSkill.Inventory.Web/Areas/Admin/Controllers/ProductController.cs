@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
 using static DevSkill.Inventory.Web.Areas.Admin.Models.ResponseModel;
+using DevSkill.Inventory.Application.Services;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
@@ -13,10 +14,12 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
     public class ProductController : Controller
     {
         private readonly IProductManagementService _productManagementService;
+        private readonly ILogger<ProductController> _logger;
 
-        public ProductController(IProductManagementService productManagementService)
+        public ProductController(ILogger<ProductController> logger, IProductManagementService productManagementService)
         {
             _productManagementService = productManagementService;
+            _logger = logger;
         }
 
         public IActionResult Index()
@@ -24,10 +27,11 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View();
         }
 
-   
-        public JsonResult GetProductJsonData(ProductListModel model)
+        [HttpPost]
+        public JsonResult GetProductJsonData([FromBody] ProductListModel model)
         {
-            var result = _productManagementService.GetProducts(model.PageIndex, model.PageSize, model.Search, model.FormatSortExpression("ProductName"));
+            var result = _productManagementService.GetProducts(model.PageIndex, model.PageSize, model.Search, 
+                model.FormatSortExpression("Id", "ProductName", "Description", "Price", "Ratings"));
 
             var productJsonData = new
             {
@@ -57,25 +61,38 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Create(ProductModel model)
         {
-            var product = new Product { 
-                Id = Guid.NewGuid(),
-                ProductName = model.ProductName,
-                Description = model.Description,
-                Price = model.Price,
-                Ratings = model.Ratings,
-            };
-
-            if (ModelState.IsValid)
+            try
             {
-                _productManagementService.CreateProduct(product);
+                var product = new Product
+                {
+                    Id = Guid.NewGuid(),
+                    ProductName = model.ProductName,
+                    Description = model.Description,
+                    Price = model.Price,
+                    Ratings = model.Ratings,
+                };
 
+                if (ModelState.IsValid)
+                {
+                    _productManagementService.CreateProduct(product);
+
+                    TempData.Put("ResponseMessage", new ResponseModel
+                    {
+                        Message = "Product has been created successfuly",
+                        Type = ResponseTypes.Success
+                    });
+
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex) 
+            {
                 TempData.Put("ResponseMessage", new ResponseModel
                 {
                     Message = "Product has been created successfuly",
                     Type = ResponseTypes.Success
                 });
-
-                return RedirectToAction("Index");
+                _logger.LogError(ex, "Ultimatly product creation failed!");
             }
             return View();
         }
