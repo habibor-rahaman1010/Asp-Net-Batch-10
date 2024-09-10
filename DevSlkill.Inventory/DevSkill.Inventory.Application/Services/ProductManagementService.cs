@@ -25,9 +25,9 @@ namespace DevSkill.Inventory.Application.Services
             _productUnitOfWork.Save();
         }
 
-        public (IList<Product> data, int total, int totalDisplay) GetProducts(int pageIndex, int pageSize, DataTablesSearch search, string? order)
+        public Task<(IList<Product> data, int total, int totalDisplay)> GetProductsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
         {
-            return _productUnitOfWork.ProductRepository.GetPagedProducts(pageIndex, pageSize, search, order);
+            return _productUnitOfWork.ProductRepository.GetPagedProductsAsync(pageIndex, pageSize, search, order);
         }
     }
 }

@@ -9,6 +9,6 @@ namespace DevSkill.Inventory.Domain.RepositoryContracts
 {
     public interface IProductRepository : IRepositoryBase<Product, Guid>
     {
-        (IList<Product> data, int total, int totalDisplay) GetPagedProducts(int pageIndex, int pageSize, DataTablesSearch search, string? order);
+        Task<(IList<Product> data, int total, int totalDisplay)> GetPagedProductsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
     }
 }

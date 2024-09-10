@@ -27,10 +27,11 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View();
         }
 
+        [Route("/Admin/Product/GetProductJsonDataAsync")]
         [HttpPost]
-        public JsonResult GetProductJsonData([FromBody] ProductListModel model)
+        public async Task<JsonResult> GetProductJsonDataAsync([FromBody] ProductListModel model)
         {
-            var result = _productManagementService.GetProducts(model.PageIndex, model.PageSize, model.Search, 
+            var result = await _productManagementService.GetProductsAsync(model.PageIndex, model.PageSize, model.Search, 
                 model.FormatSortExpression("Id", "ProductName", "Description", "Price", "Ratings"));
 
             var productJsonData = new

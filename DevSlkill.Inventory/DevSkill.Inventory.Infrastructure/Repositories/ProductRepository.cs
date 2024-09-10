@@ -15,16 +15,17 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
         public ProductRepository(InventoryDbContext productDbContext) : base(productDbContext) 
         {
         }
+        //GetDynamic(null, order, null, pageIndex, pageSize, true);
 
-        public (IList<Product> data, int total, int totalDisplay) GetPagedProducts(int pageIndex, int pageSize, DataTablesSearch search, string? order)
+        public async Task<(IList<Product> data, int total, int totalDisplay)> GetPagedProductsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
         {
             if (string.IsNullOrWhiteSpace(search.Value))
             {
-                return GetDynamic(null, order, null, pageIndex, pageSize, true);
+                return await GetDynamicAsync(null, order, null, pageIndex, pageSize, true);
             }
             else
             {
-                return GetDynamic(x => x.ProductName.Contains(search.Value), order, null, pageIndex, pageSize, true);
+                return await GetDynamicAsync(x => x.ProductName.Contains(search.Value) || x.Description.Contains(search.Value), order, null, pageIndex, pageSize, true);
             }
         }
     }

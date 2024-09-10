@@ -164,7 +164,7 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
 
         public virtual async Task<(IList<TEntity> data, int total, int totalDisplay)> GetDynamicAsync(
             Expression<Func<TEntity, bool>> filter = null,
-            string orderBy = null,
+            string? orderBy = null,
             Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
             int pageIndex = 1,
             int pageSize = 10,

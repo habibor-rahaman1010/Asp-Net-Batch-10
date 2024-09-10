@@ -1,6 +1,5 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Infrastructure.Data;
 using DevSkill.Inventory.Web.Data;
 using DevSkill.Inventory.Web.WebModules;
@@ -121,4 +120,3 @@ namespace DevSkill.Inventory.Web
         }
     }
 }
-

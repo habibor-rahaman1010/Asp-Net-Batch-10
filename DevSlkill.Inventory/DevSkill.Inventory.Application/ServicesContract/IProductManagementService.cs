@@ -11,6 +11,6 @@ namespace DevSkill.Inventory.Application.ServicesContract
     public interface IProductManagementService
     {
         void CreateProduct(Product product);
-        (IList<Product> data, int total, int totalDisplay) GetProducts(int pageIndex, int pageSize, DataTablesSearch search, string? order);
+        Task<(IList<Product> data, int total, int totalDisplay)> GetProductsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
     }
 }
