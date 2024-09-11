@@ -10,7 +10,10 @@ namespace DevSkill.Inventory.Application.ServicesContract
 {
     public interface IProductManagementService
     {
-        void CreateProduct(Product product);
+        Task CreateProduct(Product product);
+        Task DeleteBlogPostAsync(Guid id);
+        Task<Product> GetProductAsync(Guid id);
         Task<(IList<Product> data, int total, int totalDisplay)> GetProductsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
+        Task UpdateProductAsync(Product product);
     }
 }

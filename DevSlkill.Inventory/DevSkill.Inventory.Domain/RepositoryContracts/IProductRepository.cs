@@ -10,5 +10,6 @@ namespace DevSkill.Inventory.Domain.RepositoryContracts
     public interface IProductRepository : IRepositoryBase<Product, Guid>
     {
         Task<(IList<Product> data, int total, int totalDisplay)> GetPagedProductsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
+        Task<bool> IsTitleDuplicateAsync(string productName, Guid? id = null);
     }
 }

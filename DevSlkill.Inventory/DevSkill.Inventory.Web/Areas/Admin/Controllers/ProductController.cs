@@ -59,10 +59,10 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View();
         }
 
-        [HttpPost]
-        public IActionResult Create(ProductModel model)
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(ProductModel model)
         {
-            try
+            if (ModelState.IsValid)
             {
                 var product = new Product
                 {
@@ -73,27 +73,107 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     Ratings = model.Ratings,
                 };
 
-                if (ModelState.IsValid)
+                try
                 {
-                    _productManagementService.CreateProduct(product);
+                    await _productManagementService.CreateProduct(product);
 
                     TempData.Put("ResponseMessage", new ResponseModel
                     {
-                        Message = "Product has been created successfuly",
+                        Message = "The product has been created successfuly!",
                         Type = ResponseTypes.Success
                     });
 
                     return RedirectToAction("Index");
                 }
+                catch (Exception ex)
+                {
+                    TempData.Put("ResponseMessage", new ResponseModel
+                    {
+                        Message = "The product creation has failed!",
+                        Type = ResponseTypes.Danger
+                    });
+                    _logger.LogError(ex, "Ultimatly the product creation failed!");
+                }
             }
-            catch (Exception ex) 
+            return View();
+        }
+
+        public async Task<IActionResult> UpdateProduct(Guid id)
+        {
+            var model = new UpdateProductModel();
+            var product = await _productManagementService.GetProductAsync(id);
+
+            model.Id = product.Id;
+            model.ProductName = product.ProductName;
+            model.Description = product.Description;
+            model.Price = product.Price;
+            model.Ratings = product.Ratings;
+
+            return View(model);
+        }
+
+        [HttpPost, AutoValidateAntiforgeryToken]
+        public async Task<IActionResult> UpdateProduct (UpdateProductModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var product = new Product()
+                {
+                    Id = model.Id,
+                    ProductName = model.ProductName,
+                    Description = model.Description,
+                    Price = model.Price,
+                    Ratings = model.Ratings
+                };
+
+                try
+                {
+                    await _productManagementService.UpdateProductAsync(product);
+                    TempData.Put("ResponseMessage", new ResponseModel
+                    {
+                        Message = "The Product has been update successfuly",
+                        Type = ResponseTypes.Success
+                    });
+
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    TempData.Put("ResponseMessage", new ResponseModel
+                    {
+                        Message = "The product update has failed!",
+                        Type = ResponseTypes.Danger
+                    });
+                    _logger.LogError(ex, "Ultimatly the product updated failed!");
+                }
+            }
+            return View();
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+               await _productManagementService.DeleteBlogPostAsync(id);
+
+                TempData.Put("ResponseMessage", new ResponseModel
+                {
+                    Message = "The product has deleted successfuly",
+                    Type = ResponseTypes.Success
+                });
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
             {
                 TempData.Put("ResponseMessage", new ResponseModel
                 {
-                    Message = "Product has been created successfuly",
-                    Type = ResponseTypes.Success
+                    Message = "The product has deleted failed",
+                    Type = ResponseTypes.Danger
                 });
-                _logger.LogError(ex, "Ultimatly product creation failed!");
+
+                _logger.LogError(ex, "The product deleted failed");
             }
             return View();
         }

@@ -14,8 +14,8 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
     {
         public ProductRepository(InventoryDbContext productDbContext) : base(productDbContext) 
         {
+
         }
-        //GetDynamic(null, order, null, pageIndex, pageSize, true);
 
         public async Task<(IList<Product> data, int total, int totalDisplay)> GetPagedProductsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
         {
@@ -26,6 +26,18 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
             else
             {
                 return await GetDynamicAsync(x => x.ProductName.Contains(search.Value) || x.Description.Contains(search.Value), order, null, pageIndex, pageSize, true);
+            }
+        }
+
+        public async Task<bool> IsTitleDuplicateAsync(string productName, Guid? id = null)
+        {
+            if (id.HasValue)
+            {
+                return await GetCountAsync(x => x.Id != id.Value && x.ProductName == productName) > 0;
+            }
+            else
+            {
+                return await GetCountAsync(x => x.ProductName == productName) > 0;
             }
         }
     }

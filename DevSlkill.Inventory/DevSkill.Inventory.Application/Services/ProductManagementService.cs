@@ -19,15 +19,45 @@ namespace DevSkill.Inventory.Application.Services
             _productUnitOfWork = productUnitOfWork;
         }
 
-        public void CreateProduct(Product product)
+        public async Task CreateProduct(Product product)
         {
-            _productUnitOfWork.ProductRepository.Add(product);
-            _productUnitOfWork.Save();
+            if (!await _productUnitOfWork.ProductRepository.IsTitleDuplicateAsync(product.ProductName))
+            {
+                await _productUnitOfWork.ProductRepository.AddAsync(product);
+                await _productUnitOfWork.SaveAsync();
+            }
+            else
+            {
+                throw new InvalidOperationException("Product name should be unique!");
+            }
+        }
+
+        public async  Task DeleteBlogPostAsync(Guid id)
+        {
+            await _productUnitOfWork.ProductRepository.RemoveAsync(id);
+            await _productUnitOfWork.SaveAsync();
+        }
+
+        public async Task<Product> GetProductAsync(Guid id)
+        {
+            return await _productUnitOfWork.ProductRepository.GetByIdAsync(id);
         }
 
         public Task<(IList<Product> data, int total, int totalDisplay)> GetProductsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
         {
             return _productUnitOfWork.ProductRepository.GetPagedProductsAsync(pageIndex, pageSize, search, order);
+        }
+
+        public async Task UpdateProductAsync(Product product)
+        {
+            if (!await _productUnitOfWork.ProductRepository.IsTitleDuplicateAsync(product.ProductName, product.Id)) {
+                await _productUnitOfWork.ProductRepository.EditAsync(product);
+                await _productUnitOfWork.SaveAsync();
+            }
+            else
+            {
+                throw new InvalidOperationException("Product name should be unique!");
+            }
         }
     }
 }
