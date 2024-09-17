@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DevSkill.Inventory.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,9 @@ namespace DevSkill.Inventory.Domain.Entities
         public int AlertQuantity { get; set; }
         public string IMEI { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty ;
+        public ProductStatus Status { get; set; }
+        public ProductType ProductType { get; set; }
+        public Tax Tax { get; set; }
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
 

@@ -4,16 +4,19 @@ using DevSkill.Inventory.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DevSkill.Inventory.Web.Data.Migrations
+namespace DevSkill.Inventory.Web.Migrations.InventoryDb
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240917040507_UpdateProductTable")]
+    partial class UpdateProductTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,9 +124,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProductType")
-                        .HasColumnType("int");
-
                     b.Property<int>("Ratings")
                         .HasColumnType("int");
 
@@ -136,9 +136,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
 
                     b.Property<Guid>("SubcategoryId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Tax")
-                        .HasColumnType("int");
 
                     b.Property<Guid>("UnitId")
                         .HasColumnType("uniqueidentifier");
