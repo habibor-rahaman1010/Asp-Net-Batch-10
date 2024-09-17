@@ -7,6 +7,8 @@ using DevSkill.Inventory.Infrastructure.Data;
 using DevSkill.Inventory.Infrastructure.Repositories;
 using DevSkill.Inventory.Infrastructure.UnitOfWork;
 using DevSkill.Inventory.Web.Service;
+using DevSkill.Inventory.Infrastructure;
+using DevSkill.Inventory.Domain;
 
 namespace DevSkill.Inventory.Web.WebModules
 {
@@ -40,6 +42,10 @@ namespace DevSkill.Inventory.Web.WebModules
 
             builder.RegisterType<ProductUnitOfWork>()
                 .As<IInventoryUnitOfWork>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<ApplicationTime>()
+                .As<IApplicationTime>()
                 .InstancePerLifetimeScope();
         }
     }

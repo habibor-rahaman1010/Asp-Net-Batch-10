@@ -30,6 +30,41 @@ namespace DevSkill.Inventory.Infrastructure.Data
             base.OnConfiguring(optionsBuilder);
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Product>(entity =>
+            {
+                entity.HasKey(p => p.Id);
+
+                entity.HasOne(p => p.Category)
+                      .WithMany()
+                      .HasForeignKey("CategoryId");
+
+                entity.HasOne(p => p.Brand)
+                      .WithMany()
+                      .HasForeignKey("BrandId");
+
+                entity.HasOne(p => p.Unit)
+                      .WithMany()
+                      .HasForeignKey("UnitId");
+
+                entity.HasOne(p => p.Subcategory)
+                      .WithMany()
+                      .HasForeignKey("SubcategoryId");
+
+                entity.HasOne(p => p.BusinessLocation)
+                      .WithMany()
+                      .HasForeignKey("BusinessLocationId");
+            });
+
+            base.OnModelCreating(modelBuilder);
+        }
+
         public DbSet<Product> Products { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Brand> Brands { get; set; }
+        public DbSet<Unit> Units { get; set; }
+        public DbSet<Subcategory> Subcategories { get; set; }
+        public DbSet<BusinessLocation> BusinessLocations { get; set; }
     }
 }
