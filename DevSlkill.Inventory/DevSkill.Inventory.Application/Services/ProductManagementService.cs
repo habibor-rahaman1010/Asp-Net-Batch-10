@@ -1,5 +1,6 @@
 ﻿using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Domain;
+using DevSkill.Inventory.Domain.Dtos;
 using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Domain.UnitOfWorkContracts;
 using System;
@@ -46,6 +47,11 @@ namespace DevSkill.Inventory.Application.Services
         public Task<(IList<Product> data, int total, int totalDisplay)> GetProductsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
         {
             return _productUnitOfWork.ProductRepository.GetPagedProductsAsync(pageIndex, pageSize, search, order);
+        }
+
+        public async Task<(IList<ProductDto> data, int total, int totalDisplay)> GetProductsSpAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
+        {
+            return await _productUnitOfWork.GetPagedProductUsingSPAsync(pageIndex, pageSize, search, order);
         }
 
         public async Task UpdateProductAsync(Product product)

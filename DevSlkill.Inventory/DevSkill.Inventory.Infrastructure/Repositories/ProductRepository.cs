@@ -2,6 +2,7 @@
 using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Domain.RepositoryContracts;
 using DevSkill.Inventory.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,11 +22,11 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
         {
             if (string.IsNullOrWhiteSpace(search.Value))
             {
-                return await GetDynamicAsync(null, order, null, pageIndex, pageSize, true);
+                return await GetDynamicAsync(null, order, y => y.Include(z => z.Category).Include(n => n.Brand), pageIndex, pageSize, true);
             }
             else
             {
-                return await GetDynamicAsync(x => x.ProductName.Contains(search.Value) || x.Description.Contains(search.Value), order, null, pageIndex, pageSize, true);
+                return await GetDynamicAsync(x => x.ProductName.Contains(search.Value) || x.Description.Contains(search.Value), order, y => y.Include(z => z.Category).Include(n => n.Brand), pageIndex, pageSize, true);
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿@{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Product List";
 }
+
 
 @section Styles {
     <!-- DataTables -->
@@ -47,7 +48,6 @@
                                     <th>Description</th>
                                     <th>SKU</th>
                                     <th>Category</th>
-                                    <th>Brand</th>
                                     <th>Price</th>
                                     <th>Rating</th>
                                     <th>Actions</th>
@@ -61,7 +61,6 @@
                                     <th>Description</th>
                                     <th>SKU</th>
                                     <th>Category</th>
-                                    <th>Brand</th>
                                     <th>Price</th>
                                     <th>Rating</th>
                                     <th>Actions</th>
@@ -109,7 +108,7 @@
                 info: true,
                 autoWidth: false,
                 ajax: {
-                    url: "/Admin/Product/GetProductJsonDataAsync",
+                    url: "/Admin/Product/GetProductJsonDataSpAsync",
                     type: "POST",
                     contentType: "application/json",
                     dataType: "json",
@@ -133,19 +132,19 @@
 
                     {
                         orderable: false,
-                        targets: 8,
+                        targets: 7,
                         render: function (data, type, row) {
                             console.log(type);
                             return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/admin/Product/UpdateProduct/${data}'" value='${data}'>
-                                                                        <i class="fas fa-pencil-alt">
-                                                                        </i>
-                                                                        Edit
-                                                                    </button>
-                                                                    <button type="submit" class="btn btn-danger btn-sm show-bs-modal" data-id='${data}' value='${data}'>
-                                                                        <i class="fas fa-trash">
-                                                                        </i>
-                                                                        Delete
-                                                                    </button>`;
+                                                                                <i class="fas fa-pencil-alt">
+                                                                                </i>
+                                                                                Edit
+                                                                            </button>
+                                                                            <button type="submit" class="btn btn-danger btn-sm show-bs-modal" data-id='${data}' value='${data}'>
+                                                                                <i class="fas fa-trash">
+                                                                                </i>
+                                                                                Delete
+                                                                            </button>`;
                         }
                     }
                 ],
@@ -171,3 +170,6 @@
         });
     </script>
 }
+
+
+

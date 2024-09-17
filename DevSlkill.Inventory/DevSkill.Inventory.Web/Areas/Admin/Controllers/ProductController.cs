@@ -44,6 +44,9 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                                 HttpUtility.HtmlEncode(record.Id),
                                 HttpUtility.HtmlEncode(record.ProductName),
                                 HttpUtility.HtmlEncode(record.Description),
+                                HttpUtility.HtmlEncode(record.SKU),
+                                HttpUtility.HtmlEncode(record?.Category?.CategoryName),
+                                HttpUtility.HtmlDecode(record?.Brand?.BrandName),
                                 HttpUtility.HtmlEncode(record.Price),
                                 HttpUtility.HtmlEncode(record.Ratings),
                                 record.Id.ToString()
@@ -53,6 +56,42 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 
             return Json(productJsonData);
         }
+
+        public IActionResult ProductList()
+        {
+            return View();
+        }
+
+        //use stored procedure
+        [Route("/Admin/Product/GetProductJsonDataSpAsync")]
+        [HttpPost]
+        public async Task<JsonResult> GetProductJsonDataSpAsync([FromBody] ProductListModel model)
+        {
+            var result = await _productManagementService.GetProductsSpAsync(model.PageIndex, model.PageSize, model.Search,
+                model.FormatSortExpression("Id", "ProductName", "Description", "Price", "Ratings"));
+
+            var productJsonData = new
+            {
+                recordsTotal = result.total,
+                recordsFiltered = result.totalDisplay,
+                data = (from record in result.data
+                        select new string[]
+                        {
+                                HttpUtility.HtmlEncode(record.Id),
+                                HttpUtility.HtmlEncode(record.ProductName),
+                                HttpUtility.HtmlEncode(record.Description),
+                                HttpUtility.HtmlEncode(record.SKU),
+                                HttpUtility.HtmlEncode(record.CategoryName),
+                                HttpUtility.HtmlEncode(record.Price),
+                                HttpUtility.HtmlEncode(record.Ratings),
+                                record.Id.ToString()
+                        }
+                    ).ToArray()
+            };
+
+            return Json(productJsonData);
+        }
+
 
         public IActionResult Create()
         {

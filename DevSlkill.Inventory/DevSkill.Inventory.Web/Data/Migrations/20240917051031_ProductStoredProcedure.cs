@@ -11,148 +11,166 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             var sql = """
+         
                     CREATE OR ALTER PROCEDURE ProductAdvancedSearch
-                    @PageIndex int,
-                    @PageSize int,
-                    @OrderBy nvarchar(50),
-                    @ProductName nvarchar(max) = '%',
-                    @ProductType int = NULL,
-                    @CategoryId uniqueidentifier = NULL,    
-                    @UnitId uniqueidentifier = NULL,        
-                    @BrandId uniqueidentifier = NULL,       
-                    @BusinessLocationId uniqueidentifier = NULL,
-                    @TaxRate int = NULL,
-                    @Status int = NULL, 
-                    @Total int OUTPUT,
-                    @TotalDisplay int OUTPUT
-                AS
-                BEGIN
-                    SET NOCOUNT ON;
+                        @PageIndex int,
+                        @PageSize int,
+                        @OrderBy nvarchar(50),
+                        @ProductName nvarchar(max) = '%',
+                        @Description nvarchar(max) = '%', -- New parameter for Description
+                        @ProductType int = NULL,
+                        @CategoryId uniqueidentifier = NULL,    
+                        @UnitId uniqueidentifier = NULL,        
+                        @BrandId uniqueidentifier = NULL,       
+                        @BusinessLocationId uniqueidentifier = NULL,
+                        @TaxRate int = NULL,
+                        @Status int = NULL, 
+                        @Total int OUTPUT,
+                        @TotalDisplay int OUTPUT
+                    AS
 
-                    -- Declare SQL strings for the query and count
-                    DECLARE @sql nvarchar(MAX);
-                    DECLARE @countSql nvarchar(MAX);
-                    DECLARE @paramList nvarchar(MAX); 
+                    BEGIN
+                        SET NOCOUNT ON;
 
-                    -- Collecting Total (total products count without filtering)
-                    SELECT @Total = COUNT(*) FROM Products;
+                        -- Declare SQL strings for the query and count
+                        DECLARE @sql nvarchar(MAX);
+                        DECLARE @countSql nvarchar(MAX);
+                        DECLARE @paramList nvarchar(MAX); 
 
-                    -- Base SQL for counting filtered products
-                    SET @countSql = N'
-                        SELECT @TotalDisplay = COUNT(*) 
-                        FROM Products p
-                        LEFT JOIN Categories c ON p.CategoryId = c.Id
-                        LEFT JOIN Subcategories sc ON p.SubcategoryId = sc.Id
-                        LEFT JOIN Brands b ON p.BrandId = b.Id
-                        LEFT JOIN Units u ON p.UnitId = u.Id
-                        LEFT JOIN BusinessLocations bl ON p.BusinessLocationId = bl.Id
-                        WHERE 1 = 1';
+                        -- Collecting Total (total products count without filtering)
+                        SELECT @Total = COUNT(*) FROM Products;
 
-                    -- Add filtering conditions based on provided parameters
-                    IF @ProductName IS NOT NULL AND @ProductName <> '%'
-                        SET @countSql = @countSql + N' AND p.ProductName LIKE @xProductName';
+                        -- Base SQL for counting filtered products
+                        SET @countSql = 'SELECT @TotalDisplay = COUNT(*) 
+                            FROM Products p
+                            LEFT JOIN Categories c ON p.CategoryId = c.Id
+                            LEFT JOIN Subcategories sc ON p.SubcategoryId = sc.Id
+                            LEFT JOIN Brands b ON p.BrandId = b.Id
+                            LEFT JOIN Units u ON p.UnitId = u.Id
+                            LEFT JOIN BusinessLocations bl ON p.BusinessLocationId = bl.Id
+                            WHERE 1 = 1';
 
-                    IF @ProductType IS NOT NULL
-                        SET @countSql = @countSql + N' AND p.ProductType = @xProductType';
+                        -- Add filtering conditions based on provided parameters
+                        SET @countSql = @countSql + ' AND (p.ProductName LIKE ''%'' + @xProductName + ''%'' OR p.Description LIKE ''%'' + @xDescription + ''%'' )'; -- Updated filter for both ProductName and Description
 
-                    IF @CategoryId IS NOT NULL
-                        SET @countSql = @countSql + N' AND p.CategoryId = @xCategoryId';
+                        IF @ProductType IS NOT NULL
+                            SET @countSql = @countSql + ' AND p.ProductType = @xProductType';
 
-                    IF @UnitId IS NOT NULL
-                        SET @countSql = @countSql + N' AND p.UnitId = @xUnitId';
+                        IF @CategoryId IS NOT NULL
+                            SET @countSql = @countSql + ' AND p.CategoryId = @xCategoryId';
 
-                    IF @BrandId IS NOT NULL
-                        SET @countSql = @countSql + N' AND p.BrandId = @xBrandId';
+                        IF @UnitId IS NOT NULL
+                            SET @countSql = @countSql + ' AND p.UnitId = @xUnitId';
 
-                    IF @BusinessLocationId IS NOT NULL
-                        SET @countSql = @countSql + N' AND p.BusinessLocationId = @xBusinessLocationId';
+                        IF @BrandId IS NOT NULL
+                            SET @countSql = @countSql + ' AND p.BrandId = @xBrandId';
 
-                    IF @TaxRate IS NOT NULL
-                        SET @countSql = @countSql + N' AND p.Tax = @xTaxRate';
+                        IF @BusinessLocationId IS NOT NULL
+                            SET @countSql = @countSql + ' AND p.BusinessLocationId = @xBusinessLocationId';
 
-                    IF @Status IS NOT NULL
-                        SET @countSql = @countSql + N' AND p.Status = @xStatus';
+                        IF @TaxRate IS NOT NULL
+                            SET @countSql = @countSql + ' AND p.Tax = @xTaxRate';
 
-                    -- Prepare parameters list for counting filtered products
-                    SET @paramList = N'@xProductName nvarchar(max), 
-                                       @xProductType int, 
-                                       @xCategoryId uniqueidentifier, 
-                                       @xUnitId uniqueidentifier, 
-                                       @xBrandId uniqueidentifier, 
-                                       @xBusinessLocationId uniqueidentifier, 
-                                       @xTaxRate decimal(18,2),
-                                       @xStatus int,
-                                       @TotalDisplay int OUTPUT';
+                        IF @Status IS NOT NULL
+                            SET @countSql = @countSql + ' AND p.Status = @xStatus';
 
-                    -- Execute the count query to get filtered total
-                    EXEC sp_executesql @countSql, @paramList,
-                        @ProductName, @ProductType, @CategoryId, 
-                        @UnitId, @BrandId, @BusinessLocationId, 
-                        @TaxRate, @Status, @TotalDisplay OUTPUT;
+                        -- Prepare parameter list for count query
+                        SELECT @paramList = '@xProductName nvarchar(max),
+                            @xDescription nvarchar(max), -- New parameter for Description
+                            @xProductType int,
+                            @xCategoryId uniqueidentifier,
+                            @xUnitId uniqueidentifier,
+                            @xBrandId uniqueidentifier,
+                            @xBusinessLocationId uniqueidentifier,
+                            @xTaxRate int,
+                            @xStatus int,
+                            @TotalDisplay int OUTPUT';
 
-                    -- Base SQL for retrieving paginated product data
-                    SET @sql = N'
-                        SELECT p.Id, p.ProductName, p.Price, p.SKU, p.Ratings, p.Created, p.Updated, 
-                               c.CategoryName, sc.SubcategoryName, 
-                               b.BrandName, u.UnitName, bl.LocationName
-                        FROM Products p
-                        LEFT JOIN Categories c ON p.CategoryId = c.Id
-                        LEFT JOIN Subcategories sc ON p.SubcategoryId = sc.Id
-                        LEFT JOIN Brands b ON p.BrandId = b.Id
-                        LEFT JOIN Units u ON p.UnitId = u.Id
-                        LEFT JOIN BusinessLocations bl ON p.BusinessLocationId = bl.Id
-                        WHERE 1 = 1';
+                        -- Execute the count query
+                        EXEC sp_executesql @countSql, @paramList,
+                            @ProductName,
+                            @Description, -- Include Description parameter
+                            @ProductType,
+                            @CategoryId,
+                            @UnitId,
+                            @BrandId,
+                            @BusinessLocationId,
+                            @TaxRate,
+                            @Status,
+                            @TotalDisplay OUTPUT;
 
-                    -- Add filtering conditions for product retrieval
-                    IF @ProductName IS NOT NULL AND @ProductName <> '%'
-                        SET @sql = @sql + N' AND p.ProductName LIKE @xProductName';
+                        -- Base SQL for retrieving paginated product data
+                        SET @sql = 'SELECT p.Id, p.ProductName, p.Description, p.Price, p.SKU, p.Ratings, p.Created, p.Updated, 
+                                   c.CategoryName, sc.SubcategoryName, 
+                                   b.BrandName, u.UnitName, bl.LocationName
+                            FROM Products p
+                            LEFT JOIN Categories c ON p.CategoryId = c.Id
+                            LEFT JOIN Subcategories sc ON p.SubcategoryId = sc.Id
+                            LEFT JOIN Brands b ON p.BrandId = b.Id
+                            LEFT JOIN Units u ON p.UnitId = u.Id
+                            LEFT JOIN BusinessLocations bl ON p.BusinessLocationId = bl.Id
+                            WHERE 1 = 1';
 
-                    IF @ProductType IS NOT NULL
-                        SET @sql = @sql + N' AND p.ProductType = @xProductType';
+                        -- Add filtering conditions for product retrieval
+                        SET @sql = @sql + ' AND (p.ProductName LIKE ''%'' + @xProductName + ''%'' OR p.Description LIKE ''%'' + @xDescription + ''%'' )'; -- Add combined filter for ProductName and Description
 
-                    IF @CategoryId IS NOT NULL
-                        SET @sql = @sql + N' AND p.CategoryId = @xCategoryId';
+                        IF @ProductType IS NOT NULL
+                            SET @sql = @sql + ' AND p.ProductType = @xProductType';
 
-                    IF @UnitId IS NOT NULL
-                        SET @sql = @sql + N' AND p.UnitId = @xUnitId';
+                        IF @CategoryId IS NOT NULL
+                            SET @sql = @sql + ' AND p.CategoryId = @xCategoryId';
 
-                    IF @BrandId IS NOT NULL
-                        SET @sql = @sql + N' AND p.BrandId = @xBrandId';
+                        IF @UnitId IS NOT NULL
+                            SET @sql = @sql + ' AND p.UnitId = @xUnitId';
 
-                    IF @BusinessLocationId IS NOT NULL
-                        SET @sql = @sql + N' AND p.BusinessLocationId = @xBusinessLocationId';
+                        IF @BrandId IS NOT NULL
+                            SET @sql = @sql + ' AND p.BrandId = @xBrandId';
 
-                    IF @TaxRate IS NOT NULL
-                        SET @sql = @sql + N' AND p.Tax = @xTaxRate';
+                        IF @BusinessLocationId IS NOT NULL
+                            SET @sql = @sql + ' AND p.BusinessLocationId = @xBusinessLocationId';
 
-                    IF @Status IS NOT NULL
-                        SET @sql = @sql + N' AND p.Status = @xStatus';
+                        IF @TaxRate IS NOT NULL
+                            SET @sql = @sql + ' AND p.Tax = @xTaxRate';
 
-                    -- Add ordering, pagination using OFFSET and FETCH
-                    SET @sql = @sql + N'
-                        ORDER BY ' + @OrderBy + N'
-                        OFFSET (@xPageSize * (@xPageIndex - 1)) ROWS
-                        FETCH NEXT @xPageSize ROWS ONLY';
+                        IF @Status IS NOT NULL
+                            SET @sql = @sql + ' AND p.Status = @xStatus';
 
-                    -- Prepare parameters list for paginated product data retrieval
-                    SET @paramList = N'@xProductName nvarchar(max), 
-                                       @xProductType int, 
-                                       @xCategoryId uniqueidentifier, 
-                                       @xUnitId uniqueidentifier, 
-                                       @xBrandId uniqueidentifier, 
-                                       @xBusinessLocationId uniqueidentifier, 
-                                       @xTaxRate decimal(18,2),
-                                       @xStatus int,
-                                       @xPageIndex int, 
-                                       @xPageSize int';
+                        -- Add ordering, pagination using OFFSET and FETCH
+                        SET @sql = @sql + ' ORDER BY ' + @OrderBy + 
+                            ' OFFSET @PageSize * (@PageIndex - 1) ROWS 
+                            FETCH NEXT @PageSize ROWS ONLY';
 
-                    -- Execute the paginated product retrieval query
-                    EXEC sp_executesql @sql, @paramList,
-                        @ProductName, @ProductType, @CategoryId, 
-                        @UnitId, @BrandId, @BusinessLocationId, 
-                        @TaxRate, @Status, @PageIndex, @PageSize;
-                END;
-                
+                        -- Prepare parameters list for paginated product data retrieval
+                        SELECT @paramList = '@xProductName nvarchar(max),
+                            @xDescription nvarchar(max), -- New parameter for Description
+                            @xProductType int,
+                            @xCategoryId uniqueidentifier,
+                            @xUnitId uniqueidentifier,
+                            @xBrandId uniqueidentifier,
+                            @xBusinessLocationId uniqueidentifier,
+                            @xTaxRate int,
+                            @xStatus int,
+                            @PageIndex int,
+                            @PageSize int';
+
+                        -- Execute the paginated product retrieval query
+                        EXEC sp_executesql @sql, @paramList,
+                            @ProductName,
+                            @Description, -- Include Description parameter
+                            @ProductType,
+                            @CategoryId,
+                            @UnitId,
+                            @BrandId,
+                            @BusinessLocationId,
+                            @TaxRate,
+                            @Status,
+                            @PageIndex,
+                            @PageSize;
+
+                        PRINT @sql;
+                        PRINT @countSql;
+                    END;
+
                 """;
             migrationBuilder.Sql(sql);
         }

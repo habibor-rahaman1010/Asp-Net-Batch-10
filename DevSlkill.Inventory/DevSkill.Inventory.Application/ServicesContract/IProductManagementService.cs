@@ -1,4 +1,5 @@
 ﻿using DevSkill.Inventory.Domain;
+using DevSkill.Inventory.Domain.Dtos;
 using DevSkill.Inventory.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace DevSkill.Inventory.Application.ServicesContract
         Task DeleteBlogPostAsync(Guid id);
         Task<Product> GetProductAsync(Guid id);
         Task<(IList<Product> data, int total, int totalDisplay)> GetProductsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
+        Task<(IList<ProductDto> data, int total, int totalDisplay)> GetProductsSpAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
         Task UpdateProductAsync(Product product);
     }
 }
