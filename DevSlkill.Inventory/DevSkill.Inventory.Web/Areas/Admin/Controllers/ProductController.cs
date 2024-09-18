@@ -14,11 +14,15 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
     public class ProductController : Controller
     {
         private readonly IProductManagementService _productManagementService;
+        private readonly ICategoryManagementService _categoryManagementService;
         private readonly ILogger<ProductController> _logger;
 
-        public ProductController(ILogger<ProductController> logger, IProductManagementService productManagementService)
+        public ProductController(ILogger<ProductController> logger, 
+            IProductManagementService productManagementService,
+            ICategoryManagementService categoryManagementService)
         {
             _productManagementService = productManagementService;
+            _categoryManagementService = categoryManagementService;
             _logger = logger;
         }
 
@@ -57,9 +61,11 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(productJsonData);
         }
 
-        public IActionResult ProductList()
+        public async Task<IActionResult> ProductList()
         {
-            return View();
+            var model = new ProductListModel();
+            model.SetCategoryValues(await _categoryManagementService.GetCategoriesAsync());
+            return View(model);
         }
 
         //use stored procedure
@@ -76,14 +82,18 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 recordsFiltered = result.totalDisplay,
                 data = (from record in result.data
                         select new string[]
-                        {
-                                HttpUtility.HtmlEncode(record.Id),
+                        {   
                                 HttpUtility.HtmlEncode(record.ProductName),
+                                HttpUtility.HtmlEncode(record.LocationName),
                                 HttpUtility.HtmlEncode(record.Description),
+                                HttpUtility.HtmlEncode((int)(record.Price) - (record.Price / 100 * 30)),
+                                HttpUtility.HtmlEncode(record.Price),
                                 HttpUtility.HtmlEncode(record.SKU),
                                 HttpUtility.HtmlEncode(record.CategoryName),
-                                HttpUtility.HtmlEncode(record.Price),
+                                HttpUtility.HtmlEncode(record.ProductType),
                                 HttpUtility.HtmlEncode(record.Ratings),
+                                HttpUtility.HtmlEncode(record.BrandName),
+                                HttpUtility.HtmlEncode(record.Tax),
                                 record.Id.ToString()
                         }
                     ).ToArray()

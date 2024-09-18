@@ -32,16 +32,24 @@ namespace DevSkill.Inventory.Web.WebModules
                 .WithParameter("migrationAssembly", _migrationAssembly)
                 .InstancePerLifetimeScope();
 
-            builder.RegisterType<ProductManagementService>()
-                .As<IProductManagementService>()
+            builder.RegisterType<ProductUnitOfWork>()
+                .As<IInventoryUnitOfWork>()
                 .InstancePerLifetimeScope();
 
             builder.RegisterType<ProductRepository>()
                 .As<IProductRepository>()
                 .InstancePerLifetimeScope();
 
-            builder.RegisterType<ProductUnitOfWork>()
-                .As<IInventoryUnitOfWork>()
+            builder.RegisterType<ProductManagementService>()
+                .As<IProductManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<CategoryRepository>()
+                .As<ICategoryRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<CategoryManagementService>()
+                .As<ICategoryManagementService>()
                 .InstancePerLifetimeScope();
 
             builder.RegisterType<ApplicationTime>()

@@ -12,6 +12,8 @@ namespace DevSkill.Inventory.Domain.UnitOfWorkContracts
     public interface IInventoryUnitOfWork : IUnitOfWork
     {
         IProductRepository ProductRepository { get; }
+        ICategoryRepository CategoryRepository { get; }
+
         Task<(IList<ProductDto> data, int total, int totalDisplay)> GetPagedProductUsingSPAsync(int pageIndex,
             int pageSize, DataTablesSearch search, string? order);
     }

@@ -16,10 +16,14 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
     public class ProductUnitOfWork : UnitOfWork, IInventoryUnitOfWork
     {
         public IProductRepository ProductRepository { get; private set; }
+        public ICategoryRepository CategoryRepository { get; private set; }
 
-        public ProductUnitOfWork(InventoryDbContext productDbContext, IProductRepository productRepository) : base(productDbContext) 
+        public ProductUnitOfWork(InventoryDbContext productDbContext, 
+            IProductRepository productRepository, 
+            ICategoryRepository categoryRepository) : base(productDbContext) 
         {
             ProductRepository = productRepository;
+            CategoryRepository = categoryRepository;
         }
 
         public async Task<(IList<ProductDto> data, int total, int totalDisplay)> GetPagedProductUsingSPAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)

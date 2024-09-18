@@ -1,4 +1,5 @@
-﻿@{
+﻿@model ProductListModel
+@{
     ViewData["Title"] = "Product List";
 }
 
@@ -29,6 +30,55 @@
 
 <!-- Main content -->
 <section class="content">
+    <div class="col-12">
+        <div class="card card-outline card-primary collapsed-card">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-search mr-1"></i>Search Blog Post</h3>
+
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <!-- /.card-tools -->
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" asp-for="SearchItem.ProductName" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select asp-for="SearchItem.CategoryId" asp-items="Model.Categories" class="form-control"></select>
+                        </div>
+                    </div>
+                    @* <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Create Date From</label>
+                            <input type="text" asp-for="SearchItem.CreateDateFrom" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Create Date To</label>
+                            <input type="text" asp-for="SearchItem.CreateDateTo" class="form-control" />
+                        </div>
+                    </div> *@
+                </div>
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer">
+                <button id="searchButton" type="submit" class="btn btn-primary float-right">Search</button>
+            </div>
+        </div>
+    </div>
+
+
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
@@ -43,26 +93,34 @@
                         <table id="products" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th>Id</th>
                                     <th>Product Name</th>
+                                    <th>Business Location</th>
                                     <th>Description</th>
+                                    <th>Unit Purchase Price</th>
+                                    <th>Selling Price</th>
                                     <th>SKU</th>
                                     <th>Category</th>
-                                    <th>Price</th>
+                                    <th>Product Type</th>
                                     <th>Rating</th>
+                                    <th>Brand</th>
+                                    <th>Tax</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
 
                             <tfoot>
                                 <tr>
-                                    <th>Id</th>
                                     <th>Product Name</th>
+                                    <th>Business Location</th>
                                     <th>Description</th>
+                                    <th>Unit Purchase Price</th>
+                                    <th>Selling Price</th>
                                     <th>SKU</th>
                                     <th>Category</th>
-                                    <th>Price</th>
+                                    <th>Product Type</th>
                                     <th>Rating</th>
+                                    <th>Brand</th>
+                                    <th>Tax</th>
                                     <th>Actions</th>
                                 </tr>
                             </tfoot>
@@ -123,8 +181,8 @@
                         targets: 2,
                         render: function (data, type, row) {
                             var words = data.split(" ");
-                            if (words.length > 20) {
-                                return words.slice(0, 20).join(" ") + '...';
+                            if (words.length > 5) {
+                                return words.slice(0, 5).join(" ") + '...';
                             }
                             return data;
                         }
@@ -132,7 +190,7 @@
 
                     {
                         orderable: false,
-                        targets: 7,
+                        targets: 11,
                         render: function (data, type, row) {
                             console.log(type);
                             return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/admin/Product/UpdateProduct/${data}'" value='${data}'>
