@@ -38,8 +38,8 @@ namespace DevSkill.Inventory.Web
               
                 IHostBuilder hostBuilder = builder.Host.UseSerilog((ctx, lc) =>
                     lc.MinimumLevel.Debug().WriteTo.MSSqlServer(
-                      connectionString: connection,
-                      sinkOptions: new MSSqlServerSinkOptions { TableName = tableName, AutoCreateSqlTable = true })
+                        connectionString: connection,
+                        sinkOptions: new MSSqlServerSinkOptions { TableName = tableName, AutoCreateSqlTable = true })
                     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                     .Enrich.FromLogContext()
                     .ReadFrom.Configuration(builder.Configuration)                 
@@ -52,6 +52,8 @@ namespace DevSkill.Inventory.Web
                 {
                     throw new InvalidOperationException("Migration assembly not found.");
                 }
+
+                builder.WebHost.UseUrls("http://*:80");
 
                 builder.Services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlServer(connectionString));

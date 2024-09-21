@@ -12,9 +12,11 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
         { 
             SearchItem = new ProductSearchDto();
             Categories = new List<SelectListItem>();
+            ProductTypeSelectList = new List<SelectListItem>();
         }
         public ProductSearchDto SearchItem { get; set; }
         public IList<SelectListItem> Categories { get; private set; }
+        public IList<SelectListItem> ProductTypeSelectList { get; set; }
 
         public void SetCategoryValues(IList<Category> categories)
         {

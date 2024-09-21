@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Web;
 using static DevSkill.Inventory.Web.Areas.Admin.Models.ResponseModel;
 using DevSkill.Inventory.Application.Services;
+using DevSkill.Inventory.Infrastructure.RazorUtility;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
@@ -65,6 +66,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         {
             var model = new ProductListModel();
             model.SetCategoryValues(await _categoryManagementService.GetCategoriesAsync());
+            model.ProductTypeSelectList = Utility.ConvertProductTypes();
             return View(model);
         }
 
@@ -73,7 +75,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         [HttpPost]
         public async Task<JsonResult> GetProductJsonDataSpAsync([FromBody] ProductListModel model)
         {
-            var result = await _productManagementService.GetProductsSpAsync(model.PageIndex, model.PageSize, model.Search,
+            var result = await _productManagementService.GetProductsSpAsync(model.PageIndex, model.PageSize, model.SearchItem,
                 model.FormatSortExpression("Id", "ProductName", "Description", "Price", "Ratings"));
 
             var productJsonData = new

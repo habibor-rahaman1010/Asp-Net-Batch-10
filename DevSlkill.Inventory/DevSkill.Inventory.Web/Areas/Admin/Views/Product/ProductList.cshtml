@@ -1,4 +1,5 @@
 ﻿@model ProductListModel
+@using DevSkill.Inventory.Domain.Enums
 @{
     ViewData["Title"] = "Product List";
 }
@@ -47,16 +48,26 @@
                 <div class="row">
                     <div class="col-sm-3">
                         <div class="form-group">
-                            <label>Title</label>
+                            <label>Product Name</label>
                             <input type="text" asp-for="SearchItem.ProductName" class="form-control" />
                         </div>
                     </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Product Type</label>
+                            <select asp-for="SearchItem.ProductType" asp-items="Model.ProductTypeSelectList" class="form-control"></select>
+                        </div>
+                    </div>
+
+
                     <div class="col-sm-3">
                         <div class="form-group">
                             <label>Category</label>
                             <select asp-for="SearchItem.CategoryId" asp-items="Model.Categories" class="form-control"></select>
                         </div>
                     </div>
+
                     @* <div class="col-sm-3">
                         <div class="form-group">
                             <label>Create Date From</label>
@@ -171,6 +182,13 @@
                     contentType: "application/json",
                     dataType: "json",
                     data: function (d) {
+                        d.SearchItem = {
+                            ProductName: $("#SearchItem_ProductName").val(),
+                            ProductType: parseInt($("#SearchItem_ProductType").val()),
+                            CategoryId: $("#SearchItem_CategoryId").val()
+                            //CreateDateFrom: $("#SearchItem_CreateDateFrom").val(),
+                            //CreateDateTo: $("#SearchItem_CreateDateTo").val()
+                        };
                         return JSON.stringify(d);
                     },
                 },
@@ -223,6 +241,10 @@
 
             $("#deleteButton").click(function () {
                 $("#deleteForm").submit();
+            });
+
+            $("#searchButton").click(function () {
+                $('#products').DataTable().ajax.reload(null, false);
             });
 
         });

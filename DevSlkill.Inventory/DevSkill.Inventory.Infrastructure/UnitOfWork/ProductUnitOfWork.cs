@@ -26,7 +26,7 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
             CategoryRepository = categoryRepository;
         }
 
-        public async Task<(IList<ProductDto> data, int total, int totalDisplay)> GetPagedProductUsingSPAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
+        public async Task<(IList<ProductDto> data, int total, int totalDisplay)> GetPagedProductUsingSPAsync(int pageIndex, int pageSize, ProductSearchDto search, string? order)
         {
             var procedureName = "ProductAdvancedSearch";
             var result = await SqlUtility.QueryWithStoredProcedureAsync<ProductDto>(procedureName, new Dictionary<string, object>
@@ -34,8 +34,10 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
                 { "PageIndex", pageIndex },
                 { "PageSize", pageSize },
                 { "OrderBy", order },
-                { "ProductName", search.Value },
-                { "Description", search.Value},
+                { "ProductName", string.IsNullOrEmpty(search.ProductName) ? null : search.ProductName },
+                { "ProductType", string.IsNullOrEmpty(search.ProductType.ToString()) ? null : (int)search.ProductType },
+                { "CategoryId", string.IsNullOrEmpty(search.CategoryId) ? null : Guid.Parse(search.CategoryId) }
+
             },
             new Dictionary<string, Type>
             {

@@ -11,6 +11,6 @@ namespace DevSkill.Inventory.Domain.Enums
         Single,
         Double,
         Variable,
-        Combo
+        Combo,
     }
 }

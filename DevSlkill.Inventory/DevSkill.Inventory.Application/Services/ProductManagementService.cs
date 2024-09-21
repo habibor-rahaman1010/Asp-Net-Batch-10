@@ -49,7 +49,7 @@ namespace DevSkill.Inventory.Application.Services
             return _productUnitOfWork.ProductRepository.GetPagedProductsAsync(pageIndex, pageSize, search, order);
         }
 
-        public async Task<(IList<ProductDto> data, int total, int totalDisplay)> GetProductsSpAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
+        public async Task<(IList<ProductDto> data, int total, int totalDisplay)> GetProductsSpAsync(int pageIndex, int pageSize, ProductSearchDto search, string? order)
         {
             return await _productUnitOfWork.GetPagedProductUsingSPAsync(pageIndex, pageSize, search, order);
         }
