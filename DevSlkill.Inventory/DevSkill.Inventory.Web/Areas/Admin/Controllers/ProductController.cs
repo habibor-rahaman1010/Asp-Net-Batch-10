@@ -5,9 +5,12 @@ using DevSkill.Inventory.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
-using static DevSkill.Inventory.Web.Areas.Admin.Models.ResponseModel;
 using DevSkill.Inventory.Application.Services;
 using DevSkill.Inventory.Infrastructure.RazorUtility;
+using AutoMapper;
+using DevSkill.Inventory.Domain;
+using static DevSkill.Inventory.Web.Areas.Admin.Models.ResponseModel;
+using DevSkill.Inventory.Domain.RepositoryContracts;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
@@ -16,14 +19,26 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
     {
         private readonly IProductManagementService _productManagementService;
         private readonly ICategoryManagementService _categoryManagementService;
+        private readonly IProductTypeManagementService _productTypeManagementService;
+        private readonly IBarcodeTypeManagementService _barcodeTypeManagementService;
+        private readonly IMapper _mapper;
+        private readonly IApplicationTime _applicationTime;
         private readonly ILogger<ProductController> _logger;
 
         public ProductController(ILogger<ProductController> logger, 
             IProductManagementService productManagementService,
-            ICategoryManagementService categoryManagementService)
+            ICategoryManagementService categoryManagementService,
+            IProductTypeManagementService productTypeManagementService,
+            IBarcodeTypeManagementService barcodeTypeManagementService,
+            IApplicationTime applicationTime,
+            IMapper mapper)
         {
             _productManagementService = productManagementService;
             _categoryManagementService = categoryManagementService;
+            _productTypeManagementService = productTypeManagementService;
+            _barcodeTypeManagementService = barcodeTypeManagementService;
+            _applicationTime = applicationTime;
+            _mapper = mapper;
             _logger = logger;
         }
 
@@ -66,7 +81,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         {
             var model = new ProductListModel();
             model.SetCategoryValues(await _categoryManagementService.GetCategoriesAsync());
-            model.ProductTypeSelectList = Utility.ConvertProductTypes();
+            model.SetProductTypeValues(await _productTypeManagementService.GetProductTypesAsync());
             return View(model);
         }
 
@@ -105,24 +120,24 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var model = new ProductCreateModel();
+            model.SetCategoriesValues(await _categoryManagementService.GetCategoriesAsync());
+            model.SetProductTypeValues(await _productTypeManagementService.GetProductTypesAsync());
+            model.SetBarcodeTypeValues(await _barcodeTypeManagementService.GetBarCodeTypes());
+            return View(model);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ProductModel model)
+        public async Task<IActionResult> Create(ProductCreateModel model)
         {
             if (ModelState.IsValid)
             {
-                var product = new Product
-                {
-                    Id = Guid.NewGuid(),
-                    ProductName = model.ProductName,
-                    Description = model.Description,
-                    Price = model.Price,
-                    Ratings = model.Ratings,
-                };
+                var product = _mapper.Map<Product>(model);
+                product.Created = _applicationTime.GetCurrentDateTime();
+                product.Updated = _applicationTime.GetCurrentDateTime();
+                
 
                 try
                 {

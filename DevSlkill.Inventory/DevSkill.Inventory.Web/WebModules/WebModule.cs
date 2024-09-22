@@ -52,6 +52,22 @@ namespace DevSkill.Inventory.Web.WebModules
                 .As<ICategoryManagementService>()
                 .InstancePerLifetimeScope();
 
+            builder.RegisterType<ProductTypeRepository>()
+                .As<IProductTypeRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<ProductTypeManagementService>()
+                .As<IProductTypeManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<BarcodeTypeRepository>()
+               .As<IBarcodeTypeRepository>()
+               .InstancePerLifetimeScope();
+
+            builder.RegisterType<BarcodeTypeManagementService>()
+                .As<IBarcodeTypeManagementService>()
+                .InstancePerLifetimeScope();
+
             builder.RegisterType<ApplicationTime>()
                 .As<IApplicationTime>()
                 .InstancePerLifetimeScope();

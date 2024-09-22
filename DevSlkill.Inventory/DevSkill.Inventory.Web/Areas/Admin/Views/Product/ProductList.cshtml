@@ -1,5 +1,5 @@
 ﻿@model ProductListModel
-@using DevSkill.Inventory.Domain.Enums
+
 @{
     ViewData["Title"] = "Product List";
 }
@@ -34,7 +34,7 @@
     <div class="col-12">
         <div class="card card-outline card-primary collapsed-card">
             <div class="card-header">
-                <h3 class="card-title"><i class="fas fa-search mr-1"></i>Search Blog Post</h3>
+                <h3 class="card-title"><i class="fas fa-search mr-1"></i>Search Your Product</h3>
 
                 <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -56,7 +56,7 @@
                     <div class="col-sm-3">
                         <div class="form-group">
                             <label>Product Type</label>
-                            <select asp-for="SearchItem.ProductType" asp-items="Model.ProductTypeSelectList" class="form-control"></select>
+                            <select asp-for="SearchItem.ProductTypeId" asp-items="Model.ProductTypes" class="form-control"></select>
                         </div>
                     </div>
 
@@ -184,7 +184,7 @@
                     data: function (d) {
                         d.SearchItem = {
                             ProductName: $("#SearchItem_ProductName").val(),
-                            ProductType: parseInt($("#SearchItem_ProductType").val()),
+                            ProductTypeId: $("#SearchItem_ProductTypeId").val(),
                             CategoryId: $("#SearchItem_CategoryId").val()
                             //CreateDateFrom: $("#SearchItem_CreateDateFrom").val(),
                             //CreateDateTo: $("#SearchItem_CreateDateTo").val()
@@ -250,6 +250,3 @@
         });
     </script>
 }
-
-
-

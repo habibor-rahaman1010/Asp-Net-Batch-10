@@ -4,9 +4,11 @@ services:
         build: 
             context: .
             dockerfile: DevSkill.Inventory.Web/Dockerfile
-        image: inventory-image
+        image: devskill-inventory
         env_file: 
             - web.env
         ports:
             - "8080:80"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Production
         entrypoint: ["dotnet", "DevSkill.Inventory.Web.dll"]

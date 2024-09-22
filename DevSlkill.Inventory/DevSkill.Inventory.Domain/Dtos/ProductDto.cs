@@ -1,4 +1,4 @@
-﻿using DevSkill.Inventory.Domain.Enums;
+﻿using DevSkill.Inventory.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +19,12 @@ namespace DevSkill.Inventory.Domain.Dtos
         public string CategoryName { get; set; } = string.Empty;  
         public ProductType ProductType { get; set; }
         public string BrandName { get; set; } = string.Empty;
-        public Tax Tax { get; set; }
+        public ApplicableTax Tax { get; set; }
+
+        public ProductDto()
+        {
+            this.ProductType = new ProductType();
+            this.Tax = new ApplicableTax();
+        }
     }
 }

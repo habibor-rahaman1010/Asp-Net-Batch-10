@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace DevSkill.Inventory.Infrastructure.Repositories
 {
-    public class CategoryRepository : Repository<Category, Guid>, ICategoryRepository
+    public class BarcodeTypeRepository : Repository<BarcodeType, Guid>, IBarcodeTypeRepository
     {
-        public CategoryRepository(InventoryDbContext inventoryDbcontext) : base(inventoryDbcontext)
+        public BarcodeTypeRepository(InventoryDbContext context) : base(context)
         {
         }
     }

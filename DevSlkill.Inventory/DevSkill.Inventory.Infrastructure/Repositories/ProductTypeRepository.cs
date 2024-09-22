@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace DevSkill.Inventory.Infrastructure.Repositories
 {
-    public class CategoryRepository : Repository<Category, Guid>, ICategoryRepository
+    public class ProductTypeRepository : Repository<ProductType, Guid>, IProductTypeRepository
     {
-        public CategoryRepository(InventoryDbContext inventoryDbcontext) : base(inventoryDbcontext)
+        public ProductTypeRepository(InventoryDbContext inventoryDbcontext) : base(inventoryDbcontext)
         {
         }
     }

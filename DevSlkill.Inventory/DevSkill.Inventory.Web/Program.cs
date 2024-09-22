@@ -53,7 +53,7 @@ namespace DevSkill.Inventory.Web
                     throw new InvalidOperationException("Migration assembly not found.");
                 }
 
-                builder.WebHost.UseUrls("http://*:80");
+                //builder.WebHost.UseUrls("http://*:80");
 
                 builder.Services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlServer(connectionString));
@@ -69,6 +69,8 @@ namespace DevSkill.Inventory.Web
                     containerBuilder.RegisterModule(new WebModule(connectionString, migrationAssembly));
                 });
 
+                //This service for automapper
+                builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
                 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                     .AddEntityFrameworkStores<ApplicationDbContext>();

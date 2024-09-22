@@ -8,19 +8,25 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
 {
     public class ProductListModel : DataTables
     {
+        public ProductSearchDto SearchItem { get; set; }
+        public IList<SelectListItem> Categories { get; private set; }
+        public IList<SelectListItem> ProductTypes { get; private set; }
+
         public ProductListModel() 
         { 
             SearchItem = new ProductSearchDto();
             Categories = new List<SelectListItem>();
-            ProductTypeSelectList = new List<SelectListItem>();
+            ProductTypes = new List<SelectListItem>();
         }
-        public ProductSearchDto SearchItem { get; set; }
-        public IList<SelectListItem> Categories { get; private set; }
-        public IList<SelectListItem> ProductTypeSelectList { get; set; }
 
         public void SetCategoryValues(IList<Category> categories)
         {
             Categories = Utility.ConvertCategories(categories);
+        }
+
+        public void SetProductTypeValues(IList<ProductType> productTypes)
+        {
+            ProductTypes = Utility.ConvertProductTypes(productTypes);
         }
     }
 }

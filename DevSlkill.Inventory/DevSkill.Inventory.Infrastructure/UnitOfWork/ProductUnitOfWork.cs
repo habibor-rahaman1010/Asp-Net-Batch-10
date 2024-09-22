@@ -18,12 +18,21 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
         public IProductRepository ProductRepository { get; private set; }
         public ICategoryRepository CategoryRepository { get; private set; }
 
+        public IProductTypeRepository ProductTypeRepository { get; private set; }
+
+        public IBarcodeTypeRepository BarcodeTypeRepository {  get; private set; }
+
         public ProductUnitOfWork(InventoryDbContext productDbContext, 
             IProductRepository productRepository, 
-            ICategoryRepository categoryRepository) : base(productDbContext) 
+            ICategoryRepository categoryRepository,
+            IProductTypeRepository productTypeRepository,
+            IBarcodeTypeRepository barcodeTypeRepository)
+            : base(productDbContext) 
         {
             ProductRepository = productRepository;
             CategoryRepository = categoryRepository;
+            ProductTypeRepository = productTypeRepository;
+            BarcodeTypeRepository = barcodeTypeRepository;
         }
 
         public async Task<(IList<ProductDto> data, int total, int totalDisplay)> GetPagedProductUsingSPAsync(int pageIndex, int pageSize, ProductSearchDto search, string? order)
@@ -35,7 +44,7 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
                 { "PageSize", pageSize },
                 { "OrderBy", order },
                 { "ProductName", string.IsNullOrEmpty(search.ProductName) ? null : search.ProductName },
-                { "ProductType", string.IsNullOrEmpty(search.ProductType.ToString()) ? null : (int)search.ProductType },
+                { "ProductTypeId", string.IsNullOrEmpty(search.ProductTypeId) ? null : Guid.Parse(search.ProductTypeId) },
                 { "CategoryId", string.IsNullOrEmpty(search.CategoryId) ? null : Guid.Parse(search.CategoryId) }
 
             },

@@ -1,4 +1,4 @@
-﻿@model ProductModel;
+﻿@model ProductCreateModel;
 
 @{
     ViewData["Title"] = "Create";
@@ -25,7 +25,7 @@
     <div class="container-fluid">
         <div class="row">
             <!-- left column -->
-            <div class="col">
+            <div class="col-sm-12">
                 <!-- general form elements -->
                 <div class="card card-primary">
                     <div class="card-header">
@@ -36,29 +36,144 @@
                     <form asp-antiforgery="true" asp-area="Admin" asp-controller="Product" asp-action="Create" method="post" enctype="multipart/form-data">
                         <div class="card-body">
                             <partial name="_ResponsePartial" />
-                            <div class="form-group">
-                                <label asp-for="ProductName"></label>
-                                <input type="text" asp-for="ProductName" class="form-control" placeholder="Product Name" />
-                                <span asp-validation-for="ProductName" class="text-danger"></span>
+
+                            <div class="row">
+                                <!-- First row of form inputs -->
+                                <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="ProductName"></label>
+                                        <input type="text" asp-for="ProductName" class="form-control" placeholder="Product Name" />
+                                        <span asp-validation-for="ProductName" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="SKU"></label>
+                                        <input type="text" asp-for="SKU" class="form-control" placeholder=" SKU" />
+                                        <span asp-validation-for="SKU" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="BarcodeTypeId"></label>
+                                        <select asp-for="BarcodeTypeId" asp-items="Model.BarcodeTypes" class="form-control"></select>
+                                        <span asp-validation-for="BarcodeTypeId" class="text-danger"></span>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="form-group">
-                                <label asp-for="Description"></label>
-                                <input type="text" asp-for="Description" class="form-control" placeholder="Product Description" />
-                                <span asp-validation-for="Description" class="text-danger"></span>
+                            <div class="row">
+                                <!-- Second row of form inputs -->
+                                <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="Description"></label>
+                                        <input type="text" asp-for="Description" class="form-control" placeholder="Product Description" />
+                                        <span asp-validation-for="Description" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="Ratings"></label>
+                                        <input type="number" asp-for="Ratings" class="form-control" placeholder="Product Rating" />
+                                        <span asp-validation-for="Ratings" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="ProductypeId"></label>
+                                        <select asp-for="ProductypeId" asp-items="Model.ProductTypes" class="form-control"></select>
+                                        <span asp-validation-for="ProductypeId" class="text-danger"></span>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="form-group">
-                                <label asp-for="Price"></label>
-                                <input type="number" asp-for="Price" class="form-control" placeholder="Product Price" />
-                                <span asp-validation-for="Price" class="text-danger"></span>
+                            <div class="row">
+                                <!-- Second row of form inputs -->
+                                <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="Description"></label>
+                                        <input type="text" asp-for="Description" class="form-control" placeholder="Product Description" />
+                                        <span asp-validation-for="Description" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="Ratings"></label>
+                                        <input type="number" asp-for="Ratings" class="form-control" placeholder="Product Rating" />
+                                        <span asp-validation-for="Ratings" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="ProductypeId"></label>
+                                        <select asp-for="ProductypeId" asp-items="Model.ProductTypes" class="form-control"></select>
+                                        <span asp-validation-for="ProductypeId" class="text-danger"></span>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="form-group">
-                                <label asp-for="Ratings"></label>
-                                <input type="number" asp-for="Ratings" class="form-control" placeholder="Product Rating" />
-                                <span asp-validation-for="Ratings" class="text-danger"></span>
+                            <div class="row">
+                                <!-- Second row of form inputs -->
+                                <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
+                                        <h3>Hello</h3>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="Ratings"></label>
+                                        <input type="number" asp-for="Ratings" class="form-control" placeholder="Product Rating" />
+                                        <span asp-validation-for="Ratings" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="ProductypeId"></label>
+                                        <select asp-for="ProductypeId" asp-items="Model.ProductTypes" class="form-control"></select>
+                                        <span asp-validation-for="ProductypeId" class="text-danger"></span>
+                                    </div>
+                                </div>
                             </div>
+
+                            <!--description section -->
+                            <div class="row">
+                                <!-- Second row of form inputs -->
+                                <div class="col-sm-8 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="Ratings"></label>
+                                        <input type="number" asp-for="Ratings" class="form-control" placeholder="Product Rating" />
+                                        <span asp-validation-for="Ratings" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="ProductypeId"></label>
+                                        <select asp-for="ProductypeId" asp-items="Model.ProductTypes" class="form-control"></select>
+                                        <span asp-validation-for="ProductypeId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Second row of form inputs -->
+                                <div class="col-sm-5 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="Ratings"></label>
+                                        <input type="number" asp-for="Ratings" class="form-control" placeholder="Product Rating" />
+                                        <span asp-validation-for="Ratings" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                         <!-- /.card-body -->
 
@@ -68,7 +183,6 @@
                     </form>
                 </div>
                 <!-- /.card -->
-
             </div>
             <!--/.col (left) -->
         </div>
