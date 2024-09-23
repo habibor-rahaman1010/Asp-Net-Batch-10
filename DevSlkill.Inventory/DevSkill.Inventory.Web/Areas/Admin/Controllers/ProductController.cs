@@ -103,14 +103,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                                 HttpUtility.HtmlEncode(record.ProductName),
                                 HttpUtility.HtmlEncode(record.LocationName),
                                 HttpUtility.HtmlEncode(record.Description),
-                                HttpUtility.HtmlEncode((int)(record.Price) - (record.Price / 100 * 30)),
+                                HttpUtility.HtmlEncode((record.Price) - (record.Price / 100 * 30)),
                                 HttpUtility.HtmlEncode(record.Price),
                                 HttpUtility.HtmlEncode(record.SKU),
                                 HttpUtility.HtmlEncode(record.CategoryName),
-                                HttpUtility.HtmlEncode(record.ProductType),
+                                HttpUtility.HtmlEncode(record.ProductTypeName),
                                 HttpUtility.HtmlEncode(record.Ratings),
                                 HttpUtility.HtmlEncode(record.BrandName),
-                                HttpUtility.HtmlEncode(record.Tax),
+                                HttpUtility.HtmlEncode(record.ApplicableTaxName),
                                 record.Id.ToString()
                         }
                     ).ToArray()

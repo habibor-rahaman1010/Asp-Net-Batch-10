@@ -17,9 +17,7 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
     {
         public IProductRepository ProductRepository { get; private set; }
         public ICategoryRepository CategoryRepository { get; private set; }
-
         public IProductTypeRepository ProductTypeRepository { get; private set; }
-
         public IBarcodeTypeRepository BarcodeTypeRepository {  get; private set; }
 
         public ProductUnitOfWork(InventoryDbContext productDbContext, 
@@ -43,6 +41,7 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
                 { "PageIndex", pageIndex },
                 { "PageSize", pageSize },
                 { "OrderBy", order },
+
                 { "ProductName", string.IsNullOrEmpty(search.ProductName) ? null : search.ProductName },
                 { "ProductTypeId", string.IsNullOrEmpty(search.ProductTypeId) ? null : Guid.Parse(search.ProductTypeId) },
                 { "CategoryId", string.IsNullOrEmpty(search.CategoryId) ? null : Guid.Parse(search.CategoryId) }

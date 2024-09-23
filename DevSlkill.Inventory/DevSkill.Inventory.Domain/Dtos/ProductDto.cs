@@ -13,18 +13,13 @@ namespace DevSkill.Inventory.Domain.Dtos
         public string ProductName { get; set; } = string.Empty;
         public string LocationName { get; set; } = string.Empty ;
         public string Description { get; set; } = string.Empty;
-        public int Price { get; set; } 
+        public double Price { get; set; } 
         public string SKU {  get; set; } = string.Empty;    
-        public int Ratings { get; set; }
-        public string CategoryName { get; set; } = string.Empty;  
-        public ProductType ProductType { get; set; }
+        public double Ratings { get; set; }
+        public string CategoryName { get; set; } = string.Empty;
+        public string ProductTypeName { get; set; } = string.Empty;
         public string BrandName { get; set; } = string.Empty;
-        public ApplicableTax Tax { get; set; }
+        public string ApplicableTaxName { get; set; } = string.Empty;
 
-        public ProductDto()
-        {
-            this.ProductType = new ProductType();
-            this.Tax = new ApplicableTax();
-        }
     }
 }
