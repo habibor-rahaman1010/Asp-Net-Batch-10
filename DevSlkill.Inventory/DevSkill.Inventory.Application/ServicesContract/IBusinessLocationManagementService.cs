@@ -10,5 +10,6 @@ namespace DevSkill.Inventory.Application.ServicesContract
     public interface IBusinessLocationManagementService
     {
         Task<IList<BusinessLocation>> GetAllBusinessLocationAsync();
+        Task<BusinessLocation> GetBusinessLocationByIdAsync(Guid id);
     }
 }

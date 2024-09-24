@@ -9,7 +9,6 @@ using DevSkill.Inventory.Application.Services;
 using DevSkill.Inventory.Infrastructure.RazorUtility;
 using AutoMapper;
 using DevSkill.Inventory.Domain;
-using static DevSkill.Inventory.Web.Areas.Admin.Models.ResponseModel;
 using DevSkill.Inventory.Domain.RepositoryContracts;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
@@ -88,7 +87,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                                 HttpUtility.HtmlEncode(record.Description),
                                 HttpUtility.HtmlEncode(record.SKU),
                                 HttpUtility.HtmlEncode(record?.Category?.CategoryName),
-                                HttpUtility.HtmlDecode(record?.Brand?.BrandName),
+                                HttpUtility.HtmlEncode(record?.Brand?.BrandName),
                                 HttpUtility.HtmlEncode(record.Price),
                                 HttpUtility.HtmlEncode(record.Ratings),
                                 record.Id.ToString()
@@ -127,6 +126,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                                 HttpUtility.HtmlEncode(record.Description),
                                 HttpUtility.HtmlEncode((record.Price) - (record.Price / 100 * 30)),
                                 HttpUtility.HtmlEncode(record.Price),
+                                HttpUtility.HtmlEncode(record.SellingPrice),
                                 HttpUtility.HtmlEncode(record.SKU),
                                 HttpUtility.HtmlEncode(record.CategoryName),
                                 HttpUtility.HtmlEncode(record.ProductTypeName),
@@ -165,10 +165,18 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             {
                 var product = _mapper.Map<Product>(model);
                 product.Category = await _categoryManagementService.GetCategoryById(model.CategoryId);
+                product.ProductType = await _productTypeManagementService.GetProductTypeIdAsync(model.ProductypeId);
+                product.BarcodeType = await _barcodeTypeManagementService.GetBarcodeTypeId(model.BarcodeTypeId);
+                product.Unit = await _unitManagementService.GetUnitByIdAsync(model.UnitId);
+                product.Brand = await _brandManagementService.GetBrandByIdAsync(model.BrandId);
+                product.Subcategory = await _subCategoryManagementService.GetSubcategoryByIdAsync(model.SubcategoryId);
+                product.BusinessLocation = await _businessLocationManagementService.GetBusinessLocationByIdAsync(model.BusinessLocationId);
+                product.Warranty = await _warrantyManagementService.GetWarrantyByIdAsync(model.WarrantyId);
+                product.ApplicableTax = await _applicableTaxManagementService.GetApplicableTaxByIdAsync(model.ApplicableTaxId);
+                product.SellingPriceTax = await _sellingPriceTaxManagementService.GetSellingPriceTaxByIdAsync(model.SellingPriceTaxId);
                 product.Created = _applicationTime.GetCurrentDateTime();
                 product.Updated = _applicationTime.GetCurrentDateTime();
                 
-
                 try
                 {
                     await _productManagementService.CreateProduct(product);
@@ -191,20 +199,34 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     _logger.LogError(ex, "Ultimatly the product creation failed!");
                 }
             }
-            return View();
+            /*model.SetCategoriesValues(await _categoryManagementService.GetCategoriesAsync());
+            model.SetProductTypeValues(await _productTypeManagementService.GetProductTypesAsync());
+            model.SetBarcodeTypeValues(await _barcodeTypeManagementService.GetBarCodeTypes());
+            model.SetUnitValues(await _unitManagementService.GetAllUnitAsync());
+            model.SetBrandValues(await _brandManagementService.GetAllBrandAsync());
+            model.SetSubcategoryValues(await _subCategoryManagementService.GetAllSubcategoryAsync());
+            model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
+            model.SetWarrantyValues(await _warrantyManagementService.GetAllWarrantyAsync());
+            model.SetApplicableTaxValues(await _applicableTaxManagementService.GetAllApplicablTax());
+            model.SetSellingPriceTaxValues(await _sellingPriceTaxManagementService.GetAllSellingPriceTax());*/
+            return View(model);
         }
 
         public async Task<IActionResult> UpdateProduct(Guid id)
         {
-            var model = new UpdateProductModel();
             var product = await _productManagementService.GetProductAsync(id);
+            var model = _mapper.Map<UpdateProductModel>(product);
 
-            model.Id = product.Id;
-            model.ProductName = product.ProductName;
-            model.Description = product.Description;
-            model.Price = product.Price;
-            model.Ratings = product.Ratings;
-
+            model.SetCategoriesValues(await _categoryManagementService.GetCategoriesAsync());
+            model.SetProductTypeValues(await _productTypeManagementService.GetProductTypesAsync());
+            model.SetBarcodeTypeValues(await _barcodeTypeManagementService.GetBarCodeTypes());
+            model.SetUnitValues(await _unitManagementService.GetAllUnitAsync());
+            model.SetBrandValues(await _brandManagementService.GetAllBrandAsync());
+            model.SetSubcategoryValues(await _subCategoryManagementService.GetAllSubcategoryAsync());
+            model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
+            model.SetWarrantyValues(await _warrantyManagementService.GetAllWarrantyAsync());
+            model.SetApplicableTaxValues(await _applicableTaxManagementService.GetAllApplicablTax());
+            model.SetSellingPriceTaxValues(await _sellingPriceTaxManagementService.GetAllSellingPriceTax());
             return View(model);
         }
 
@@ -213,14 +235,20 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                var product = new Product()
-                {
-                    Id = model.Id,
-                    ProductName = model.ProductName,
-                    Description = model.Description,
-                    Price = model.Price,
-                    Ratings = model.Ratings
-                };
+                var product = await _productManagementService.GetProductAsync(model.Id);
+                product = _mapper.Map(model, product);
+
+                product.Category = await _categoryManagementService.GetCategoryById(model.CategoryId);
+                product.BarcodeType = await _barcodeTypeManagementService.GetBarcodeTypeId(model.BarcodeTypeId);
+                product.Unit = await _unitManagementService.GetUnitByIdAsync(model.UnitId);
+                product.Brand = await _brandManagementService.GetBrandByIdAsync(model.BrandId);
+                product.Subcategory = await _subCategoryManagementService.GetSubcategoryByIdAsync(model.SubcategoryId);
+                product.BusinessLocation = await _businessLocationManagementService.GetBusinessLocationByIdAsync(model.BusinessLocationId);
+                product.Warranty = await _warrantyManagementService.GetWarrantyByIdAsync(model.WarrantyId);
+                product.ApplicableTax = await _applicableTaxManagementService.GetApplicableTaxByIdAsync(model.ApplicableTaxId);
+                product.SellingPriceTax = await _sellingPriceTaxManagementService.GetSellingPriceTaxByIdAsync(model.SellingPriceTaxId);
+                product.ProductType = await _productTypeManagementService.GetProductTypeIdAsync(model.ProductTypeId);
+                product.Updated = _applicationTime.GetCurrentDateTime();
 
                 try
                 {
@@ -243,7 +271,19 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     _logger.LogError(ex, "Ultimatly the product updated failed!");
                 }
             }
-            return View();
+
+            model.SetCategoriesValues(await _categoryManagementService.GetCategoriesAsync());
+            model.SetBarcodeTypeValues(await _barcodeTypeManagementService.GetBarCodeTypes());
+            model.SetUnitValues(await _unitManagementService.GetAllUnitAsync());
+            model.SetBrandValues(await _brandManagementService.GetAllBrandAsync());
+            model.SetSubcategoryValues(await _subCategoryManagementService.GetAllSubcategoryAsync());
+            model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
+            model.SetWarrantyValues(await _warrantyManagementService.GetAllWarrantyAsync());
+            model.SetApplicableTaxValues(await _applicableTaxManagementService.GetAllApplicablTax());
+            model.SetSellingPriceTaxValues(await _sellingPriceTaxManagementService.GetAllSellingPriceTax());
+            model.SetProductTypeValues(await _productTypeManagementService.GetProductTypesAsync());
+
+            return View(model);
         }
 
         [HttpPost, ValidateAntiForgeryToken]

@@ -17,6 +17,12 @@ namespace DevSkill.Inventory.Application.Services
         {
             _inventoryUnitOfWork = inventoryUnitOfWork;
         }
+
+        public async Task<ProductType> GetProductTypeIdAsync(Guid id)
+        {
+            return await _inventoryUnitOfWork.ProductTypeRepository.GetByIdAsync(id);
+        }
+
         public async Task<IList<ProductType>> GetProductTypesAsync()
         {
             return await _inventoryUnitOfWork.ProductTypeRepository.GetAllAsync();

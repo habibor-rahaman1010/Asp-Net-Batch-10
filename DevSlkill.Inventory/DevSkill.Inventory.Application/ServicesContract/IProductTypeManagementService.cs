@@ -10,5 +10,6 @@ namespace DevSkill.Inventory.Application.ServicesContract
     public interface IProductTypeManagementService
     {
         Task<IList<ProductType>> GetProductTypesAsync();
+        Task<ProductType> GetProductTypeIdAsync(Guid id);
     }
 }

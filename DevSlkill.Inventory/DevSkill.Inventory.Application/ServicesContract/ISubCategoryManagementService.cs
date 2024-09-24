@@ -10,5 +10,6 @@ namespace DevSkill.Inventory.Application.ServicesContract
     public interface ISubCategoryManagementService
     {
         Task<IList<Subcategory>> GetAllSubcategoryAsync();
+        Task<Subcategory> GetSubcategoryByIdAsync(Guid id);
     }
 }

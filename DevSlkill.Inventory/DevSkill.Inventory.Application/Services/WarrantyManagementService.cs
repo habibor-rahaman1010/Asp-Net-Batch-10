@@ -21,5 +21,10 @@ namespace DevSkill.Inventory.Application.Services
         {
             return await _inventoryUnitOfWork.WarrantyRepository.GetAllAsync();
         }
+
+        public async Task<Warranty> GetWarrantyByIdAsync(Guid id)
+        {
+            return await _inventoryUnitOfWork.WarrantyRepository.GetByIdAsync(id);
+        }
     }
 }

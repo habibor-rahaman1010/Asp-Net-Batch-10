@@ -17,6 +17,12 @@ namespace DevSkill.Inventory.Application.Services
         {
             _inventoryUnitOfWork = inventoryUnitOfWork;
         }
+
+        public async Task<BarcodeType> GetBarcodeTypeId(Guid id)
+        {
+            return await _inventoryUnitOfWork.BarcodeTypeRepository.GetByIdAsync(id);
+        }
+
         public async Task<IList<BarcodeType>> GetBarCodeTypes()
         {
             return await _inventoryUnitOfWork.BarcodeTypeRepository.GetAllAsync();

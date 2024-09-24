@@ -21,5 +21,10 @@ namespace DevSkill.Inventory.Application.Services
         {
             return await _inventoryUnitOfWork.SubCategoryRepository.GetAllAsync();
         }
+
+        public async Task<Subcategory> GetSubcategoryByIdAsync(Guid id)
+        {
+            return await _inventoryUnitOfWork.SubCategoryRepository.GetByIdAsync(id);
+        }
     }
 }

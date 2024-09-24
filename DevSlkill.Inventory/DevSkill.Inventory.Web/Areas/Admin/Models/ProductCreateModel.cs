@@ -28,7 +28,10 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
         public Guid WarrantyId { get; set; }    
         public double Weight { get; set; }
         public int AlertQuantity { get; set; }
+
         public ProductStatus Status { get; set; }
+        public IList<SelectListItem> Statuses { get; set; }
+
         public Guid CategoryId { get; set; }
         public IList<SelectListItem> Categories { get; private set; }
         public Guid ProductypeId { get; set; }
@@ -69,6 +72,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
             Warranties = new List<SelectListItem>();
             ApplicableTaxes = new List<SelectListItem>();
             SellingPriceTaxes = new List<SelectListItem>();
+            Statuses = Utility.ConvertEnumToSelectList<ProductStatus>();
         }
 
         public void SetCategoriesValues(IList<Category> categories)

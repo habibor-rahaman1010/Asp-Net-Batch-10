@@ -21,5 +21,10 @@ namespace DevSkill.Inventory.Application.Services
         {
             return await _inventoryUnitOfWork.SellingPriceTaxRepository.GetAllAsync();
         }
+
+        public async Task<SellingPriceTax> GetSellingPriceTaxByIdAsync(Guid id)
+        {
+            return await _inventoryUnitOfWork.SellingPriceTaxRepository.GetByIdAsync(id);
+        }
     }
 }

@@ -120,5 +120,21 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
 
             return Items;
         }
+
+        public static IList<SelectListItem> ConvertEnumToSelectList<TEnum>() where TEnum : Enum
+        {
+            // Convert enum values to SelectListItem
+            var items = Enum.GetValues(typeof(TEnum))
+                .Cast<TEnum>()
+                .Select(e => new SelectListItem
+                {
+                    Value = Convert.ToInt32(e).ToString(), // Enum value as int
+                    Text = e.ToString()                   // Enum name as string
+                })
+                .ToList();
+
+            return items;
+        }
+
     }
 }

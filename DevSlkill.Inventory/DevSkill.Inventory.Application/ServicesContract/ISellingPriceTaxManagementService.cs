@@ -10,5 +10,6 @@ namespace DevSkill.Inventory.Application.ServicesContract
     public interface ISellingPriceTaxManagementService
     {
         Task<IList<SellingPriceTax>> GetAllSellingPriceTax();
+        Task<SellingPriceTax> GetSellingPriceTaxByIdAsync(Guid id);
     }
 }

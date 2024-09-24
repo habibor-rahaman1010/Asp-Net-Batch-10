@@ -10,5 +10,6 @@ namespace DevSkill.Inventory.Application.ServicesContract
     public interface IUnitManagementService
     {
         Task<IList<Unit>> GetAllUnitAsync();
+        Task<Unit> GetUnitByIdAsync(Guid id);
     }
 }

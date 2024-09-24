@@ -10,5 +10,6 @@ namespace DevSkill.Inventory.Application.ServicesContract
     public interface IWarrantyManagementService
     {
         Task<IList<Warranty>> GetAllWarrantyAsync();
+        Task<Warranty> GetWarrantyByIdAsync(Guid id);
     }
 }

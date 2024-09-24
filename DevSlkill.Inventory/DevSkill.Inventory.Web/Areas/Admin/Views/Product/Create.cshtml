@@ -158,6 +158,7 @@
                                         <h3>Image Upload</h3>
                                     </div>
                                 </div>
+
                             </div>
 
                         </div>
@@ -217,7 +218,6 @@
                                 </div>
                             </div>
 
-
                             <div class="col-sm-4 px-3">
                                 <div class="form-group">
                                     <label asp-for="StoreTime"></label>
@@ -225,6 +225,14 @@
                                     <span asp-validation-for="StoreTime" class="text-danger"></span>
                                 </div>
                             </div>    
+
+                            <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="Status"></label>
+                                        <select asp-for="Status" asp-items="Model.Statuses" class="form-control"></select>
+                                        <span asp-validation-for="Status" class="text-danger"></span>
+                                    </div>
+                                </div>
                         </div>     
                     </div>
                 </div>
@@ -262,9 +270,23 @@
                                     </div>
                                 </div>
                             </div>
-                            
+                                
+
+                            <div class="d-flex justify-content-between bg-green p-2 align-items-center mb-2">
+                                <div>
+                                    <h6>Default Purchase Price</h6>
+                                </div>
+                                <div>
+                                    <h6>X Margin(%) </h6>
+                                </div>
+                                <div>
+                                    <h6>Default Selling Price</h6>
+                                </div>
+                            </div>
+                       
                             <div class="row">
                                 <!-- First row of tax inputs -->
+     
                                 <div class="col-sm-3 mb-3 px-3">
                                     <div class="form-group">
                                         <label asp-for="ExciseTax"></label>
@@ -324,7 +346,9 @@
                 var marginTax = parseFloat($('#marginTax').val()) || 0;
 
                 // Calculation formula for SellingPrice
-                var sellingPrice = exciseTax + inclusiveTax + marginTax;
+                var calInclusiveTax = (exciseTax / 100) * inclusiveTax;
+                var calmarginTax = (exciseTax / 100) * marginTax;
+                var sellingPrice = exciseTax + calInclusiveTax + calmarginTax;
 
                 // Update SellingPrice field
                 $('#sellingPrice').val(sellingPrice.toFixed(2));

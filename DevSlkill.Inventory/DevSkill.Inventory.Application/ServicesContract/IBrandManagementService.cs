@@ -10,5 +10,6 @@ namespace DevSkill.Inventory.Application.ServicesContract
     public interface IBrandManagementService
     {
         Task<IList<Brand>> GetAllBrandAsync();
+        Task<Brand> GetBrandByIdAsync(Guid id);
     }
 }

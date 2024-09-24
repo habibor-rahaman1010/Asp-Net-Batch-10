@@ -14,12 +14,14 @@ namespace DevSkill.Inventory.Domain.Dtos
         public string LocationName { get; set; } = string.Empty ;
         public string Description { get; set; } = string.Empty;
         public double Price { get; set; } 
+        public double SellingPrice { get; set; }    
         public string SKU {  get; set; } = string.Empty;    
         public double Ratings { get; set; }
         public string CategoryName { get; set; } = string.Empty;
         public string ProductTypeName { get; set; } = string.Empty;
         public string BrandName { get; set; } = string.Empty;
         public string ApplicableTaxName { get; set; } = string.Empty;
+        
 
     }
 }

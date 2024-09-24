@@ -11,5 +11,6 @@ namespace DevSkill.Inventory.Application.ServicesContract
     public interface IBarcodeTypeManagementService
     {
         Task<IList<BarcodeType>> GetBarCodeTypes();
+        Task<BarcodeType> GetBarcodeTypeId(Guid id);
     }
 }

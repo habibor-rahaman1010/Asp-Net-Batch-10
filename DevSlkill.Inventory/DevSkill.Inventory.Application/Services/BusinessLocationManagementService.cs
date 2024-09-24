@@ -21,5 +21,10 @@ namespace DevSkill.Inventory.Application.Services
         {
             return await _inventoryUnitOfWork.BusinessLocationRepository.GetAllAsync();
         }
+
+        public async Task<BusinessLocation> GetBusinessLocationByIdAsync(Guid id)
+        {
+            return await _inventoryUnitOfWork.BusinessLocationRepository.GetByIdAsync(id);
+        }
     }
 }

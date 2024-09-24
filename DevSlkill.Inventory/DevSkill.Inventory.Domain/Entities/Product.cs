@@ -49,16 +49,16 @@ namespace DevSkill.Inventory.Domain.Entities
 
         public Product() 
         {
-            this.BarcodeType = new BarcodeType();
-            this.Unit = new Unit();
-            this.Brand = new Brand();
-            this.Category = new Category();
-            this.Subcategory = new Subcategory();
-            this.BusinessLocation = new BusinessLocation();
-            this.Warranty = new Warranty();
-            this.ProductType = new ProductType();
-            this.ApplicableTax = new ApplicableTax();
-            this.SellingPriceTax = new SellingPriceTax();
+            BarcodeType = new BarcodeType();
+            Unit = new Unit();
+            Brand = new Brand();
+            Category = new Category();
+            Subcategory = new Subcategory();
+            BusinessLocation = new BusinessLocation();
+            Warranty = new Warranty();
+            ProductType = new ProductType();
+            ApplicableTax = new ApplicableTax();
+            SellingPriceTax = new SellingPriceTax();
         }
     }
 }
