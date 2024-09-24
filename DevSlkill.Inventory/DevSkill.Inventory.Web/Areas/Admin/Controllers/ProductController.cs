@@ -21,6 +21,13 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         private readonly ICategoryManagementService _categoryManagementService;
         private readonly IProductTypeManagementService _productTypeManagementService;
         private readonly IBarcodeTypeManagementService _barcodeTypeManagementService;
+        private readonly IUnitManagementService _unitManagementService;
+        private readonly IBrandManagementService _brandManagementService;
+        private readonly ISubCategoryManagementService _subCategoryManagementService;
+        private readonly IBusinessLocationManagementService _businessLocationManagementService;
+        private readonly IWarrantyManagementService _warrantyManagementService;
+        private readonly IApplicableTaxManagementService _applicableTaxManagementService;
+        private readonly ISellingPriceTaxManagementService _sellingPriceTaxManagementService;
         private readonly IMapper _mapper;
         private readonly IApplicationTime _applicationTime;
         private readonly ILogger<ProductController> _logger;
@@ -30,14 +37,29 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             ICategoryManagementService categoryManagementService,
             IProductTypeManagementService productTypeManagementService,
             IBarcodeTypeManagementService barcodeTypeManagementService,
+            IUnitManagementService unitManagementService,
+            IBrandManagementService brandManagementService,
+            ISubCategoryManagementService subCategoryManagementService,
+            IBusinessLocationManagementService businessLocationManagementService,
+            IWarrantyManagementService warrantyManagementService,
+            IApplicableTaxManagementService applicableTaxManagementService,
+            ISellingPriceTaxManagementService sellingPriceTaxManagementService,
             IApplicationTime applicationTime,
             IMapper mapper)
+
         {
             _productManagementService = productManagementService;
             _categoryManagementService = categoryManagementService;
             _productTypeManagementService = productTypeManagementService;
             _barcodeTypeManagementService = barcodeTypeManagementService;
+            _unitManagementService = unitManagementService;
+            _brandManagementService = brandManagementService;
+            _subCategoryManagementService = subCategoryManagementService;
             _applicationTime = applicationTime;
+            _businessLocationManagementService = businessLocationManagementService;
+            _warrantyManagementService = warrantyManagementService;
+            _applicableTaxManagementService = applicableTaxManagementService;
+            _sellingPriceTaxManagementService = sellingPriceTaxManagementService;
             _mapper = mapper;
             _logger = logger;
         }
@@ -126,6 +148,13 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             model.SetCategoriesValues(await _categoryManagementService.GetCategoriesAsync());
             model.SetProductTypeValues(await _productTypeManagementService.GetProductTypesAsync());
             model.SetBarcodeTypeValues(await _barcodeTypeManagementService.GetBarCodeTypes());
+            model.SetUnitValues(await _unitManagementService.GetAllUnitAsync());
+            model.SetBrandValues(await _brandManagementService.GetAllBrandAsync());
+            model.SetSubcategoryValues(await _subCategoryManagementService.GetAllSubcategoryAsync());
+            model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
+            model.SetWarrantyValues(await _warrantyManagementService.GetAllWarrantyAsync());
+            model.SetApplicableTaxValues(await _applicableTaxManagementService.GetAllApplicablTax());
+            model.SetSellingPriceTaxValues(await _sellingPriceTaxManagementService.GetAllSellingPriceTax());
             return View(model);
         }
 
@@ -135,6 +164,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var product = _mapper.Map<Product>(model);
+                product.Category = await _categoryManagementService.GetCategoryById(model.CategoryId);
                 product.Created = _applicationTime.GetCurrentDateTime();
                 product.Updated = _applicationTime.GetCurrentDateTime();
                 

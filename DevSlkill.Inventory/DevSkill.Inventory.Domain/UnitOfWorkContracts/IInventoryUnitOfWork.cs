@@ -15,6 +15,13 @@ namespace DevSkill.Inventory.Domain.UnitOfWorkContracts
         ICategoryRepository CategoryRepository { get; }
         IProductTypeRepository ProductTypeRepository { get; }
         IBarcodeTypeRepository BarcodeTypeRepository { get; }
+        IUnitRepository UnitRepository { get; }
+        IBrandRepository BrandRepository { get; }
+        ISubCategoryRepository SubCategoryRepository { get; }
+        IBusinessLocationRepository BusinessLocationRepository { get; }
+        IWarrantyRepository WarrantyRepository { get; }
+        IApplicableTaxRepository ApplicableTaxRepository { get; }
+        ISellingPriceTaxRepository SellingPriceTaxRepository { get; }
 
         Task<(IList<ProductDto> data, int total, int totalDisplay)> GetPagedProductUsingSPAsync(int pageIndex,
             int pageSize, ProductSearchDto search, string? order);

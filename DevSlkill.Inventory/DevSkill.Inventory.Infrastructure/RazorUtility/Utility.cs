@@ -53,5 +53,72 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
 
             return Items;
         }
+
+        public static IList<SelectListItem> ConvertUnits(IList<Unit> units)
+        {
+            var Items = (from c in units
+                         select new SelectListItem(c.UnitName, c.Id.ToString()))
+                         .ToList();
+
+            Items.Insert(0, new SelectListItem("Select", string.Empty));
+
+            return Items;
+        }
+
+        public static IList<SelectListItem> ConvertBrands(IList<Brand> brands)
+        {
+            var Items = (from c in brands
+                         select new SelectListItem(c.BrandName, c.Id.ToString()))
+                         .ToList();
+
+            Items.Insert(0, new SelectListItem("Select", string.Empty));
+
+            return Items;
+        }
+        
+
+        public static IList<SelectListItem> ConvertBusinessLocations(IList<BusinessLocation> businessLocations)
+        {
+            var Items = (from c in businessLocations
+                         select new SelectListItem(c.LocationName, c.Id.ToString()))
+                         .ToList();
+
+            Items.Insert(0, new SelectListItem("Select", string.Empty));
+
+            return Items;
+        }
+
+        public static IList<SelectListItem> ConvertWarranties(IList<Warranty> warranties)
+        {
+            var Items = (from c in warranties
+                         select new SelectListItem(c.WarrantyDuration, c.Id.ToString()))
+                         .ToList();
+
+            Items.Insert(0, new SelectListItem("Select", string.Empty));
+
+            return Items;
+        }
+
+        public static IList<SelectListItem> ConvertApplicableTaxes(IList<ApplicableTax> applicableTaxes)
+        {
+            var Items = (from c in applicableTaxes
+                         select new SelectListItem(c.ApplicableTaxName, c.Id.ToString()))
+                         .ToList();
+
+            Items.Insert(0, new SelectListItem("Select", string.Empty));
+
+            return Items;
+        }
+
+        public static IList<SelectListItem> ConvertSellingPriceTaxes(IList<SellingPriceTax> sellingPriceTaxes)
+        {
+            var Items = (from c in sellingPriceTaxes
+                         select new SelectListItem(c.SellingPriceTaxName, c.Id.ToString()))
+                         .ToList();
+
+            Items.Insert(0, new SelectListItem("Select", string.Empty));
+
+            return Items;
+        }
     }
 }

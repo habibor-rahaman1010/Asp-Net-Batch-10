@@ -19,18 +19,39 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
         public ICategoryRepository CategoryRepository { get; private set; }
         public IProductTypeRepository ProductTypeRepository { get; private set; }
         public IBarcodeTypeRepository BarcodeTypeRepository {  get; private set; }
+        public IUnitRepository UnitRepository { get; private set; }
+        public IBrandRepository BrandRepository { get; private set; }
+        public ISubCategoryRepository SubCategoryRepository { get; private set; }
+        public IBusinessLocationRepository BusinessLocationRepository { get; private set; }
+        public IWarrantyRepository WarrantyRepository { get; private set; }
+        public IApplicableTaxRepository ApplicableTaxRepository { get; private set; }
+        public ISellingPriceTaxRepository SellingPriceTaxRepository { get; private set; }
 
-        public ProductUnitOfWork(InventoryDbContext productDbContext, 
-            IProductRepository productRepository, 
+        public ProductUnitOfWork(InventoryDbContext productDbContext,
+            IProductRepository productRepository,
             ICategoryRepository categoryRepository,
             IProductTypeRepository productTypeRepository,
-            IBarcodeTypeRepository barcodeTypeRepository)
-            : base(productDbContext) 
+            IBarcodeTypeRepository barcodeTypeRepository,
+            IBrandRepository brandRepository,
+            IUnitRepository unitRepository,
+            ISubCategoryRepository subCategoryRepository, 
+            IWarrantyRepository warrantyRepository,
+            IBusinessLocationRepository businessLocationRepository, 
+            IApplicableTaxRepository applicableTaxRepository,
+            ISellingPriceTaxRepository sellingPriceTaxRepository)
+            : base(productDbContext)
         {
             ProductRepository = productRepository;
             CategoryRepository = categoryRepository;
             ProductTypeRepository = productTypeRepository;
             BarcodeTypeRepository = barcodeTypeRepository;
+            UnitRepository = unitRepository;
+            BrandRepository = brandRepository;
+            SubCategoryRepository = subCategoryRepository;
+            BusinessLocationRepository = businessLocationRepository;
+            WarrantyRepository = warrantyRepository;
+            ApplicableTaxRepository = applicableTaxRepository;
+            SellingPriceTaxRepository = sellingPriceTaxRepository;
         }
 
         public async Task<(IList<ProductDto> data, int total, int totalDisplay)> GetPagedProductUsingSPAsync(int pageIndex, int pageSize, ProductSearchDto search, string? order)

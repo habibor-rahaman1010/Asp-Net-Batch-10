@@ -98,7 +98,7 @@ namespace DevSkill.Inventory.Infrastructure.Data
             );
 
             // Define entity relationships
-            modelBuilder.Entity<Product>(entity =>
+            /*modelBuilder.Entity<Product>(entity =>
             {
                 entity.HasKey(p => p.Id);
                 entity.HasOne(p => p.Category)
@@ -140,7 +140,7 @@ namespace DevSkill.Inventory.Infrastructure.Data
                 entity.HasOne(p => p.ApplicableTax)
                       .WithMany()
                       .HasForeignKey("ApplicableTaxId");
-            });
+            });*/
 
             base.OnModelCreating(modelBuilder);
         }

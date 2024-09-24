@@ -9,22 +9,17 @@ using System.Threading.Tasks;
 
 namespace DevSkill.Inventory.Application.Services
 {
-    public class CategoryManagementService : ICategoryManagementService
+    public class BrandManagementService : IBrandManagementService
     {
         private readonly IInventoryUnitOfWork _inventoryUnitOfWork;
-        public CategoryManagementService(IInventoryUnitOfWork inventoryUnitOfWork)
+        public BrandManagementService(IInventoryUnitOfWork inventoryUnitOfWork)
         {
             _inventoryUnitOfWork = inventoryUnitOfWork;
         }
 
-        public async Task<IList<Category>> GetCategoriesAsync()
+        public async Task<IList<Brand>> GetAllBrandAsync()
         {
-            return await _inventoryUnitOfWork.CategoryRepository.GetAllAsync();
-        }
-
-        public async Task<Category> GetCategoryById(Guid id)
-        {
-            return await _inventoryUnitOfWork.CategoryRepository.GetByIdAsync(id);
+            return await _inventoryUnitOfWork.BrandRepository.GetAllAsync();
         }
     }
 }

@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace DevSkill.Inventory.Application.ServicesContract
 {
-    public interface ICategoryManagementService
+    public interface IApplicableTaxManagementService
     {
-        Task<IList<Category>> GetCategoriesAsync();
-        Task<Category> GetCategoryById(Guid id);
+        Task<IList<ApplicableTax>> GetAllApplicablTax();
     }
 }

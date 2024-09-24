@@ -68,6 +68,62 @@ namespace DevSkill.Inventory.Web.WebModules
                 .As<IBarcodeTypeManagementService>()
                 .InstancePerLifetimeScope();
 
+            builder.RegisterType<UnitRepository>()
+               .As<IUnitRepository>()
+               .InstancePerLifetimeScope();
+
+            builder.RegisterType<UnitManagementService>()
+                .As<IUnitManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<BrandRepository>()
+              .As<IBrandRepository>()
+              .InstancePerLifetimeScope();
+
+            builder.RegisterType<BrandManagementService>()
+                .As<IBrandManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SubCategoryRepository>()
+             .As<ISubCategoryRepository>()
+             .InstancePerLifetimeScope();
+
+            builder.RegisterType<SubCategoryManagementService>()
+                .As<ISubCategoryManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<BusinessLocationRepository>()
+             .As<IBusinessLocationRepository>()
+             .InstancePerLifetimeScope();
+
+            builder.RegisterType<BusinessLocationManagementService>()
+                .As<IBusinessLocationManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<WarrantyRepository>()
+            .As<IWarrantyRepository>()
+            .InstancePerLifetimeScope();
+
+            builder.RegisterType<WarrantyManagementService>()
+                .As<IWarrantyManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<ApplicableTaxRepository>()
+            .As<IApplicableTaxRepository>()
+            .InstancePerLifetimeScope();
+
+            builder.RegisterType<ApplicableTaxManagementService>()
+                .As<IApplicableTaxManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SellingPriceTaxRepository>()
+            .As<ISellingPriceTaxRepository>()
+            .InstancePerLifetimeScope();
+
+            builder.RegisterType<SellingPriceTaxManagementService>()
+                .As<ISellingPriceTaxManagementService>()
+                .InstancePerLifetimeScope();
+
             builder.RegisterType<ApplicationTime>()
                 .As<IApplicationTime>()
                 .InstancePerLifetimeScope();
