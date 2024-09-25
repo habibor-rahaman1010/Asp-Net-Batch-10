@@ -18,6 +18,32 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
 
         }
 
+       /* public async Task<Product> GetProductByIdAsync(Guid id)
+        {
+            *//*return (await GetAsync(x => x.Id == id, y => y.Include(z => z.Category))).FirstOrDefault();*//*
+            var product = await GetAsync(x => x.Id == id, y => y.Include(z => z.Category));
+            return product.FirstOrDefault();
+        }*/
+
+        public async Task<Product> GetProductByIdAsync(Guid id)
+        {
+            var product = await GetAsync(x => x.Id == id, y => y
+                .Include(z => z.BarcodeType)
+                .Include(z => z.Category)
+                .Include(z => z.Brand)
+                .Include(z => z.Unit)
+                .Include(z => z.Subcategory)
+                .Include(z => z.BusinessLocation)
+                .Include(z => z.Warranty)
+                .Include(z => z.ProductType)
+                .Include(z => z.ApplicableTax)
+                .Include(z => z.SellingPriceTax)
+            );
+
+            return product.FirstOrDefault();
+        }
+
+
         public async Task<(IList<Product> data, int total, int totalDisplay)> GetPagedProductsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
         {
             if (string.IsNullOrWhiteSpace(search.Value))

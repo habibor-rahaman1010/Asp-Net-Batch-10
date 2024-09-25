@@ -12,7 +12,7 @@ namespace DevSkill.Inventory.Application.ServicesContract
     public interface IProductManagementService
     {
         Task CreateProduct(Product product);
-        Task DeleteBlogPostAsync(Guid id);
+        Task DeleteProductAsync(Guid id);
         Task<Product> GetProductAsync(Guid id);
         Task<(IList<Product> data, int total, int totalDisplay)> GetProductsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
         Task<(IList<ProductDto> data, int total, int totalDisplay)> GetProductsSpAsync(int pageIndex, int pageSize, ProductSearchDto search, string? order);

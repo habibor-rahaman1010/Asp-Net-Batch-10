@@ -291,7 +291,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         {
             try
             {
-               await _productManagementService.DeleteBlogPostAsync(id);
+               await _productManagementService.DeleteProductAsync(id);
 
                 TempData.Put("ResponseMessage", new ResponseModel
                 {

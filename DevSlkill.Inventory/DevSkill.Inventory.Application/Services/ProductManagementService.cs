@@ -33,7 +33,7 @@ namespace DevSkill.Inventory.Application.Services
             }
         }
 
-        public async  Task DeleteBlogPostAsync(Guid id)
+        public async  Task DeleteProductAsync(Guid id)
         {
             await _productUnitOfWork.ProductRepository.RemoveAsync(id);
             await _productUnitOfWork.SaveAsync();
@@ -41,7 +41,7 @@ namespace DevSkill.Inventory.Application.Services
 
         public async Task<Product> GetProductAsync(Guid id)
         {
-            return await _productUnitOfWork.ProductRepository.GetByIdAsync(id);
+            return await _productUnitOfWork.ProductRepository.GetProductByIdAsync(id);
         }
 
         public Task<(IList<Product> data, int total, int totalDisplay)> GetProductsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
