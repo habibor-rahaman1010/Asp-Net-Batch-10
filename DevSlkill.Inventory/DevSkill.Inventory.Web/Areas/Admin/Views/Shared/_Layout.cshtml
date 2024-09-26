@@ -230,20 +230,21 @@
                             </a>
                         </li>
 
+                        <!--User Management-->
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-copy"></i>
+                                <i class="nav-icon fa fas fa-users"></i>
                                 <p>
-                                    Products
+                                    User Management
                                     <i class="fas fa-angle-left right"></i>
-                                    <span class="badge badge-info right">6</span>
+                                    <span class="badge badge-info right">2</span>
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a asp-area="Admin" asp-controller="Product" asp-action="Index" class="nav-link">
+                                    <a asp-area="Admin" asp-controller="Product" asp-action="ProductList" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>All Products</p>
+                                        <p>List Products</p>
                                     </a>
                                 </li>
 
@@ -253,9 +254,86 @@
                                         <p>Add Product</p>
                                     </a>
                                 </li>
+
                             </ul>
                         </li>
 
+                        <!--Product Management and other stuff-->
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fa fas fa-cubes"></i>
+                                <p>
+                                    Products
+                                    <i class="fas fa-angle-left right"></i>
+                                    <span class="badge badge-info right">6</span>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Product" asp-action="ProductList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>List Products</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Product" asp-action="Create" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Add Product</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Product" asp-action="Create" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Categories</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Product" asp-action="Create" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Brands</p>
+                                    </a>
+                                </li>
+
+                                 <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Product" asp-action="Create" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Warranties</p>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
+
+                        <!--Stock Adjustment-->
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fa fas fa-database"></i>
+                                <p>
+                                    Stock Adjustment
+                                    <i class="fas fa-angle-left right"></i>
+                                    <span class="badge badge-info right">2</span>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Product" asp-action="ProductList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>List Products</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Product" asp-action="Create" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Add Product</p>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
                         
                     </ul>
                 </nav>
@@ -326,6 +404,16 @@
     <script src="~/adminlte/js/demo.js"></script>
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     <script src="~/adminlte/js/pages/dashboard.js"></script>
+
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#editor'))
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
 
 </body>
 </html>

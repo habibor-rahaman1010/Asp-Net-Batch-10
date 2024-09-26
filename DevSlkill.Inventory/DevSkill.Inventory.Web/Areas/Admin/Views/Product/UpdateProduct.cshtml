@@ -3,6 +3,23 @@
 @{
     ViewData["Title"] = "Update";
 }
+
+<style>
+    #container {
+        width: 1000px;
+        margin: 20px auto;
+    }
+
+    .ck-editor__editable[role="textbox"] {
+        min-height: 300px;
+    }
+
+    .ck-content .image {
+        max-width: 80%;
+        margin: 20px auto;
+    }
+</style>
+
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <div class="container-fluid">
@@ -39,7 +56,7 @@
                                 <!-- First row of form inputs -->
                                 <div class="col-sm-4 mb-3 px-3">
                                     <div class="form-group">
-                                        <label asp-for="ProductName"></label>
+                                        <label asp-for="ProductName">Product Name*</label>
                                         <input type="text" asp-for="ProductName" class="form-control" placeholder="Product Name" />
                                         <span asp-validation-for="ProductName" class="text-danger"></span>
                                     </div>
@@ -55,7 +72,7 @@
 
                                 <div class="col-sm-4 mb-3 px-3">
                                     <div class="form-group">
-                                        <label asp-for="BarcodeTypeId"></label>
+                                        <label asp-for="BarcodeTypeId">Barcode Type</label>
                                         <select asp-for="BarcodeTypeId" asp-items="Model.BarcodeTypes" class="form-control"></select>
                                         <span asp-validation-for="BarcodeTypeId" class="text-danger"></span>
                                     </div>
@@ -66,7 +83,7 @@
                                 <!-- Second row of form inputs -->
                                 <div class="col-sm-4 mb-3 px-3">
                                     <div class="form-group">
-                                        <label asp-for="UnitId"></label>
+                                        <label asp-for="UnitId">Unit</label>
                                         <select asp-for="UnitId" asp-items="Model.Units" class="form-control"></select>
                                         <span asp-validation-for="UnitId" class="text-danger"></span>
                                     </div>
@@ -82,7 +99,7 @@
 
                                 <div class="col-sm-4 mb-3 px-3">
                                     <div class="form-group">
-                                        <label asp-for="BrandId"></label>
+                                        <label asp-for="BrandId">Brand</label>
                                         <select asp-for="BrandId" asp-items="Model.Brands" class="form-control"></select>
                                         <span asp-validation-for="BrandId" class="text-danger"></span>
                                     </div>
@@ -93,7 +110,7 @@
                                 <!-- Third row of form inputs -->
                                 <div class="col-sm-4 mb-3 px-3">
                                     <div class="form-group">
-                                        <label asp-for="CategoryId"></label>
+                                        <label asp-for="CategoryId">Category</label>
                                         <select asp-for="CategoryId" asp-items="Model.Categories" class="form-control"></select>
                                         <span asp-validation-for="CategoryId" class="text-danger"></span>
                                     </div>
@@ -101,7 +118,7 @@
 
                                 <div class="col-sm-4 mb-3 px-3">
                                     <div class="form-group">
-                                        <label asp-for="SubcategoryId"></label>
+                                        <label asp-for="SubcategoryId">Sub Category*</label>
                                         <select asp-for="SubcategoryId" asp-items="Model.Subcategories" class="form-control"></select>
                                         <span asp-validation-for="SubcategoryId" class="text-danger"></span>
                                     </div>
@@ -109,7 +126,7 @@
 
                                 <div class="col-sm-4 mb-3 px-3">
                                     <div class="form-group">
-                                        <label asp-for="BusinessLocationId"></label>
+                                        <label asp-for="BusinessLocationId">Business Location</label>
                                         <select asp-for="BusinessLocationId" asp-items="Model.BusinessLocations" class="form-control"></select>
                                         <span asp-validation-for="BusinessLocationId" class="text-danger"></span>
                                     </div>
@@ -128,7 +145,7 @@
 
                                 <div class="col-sm-4 mb-3 px-3">
                                     <div class="form-group">
-                                        <label asp-for="AlertQuantity"></label>
+                                        <label asp-for="AlertQuantity">Alert Quantity</label>
                                         <input type="number" asp-for="AlertQuantity" class="form-control" placeholder="Alert Quantity" />
                                         <span asp-validation-for="AlertQuantity" class="text-danger"></span>
                                     </div>
@@ -136,7 +153,7 @@
 
                                 <div class="col-sm-4 mb-3 px-3">
                                     <div class="form-group">
-                                        <label asp-for="WarrantyId"></label>
+                                        <label asp-for="WarrantyId">Warranty*</label>
                                         <select asp-for="WarrantyId" asp-items="Model.Warranties" class="form-control"></select>
                                         <span asp-validation-for="WarrantyId" class="text-danger"></span>
                                     </div>
@@ -149,7 +166,7 @@
                                 <div class="col-sm-8 mb-3 px-3">
                                     <div class="form-group">
                                         <label asp-for="Description"></label>
-                                        <input type="text" asp-for="Description" class="form-control" placeholder="Description" />
+                                        <textarea asp-for="Description" placeholder="Description" id="editor"></textarea>
                                         <span asp-validation-for="Description" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -221,7 +238,7 @@
 
                                 <div class="col-sm-4 px-3">
                                     <div class="form-group">
-                                        <label asp-for="StoreTime"></label>
+                                        <label asp-for="StoreTime">Store Time</label>
                                         <input type="datetime-local" asp-for="StoreTime" class="form-control" />
                                         <span asp-validation-for="StoreTime" class="text-danger"></span>
                                     </div>
@@ -290,7 +307,7 @@
 
                                 <div class="col-sm-3 mb-3 px-3">
                                     <div class="form-group">
-                                        <label asp-for="ExciseTax"></label>
+                                        <label asp-for="ExciseTax">Purchase Exc.Tax*</label>
                                         <input type="number" asp-for="ExciseTax" class="form-control" placeholder="Excise Tax" id="exciseTax" />
                                         <span asp-validation-for="ExciseTax" class="text-danger"></span>
                                     </div>
@@ -298,7 +315,7 @@
 
                                 <div class="col-sm-3 mb-3 px-3">
                                     <div class="form-group">
-                                        <label asp-for="InclusiveTax"></label>
+                                        <label asp-for="InclusiveTax">Inc.Tax*</label>
                                         <input type="number" asp-for="InclusiveTax" class="form-control" placeholder="Inclusive Tax" id="inclusiveTax" />
                                         <span asp-validation-for="InclusiveTax" class="text-danger"></span>
                                     </div>
@@ -306,7 +323,7 @@
 
                                 <div class="col-sm-3 mb-3 px-3">
                                     <div class="form-group">
-                                        <label asp-for="MarginTax"></label>
+                                        <label asp-for="MarginTax">Margin*</label>
                                         <input type="number" asp-for="MarginTax" class="form-control" placeholder="Margin Tax" id="marginTax" />
                                         <span asp-validation-for="MarginTax" class="text-danger"></span>
                                     </div>
@@ -315,7 +332,7 @@
                                 <!-- Automatically calculated Selling Price -->
                                 <div class="col-sm-3 mb-3 px-3">
                                     <div class="form-group">
-                                        <label asp-for="SellingPrice"></label>
+                                        <label asp-for="SellingPrice">Selling Price</label>
                                         <input type="number" asp-for="SellingPrice" class="form-control" placeholder="Selling Price" id="sellingPrice" readonly />
                                         <span asp-validation-for="SellingPrice" class="text-danger"></span>
                                     </div>

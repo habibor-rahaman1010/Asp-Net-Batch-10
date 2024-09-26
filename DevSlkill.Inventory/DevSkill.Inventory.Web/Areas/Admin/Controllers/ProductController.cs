@@ -84,7 +84,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                         {
                                 HttpUtility.HtmlEncode(record.Id),
                                 HttpUtility.HtmlEncode(record.ProductName),
-                                HttpUtility.HtmlEncode(record.Description),
+                                HttpUtility.HtmlDecode(record.Description),
                                 HttpUtility.HtmlEncode(record.SKU),
                                 HttpUtility.HtmlEncode(record?.Category?.CategoryName),
                                 HttpUtility.HtmlEncode(record?.Brand?.BrandName),
@@ -123,10 +123,10 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                         {   
                                 HttpUtility.HtmlEncode(record.ProductName),
                                 HttpUtility.HtmlEncode(record.LocationName),
-                                HttpUtility.HtmlEncode(record.Description),
-                                HttpUtility.HtmlEncode((record.Price) - (record.Price / 100 * 30)),
-                                HttpUtility.HtmlEncode(record.Price),
-                                HttpUtility.HtmlEncode(record.SellingPrice),
+                                HttpUtility.HtmlDecode(record.Description),
+                                HttpUtility.HtmlEncode((record.Price - (record.Price / 100 * 30)).ToString("F2")),
+                                HttpUtility.HtmlEncode(record.Price.ToString("F2")),
+                                HttpUtility.HtmlEncode(record.SellingPrice.ToString("F2")),
                                 HttpUtility.HtmlEncode(record.SKU),
                                 HttpUtility.HtmlEncode(record.CategoryName),
                                 HttpUtility.HtmlEncode(record.ProductTypeName),
@@ -187,7 +187,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                         Type = ResponseTypes.Success
                     });
 
-                    return RedirectToAction("Index");
+                    return RedirectToAction("ProductList");
                 }
                 catch (Exception ex)
                 {
@@ -259,7 +259,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                         Type = ResponseTypes.Success
                     });
 
-                    return RedirectToAction("Index");
+                    return RedirectToAction("ProductList");
                 }
                 catch (Exception ex)
                 {
