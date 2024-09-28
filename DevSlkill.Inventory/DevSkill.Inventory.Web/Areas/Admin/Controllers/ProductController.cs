@@ -2,14 +2,14 @@
 using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
 using DevSkill.Inventory.Infrastructure;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
-using DevSkill.Inventory.Application.Services;
-using DevSkill.Inventory.Infrastructure.RazorUtility;
 using AutoMapper;
 using DevSkill.Inventory.Domain;
-using DevSkill.Inventory.Domain.RepositoryContracts;
+using System.IO;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
+using System.Security.Cryptography;
+
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
@@ -27,6 +27,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         private readonly IWarrantyManagementService _warrantyManagementService;
         private readonly IApplicableTaxManagementService _applicableTaxManagementService;
         private readonly ISellingPriceTaxManagementService _sellingPriceTaxManagementService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IMapper _mapper;
         private readonly IApplicationTime _applicationTime;
         private readonly ILogger<ProductController> _logger;
@@ -44,7 +45,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             IApplicableTaxManagementService applicableTaxManagementService,
             ISellingPriceTaxManagementService sellingPriceTaxManagementService,
             IApplicationTime applicationTime,
-            IMapper mapper)
+            IMapper mapper,
+            IWebHostEnvironment webHostEnvironment)
 
         {
             _productManagementService = productManagementService;
@@ -61,6 +63,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _sellingPriceTaxManagementService = sellingPriceTaxManagementService;
             _mapper = mapper;
             _logger = logger;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public IActionResult Index()
@@ -120,7 +123,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 recordsFiltered = result.totalDisplay,
                 data = (from record in result.data
                         select new string[]
-                        {   
+                        {
+                                $"<img src='{"/" + HttpUtility.HtmlDecode(record.ProductImage)}' alt='Image' width='100' height='70'/>",
                                 HttpUtility.HtmlEncode(record.ProductName),
                                 HttpUtility.HtmlEncode(record.LocationName),
                                 HttpUtility.HtmlDecode(record.Description),
@@ -158,12 +162,38 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
+
+      /*  private async Task<string> UploadImage(string folderPath, IFormFile file)
+        {
+
+            folderPath += Guid.NewGuid().ToString() + "_" + file.FileName;
+
+            string serverFolder = Path.Combine(_webHostEnvironment.WebRootPath, folderPath);
+
+            await file.CopyToAsync(new FileStream(serverFolder, FileMode.Create));
+
+            return "/" + folderPath;
+        }
+      */
+
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductCreateModel model)
         {
             if (ModelState.IsValid)
             {
                 var product = _mapper.Map<Product>(model);
+
+                if (model.ProductImageFile != null)
+                {
+                    string folder = "product/images/";
+                    folder += Guid.NewGuid().ToString() + "_" + model.ProductImageFile.FileName;
+                    model.ProductImage = folder;
+                    string serverFolder = Path.Combine(_webHostEnvironment.WebRootPath, folder);
+
+                    await model.ProductImageFile.CopyToAsync(new FileStream(serverFolder, FileMode.Create));
+                    product.ProductImage = model.ProductImage;
+                }
+
                 product.Category = await _categoryManagementService.GetCategoryById(model.CategoryId);
                 product.ProductType = await _productTypeManagementService.GetProductTypeIdAsync(model.ProductypeId);
                 product.BarcodeType = await _barcodeTypeManagementService.GetBarcodeTypeId(model.BarcodeTypeId);
@@ -236,6 +266,33 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var product = await _productManagementService.GetProductAsync(model.Id);
+
+                /*if (model.ProductImageFile != null)
+                {
+                    string folder = "product/images/";
+                    folder += Guid.NewGuid().ToString() + "_" + model.ProductImageFile.FileName;
+                    model.ProductImage = folder;
+                    string serverFolder = Path.Combine(_webHostEnvironment.WebRootPath, folder);
+
+                    await model.ProductImageFile.CopyToAsync(new FileStream(serverFolder, FileMode.Create));
+
+                    //Delete the old image file if a new one is uploaded
+                    if (!string.IsNullOrEmpty(product.ProductImage))
+                    {
+                        var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, product.ProductImage);
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
+                }
+                else
+                {
+                    model.ProductImage = product.ProductImage;
+                }*/
+
+                model.ProductImage = await SaveProductImage(model.ProductImageFile, product.ProductImage);
+
                 product = _mapper.Map(model, product);
 
                 product.Category = await _categoryManagementService.GetCategoryById(model.CategoryId);
@@ -286,6 +343,40 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
+        private async Task<string> SaveProductImage(IFormFile productImageFile, string existingImagePath)
+        {
+            if (productImageFile == null)
+            {
+                return existingImagePath;
+            }
+
+            string folder = "product/images/";
+            string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, folder);
+
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + productImageFile.FileName;
+            string serverFolder = Path.Combine(folderPath, uniqueFileName);
+            string newImagePath = Path.Combine(folder, uniqueFileName);
+
+            await productImageFile.CopyToAsync(new FileStream(serverFolder, FileMode.Create));
+
+            if (!string.IsNullOrEmpty(existingImagePath))
+            {
+                var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, existingImagePath);
+                if (System.IO.File.Exists(oldImagePath))
+                {
+                    System.IO.File.Delete(oldImagePath);
+                }
+            }
+
+            return newImagePath;
+        }
+
+
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -299,7 +390,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     Type = ResponseTypes.Success
                 });
 
-                return RedirectToAction("Index");
+                return RedirectToAction("ProductList");
             }
             catch (Exception ex)
             {

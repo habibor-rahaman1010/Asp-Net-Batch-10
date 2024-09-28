@@ -21,5 +21,6 @@ namespace DevSkill.Inventory.Domain.Dtos
         public string ProductTypeName { get; set; } = string.Empty;
         public string BrandName { get; set; } = string.Empty;
         public string ApplicableTaxName { get; set; } = string.Empty;
+        public string ProductImage { get; set; } = string.Empty;
     }
 }

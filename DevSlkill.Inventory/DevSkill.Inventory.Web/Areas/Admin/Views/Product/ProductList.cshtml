@@ -104,6 +104,7 @@
                         <table id="products" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
+                                    <th>Product Image</th>
                                     <th>Product Name</th>
                                     <th>Business Location</th>
                                     <th>Description</th>
@@ -122,6 +123,7 @@
 
                             <tfoot>
                                 <tr>
+                                    <th>Product Image</th>
                                     <th>Product Name</th>
                                     <th>Business Location</th>
                                     <th>Description</th>
@@ -210,7 +212,7 @@
 
                     {
                         orderable: false,
-                        targets: 12,
+                        targets: 13,
                         render: function (data, type, row) {
                             console.log(type);
                             return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/admin/Product/UpdateProduct/${data}'" value='${data}'>

@@ -55,6 +55,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
         public double InclusiveTax { get; set; }
         public double MarginTax { get; set; }
         public double SellingPrice { get; set; }
+        public IFormFile? ProductImageFile { get; set; }
+        public string ProductImage { get; set; } = string.Empty;
 
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }

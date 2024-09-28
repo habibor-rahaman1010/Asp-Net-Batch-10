@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DevSkill.Inventory.Domain.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace DevSkill.Inventory.Domain.Entities
 {
@@ -42,10 +43,8 @@ namespace DevSkill.Inventory.Domain.Entities
 
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
-
-
-       /* public string ProductImage { get; set; } = string.Empty;
-        public string ProductBrochure { get; set; } = string.Empty;*/
+  /*      public IFormFile? ProductImageFile { get; set; }*/
+        public string ProductImage { get; set; } = string.Empty;
 
         public Product() 
         {
