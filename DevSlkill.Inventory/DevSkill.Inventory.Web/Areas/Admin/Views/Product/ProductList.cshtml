@@ -152,6 +152,11 @@
     <!-- /.container-fluid -->
 </section>
 
+
+<!-- This code for detail modal-->
+<partial name="_ProductDetailsPartial" />
+
+
 <!-- /.content -->
 @section Scripts {
 
@@ -168,6 +173,9 @@
     <script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
     <script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
     <script src="~/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+    <!--This is link for print-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/printThis/1.15.0/printThis.min.js"></script>
 
     <script type="text/javascript">
         $(function () {
@@ -200,7 +208,7 @@
                 columnDefs: [
                     {
                         // Render description column with only 20 words
-                        targets: 2,
+                        targets: 3,
                         render: function (data, type, row) {
                             var words = data.split(" ");
                             if (words.length > 5) {
@@ -214,25 +222,35 @@
                         orderable: false,
                         targets: 13,
                         render: function (data, type, row) {
-                            console.log(type);
-                            return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/admin/Product/UpdateProduct/${data}'" value='${data}'>
-                                                                                <i class="fas fa-pencil-alt">
-                                                                                </i>
-                                                                                Edit
-                                                                            </button>
-                                                                            <button type="submit" class="btn btn-danger btn-sm show-bs-modal" data-id='${data}' value='${data}'>
-                                                                                <i class="fas fa-trash">
-                                                                                </i>
-                                                                                Delete
-                                                                            </button>`;
+                            return `<button type="submit" class="btn btn-info btn-sm edit-btn" onclick="window.location.href='/admin/Product/UpdateProduct/${data}'" value='${data}'>
+                                    <i class="fas fa-pencil-alt">
+                                    </i>
+                                    Edit
+                                </button>
+                                    <button type="submit" class="btn btn-danger btn-sm show-bs-modal delete-btn" data-id='${data}' value='${data}'>
+                                    <i class="fas fa-trash">
+                                    </i>
+                                    Delete
+                                </button>`;
                         }
-                    }
+                    },  
                 ],
 
+                //This code for product details
+                createdRow: function (row, data) {
+                    const productId = data[13];
+                    $(row).attr('data-id', productId);
+                },
 
                 dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
             }).buttons().container().appendTo('#products_wrapper .col-md-6:eq(0)');
+
+            // Button click event to prevent row click event when clicking on "Edit" or "Delete"
+           /* $('#products tbody').on('click', '.edit-btn, .show-bs-modal', function (e) {
+                e.stopPropagation();
+            }); */
+
 
             $('#products').on('click', '.show-bs-modal', function (event) {
                 let id = $(this).data("id");
@@ -251,6 +269,74 @@
                 $('#products').DataTable().ajax.reload(null, false);
             });
 
+
+
+           /*$('#products tbody').on('click', 'tr', function (event) {
+
+                var data = $(this).data();
+
+                $('#productName').text(data);
+
+                console.log(data);
+
+                $('#itemDetailsModal').modal('show');
+            });*/
+
+           
+            //This code for product details
+            $('#products tbody').on('click', 'tr', function () {
+                var productId = $(this).data().id;
+
+                $.ajax({
+                    url: `/admin/Product/GetProductById/${productId}`,
+                    method: 'GET',
+                    success: function (data) {
+                        console.log(data); // Debugging purpose
+
+                        // Populate the modal with product details
+                        $('#id').text(data.id);
+                        $('#productName').text(data.productName);
+                        $('#description').html(data.description);
+                        $('#price').html(data.price);
+                        $('#sku').html(data.sku);
+                        $('#category').text(data.category.categoryName);
+                        $('#subcategory').text(data.subcategory.subcategoryName);
+                        $('#brand').text(data.brand.brandName);
+                        $('#productType').text(data.productType.productTypeName);
+                        $('#businessLocation').text(data.businessLocation.locationName);
+                        $('#unit').text(data.unit.unitName);
+                        $('#weight').text(data.weight);
+                        $('#status').text(data.status === 0 ? 'Active' : 'Inactive');
+                        $('#warranty').text(data.warranty.warrantyDuration);
+                        $('#barcodeType').text(data.barcodeType.barcodeTypeName);
+                        $('#imei').text(data.imei);
+                        $('#position').text(data.position);
+                        $('#rack').text(data.rack);
+                        $('#exciseTax').text(data.exciseTax);
+                        $('#inclusiveTax').text(data.inclusiveTax);
+                        $('#marginTax').text(data.marginTax);
+                        $('#sellingPrice').text(data.sellingPrice);
+                        $('#sellingPriceTax').text(data.sellingPriceTax.sellingPriceTaxName);
+                        $('#alertQuantity').text(data.alertQuantity);
+                        $('#ratings').text(data.ratings);
+                        $('#created').text(new Date(data.created).toLocaleString());
+                        $('#updated').text(new Date(data.updated).toLocaleString());
+                        $('#storeTime').text(new Date(data.storeTime).toLocaleString());
+
+                        // Set product image
+                        $('#productImage').attr('src', "/" + data.productImage);
+
+                        // Show the modal
+                        $('#itemDetailsModal').modal('show');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching product data:", error);
+                        alert('Failed to load product details.');
+                    }
+                });
+            });
+      
         });
+
     </script>
 }

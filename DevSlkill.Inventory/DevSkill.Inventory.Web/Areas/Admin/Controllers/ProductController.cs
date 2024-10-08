@@ -9,6 +9,7 @@ using DevSkill.Inventory.Domain;
 using System.IO;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using System.Security.Cryptography;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
@@ -99,6 +100,16 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             };
 
             return Json(productJsonData);
+        }
+
+        public async Task<IActionResult> GetProductById(Guid id)
+        {
+            var product = await _productManagementService.GetProductAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            return Json(product);
         }
 
         public async Task<IActionResult> ProductList()
