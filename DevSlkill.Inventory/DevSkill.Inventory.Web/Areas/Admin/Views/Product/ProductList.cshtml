@@ -224,39 +224,35 @@
                                     </i>
                                     Edit
                                 </button>
-                                    <button type="submit" class="btn btn-danger btn-sm show-bs-modal delete-btn" data-id='${data}' value='${data}'>
+                                <button type="submit" class="btn btn-danger btn-sm show-bs-modal delete-btn" data-id='${data}' value='${data}'>
                                     <i class="fas fa-trash">
                                     </i>
                                     Delete
                                 </button>`;
                         }
-                    },  
-                ],
+                    },
 
-                //This code for product details
-                createdRow: function (row, data) {
-                    const productId = data[13];
-                    $(row).attr('data-id', productId);
-                },
+                    ...[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(function (target) {
+                        return {
+                            targets: target,
+                            createdCell: function (td, type, data) {
+                                $(td).addClass('table-row');
+                                $(td).attr('data-id', data[13]);
+                            }
+                        };
+                    })
+                ],
 
                 dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
             }).buttons().container().appendTo('#products_wrapper .col-md-6:eq(0)');
 
-            // Stop propagation when clicking on Edit or Delete buttons
-            $('#products').on('click', '.edit-btn, .delete-btn', function (event) {
-                console.log(event.target.name);
-                event.stopPropagation();
-            });
-            
             $('#products').on('click', '.show-bs-modal', function () {
                 let id = $(this).data("id");
                 let modal = $("#modal-default");
                 modal.find('.modal-body p').text('Are you sure you want to delete this record?');
                 $("#deleteId").val(id);
                 $("#deleteForm").attr("action", "/admin/Product/delete");
-
-                $('#productDetailsModal').modal('hide');
                 modal.modal('show');
             });
 
@@ -268,28 +264,16 @@
                 $('#products').DataTable().ajax.reload(null, false);
             });
 
-           /*$('#products tbody').on('click', 'tr', function (event) {
-
-                var data = $(this).data();
-
-                $('#productName').text(data);
-
-                console.log(data);
-
-                $('#itemDetailsModal').modal('show');
-            });*/
-
-           
+   
             //This code for product details
-            $('#products tbody').on('click', 'tr', function () {
+            $('#products tbody').on('click', '.table-row', function () {
+                console.log("clicked");
                 var productId = $(this).data().id;
 
                 $.ajax({
                     url: `/admin/Product/GetProductById/${productId}`,
                     method: 'GET',
                     success: function (data) {
-                        console.log(data);
-                        // Populate the modal with product details
                         $('#id').text(data.id);
                         $('#productName').text(data.productName);
                         $('#description').html(data.description);
