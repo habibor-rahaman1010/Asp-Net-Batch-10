@@ -4,7 +4,6 @@
     ViewData["Title"] = "Product List";
 }
 
-
 @section Styles {
     <!-- DataTables -->
     <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
@@ -152,10 +151,8 @@
     <!-- /.container-fluid -->
 </section>
 
-
 <!-- This code for detail modal-->
 <partial name="_ProductDetailsPartial" />
-
 
 <!-- /.content -->
 @section Scripts {
@@ -246,18 +243,20 @@
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
             }).buttons().container().appendTo('#products_wrapper .col-md-6:eq(0)');
 
-            // Button click event to prevent row click event when clicking on "Edit" or "Delete"
-           /* $('#products tbody').on('click', '.edit-btn, .show-bs-modal', function (e) {
-                e.stopPropagation();
-            }); */
-
-
-            $('#products').on('click', '.show-bs-modal', function (event) {
+            // Stop propagation when clicking on Edit or Delete buttons
+            $('#products').on('click', '.edit-btn, .delete-btn', function (event) {
+                console.log(event.target.name);
+                event.stopPropagation();
+            });
+            
+            $('#products').on('click', '.show-bs-modal', function () {
                 let id = $(this).data("id");
                 let modal = $("#modal-default");
                 modal.find('.modal-body p').text('Are you sure you want to delete this record?');
                 $("#deleteId").val(id);
                 $("#deleteForm").attr("action", "/admin/Product/delete");
+
+                $('#productDetailsModal').modal('hide');
                 modal.modal('show');
             });
 
@@ -268,8 +267,6 @@
             $("#searchButton").click(function () {
                 $('#products').DataTable().ajax.reload(null, false);
             });
-
-
 
            /*$('#products tbody').on('click', 'tr', function (event) {
 
@@ -291,8 +288,7 @@
                     url: `/admin/Product/GetProductById/${productId}`,
                     method: 'GET',
                     success: function (data) {
-                        console.log(data); // Debugging purpose
-
+                        console.log(data);
                         // Populate the modal with product details
                         $('#id').text(data.id);
                         $('#productName').text(data.productName);
@@ -322,12 +318,8 @@
                         $('#created').text(new Date(data.created).toLocaleString());
                         $('#updated').text(new Date(data.updated).toLocaleString());
                         $('#storeTime').text(new Date(data.storeTime).toLocaleString());
-
-                        // Set product image
                         $('#productImage').attr('src', "/" + data.productImage);
-
-                        // Show the modal
-                        $('#itemDetailsModal').modal('show');
+                        $('#productDetailsModal').modal('show');
                     },
                     error: function (xhr, status, error) {
                         console.error("Error fetching product data:", error);
