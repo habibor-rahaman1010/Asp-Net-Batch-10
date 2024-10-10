@@ -10,5 +10,7 @@ namespace DevSkill.Inventory.Domain.Entities
     {
         public Guid Id { get; set; }
         public string CategoryName { get; set; } = string.Empty;
+        public string CategoryCode { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;    
     }
 }

@@ -240,7 +240,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     _logger.LogError(ex, "Ultimatly the product creation failed!");
                 }
             }
-            /*model.SetCategoriesValues(await _categoryManagementService.GetCategoriesAsync());
+            model.SetCategoriesValues(await _categoryManagementService.GetCategoriesAsync());
             model.SetProductTypeValues(await _productTypeManagementService.GetProductTypesAsync());
             model.SetBarcodeTypeValues(await _barcodeTypeManagementService.GetBarCodeTypes());
             model.SetUnitValues(await _unitManagementService.GetAllUnitAsync());
@@ -249,7 +249,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
             model.SetWarrantyValues(await _warrantyManagementService.GetAllWarrantyAsync());
             model.SetApplicableTaxValues(await _applicableTaxManagementService.GetAllApplicablTax());
-            model.SetSellingPriceTaxValues(await _sellingPriceTaxManagementService.GetAllSellingPriceTax());*/
+            model.SetSellingPriceTaxValues(await _sellingPriceTaxManagementService.GetAllSellingPriceTax());
             return View(model);
         }
 
@@ -277,31 +277,6 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var product = await _productManagementService.GetProductAsync(model.Id);
-
-                /*if (model.ProductImageFile != null)
-                {
-                    string folder = "product/images/";
-                    folder += Guid.NewGuid().ToString() + "_" + model.ProductImageFile.FileName;
-                    model.ProductImage = folder;
-                    string serverFolder = Path.Combine(_webHostEnvironment.WebRootPath, folder);
-
-                    await model.ProductImageFile.CopyToAsync(new FileStream(serverFolder, FileMode.Create));
-
-                    //Delete the old image file if a new one is uploaded
-                    if (!string.IsNullOrEmpty(product.ProductImage))
-                    {
-                        var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, product.ProductImage);
-                        if (System.IO.File.Exists(oldImagePath))
-                        {
-                            System.IO.File.Delete(oldImagePath);
-                        }
-                    }
-                }
-                else
-                {
-                    model.ProductImage = product.ProductImage;
-                }*/
-
                 model.ProductImage = await SaveProductImage(model.ProductImageFile, product.ProductImage);
 
                 product = _mapper.Map(model, product);
@@ -354,6 +329,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
+        //This code for image upload
         private async Task<string> SaveProductImage(IFormFile productImageFile, string existingImagePath)
         {
             if (productImageFile == null)
