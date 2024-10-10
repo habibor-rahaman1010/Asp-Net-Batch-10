@@ -18,6 +18,12 @@ namespace DevSkill.Inventory.Application.Services
             _categoryUnitOfWork = categoryUnitOfWork;
         }
 
+        public async Task AddCategoryAsync(Category category)
+        {
+            await _categoryUnitOfWork.CategoryRepository.AddAsync(category);
+            await _categoryUnitOfWork.SaveAsync();
+        }
+
         public async Task<IList<Category>> GetCategoriesAsync()
         {
             return await _categoryUnitOfWork.CategoryRepository.GetAllAsync();

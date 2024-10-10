@@ -10,6 +10,7 @@ namespace DevSkill.Inventory.Web.AutoMapProfile
         {
             CreateMap<ProductCreateModel, Product>().ReverseMap();
             CreateMap<UpdateProductModel, Product>().ReverseMap();
+            CreateMap<CategoryCreateModel, Category>().ReverseMap();
 
             /*// If you need two-way mapping, include this:
             CreateMap<Product, UpdateProductModel>();
