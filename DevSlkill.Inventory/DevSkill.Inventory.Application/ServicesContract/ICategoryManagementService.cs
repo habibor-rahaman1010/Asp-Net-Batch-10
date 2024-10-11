@@ -14,5 +14,7 @@ namespace DevSkill.Inventory.Application.ServicesContract
         Task<Category> GetCategoryById(Guid id);
         Task<(IList<Category> data, int total, int totalDisplay)> GetCategoriesAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
         Task AddCategoryAsync(Category category);
+        Task DeleteCategoryAsync(Guid id);
+        Task UpdateCategoryAsync(Category category);
     }
 }

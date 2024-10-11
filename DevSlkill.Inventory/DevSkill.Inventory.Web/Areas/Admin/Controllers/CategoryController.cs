@@ -5,6 +5,7 @@ using DevSkill.Inventory.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Mvc;
 using DevSkill.Inventory.Infrastructure;
 using System.Web;
+using DevSkill.Inventory.Application.Services;
 
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
@@ -58,8 +59,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddCategory(CategoryCreateModel model)
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<JsonResult> AddCategory(CategoryCreateModel model)
         {
             if (ModelState.IsValid)
             {
@@ -70,29 +71,100 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 {
                     await _categoryManagementService.AddCategoryAsync(category);
 
-                    TempData.Put("ResponseMessage", new ResponseModel
+                    return Json(new
                     {
-                        Message = "Categoey created successfuly",
-                        Type = ResponseTypes.Success
+                        success = true,
+                        message = "Category created successfully"
                     });
-
-                    return RedirectToAction(nameof(CategoryList));
                 }
 
                 catch (Exception ex)
                 {
-                    TempData.Put("ResponseMessage", new ResponseModel
-                    {
-                        Message = "Category post creation failed",
-                        Type = ResponseTypes.Danger
-                    });
                     _logger.LogError(ex, "category creation failed");
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Category creation failed"
+                    });
                 }
             }
 
-            return View(model);
+            return Json(new
+            {
+                success = false,
+                message = "Category creation failed"
+            });
         }
 
+
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> CategoryDelete(Guid id)
+        {
+            try
+            {
+                await _categoryManagementService.DeleteCategoryAsync(id);
+
+                TempData.Put("ResponseMessage", new ResponseModel
+                {
+                    Message = "The category has deleted successfuly",
+                    Type = ResponseTypes.Success
+                });
+
+                return RedirectToAction(nameof(CategoryList));
+            }
+            catch (Exception ex)
+            {
+                TempData.Put("ResponseMessage", new ResponseModel
+                {
+                    Message = "The category has deleted failed",
+                    Type = ResponseTypes.Danger
+                });
+
+                _logger.LogError(ex, "The category deleted failed");
+            }
+            return View();
+        }
+
+
+        //This code for update the category
+        public async Task<IActionResult> EditCategory(Guid id)
+        {
+            var category = await _categoryManagementService.GetCategoryById(id);
+            var moddel = _mapper.Map<UpdateCategoryModel>(category);
+            return View(moddel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditCategory(UpdateCategoryModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var category = await _categoryManagementService.GetCategoryById(model.Id);
+                category = _mapper.Map(model, category);
+               
+                try
+                {
+                    await _categoryManagementService.UpdateCategoryAsync(category);
+                    TempData.Put("ResponseMessage", new ResponseModel
+                    {
+                        Message = "The category has been update successfuly",
+                        Type = ResponseTypes.Success
+                    });
+                    return RedirectToAction($"{nameof(CategoryList)}");
+                }
+                catch (Exception ex)
+                {
+                    TempData.Put("ResponseMessage", new ResponseModel
+                    {
+                        Message = "The category update has failed!",
+                        Type = ResponseTypes.Danger
+                    });
+                    _logger.LogError(ex, "Ultimatly the category updated failed!");
+                }
+            }
+            return View(model);
+        }
 
     }
 }

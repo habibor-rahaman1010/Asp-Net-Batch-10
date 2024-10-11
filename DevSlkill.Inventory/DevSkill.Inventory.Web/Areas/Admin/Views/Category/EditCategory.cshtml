@@ -1,14 +1,14 @@
-﻿@model CategoryCreateModel
+﻿@model UpdateCategoryModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Update Category";
 }
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <div class="container">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="text-green">Create A New Category</h1>
+                <h1 class="text-green">Update Category</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -29,11 +29,11 @@
                 <!-- general form elements -->
                 <div class="card card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">Add A New Category</h3>
+                        <h3 class="card-title">Update The Category</h3>
                     </div>
                     <!-- /.card-header -->
                     <!-- form start -->
-                    <form asp-antiforgery="true" asp-area="Admin" asp-controller="Category" asp-action="AddCategory" method="post" enctype="multipart/form-data">
+                    <form asp-antiforgery="true" asp-area="Admin" asp-controller="Category" asp-action="EditCategory" method="post" enctype="multipart/form-data">
                         <partial name="_ResponsePartial" />
                         <div class="card-body">
                             <div class="form-group">
@@ -48,7 +48,7 @@
                             </div>
                             <div class="form-group">
                                 <label asp-for="Description"></label>
-                                <textarea type="text" asp-for="Description" class="form-control" placeholder="Description"> </textarea> 
+                                <textarea type="text" asp-for="Description" class="form-control" placeholder="Description"> </textarea>
                                 <span asp-validation-for="Description" class="text-danger"></span>
                             </div>
 

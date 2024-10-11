@@ -2,12 +2,33 @@
     ViewData["Title"] = "Category List";
 }
 
+<style>
+    .toast {
+        background-color: #28a745; /* Green background */
+        color: white; /* Text color */
+    }
+    .toast-body{
+        width: 100%;
+        text-align: center;
+    }
+
+</style>
+
 @section Styles {
     <!-- DataTables -->
     <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 }
+
+<!-- Toast container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+    <div id="categoryToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-body d-flex" id="toastMessage">
+            <!-- Toast message will be dynamically set here -->
+        </div>
+    </div>
+</div>
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
@@ -35,10 +56,11 @@
                     <div class="card-header">
                         <h3 class="card-title">All available category are here!</h3>
 
-                        <a asp-area="Admin" asp-controller="Category" asp-action="AddCategory" class="btn btn-primary float-right">
+                        <a class="btn btn-primary float-right" data-toggle="modal" data-target="#addCategoryModal">
                             <i class="nav-icon"></i>
                             <i class="fas fa-plus"></i> Add Category
                         </a>
+
 
                     </div>
                     <!-- /.card-header -->
@@ -77,6 +99,7 @@
 </section>
 
 
+@model CategoryCreateModel
 <!-- Modal for adding a new category -->
 <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -88,18 +111,21 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="addCategoryForm">
+                <form method="post" asp-antiforgery="true" id="addCategoryForm" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label for="categoryName">Category Name</label>
-                        <input type="text" class="form-control" id="categoryName" name="CategoryName" required>
+                        <label asp-for="CategoryName">Category Name</label>
+                        <input asp-for="CategoryName" type="text" class="form-control" id="categoryName" name="CategoryName" required>
+                        <span asp-validation-for="CategoryName" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <label for="categoryCode">Category Code</label>
-                        <input type="text" class="form-control" id="categoryCode" name="CategoryCode" required>
+                        <label asp-for="CategoryCode">Category Code</label>
+                        <input asp-for="CategoryCode" type="text" class="form-control" id="categoryCode" name="CategoryCode" required>
+                        <span asp-validation-for="CategoryCode" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <label for="description">Description</label>
-                        <textarea class="form-control" id="description" name="Description" rows="3"></textarea>
+                        <label asp-for="Description">Description</label>
+                        <textarea asp-for="Description" class="form-control" id="description" name="Description" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
                     <button type="submit" class="btn btn-primary">Save</button>
                 </form>
@@ -166,7 +192,7 @@
                         targets: 3,
                         render: function (data, type, row) {
                             console.log(type);
-                            return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/admin/Product/UpdateProduct/${data}'" value='${data}'>
+                            return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/admin/Category/EditCategory/${data}'" value='${data}'>
                                             <i class="fas fa-pencil-alt">
                                             </i>
                                             Edit
@@ -187,6 +213,65 @@
             }).buttons().container().appendTo('#products_wrapper .col-md-6:eq(0)');
         });
 
+        //This code for delete
+        $('#products').on('click', '.show-bs-modal', function () {
+            let id = $(this).data("id");
+            let modal = $("#modal-default");
+            modal.find('.modal-body p').text('Are you sure you want to delete this record?');
+            $("#deleteId").val(id);
+            $("#deleteForm").attr("action", "/admin/Category/CategoryDelete");
+            modal.modal('show');
+        });
+
+        $("#deleteButton").click(function () {
+            $("#deleteForm").submit();
+        });
+
+        //This code for category create...
+        $(document).ready(function () {
+            // Handle form submission
+            $('#addCategoryForm').on('submit', function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    url: '/Admin/Category/AddCategory', 
+                    method: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            // Close the modal
+                            $('#addCategoryModal').modal('hide');
+                            $('#addCategoryForm')[0].reset();
+
+                            // Display toast notification
+                            $('#toastMessage').text(response.message);
+                            $('#categoryToast').toast({
+                                delay: 3000 // 3 seconds
+                            });
+                            $('#categoryToast').toast('show');
+                            // Refresh the DataTable
+                            $('#products').DataTable().ajax.reload();
+                        } else {
+                            // Handle validation errors or any other errors
+                            // Display toast notification
+                            $('#toastMessage').text(response.message);
+                            $('#categoryToast').toast({
+                                delay: 3000
+                            });
+                            $('#categoryToast').toast('show');
+                        }
+                    },
+                    error: function (error) {
+                        $('#toastMessage').text('There was an error adding the category.');
+                        $('#categoryToast').toast({
+                            delay: 3000
+                        });
+                        $('#categoryToast').toast('show');
+                    }
+                });
+            });
+        });
+       
     </script>
 }
 

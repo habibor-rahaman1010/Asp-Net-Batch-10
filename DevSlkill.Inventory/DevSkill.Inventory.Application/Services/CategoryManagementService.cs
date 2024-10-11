@@ -24,6 +24,12 @@ namespace DevSkill.Inventory.Application.Services
             await _categoryUnitOfWork.SaveAsync();
         }
 
+        public async Task DeleteCategoryAsync(Guid id)
+        {
+            await _categoryUnitOfWork.CategoryRepository.RemoveAsync(id);
+            await _categoryUnitOfWork.SaveAsync();
+        }
+
         public async Task<IList<Category>> GetCategoriesAsync()
         {
             return await _categoryUnitOfWork.CategoryRepository.GetAllAsync();
@@ -37,6 +43,13 @@ namespace DevSkill.Inventory.Application.Services
         public async Task<Category> GetCategoryById(Guid id)
         {
             return await _categoryUnitOfWork.CategoryRepository.GetByIdAsync(id);
+        }
+
+        public async Task UpdateCategoryAsync(Category category)
+        {
+            await _categoryUnitOfWork.CategoryRepository.EditAsync(category);
+            await _categoryUnitOfWork.SaveAsync();
+
         }
     }
 }
