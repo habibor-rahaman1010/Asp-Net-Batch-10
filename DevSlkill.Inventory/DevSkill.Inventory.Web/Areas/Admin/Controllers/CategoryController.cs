@@ -166,5 +166,34 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
+        public IActionResult GetCategoryById(Guid id)
+        {
+            var category = _categoryManagementService.GetCategoryById(id);
+            if (category != null)
+            {
+                return Json(new { success = true, data = category });
+            }
+            return Json(new { success = false, message = "Category not found." });
+        }
+         
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCategoryModal(UpdateCategoryModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                //_logger.LogInformation("Updating category with data: {@Model}", model);
+                var category = await _categoryManagementService.GetCategoryById(model.Id);
+                category = _mapper.Map(model, category);
+                category.Id = model.Id;
+                await _categoryManagementService.UpdateCategoryAsync(category);
+                
+               return Json(new { success = true, message = "Category updated successfully." });
+               
+            }
+            _logger.LogInformation("Updating category with data: {@Model}", model);
+            return Json(new { success = false, message = "Error updating category." });
+        }
+
+
     }
 }

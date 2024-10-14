@@ -18,7 +18,7 @@ namespace DevSkill.Inventory.Application.Services
             _inventoryUnitOfWork = inventoryUnitOfWork;
         }
 
-        public async Task<IList<ApplicableTax>> GetAllApplicablTax()
+        public async Task<IList<ApplicableTax>> GetAllApplicableTax()
         {
             return await _inventoryUnitOfWork.ApplicableTaxRepository.GetAllAsync();
         }

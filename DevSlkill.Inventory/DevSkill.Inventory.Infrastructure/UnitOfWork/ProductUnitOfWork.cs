@@ -65,7 +65,15 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
 
                 { "ProductName", string.IsNullOrEmpty(search.ProductName) ? null : search.ProductName },
                 { "ProductTypeId", string.IsNullOrEmpty(search.ProductTypeId) ? null : Guid.Parse(search.ProductTypeId) },
-                { "CategoryId", string.IsNullOrEmpty(search.CategoryId) ? null : Guid.Parse(search.CategoryId) }
+                { "CategoryId", string.IsNullOrEmpty(search.CategoryId) ? null : Guid.Parse(search.CategoryId) },
+                { "BrandId", string.IsNullOrEmpty(search.BrandId) ? null : Guid.Parse(search.BrandId)},
+                { "UnitId", string.IsNullOrEmpty(search.UnitId) ? null : Guid.Parse(search.UnitId)},
+                { "BusinessLocationId", string.IsNullOrEmpty(search.BusinessLocationId) ? null : Guid.Parse(search.BusinessLocationId)},
+                { "SellingPriceTaxId", string.IsNullOrEmpty(search.SellingPriceTaxId) ? null : Guid.Parse(search.SellingPriceTaxId)},
+                { "ApplicableTaxId", string.IsNullOrEmpty(search.ApplicableTaxId) ? null : Guid.Parse(search.ApplicableTaxId)},
+                { "Status", search.Status >= 0 ? search.Status : (object)null }
+
+
 
             },
             new Dictionary<string, Type>

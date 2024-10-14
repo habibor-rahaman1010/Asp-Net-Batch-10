@@ -62,8 +62,50 @@
 
                     <div class="col-sm-3">
                         <div class="form-group">
-                            <label>Category</label>
+                            <label>Product Category</label>
                             <select asp-for="SearchItem.CategoryId" asp-items="Model.Categories" class="form-control"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Product Brand</label>
+                            <select asp-for="SearchItem.BrandId" asp-items="Model.Brands" class="form-control"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Product Unit</label>
+                            <select asp-for="SearchItem.UnitId" asp-items="Model.Units" class="form-control"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Business Location</label>
+                            <select asp-for="SearchItem.BusinessLocationId" asp-items="Model.BusinessLocations" class="form-control"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Selling Price Tax</label>
+                            <select asp-for="SearchItem.SellingPriceTaxId" asp-items="Model.SellingPriceTaxes" class="form-control"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Applicable Tax</label>
+                            <select asp-for="SearchItem.ApplicableTaxId" asp-items="Model.ApplicableTaxes" class="form-control"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Applicable Tax</label>
+                            <select asp-for="SearchItem.Status" asp-items="Model.Statuses" class="form-control"></select>
                         </div>
                     </div>
 
@@ -194,7 +236,14 @@
                         d.SearchItem = {
                             ProductName: $("#SearchItem_ProductName").val(),
                             ProductTypeId: $("#SearchItem_ProductTypeId").val(),
-                            CategoryId: $("#SearchItem_CategoryId").val()
+                            CategoryId: $("#SearchItem_CategoryId").val(),
+                            BrandId: $("#SearchItem_BrandId").val(),
+                            UnitId: $("#SearchItem_UnitId").val(),
+                            BusinessLocationId: $("#SearchItem_BusinessLocationId").val(),
+                            SellingPriceTaxId: $("#SearchItem_SellingPriceTaxId").val(),
+                            ApplicableTaxId: $("#SearchItem_ApplicableTaxId").val(),
+                            Status: parseInt($("#SearchItem_Status").val()) || 0,
+
                             //CreateDateFrom: $("#SearchItem_CreateDateFrom").val(),
                             //CreateDateTo: $("#SearchItem_CreateDateTo").val()
                         };
@@ -204,7 +253,8 @@
 
                 columnDefs: [
                     {
-                        // Render description column with only 5 words
+                        // Render description column with only 5
+                        orderable: false,
                         targets: 3,
                         render: function (data, type, row) {
                             var words = data.split(" ");
@@ -297,6 +347,7 @@
                         $('#marginTax').text(data.marginTax);
                         $('#sellingPrice').text(data.sellingPrice);
                         $('#sellingPriceTax').text(data.sellingPriceTax.sellingPriceTaxName);
+                        $('#applicableTax').text(data.applicableTax.applicableTaxName);
                         $('#alertQuantity').text(data.alertQuantity);
                         $('#ratings').text(data.ratings);
                         $('#created').text(new Date(data.created).toLocaleString());

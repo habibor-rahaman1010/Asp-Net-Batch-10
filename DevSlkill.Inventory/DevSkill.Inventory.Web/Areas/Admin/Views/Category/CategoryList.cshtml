@@ -134,6 +134,7 @@
     </div>
 </div>
 
+<partial name="_CategoryModal" />
 
 <!-- /.content -->
 @section Scripts {
@@ -176,7 +177,7 @@
                 columnDefs: [
                     {
                         // Render description column with only 20 words
-                     
+                        orderable: false,
                         targets: 2,
                         render: function (data, type, row) {
                             var words = data.split(" ");
@@ -187,11 +188,11 @@
                         }
                     },
 
-                    {
+                /*    {
                         orderable: false,
                         targets: 3,
                         render: function (data, type, row) {
-                            console.log(type);
+                            console.log(row);
                             return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/admin/Category/EditCategory/${data}'" value='${data}'>
                                             <i class="fas fa-pencil-alt">
                                             </i>
@@ -203,10 +204,27 @@
                                             Delete
                                         </button>`;
                         }
+                    }, */
+
+                    {
+                        orderable: false,
+                        targets: 3,
+                        render: function (data, type, row) {
+                            console.log(row);
+                            return `<button type="button" class="btn btn-info btn-sm edit-category" data-id='${data}' data-toggle="modal" data-target="#editCategoryModal">
+                                                <i class="fas fa-pencil-alt"></i> Edit
+                                            </button>
+
+                                            <button type="submit" class="btn btn-danger btn-sm show-bs-modal" data-id='${data}' value='${data}'>
+                                                <i class="fas fa-trash">
+                                                </i>
+                                                Delete
+                                            </button>`;
+                        }
                     },
 
-                ],
 
+                ],
 
                 dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
@@ -227,7 +245,7 @@
             $("#deleteForm").submit();
         });
 
-        //This code for category create...
+        //This code for create category...
         $(document).ready(function () {
             // Handle form submission
             $('#addCategoryForm').on('submit', function (e) {
@@ -271,6 +289,94 @@
                 });
             });
         });
+
+
+        //This code for temp data response fadeOut
+        $(document).ready(function () {
+            setTimeout(function () {
+                $('#response-alert').fadeOut('slow');
+            }, 3000);
+        });
+
+
+
+        //for edit code
+        $(document).ready(function () {
+            // Handle the click event for the edit button
+            $('#products').on('click', '.edit-category', function () {
+                var categoryId = $(this).data('id');
+                console.log("clciked button");
+                // Use AJAX to fetch the category data
+                $.ajax({
+                    url: '/Admin/Category/GetCategoryById', // Adjust to your route
+                    method: 'GET',
+                    data: { id: categoryId },
+                    success: function (response) {
+                        console.log(response.data.result.categoryName);
+                        if (response.success) {
+                            // Populate the modal fields with the category data
+                            $('#editCategoryId').val(response.data.result.id);
+                            $('#editCategoryName').val(response.data.result.categoryName);
+                            $('#editCategoryCode').val(response.data.result.categoryCode);
+                            $('#editDescription').val(response.data.result.description);
+
+                            // Open the modal (bootstrap handles this)
+                            $('#editCategoryModal').modal('show');
+                        } else {
+                            // Handle the error case (show a message or log)
+                            alert('Error fetching category data');
+                        }
+                    },
+                    error: function () {
+                        alert('An error occurred while fetching the category data.');
+                    }
+                });
+            });
+
+            // Handle the form submission for editing a category
+            $('#editCategoryForm').on('submit', function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    url: '/Admin/Category/EditCategoryModal', // Adjust to your route
+                    method: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            // Close the modal
+                            $('#editCategoryModal').modal('hide');
+                            $('#editCategoryForm')[0].reset();
+
+                            // Display toast notification
+                            $('#toastMessage').text(response.message);
+                            $('#categoryToast').toast({
+                                delay: 3000 // 3 seconds
+                            });
+                            $('#categoryToast').toast('show');
+
+                            // Refresh the DataTable
+                            $('#products').DataTable().ajax.reload();
+                        } else {
+                            // Handle validation or other errors
+                            $('#toastMessage').text(response.message);
+                            $('#categoryToast').toast({
+                                delay: 3000
+                            });
+                            $('#categoryToast').toast('show');
+                        }
+                    },
+                    error: function () {
+                        $('#toastMessage').text('There was an error editing the category.');
+                        $('#categoryToast').toast({
+                            delay: 3000
+                        });
+                        $('#categoryToast').toast('show');
+                    }
+                });
+            });
+        });
+
+
        
     </script>
 }

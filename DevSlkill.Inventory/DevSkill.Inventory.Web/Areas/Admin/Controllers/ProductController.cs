@@ -117,6 +117,11 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             var model = new ProductListModel();
             model.SetCategoryValues(await _categoryManagementService.GetCategoriesAsync());
             model.SetProductTypeValues(await _productTypeManagementService.GetProductTypesAsync());
+            model.SetBrandValues(await _brandManagementService.GetAllBrandAsync());
+            model.SetUnitValues(await _unitManagementService.GetAllUnitAsync());
+            model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
+            model.SetSellingPriceTaxValues(await _sellingPriceTaxManagementService.GetAllSellingPriceTax());
+            model.SetApplicableTaxValues(await _applicableTaxManagementService.GetAllApplicableTax());
             return View(model);
         }
 
@@ -168,7 +173,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             model.SetSubcategoryValues(await _subCategoryManagementService.GetAllSubcategoryAsync());
             model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
             model.SetWarrantyValues(await _warrantyManagementService.GetAllWarrantyAsync());
-            model.SetApplicableTaxValues(await _applicableTaxManagementService.GetAllApplicablTax());
+            model.SetApplicableTaxValues(await _applicableTaxManagementService.GetAllApplicableTax());
             model.SetSellingPriceTaxValues(await _sellingPriceTaxManagementService.GetAllSellingPriceTax());
             return View(model);
         }
@@ -235,7 +240,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             model.SetSubcategoryValues(await _subCategoryManagementService.GetAllSubcategoryAsync());
             model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
             model.SetWarrantyValues(await _warrantyManagementService.GetAllWarrantyAsync());
-            model.SetApplicableTaxValues(await _applicableTaxManagementService.GetAllApplicablTax());
+            model.SetApplicableTaxValues(await _applicableTaxManagementService.GetAllApplicableTax());
             model.SetSellingPriceTaxValues(await _sellingPriceTaxManagementService.GetAllSellingPriceTax());
             return View(model);
         }
@@ -253,7 +258,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             model.SetSubcategoryValues(await _subCategoryManagementService.GetAllSubcategoryAsync());
             model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
             model.SetWarrantyValues(await _warrantyManagementService.GetAllWarrantyAsync());
-            model.SetApplicableTaxValues(await _applicableTaxManagementService.GetAllApplicablTax());
+            model.SetApplicableTaxValues(await _applicableTaxManagementService.GetAllApplicableTax());
             model.SetSellingPriceTaxValues(await _sellingPriceTaxManagementService.GetAllSellingPriceTax());
             return View(model);
         }
@@ -309,7 +314,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             model.SetSubcategoryValues(await _subCategoryManagementService.GetAllSubcategoryAsync());
             model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
             model.SetWarrantyValues(await _warrantyManagementService.GetAllWarrantyAsync());
-            model.SetApplicableTaxValues(await _applicableTaxManagementService.GetAllApplicablTax());
+            model.SetApplicableTaxValues(await _applicableTaxManagementService.GetAllApplicableTax());
             model.SetSellingPriceTaxValues(await _sellingPriceTaxManagementService.GetAllSellingPriceTax());
             model.SetProductTypeValues(await _productTypeManagementService.GetProductTypesAsync());
 

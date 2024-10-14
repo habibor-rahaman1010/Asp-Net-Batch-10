@@ -9,7 +9,7 @@ namespace DevSkill.Inventory.Application.ServicesContract
 {
     public interface IApplicableTaxManagementService
     {
-        Task<IList<ApplicableTax>> GetAllApplicablTax();
+        Task<IList<ApplicableTax>> GetAllApplicableTax();
         Task<ApplicableTax> GetApplicableTaxByIdAsync(Guid id);
     }
 }
