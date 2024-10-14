@@ -140,20 +140,20 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 data = (from record in result.data
                         select new string[]
                         {
-                                $"<img src='{"/" + HttpUtility.HtmlDecode(record.ProductImage)}' alt='Image' width='100' height='70'/>",
-                                HttpUtility.HtmlEncode(record.ProductName),
-                                HttpUtility.HtmlEncode(record.LocationName),
-                                HttpUtility.HtmlDecode(record.Description),
-                                HttpUtility.HtmlEncode((record.Price - (record.Price / 100 * 30)).ToString("F2")),
-                                HttpUtility.HtmlEncode(record.Price.ToString("F2")),
-                                HttpUtility.HtmlEncode(record.SellingPrice.ToString("F2")),
-                                HttpUtility.HtmlEncode(record.SKU),
-                                HttpUtility.HtmlEncode(record.CategoryName),
-                                HttpUtility.HtmlEncode(record.ProductTypeName),
-                                HttpUtility.HtmlEncode(record.Ratings),
-                                HttpUtility.HtmlEncode(record.BrandName),
-                                HttpUtility.HtmlEncode(record.ApplicableTaxName),
-                                record.Id.ToString()
+                            $"<img src='{"/" + HttpUtility.HtmlDecode(record.ProductImage ?? string.Empty)}' alt='Image' width='100' height='70'/>",
+                            HttpUtility.HtmlEncode(string.IsNullOrWhiteSpace(record.ProductName) ? "N/A" : record.ProductName),
+                            HttpUtility.HtmlEncode(string.IsNullOrWhiteSpace(record.LocationName) ? "N/A" : record.LocationName),
+                            HttpUtility.HtmlDecode(string.IsNullOrWhiteSpace(record.Description) ? "N/A" : record.Description),
+                            HttpUtility.HtmlEncode((record.Price - (record.Price / 100 * 30)).ToString("F2")),
+                            HttpUtility.HtmlEncode(record.Price.ToString("F2")),
+                            HttpUtility.HtmlEncode(record.SellingPrice.ToString("F2")),
+                            HttpUtility.HtmlEncode(string.IsNullOrWhiteSpace(record.SKU) ? "N/A" : record.SKU),
+                            HttpUtility.HtmlEncode(string.IsNullOrWhiteSpace(record.CategoryName) ? "N/A" : record.CategoryName),
+                            HttpUtility.HtmlEncode(string.IsNullOrWhiteSpace(record.ProductTypeName) ? "N/A" : record.ProductTypeName),
+                            HttpUtility.HtmlEncode(record.Ratings),
+                            HttpUtility.HtmlEncode(string.IsNullOrWhiteSpace(record.BrandName) ? "N/A" : record.BrandName),
+                            HttpUtility.HtmlEncode(string.IsNullOrWhiteSpace(record.ApplicableTaxName) ? "N/A" : record.ApplicableTaxName),
+                            record.Id.ToString()
                         }
                     ).ToArray()
             };

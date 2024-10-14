@@ -71,7 +71,7 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
                 { "BusinessLocationId", string.IsNullOrEmpty(search.BusinessLocationId) ? null : Guid.Parse(search.BusinessLocationId)},
                 { "SellingPriceTaxId", string.IsNullOrEmpty(search.SellingPriceTaxId) ? null : Guid.Parse(search.SellingPriceTaxId)},
                 { "ApplicableTaxId", string.IsNullOrEmpty(search.ApplicableTaxId) ? null : Guid.Parse(search.ApplicableTaxId)},
-                { "Status", search.Status >= 0 ? search.Status : (object)null }
+                //{ "Status", search.Status >= 0 ? search.Status : (object)null }
 
 
 

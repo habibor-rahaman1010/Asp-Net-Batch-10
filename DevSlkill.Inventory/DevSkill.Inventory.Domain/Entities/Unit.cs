@@ -10,5 +10,7 @@ namespace DevSkill.Inventory.Domain.Entities
     {
         public Guid Id { get; set; }
         public string UnitName { get; set; } = string.Empty;
+        public string SortName { get; set; } = string.Empty;
+        public string AllowDecimal { get; set; } = string.Empty; 
     }
 }

@@ -1,0 +1,330 @@
+﻿@{
+    ViewData["Title"] = "Brand List";
+}
+
+<style>
+    .toast {
+        background-color: #28a745; /* Green background */
+        color: white; /* Text color */
+    }
+
+    .toast-body {
+        width: 100%;
+        text-align: center;
+    }
+
+</style>
+
+@section Styles {
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+}
+
+<!-- Toast container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+    <div id="brandToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-body d-flex" id="toastMessage">
+            <!-- Toast message will be dynamically set here -->
+        </div>
+    </div>
+</div>
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>All Category List</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Brand</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">All available brands are here!</h3>
+
+                        <a class="btn btn-primary float-right" data-toggle="modal" data-target="#addBrandModal">
+                            <i class="nav-icon"></i>
+                            <i class="fas fa-plus"></i> Add Brand
+                        </a>
+
+
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <partial name="_ResponsePartial" />
+                        <partial name="_ModalPartial" />
+                        <table id="brands" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Brand Name</th>
+                                    <th>Brand Origin</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tfoot>
+                                <tr>
+                                    <th>Brand Name</th>
+                                    <th>Brand Origin</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+<partial name="_AddBrandModal" />
+<partial name="_UpdateBrandModal" />
+
+<!-- /.content -->
+@section Scripts {
+
+    <!-- DataTables  & Plugins -->
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+    <script type="text/javascript">
+        //Load data in table used by DataTable...
+        $(function () {
+            $("#brands").DataTable({
+                processing: true,
+                serverSide: true,
+                responsive: true,
+                lengthChange: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                autoWidth: false,
+                ajax: {
+                    url: "/Admin/Brand/GetBrandJsonData",
+                    type: "POST",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: function (d) {
+                        return JSON.stringify(d);
+                    },
+                },
+
+                columnDefs: [
+                    {
+                        // Render description column with only 20 words
+                        orderable: false,
+                        targets: 2,
+                        render: function (data, type, row) {
+                            var words = data.split(" ");
+                            if (words.length > 10) {
+                                return words.slice(0, 10).join(" ") + '...';
+                            }
+                            return data;
+                        }
+                    },
+
+                    {
+                        orderable: false,
+                        targets: 3,
+                        render: function (data, type, row) {
+                            return `<button type="button" class="btn btn-info btn-sm edit-brand" data-id='${data}' data-toggle="modal" data-target="#editCategoryModal">
+                                                        <i class="fas fa-pencil-alt"></i> Edit
+                                                    </button>
+
+                                                    <button type="submit" class="btn btn-danger btn-sm show-bs-modal" data-id='${data}' value='${data}'>
+                                                        <i class="fas fa-trash">
+                                                        </i>
+                                                        Delete
+                                                    </button>`;
+                        }
+                    },
+
+                ],
+
+                dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            }).buttons().container().appendTo('#products_wrapper .col-md-6:eq(0)');
+        });
+
+        //This code for delete
+        $('#brands').on('click', '.show-bs-modal', function () {
+            let id = $(this).data("id");
+            let modal = $("#modal-default");
+            modal.find('.modal-body p').text('Are you sure you want to delete this record?');
+            $("#deleteId").val(id);
+            $("#deleteForm").attr("action", "/admin/Brand/BrandDelete");
+            modal.modal('show');
+        });
+
+        $("#deleteButton").click(function () {
+            $("#deleteForm").submit();
+        });
+
+        //This code for create Brand...
+        $(document).ready(function () {
+            // Handle form submission
+            $('#addBrandForm').on('submit', function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    url: '/Admin/Brand/AddBrand',
+                    method: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        console.log(response);
+                        if (response.success) {
+                            // Close the modal
+                            $('#addBrandModal').modal('hide');
+                            $('#addBrandForm')[0].reset();
+
+                            // Display toast notification
+                            $('#toastMessage').text(response.message);
+                            $('#brandToast').toast({
+                                delay: 3000 // 3 seconds
+                            });
+                            $('#brandToast').toast('show');
+                            // Refresh the DataTable
+                            $('#brands').DataTable().ajax.reload();
+                        } else {
+                            // Handle validation errors or any other errors
+                            // Display toast notification
+                            $('#toastMessage').text(response.message);
+                            $('#brandToast').toast({
+                                delay: 3000
+                            });
+                            $('#brandToast').toast('show');
+                        }
+                    },
+                    error: function (error) {
+                        $('#toastMessage').text('There was an error adding the brand.');
+                        $('#brandToast').toast({
+                            delay: 3000
+                        });
+                        $('#brandToast').toast('show');
+                    }
+                });
+            });
+        });
+
+
+        //This code for temp data response fadeOut
+        $(document).ready(function () {
+            setTimeout(function () {
+                $('#response-alert').fadeOut('slow');
+            }, 3000);
+        });
+
+
+        
+        //This core for brand edit code
+        $(document).ready(function () {
+            // Handle the click event for the edit button
+            $('#brands').on('click', '.edit-brand', function () {
+                var categoryId = $(this).data('id');
+                console.log("button is clicked");
+
+                // Use AJAX to fetch the category data
+                $.ajax({
+                    url: '/Admin/Brand/GetBrandById',
+                    method: 'GET',
+                    data: { id: categoryId },
+                    success: function (response) {
+                        if (response.success) {
+                            // Populate the modal fields with the category data
+                            $('#editBrandId').val(response.data.result.id);
+                            $('#editBrandName').val(response.data.result.brandName);
+                            $('#editBrandOrigin').val(response.data.result.bandOrigin);
+                            $('#editDescription').val(response.data.result.description);
+
+                            // Open the modal (bootstrap handles this)
+                            $('#editBrandModal').modal('show');
+                        } 
+                        else {
+                            alert('Error fetching category data');
+                        }
+                    },
+                    error: function () {
+                        alert('An error occurred while fetching the category data.');
+                    }
+                });
+            });
+
+            // Handle the form submission for editing a category
+            $('#editBrandForm').on('submit', function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    url: '/Admin/Brand/EditBrand',
+                    method: 'POST',
+                    data: $(this).serialize(),
+                 
+                    success: function (response) {
+                        if (response.success) {
+                            // Close the modal and reset
+                            $('#editBrandModal').modal('hide');
+                            $('#editBrandForm')[0].reset();
+
+                            // Display toast notification
+                            $('#toastMessage').text(response.message);
+                            $('#brandToast').toast({
+                                delay: 3000
+                            });
+                            $('#brandToast').toast('show');
+
+                            // Refresh the DataTable
+                            $('#brands').DataTable().ajax.reload();
+                        } 
+                        else {
+                            $('#toastMessage').text(response.message);
+                            $('#brandToast').toast({
+                                delay: 3000
+                            });
+                            $('#brandToast').toast('show');
+                        }
+                    },
+                    error: function () {
+                        $('#toastMessage').text('There was an error editing the brand.');
+                        $('#brandToast').toast({
+                            delay: 3000
+                        });
+                        $('#brandToast').toast('show');
+                    }
+                });
+            });
+        });
+
+    </script>
+}
+

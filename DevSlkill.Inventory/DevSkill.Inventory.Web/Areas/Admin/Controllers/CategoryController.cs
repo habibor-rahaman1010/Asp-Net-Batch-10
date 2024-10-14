@@ -96,8 +96,6 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             });
         }
 
-
-
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CategoryDelete(Guid id)
         {
@@ -127,45 +125,6 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
 
-        //This code for update the category
-        public async Task<IActionResult> EditCategory(Guid id)
-        {
-            var category = await _categoryManagementService.GetCategoryById(id);
-            var moddel = _mapper.Map<UpdateCategoryModel>(category);
-            return View(moddel);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> EditCategory(UpdateCategoryModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var category = await _categoryManagementService.GetCategoryById(model.Id);
-                category = _mapper.Map(model, category);
-               
-                try
-                {
-                    await _categoryManagementService.UpdateCategoryAsync(category);
-                    TempData.Put("ResponseMessage", new ResponseModel
-                    {
-                        Message = "The category has been update successfuly",
-                        Type = ResponseTypes.Success
-                    });
-                    return RedirectToAction($"{nameof(CategoryList)}");
-                }
-                catch (Exception ex)
-                {
-                    TempData.Put("ResponseMessage", new ResponseModel
-                    {
-                        Message = "The category update has failed!",
-                        Type = ResponseTypes.Danger
-                    });
-                    _logger.LogError(ex, "Ultimatly the category updated failed!");
-                }
-            }
-            return View(model);
-        }
-
         public IActionResult GetCategoryById(Guid id)
         {
             var category = _categoryManagementService.GetCategoryById(id);
@@ -181,7 +140,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                //_logger.LogInformation("Updating category with data: {@Model}", model);
+                _logger.LogInformation("Updating category with data: {@Model}", model);
                 var category = await _categoryManagementService.GetCategoryById(model.Id);
                 category = _mapper.Map(model, category);
                 category.Id = model.Id;

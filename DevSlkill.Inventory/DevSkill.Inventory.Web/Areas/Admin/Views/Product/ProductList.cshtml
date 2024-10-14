@@ -102,12 +102,12 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-3">
+                   @*  <div class="col-sm-3">
                         <div class="form-group">
                             <label>Applicable Tax</label>
                             <select asp-for="SearchItem.Status" asp-items="Model.Statuses" class="form-control"></select>
                         </div>
-                    </div>
+                    </div> *@
 
                     @* <div class="col-sm-3">
                         <div class="form-group">
@@ -242,7 +242,8 @@
                             BusinessLocationId: $("#SearchItem_BusinessLocationId").val(),
                             SellingPriceTaxId: $("#SearchItem_SellingPriceTaxId").val(),
                             ApplicableTaxId: $("#SearchItem_ApplicableTaxId").val(),
-                            Status: parseInt($("#SearchItem_Status").val()) || 0,
+                            
+                            //Status: parseInt($("#SearchItem_Status").val()) || 0,
 
                             //CreateDateFrom: $("#SearchItem_CreateDateFrom").val(),
                             //CreateDateTo: $("#SearchItem_CreateDateTo").val()
@@ -324,38 +325,39 @@
                     url: `/admin/Product/GetProductById/${productId}`,
                     method: 'GET',
                     success: function (data) {
-                        $('#id').text(data.id);
-                        $('#productName').text(data.productName);
-                        $('#description').html(data.description);
-                        $('#price').html(data.price);
-                        $('#sku').html(data.sku);
-                        $('#category').text(data.category.categoryName);
-                        $('#subcategory').text(data.subcategory.subcategoryName);
-                        $('#brand').text(data.brand.brandName);
-                        $('#productType').text(data.productType.productTypeName);
-                        $('#businessLocation').text(data.businessLocation.locationName);
-                        $('#unit').text(data.unit.unitName);
-                        $('#weight').text(data.weight);
+                        $('#id').text(data.id !== undefined && data.id !== null && data.id !== '' ? data.id : 'N/A');
+                        $('#productName').text(data.productName !== undefined && data.productName !== null && data.productName !== '' ? data.productName : 'N/A');
+                        $('#description').html(data.description !== undefined && data.description !== null && data.description !== '' ? data.description : 'N/A');
+                        $('#price').html(data.price !== undefined && data.price !== null && data.price !== '' ? data.price : 'N/A');
+                        $('#sku').html(data.sku !== undefined && data.sku !== null && data.sku !== '' ? data.sku : 'N/A');
+                        $('#category').text(data.category && data.category.categoryName ? data.category.categoryName : 'N/A');
+                        $('#subcategory').text(data.subcategory && data.subcategory.subcategoryName ? data.subcategory.subcategoryName : 'N/A');
+                        $('#brand').text(data.brand && data.brand.brandName ? data.brand.brandName : 'N/A');
+                        $('#productType').text(data.productType && data.productType.productTypeName ? data.productType.productTypeName : 'N/A');
+                        $('#businessLocation').text(data.businessLocation && data.businessLocation.locationName ? data.businessLocation.locationName : 'N/A');
+                        $('#unit').text(data.unit && data.unit.unitName ? data.unit.unitName : 'N/A');
+                        $('#weight').text(data.weight !== undefined && data.weight !== null && data.weight !== '' ? data.weight : 'N/A');
                         $('#status').text(data.status === 0 ? 'Active' : 'Inactive');
-                        $('#warranty').text(data.warranty.warrantyDuration);
-                        $('#barcodeType').text(data.barcodeType.barcodeTypeName);
-                        $('#imei').text(data.imei);
-                        $('#position').text(data.position);
-                        $('#rack').text(data.rack);
-                        $('#exciseTax').text(data.exciseTax);
-                        $('#inclusiveTax').text(data.inclusiveTax);
-                        $('#marginTax').text(data.marginTax);
-                        $('#sellingPrice').text(data.sellingPrice);
-                        $('#sellingPriceTax').text(data.sellingPriceTax.sellingPriceTaxName);
-                        $('#applicableTax').text(data.applicableTax.applicableTaxName);
-                        $('#alertQuantity').text(data.alertQuantity);
-                        $('#ratings').text(data.ratings);
-                        $('#created').text(new Date(data.created).toLocaleString());
-                        $('#updated').text(new Date(data.updated).toLocaleString());
-                        $('#storeTime').text(new Date(data.storeTime).toLocaleString());
-                        $('#productImage').attr('src', "/" + data.productImage);
+                        $('#warranty').text(data.warranty && data.warranty.warrantyDuration ? data.warranty.warrantyDuration : 'N/A');
+                        $('#barcodeType').text(data.barcodeType && data.barcodeType.barcodeTypeName ? data.barcodeType.barcodeTypeName : 'N/A');
+                        $('#imei').text(data.imei !== undefined && data.imei !== null && data.imei !== '' ? data.imei : 'N/A');
+                        $('#position').text(data.position !== undefined && data.position !== null && data.position !== '' ? data.position : 'N/A');
+                        $('#rack').text(data.rack !== undefined && data.rack !== null && data.rack !== '' ? data.rack : 'N/A');
+                        $('#exciseTax').text(data.exciseTax !== undefined && data.exciseTax !== null && data.exciseTax !== '' ? data.exciseTax : 'N/A');
+                        $('#inclusiveTax').text(data.inclusiveTax !== undefined && data.inclusiveTax !== null && data.inclusiveTax !== '' ? data.inclusiveTax : 'N/A');
+                        $('#marginTax').text(data.marginTax !== undefined && data.marginTax !== null && data.marginTax !== '' ? data.marginTax : 'N/A');
+                        $('#sellingPrice').text(data.sellingPrice !== undefined && data.sellingPrice !== null && data.sellingPrice !== '' ? data.sellingPrice : 'N/A');
+                        $('#sellingPriceTax').text(data.sellingPriceTax && data.sellingPriceTax.sellingPriceTaxName ? data.sellingPriceTax.sellingPriceTaxName : 'N/A');
+                        $('#applicableTax').text(data.applicableTax && data.applicableTax.applicableTaxName ? data.applicableTax.applicableTaxName : 'N/A');
+                        $('#alertQuantity').text(data.alertQuantity !== undefined && data.alertQuantity !== null && data.alertQuantity !== '' ? data.alertQuantity : 'N/A');
+                        $('#ratings').text(data.ratings !== undefined && data.ratings !== null && data.ratings !== '' ? data.ratings : 'N/A');
+                        $('#created').text(data.created ? new Date(data.created).toLocaleString() : 'N/A');
+                        $('#updated').text(data.updated ? new Date(data.updated).toLocaleString() : 'N/A');
+                        $('#storeTime').text(data.storeTime ? new Date(data.storeTime).toLocaleString() : 'N/A');
+                        $('#productImage').attr('src', data.productImage ? "/" + data.productImage : 'path/to/default/image.png'); // Set a default image if productImage is not available
                         $('#productDetailsModal').modal('show');
                     },
+
                     error: function (xhr, status, error) {
                         console.error("Error fetching product data:", error);
                         alert('Failed to load product details.');
@@ -363,6 +365,13 @@
                 });
             });
       
+        });
+
+        //This code for temp data response fadeOut
+        $(document).ready(function () {
+            setTimeout(function () {
+                $('#response-alert').fadeOut('slow');
+            }, 3000);
         });
 
     </script>

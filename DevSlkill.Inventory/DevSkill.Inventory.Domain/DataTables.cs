@@ -10,7 +10,7 @@ namespace DevSkill.Inventory.Domain
     {
         public int Start { get; set; }
         public int Length { get; set; }
-        public SortColumn[] Order { get; set; }
+        public SortColumn[]? Order { get; set; }
         public DataTablesSearch Search { get; set; }
 
         public int PageIndex
@@ -52,7 +52,7 @@ namespace DevSkill.Inventory.Domain
         {
             StringBuilder columnBuilder = new StringBuilder();
 
-            for (int i = 0; i < Order.Length; i++)
+            for (int i = 0; i < Order?.Length; i++)
             {
                 columnBuilder.Append(columns[Order[i].Column])
                 .Append(" ")
