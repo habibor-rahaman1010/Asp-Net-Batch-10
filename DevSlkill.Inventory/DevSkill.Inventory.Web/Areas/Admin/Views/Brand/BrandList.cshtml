@@ -36,7 +36,7 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>All Category List</h1>
+                <h1>All Brand List</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -143,8 +143,7 @@
 
                 columnDefs: [
                     {
-                        // Render description column with only 20 words
-                        orderable: false,
+                        // Render description column with only 20 words              
                         targets: 2,
                         render: function (data, type, row) {
                             var words = data.split(" ");
