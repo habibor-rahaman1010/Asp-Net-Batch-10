@@ -1,4 +1,5 @@
 ﻿using DevSkill.Inventory.Application.ServicesContract;
+using DevSkill.Inventory.Domain;
 using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Domain.UnitOfWorkContracts;
 using System;
@@ -11,20 +12,31 @@ namespace DevSkill.Inventory.Application.Services
 {
     public class WarrantyManagementService : IWarrantyManagementService
     {
-        private readonly IInventoryUnitOfWork _inventoryUnitOfWork;
+        private readonly IInventoryUnitOfWork _warrantyUnitOfWork;
         public WarrantyManagementService(IInventoryUnitOfWork inventoryUnitOfWork)
         {
-            _inventoryUnitOfWork = inventoryUnitOfWork;
+            _warrantyUnitOfWork = inventoryUnitOfWork;
+        }
+
+        public async Task DeleteWarrantyAsync(Guid id)
+        {
+            await _warrantyUnitOfWork.WarrantyRepository.RemoveAsync(id);
+            await _warrantyUnitOfWork.SaveAsync();
         }
 
         public async Task<IList<Warranty>> GetAllWarrantyAsync()
         {
-            return await _inventoryUnitOfWork.WarrantyRepository.GetAllAsync();
+            return await _warrantyUnitOfWork.WarrantyRepository.GetAllAsync();
+        }
+
+        public Task<(IList<Warranty> data, int total, int totalDisplay)> GetAllWarrantyAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
+        {
+            return _warrantyUnitOfWork.WarrantyRepository.GetPagedWarrantiesAsync(pageIndex, pageSize, search, order);
         }
 
         public async Task<Warranty> GetWarrantyByIdAsync(Guid id)
         {
-            return await _inventoryUnitOfWork.WarrantyRepository.GetByIdAsync(id);
+            return await _warrantyUnitOfWork.WarrantyRepository.GetByIdAsync(id);
         }
     }
 }

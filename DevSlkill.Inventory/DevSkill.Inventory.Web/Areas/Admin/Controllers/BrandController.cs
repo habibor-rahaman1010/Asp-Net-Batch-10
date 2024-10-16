@@ -113,7 +113,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 
                 _logger.LogError(ex, "The brand deleted failed");
             }
-            return View();
+            return View(nameof(BrandList));
         }
 
         public IActionResult GetBrandById(Guid id)
