@@ -99,6 +99,8 @@
     <!-- /.container-fluid -->
 </section>
 
+<partial name="_AddWarrantyModal" />
+<partial name="_UpdateWarrantyModal" />
 
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
@@ -182,7 +184,7 @@
                         orderable: false,
                         targets: 3,
                         render: function (data, type, row) {
-                            return `<button type="button" class="btn btn-info btn-sm edit-brand" data-id='${data}' data-toggle="modal" data-target="#editCategoryModal">
+                            return `<button type="button" class="btn btn-info btn-sm update-warranty" data-id='${data}' data-toggle="modal" data-target="#editCategoryModal">
                                                                 <i class="fas fa-pencil-alt"></i> Edit
                                                             </button>
 
@@ -200,10 +202,9 @@
 
             }).buttons().container().appendTo('#warranties_wrapper .col-md-6:eq(0)');
 
-            //This code for warranty delete
+            //This code for warranty delete...
             $('#warranties').on('click', '.show-bs-modal', function(e) {
                 let id = $(this).data("id");
-                console.log(id);
                 $("#delete-id").val(id);
                 $("#warranty-form").attr("action", "/Admin/Warranty/DeleteWarranty");
                 $("#delete-modal").modal('show')
@@ -212,6 +213,140 @@
             $("#warranty-delete").click(function () {
                 $("#warranty-form").submit();
             });
+
+
+            //This code create a new warranty...
+            $(document).ready(function () {
+                // Handle form submission
+                $('#addWarrantyForm').on('submit', function (e) {
+                    e.preventDefault();
+
+                    $.ajax({
+                        url: '/Admin/Warranty/AddWarranty',
+                        method: 'POST',
+                        data: $(this).serialize(),
+                        success: function (response) {
+                            if (response.success) {
+                                // Close the modal
+                                $('#addWarrantyModal').modal('hide');
+                                $('#addWarrantyForm')[0].reset();
+
+                                // Display toast notification
+                                $('#toastMessage').text(response.message);
+                                $('#brandToast').toast({
+                                    delay: 3000
+                                });
+                                $('#brandToast').toast('show');
+                                // Refresh the DataTable
+                                $('#warranties').DataTable().ajax.reload();
+                            } 
+                            else {
+                                // Handle validation errors or any other errors
+                                // Display toast notification
+                                $('#toastMessage').text(response.message);
+                                $('#brandToast').toast({
+                                    delay: 3000
+                                });
+                                $('#brandToast').toast('show');
+                            }
+                        },
+                        error: function (error) {
+                            $('#toastMessage').text('There was an error adding the brand.');
+                            $('#brandToast').toast({
+                                delay: 3000
+                            });
+                            $('#brandToast').toast('show');
+                        }
+                    });
+                });
+            });
+
+            
+            //This code for warranty Update...
+            $(document).ready(function () {
+                // Handle the click event for the edit button
+                $('#warranties').on('click', '.update-warranty', function () {
+                    var warrantyId = $(this).data('id');
+                    console.log("button is clicked");
+
+                    // Use AJAX to fetch the category data
+                    $.ajax({
+                        url: '/Admin/Warranty/GetWarrantyById',
+                        method: 'GET',
+                        data: { id: warrantyId },
+                        success: function (response) {
+                            console.log(response)
+                            if (response.success) {
+                                // Populate the modal fields with the category data
+                                $('#updateWarrantyId').val(response.data.result.id);
+                                $('#editWarrantyName').val(response.data.result.name);
+                                $('#editDescription').val(response.data.result.description);
+                                $('#editWarrantyDuration').val(response.data.result.warrantyDuration);
+
+                                // Open the modal (bootstrap handles this)
+                                $('#updateWarrantyModal').modal('show');
+                            } 
+                            else {
+                                alert('Error fetching category data');
+                            }
+                        },
+                        error: function () {
+                            alert('An error occurred while fetching the category data.');
+                        }
+                    });
+                });
+
+                // Handle the form submission for editing a category
+                $('#updateWarrantyForm').on('submit', function (e) {
+                    e.preventDefault();
+
+                    $.ajax({
+                        url: '/Admin/Warranty/EditWarranty',
+                        method: 'POST',
+                        data: $(this).serialize(),    
+                        success: function (response) {
+                            console.log(response);
+                            if (response.success) {
+                                // Close the modal and reset
+                                $('#updateWarrantyModal').modal('hide');
+                                $('#updateWarrantyForm')[0].reset();
+
+                                // Display toast notification
+                                $('#toastMessage').text(response.message);
+                                $('#brandToast').toast({
+                                    delay: 3000
+                                });
+                                $('#brandToast').toast('show');
+
+                                // Refresh the DataTable
+                                $('#warranties').DataTable().ajax.reload();
+                            } 
+                            else {
+                                $('#toastMessage').text(response.message);
+                                $('#brandToast').toast({
+                                    delay: 3000
+                                });
+                                $('#brandToast').toast('show');
+                            }
+                        },
+                        error: function () {
+                            $('#toastMessage').text('There was an error editing the brand.');
+                            $('#brandToast').toast({
+                                delay: 3000
+                            });
+                            $('#brandToast').toast('show');
+                        }
+                    });
+                });
+            });
+
+            //This code for temp data response fadeOut
+            $(document).ready(function () {
+                setTimeout(function () {
+                    $('#response-alert').fadeOut('slow');
+                }, 3000);
+            });
+
         });
     </script>
 }

@@ -18,6 +18,12 @@ namespace DevSkill.Inventory.Application.Services
             _warrantyUnitOfWork = inventoryUnitOfWork;
         }
 
+        public async Task AddWarrantyAsync(Warranty warranty)
+        {
+            await _warrantyUnitOfWork.WarrantyRepository.AddAsync(warranty);
+            await _warrantyUnitOfWork.SaveAsync();
+        }
+
         public async Task DeleteWarrantyAsync(Guid id)
         {
             await _warrantyUnitOfWork.WarrantyRepository.RemoveAsync(id);
@@ -37,6 +43,12 @@ namespace DevSkill.Inventory.Application.Services
         public async Task<Warranty> GetWarrantyByIdAsync(Guid id)
         {
             return await _warrantyUnitOfWork.WarrantyRepository.GetByIdAsync(id);
+        }
+
+        public async Task UpdateWarrantyAsync(Warranty warranty)
+        {
+            await _warrantyUnitOfWork.WarrantyRepository.EditAsync(warranty);
+            await _warrantyUnitOfWork.SaveAsync();
         }
     }
 }

@@ -4,6 +4,8 @@ using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
+using DevSkill.Inventory.Application.Services;
+using DevSkill.Inventory.Domain.Entities;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
@@ -52,6 +54,42 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
+        public async Task<JsonResult> AddWarranty(WarrantyCreateModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var warranty = _mapper.Map<Warranty>(model);
+                warranty.Id = Guid.NewGuid();
+
+                try
+                {
+                    await _warrantyManagementService.AddWarrantyAsync(warranty);
+
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Warranty created successfully"
+                    });
+                }
+
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Warranty creation failed");
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Warranty creation failed"
+                    });
+                }
+            }
+            return Json(new
+            {
+                success = false,
+                message = "Warranty creation failed"
+            });
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteWarranty(Guid id)
         {
             try
@@ -77,6 +115,33 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 _logger.LogError(ex, "The warranty deleted failed");
             }
             return View(nameof(WarrantyList));
+        }
+
+        public IActionResult GetWarrantyById(Guid id)
+        {
+            var warranty = _warrantyManagementService.GetWarrantyByIdAsync(id);
+            if (warranty != null)
+            {
+                return Json(new { success = true, data = warranty });
+            }
+            return Json(new { success = false, message = "warranty not found." });
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditWarranty(WarrantyUpdateModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                _logger.LogInformation("Updating Warranty with data: {@Model}", model);
+                var warranty = await _warrantyManagementService.GetWarrantyByIdAsync(model.Id);
+                warranty = _mapper.Map(model, warranty);
+                warranty.Id = model.Id;
+                await _warrantyManagementService.UpdateWarrantyAsync(warranty);
+
+                return Json(new { success = true, message = "Warranty updated successfully." });
+            }
+            _logger.LogInformation("Updating Warranty with data: {@Model}", model);
+            return Json(new { success = false, message = "Error updating Brand." });
         }
     }
 }

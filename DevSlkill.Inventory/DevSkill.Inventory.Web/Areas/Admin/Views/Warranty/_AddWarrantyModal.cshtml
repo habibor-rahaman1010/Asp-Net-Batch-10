@@ -1,0 +1,34 @@
+﻿@model WarrantyCreateModel
+<!-- Modal for adding a new warranty -->
+<div class="modal fade" id="addWarrantyModal" tabindex="-1" role="dialog" aria-labelledby="addWarantyModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addWarrantyModalLabel">Add New Warranty</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-antiforgery="true" id="addWarrantyForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label asp-for="Name">Warranty Name</label>
+                        <input asp-for="Name" type="text" class="form-control" id="WarrantyName" name="Name" required>
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Description">Description</label>
+                        <input asp-for="Description" type="text" class="form-control" id="description" name="Description" required>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="WarrantyDuration">Warranty Duration</label>
+                        <textarea asp-for="WarrantyDuration" class="form-control" id="WarrantyDuration" name="WarrantyDuration" rows="3"></textarea>
+                        <span asp-validation-for="WarrantyDuration" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
