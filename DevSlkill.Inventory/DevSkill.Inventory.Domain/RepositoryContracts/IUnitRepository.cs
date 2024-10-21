@@ -9,5 +9,6 @@ namespace DevSkill.Inventory.Domain.RepositoryContracts
 {
     public interface IUnitRepository : IRepositoryBase<Unit, Guid>
     {
+        Task<(IList<Unit> data, int total, int totalDisplay)> GetPagedUnitsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
     }
 }

@@ -19,6 +19,8 @@ namespace DevSkill.Inventory.Web.AutoMapProfile
 
             CreateMap<WarrantyCreateModel, Warranty>().ReverseMap();
             CreateMap<WarrantyUpdateModel, Warranty>().ReverseMap();
+
+            CreateMap<UnitCreateModel, Unit>().ReverseMap();
         }
     }
 }

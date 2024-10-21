@@ -1,4 +1,5 @@
-﻿using DevSkill.Inventory.Domain.Entities;
+﻿using DevSkill.Inventory.Domain;
+using DevSkill.Inventory.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,9 @@ namespace DevSkill.Inventory.Application.ServicesContract
     {
         Task<IList<Unit>> GetAllUnitAsync();
         Task<Unit> GetUnitByIdAsync(Guid id);
+        Task<(IList<Unit> data, int total, int totalDisplay)> GetAllUnitAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
+        Task AddUnitAsync(Unit unit);
+  /*      Task DeleteWarrantyAsync(Guid id);
+        Task UpdateWarrantyAsync(Warranty warranty);*/
     }
 }

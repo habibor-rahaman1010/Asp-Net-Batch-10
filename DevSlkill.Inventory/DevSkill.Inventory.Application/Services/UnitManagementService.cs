@@ -1,4 +1,5 @@
 ﻿using DevSkill.Inventory.Application.ServicesContract;
+using DevSkill.Inventory.Domain;
 using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Domain.UnitOfWorkContracts;
 using System;
@@ -18,9 +19,20 @@ namespace DevSkill.Inventory.Application.Services
             _inventoryUnitOfWork = inventoryUnitOfWork;
         }
 
+        public async Task AddUnitAsync(Unit unit)
+        {
+            await _inventoryUnitOfWork.UnitRepository.AddAsync(unit);
+            await _inventoryUnitOfWork.SaveAsync();
+        }
+
         public async Task<IList<Unit>> GetAllUnitAsync()
         {
             return await _inventoryUnitOfWork.UnitRepository.GetAllAsync();
+        }
+
+        public Task<(IList<Unit> data, int total, int totalDisplay)> GetAllUnitAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
+        {
+            return _inventoryUnitOfWork.UnitRepository.GetPagedUnitsAsync(pageIndex, pageSize, search, order);
         }
 
         public async Task<Unit> GetUnitByIdAsync(Guid id)
