@@ -14,7 +14,9 @@ namespace DevSkill.Inventory.Application.ServicesContract
         Task<Unit> GetUnitByIdAsync(Guid id);
         Task<(IList<Unit> data, int total, int totalDisplay)> GetAllUnitAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
         Task AddUnitAsync(Unit unit);
-  /*      Task DeleteWarrantyAsync(Guid id);
-        Task UpdateWarrantyAsync(Warranty warranty);*/
+        Task DeleteUnitAsync(Guid id);
+       
+        /*      
+              Task UpdateWarrantyAsync(Warranty warranty);*/
     }
 }

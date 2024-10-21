@@ -8,7 +8,7 @@ namespace DevSkill.Inventory.Domain.Enums
 {
     public enum ProductStatus
     {
-        Active,
-        Inactive
+        Active = 0,
+        Inactive = 1
     }
 }

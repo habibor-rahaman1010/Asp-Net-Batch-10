@@ -25,6 +25,12 @@ namespace DevSkill.Inventory.Application.Services
             await _inventoryUnitOfWork.SaveAsync();
         }
 
+        public async Task DeleteUnitAsync(Guid id)
+        {
+            await _inventoryUnitOfWork.UnitRepository.RemoveAsync(id);
+            await _inventoryUnitOfWork.SaveAsync();
+        }
+
         public async Task<IList<Unit>> GetAllUnitAsync()
         {
             return await _inventoryUnitOfWork.UnitRepository.GetAllAsync();
