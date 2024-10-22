@@ -22,6 +22,9 @@ namespace DevSkill.Inventory.Web.AutoMapProfile
 
             CreateMap<UnitCreateModel, Unit>().ReverseMap();
             CreateMap<UnitUpdateModel, Unit>().ReverseMap();
+
+            CreateMap<BusinessLocationCreateModel, BusinessLocation>().ReverseMap();
+            CreateMap<BusinessLocationUpdateModel, BusinessLocation>().ReverseMap();
         }
     }
 }

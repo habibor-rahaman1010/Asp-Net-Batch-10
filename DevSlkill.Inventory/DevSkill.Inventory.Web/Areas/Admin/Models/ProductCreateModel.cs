@@ -27,6 +27,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
         public IList<SelectListItem> Warranties { get; set; }
         public Guid WarrantyId { get; set; }    
         public double Weight { get; set; }
+        public int CurrentStock { get; set; }
         public int AlertQuantity { get; set; }
 
         public ProductStatus Status { get; set; }

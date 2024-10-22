@@ -155,6 +155,7 @@
                                     <th>SKU</th>
                                     <th>Category</th>
                                     <th>Product Type</th>
+                                    <th>Current Stock</th>
                                     <th>Rating</th>
                                     <th>Brand</th>
                                     <th>Tax</th>
@@ -174,6 +175,7 @@
                                     <th>SKU</th>
                                     <th>Category</th>
                                     <th>Product Type</th>
+                                    <th>Current Stock</th>
                                     <th>Rating</th>
                                     <th>Brand</th>
                                     <th>Tax</th>
@@ -267,7 +269,7 @@
 
                     {
                         orderable: false,
-                        targets: 13,
+                        targets: 14,
                         render: function (data, type, row) {
                             return `<button type="submit" class="btn btn-info btn-sm edit-btn" onclick="window.location.href='/admin/Product/UpdateProduct/${data}'" value='${data}'>
                                     <i class="fas fa-pencil-alt">
@@ -282,12 +284,12 @@
                         }
                     },
 
-                    ...[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(function (target) {
+                    ...[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map(function (target) {
                         return {
                             targets: target,
                             createdCell: function (td, type, data) {
                                 $(td).addClass('table-row');
-                                $(td).attr('data-id', data[13]);
+                                $(td).attr('data-id', data[14]);
                             }
                         };
                     })
@@ -319,11 +321,12 @@
             $('#products tbody').on('click', '.table-row', function () {
                 console.log("clicked");
                 var productId = $(this).data().id;
-
+                console.log(productId);
                 $.ajax({
-                    url: `/admin/Product/GetProductById/${productId}`,
+                    url: `/Admin/Product/GetProductById/${productId}`,
                     method: 'GET',
                     success: function (data) {
+                        console.log(data);
                         $('#id').text(data.id !== undefined && data.id !== null && data.id !== '' ? data.id : 'N/A');
                         $('#productName').text(data.productName !== undefined && data.productName !== null && data.productName !== '' ? data.productName : 'N/A');
                         $('#description').html(data.description !== undefined && data.description !== null && data.description !== '' ? data.description : 'N/A');
@@ -348,6 +351,7 @@
                         $('#sellingPrice').text(data.sellingPrice !== undefined && data.sellingPrice !== null && data.sellingPrice !== '' ? data.sellingPrice : 'N/A');
                         $('#sellingPriceTax').text(data.sellingPriceTax && data.sellingPriceTax.sellingPriceTaxName ? data.sellingPriceTax.sellingPriceTaxName : 'N/A');
                         $('#applicableTax').text(data.applicableTax && data.applicableTax.applicableTaxName ? data.applicableTax.applicableTaxName : 'N/A');
+                        $('#currentStock').text(data.currentStock !== undefined && data.currentStock !== null && data.currentStock !== '' ? data.currentStock : 'N/A');
                         $('#alertQuantity').text(data.alertQuantity !== undefined && data.alertQuantity !== null && data.alertQuantity !== '' ? data.alertQuantity : 'N/A');
                         $('#ratings').text(data.ratings !== undefined && data.ratings !== null && data.ratings !== '' ? data.ratings : 'N/A');
                         $('#created').text(data.created ? new Date(data.created).toLocaleString() : 'N/A');

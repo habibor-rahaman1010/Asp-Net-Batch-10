@@ -15,6 +15,7 @@ namespace DevSkill.Inventory.Domain.Entities
         public double Price { get; set; }
         public string SKU { get; set; } = string.Empty;
         public double Ratings { get; set; }
+        public int CurrentStock { get; set; }
         public BarcodeType BarcodeType { get; set; }
         public Unit Unit { get; set; }
         public Brand Brand { get; set; }
@@ -43,7 +44,6 @@ namespace DevSkill.Inventory.Domain.Entities
 
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
-  /*      public IFormFile? ProductImageFile { get; set; }*/
         public string ProductImage { get; set; } = string.Empty;
 
         public Product() 

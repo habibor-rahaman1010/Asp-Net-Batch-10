@@ -154,6 +154,14 @@
 
                                 <div class="col-sm-4 mb-3 px-3">
                                     <div class="form-group">
+                                        <label asp-for="CurrentStock">Current Stock*</label>
+                                        <input type="number" asp-for="CurrentStock" class="form-control" placeholder="Current Stock" />
+                                        <span asp-validation-for="CurrentStock" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
                                         <label asp-for="AlertQuantity">Alert Quantity</label>
                                         <input type="number" asp-for="AlertQuantity" class="form-control" placeholder="Alert Quantity" />
                                         <span asp-validation-for="AlertQuantity" class="text-danger"></span>

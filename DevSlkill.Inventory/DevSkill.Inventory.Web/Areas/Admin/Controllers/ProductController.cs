@@ -150,6 +150,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                             HttpUtility.HtmlEncode(string.IsNullOrWhiteSpace(record.SKU) ? "N/A" : record.SKU),
                             HttpUtility.HtmlEncode(string.IsNullOrWhiteSpace(record.CategoryName) ? "N/A" : record.CategoryName),
                             HttpUtility.HtmlEncode(string.IsNullOrWhiteSpace(record.ProductTypeName) ? "N/A" : record.ProductTypeName),
+                            HttpUtility.HtmlEncode(record.CurrentStock),
                             HttpUtility.HtmlEncode(record.Ratings),
                             HttpUtility.HtmlEncode(string.IsNullOrWhiteSpace(record.BrandName) ? "N/A" : record.BrandName),
                             HttpUtility.HtmlEncode(string.IsNullOrWhiteSpace(record.ApplicableTaxName) ? "N/A" : record.ApplicableTaxName),

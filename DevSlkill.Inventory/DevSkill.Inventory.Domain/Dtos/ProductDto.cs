@@ -15,7 +15,8 @@ namespace DevSkill.Inventory.Domain.Dtos
         public string Description { get; set; } = string.Empty;
         public double Price { get; set; } 
         public double SellingPrice { get; set; }    
-        public string SKU {  get; set; } = string.Empty;    
+        public string SKU {  get; set; } = string.Empty; 
+        public int CurrentStock { get; set; }
         public double Ratings { get; set; }
         public string CategoryName { get; set; } = string.Empty;
         public string ProductTypeName { get; set; } = string.Empty;
