@@ -144,7 +144,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                             HttpUtility.HtmlEncode(string.IsNullOrWhiteSpace(record.ProductName) ? "N/A" : record.ProductName),
                             HttpUtility.HtmlEncode(string.IsNullOrWhiteSpace(record.LocationName) ? "N/A" : record.LocationName),
                             HttpUtility.HtmlDecode(string.IsNullOrWhiteSpace(record.Description) ? "N/A" : record.Description),
-                            HttpUtility.HtmlEncode((record.Price - (record.Price / 100 * 30)).ToString("F2")),
+                            HttpUtility.HtmlEncode((record.Price - (record.Price / 100 * 10)).ToString("F2")),
                             HttpUtility.HtmlEncode(record.Price.ToString("F2")),
                             HttpUtility.HtmlEncode(record.SellingPrice.ToString("F2")),
                             HttpUtility.HtmlEncode(string.IsNullOrWhiteSpace(record.SKU) ? "N/A" : record.SKU),
