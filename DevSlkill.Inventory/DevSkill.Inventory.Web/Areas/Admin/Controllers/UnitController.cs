@@ -43,7 +43,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             allowDecimalOptions.Insert(0, new SelectListItem
             {
                 Value = "",
-                Text = "Select" // This is the default option
+                Text = "Select"
             });
 
             ViewBag.AllowDecimalOptions = allowDecimalOptions;
@@ -135,6 +135,33 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 _logger.LogError(ex, "The unit deleted failed");
             }
             return View(nameof(UnitList));
+        }
+
+        public IActionResult GetUnitById(Guid id)
+        {
+            var unit = _unitManagementService.GetUnitByIdAsync(id);
+            if (unit != null)
+            {
+                return Json(new { success = true, data = unit });
+            }
+            return Json(new { success = false, message = "Unit not found." });
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditUnit(UnitUpdateModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                _logger.LogInformation("Updating unit with data: {@Model}", model);
+                var unit = await _unitManagementService.GetUnitByIdAsync(model.Id);
+                unit = _mapper.Map(model, unit);
+                unit.Id = model.Id;
+                await _unitManagementService.UpdateUnitAsync(unit);
+
+                return Json(new { success = true, message = "Unit updated successfully." });
+            }
+            _logger.LogInformation("Updating unit with data: {@Model}", model);
+            return Json(new { success = false, message = "Error updating unit." });
         }
     }
 }

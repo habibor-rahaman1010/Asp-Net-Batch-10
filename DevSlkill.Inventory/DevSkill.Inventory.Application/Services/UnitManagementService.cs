@@ -45,5 +45,11 @@ namespace DevSkill.Inventory.Application.Services
         {
             return await _inventoryUnitOfWork.UnitRepository.GetByIdAsync(id);
         }
+
+        public async Task UpdateUnitAsync(Unit unit)
+        {
+            await _inventoryUnitOfWork.UnitRepository.EditAsync(unit);
+            await _inventoryUnitOfWork.SaveAsync();
+        }
     }
 }
