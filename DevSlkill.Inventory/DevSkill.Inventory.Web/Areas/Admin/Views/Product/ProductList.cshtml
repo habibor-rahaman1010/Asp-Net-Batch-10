@@ -100,27 +100,7 @@
                             <label>Applicable Tax</label>
                             <select asp-for="SearchItem.ApplicableTaxId" asp-items="Model.ApplicableTaxes" class="form-control"></select>
                         </div>
-                    </div>
-
-                   @*  <div class="col-sm-3">
-                        <div class="form-group">
-                            <label>Applicable Tax</label>
-                            <select asp-for="SearchItem.Status" asp-items="Model.Statuses" class="form-control"></select>
-                        </div>
-                    </div> *@
-
-                    @* <div class="col-sm-3">
-                        <div class="form-group">
-                            <label>Create Date From</label>
-                            <input type="text" asp-for="SearchItem.CreateDateFrom" class="form-control" />
-                        </div>
-                    </div>
-                    <div class="col-sm-3">
-                        <div class="form-group">
-                            <label>Create Date To</label>
-                            <input type="text" asp-for="SearchItem.CreateDateTo" class="form-control" />
-                        </div>
-                    </div> *@
+                    </div>    
                 </div>
             </div>
             <!-- /.card-body -->
@@ -243,12 +223,7 @@
                             UnitId: $("#SearchItem_UnitId").val(),
                             BusinessLocationId: $("#SearchItem_BusinessLocationId").val(),
                             SellingPriceTaxId: $("#SearchItem_SellingPriceTaxId").val(),
-                            ApplicableTaxId: $("#SearchItem_ApplicableTaxId").val(),
-                            
-                            //Status: parseInt($("#SearchItem_Status").val()) || 0,
-
-                            //CreateDateFrom: $("#SearchItem_CreateDateFrom").val(),
-                            //CreateDateTo: $("#SearchItem_CreateDateTo").val()
+                            ApplicableTaxId: $("#SearchItem_ApplicableTaxId").val(),                        
                         };
                         return JSON.stringify(d);
                     },

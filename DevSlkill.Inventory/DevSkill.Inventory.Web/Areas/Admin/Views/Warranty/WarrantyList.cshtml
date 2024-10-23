@@ -24,7 +24,7 @@
 
 <!-- Toast container -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
-    <div id="brandToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div id="warrantyToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-body d-flex" id="toastMessage">
             <!-- Toast message will be dynamically set here -->
         </div>
@@ -233,10 +233,10 @@
 
                                 // Display toast notification
                                 $('#toastMessage').text(response.message);
-                                $('#brandToast').toast({
+                                $('#warrantyToast').toast({
                                     delay: 3000
                                 });
-                                $('#brandToast').toast('show');
+                                $('#warrantyToast').toast('show');
                                 // Refresh the DataTable
                                 $('#warranties').DataTable().ajax.reload();
                             } 
@@ -244,18 +244,18 @@
                                 // Handle validation errors or any other errors
                                 // Display toast notification
                                 $('#toastMessage').text(response.message);
-                                $('#brandToast').toast({
+                                $('#warrantyToast').toast({
                                     delay: 3000
                                 });
-                                $('#brandToast').toast('show');
+                                $('#warrantyToast').toast('show');
                             }
                         },
                         error: function (error) {
                             $('#toastMessage').text('There was an error adding the brand.');
-                            $('#brandToast').toast({
+                            $('#warrantyToast').toast({
                                 delay: 3000
                             });
-                            $('#brandToast').toast('show');
+                            $('#warrantyToast').toast('show');
                         }
                     });
                 });
@@ -313,28 +313,28 @@
 
                                 // Display toast notification
                                 $('#toastMessage').text(response.message);
-                                $('#brandToast').toast({
+                                $('#warrantyToast').toast({
                                     delay: 3000
                                 });
-                                $('#brandToast').toast('show');
+                                $('#warrantyToast').toast('show');
 
                                 // Refresh the DataTable
                                 $('#warranties').DataTable().ajax.reload();
                             } 
                             else {
                                 $('#toastMessage').text(response.message);
-                                $('#brandToast').toast({
+                                $('#warrantyToast').toast({
                                     delay: 3000
                                 });
-                                $('#brandToast').toast('show');
+                                $('#warrantyToast').toast('show');
                             }
                         },
                         error: function () {
                             $('#toastMessage').text('There was an error editing the brand.');
-                            $('#brandToast').toast({
+                            $('#warrantyToast').toast({
                                 delay: 3000
                             });
-                            $('#brandToast').toast('show');
+                            $('#warrantyToast').toast('show');
                         }
                     });
                 });

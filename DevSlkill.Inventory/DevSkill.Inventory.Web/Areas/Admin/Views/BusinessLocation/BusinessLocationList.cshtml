@@ -24,7 +24,7 @@
 
 <!-- Toast container -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
-    <div id="brandToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div id="businessLocationsToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-body d-flex" id="toastMessage">
             <!-- Toast message will be dynamically set here -->
         </div>
@@ -227,10 +227,10 @@
 
                                 // Display toast notification
                                 $('#toastMessage').text(response.message);
-                                $('#brandToast').toast({
+                                $('#businessLocationsToast').toast({
                                     delay: 3000
                                 });
-                                $('#brandToast').toast('show');
+                                $('#businessLocationsToast').toast('show');
                                 // Refresh the DataTable
                                 $('#BusinessLocations').DataTable().ajax.reload();
                             }
@@ -238,18 +238,18 @@
                                 // Handle validation errors or any other errors
                                 // Display toast notification
                                 $('#toastMessage').text(response.message);
-                                $('#brandToast').toast({
+                                $('#businessLocationsToast').toast({
                                     delay: 3000
                                 });
-                                $('#brandToast').toast('show');
+                                $('#businessLocationsToast').toast('show');
                             }
                         },
                         error: function (error) {
                             $('#toastMessage').text('There was an error adding the brand.');
-                            $('#brandToast').toast({
+                            $('#businessLocationsToast').toast({
                                 delay: 3000
                             });
-                            $('#brandToast').toast('show');
+                            $('#businessLocationsToast').toast('show');
                         }
                     });
                 });
@@ -323,28 +323,28 @@
 
                                 // Display toast notification
                                 $('#toastMessage').text(response.message);
-                                $('#brandToast').toast({
+                                $('#businessLocationsToast').toast({
                                     delay: 3000
                                 });
-                                $('#brandToast').toast('show');
+                                $('#businessLocationsToast').toast('show');
 
                                 // Refresh the DataTable
                                 $('#BusinessLocations').DataTable().ajax.reload();
                             }
                             else {
                                 $('#toastMessage').text(response.message);
-                                $('#brandToast').toast({
+                                $('#businessLocationsToast').toast({
                                     delay: 3000
                                 });
-                                $('#brandToast').toast('show');
+                                $('#businessLocationsToast').toast('show');
                             }
                         },
                         error: function () {
                             $('#toastMessage').text('There was an error editing the brand.');
-                            $('#brandToast').toast({
+                            $('#businessLocationsToast').toast({
                                 delay: 3000
                             });
-                            $('#brandToast').toast('show');
+                            $('#businessLocationsToast').toast('show');
                         }
                     });
                 });
