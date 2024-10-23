@@ -1,4 +1,5 @@
 ﻿using DevSkill.Inventory.Domain.Entities;
+using DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites;
 using DevSkill.Inventory.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -96,6 +97,30 @@ namespace DevSkill.Inventory.Infrastructure.Data
                 new Warranty { Id = Guid.NewGuid(), WarrantyDuration = "2 Years" },
                 new Warranty { Id = Guid.NewGuid(), WarrantyDuration = "3 Years" }
             );
+            modelBuilder.Entity<AdjustmentType>().HasData(
+                new AdjustmentType { Id = Guid.NewGuid(), AdjustmentTypeName = "Normal"},
+                new AdjustmentType { Id = Guid.NewGuid(), AdjustmentTypeName = "Abnormal" }
+            );
+
+
+            modelBuilder.Entity<StockAdjustment>()
+               .HasOne(sa => sa.Product)
+               .WithMany()
+               .HasForeignKey(sa => sa.ProductId)
+               .OnDelete(DeleteBehavior.Restrict); // Prevents cascade delete on Product
+
+            modelBuilder.Entity<StockAdjustment>()
+                .HasOne(sa => sa.BusinessLocation)
+                .WithMany()
+                .HasForeignKey(sa => sa.BusinessLocationId)
+                .OnDelete(DeleteBehavior.Cascade); // This can cascade if desired
+
+            modelBuilder.Entity<StockAdjustment>()
+                .HasOne(sa => sa.AdjustmentType)
+                .WithMany()
+                .HasForeignKey(sa => sa.AdjustmentTypeId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevents cascade delete on AdjustmentType
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -110,5 +135,7 @@ namespace DevSkill.Inventory.Infrastructure.Data
         public DbSet<SellingPriceTax> SellingPriceTaxes { get; set; }
         public DbSet<ProductType> ProductTypes { get; set; }
         public DbSet<ApplicableTax> ApplicableTaxs { get; set; }
+        public DbSet<AdjustmentType> AdjustmentTypes { get; set; }
+        public DbSet<StockAdjustment> StockAdjustments { get; set; }
     }
 }

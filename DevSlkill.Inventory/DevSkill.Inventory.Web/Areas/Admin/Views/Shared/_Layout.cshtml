@@ -336,17 +336,51 @@
                                 <li class="nav-item">
                                     <a asp-area="Admin" asp-controller="Product" asp-action="ProductList" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>List Products</p>
+                                        <p>List Stock Adjustments</p>
                                     </a>
                                 </li>
 
                                 <li class="nav-item">
                                     <a asp-area="Admin" asp-controller="Product" asp-action="Create" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Add Product</p>
+                                        <p>Add Stock Adjustment</p>
                                     </a>
                                 </li>
 
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="AdjustmentType" asp-action="AdjustmentTypeList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Adjustment Types</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!--Stock Transfer-->
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fa fas fa-car"></i>
+                                <p>
+                                    Stock Adjustment
+                                    <i class="fas fa-angle-left right"></i>
+                                    <span class="badge badge-info right">2</span>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Product" asp-action="ProductList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>List Stock Transfer</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Product" asp-action="Create" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Add Stock Transfer</p>
+                                    </a>
+                                </li>
+     
                             </ul>
                         </li>
                         

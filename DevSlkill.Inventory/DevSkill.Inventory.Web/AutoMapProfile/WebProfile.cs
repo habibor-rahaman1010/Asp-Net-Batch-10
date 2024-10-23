@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DevSkill.Inventory.Domain.Entities;
+using DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
 
 namespace DevSkill.Inventory.Web.AutoMapProfile
@@ -25,6 +26,9 @@ namespace DevSkill.Inventory.Web.AutoMapProfile
 
             CreateMap<BusinessLocationCreateModel, BusinessLocation>().ReverseMap();
             CreateMap<BusinessLocationUpdateModel, BusinessLocation>().ReverseMap();
+
+            CreateMap<AdjustmentTypeCreateModel, AdjustmentType>().ReverseMap();
+            CreateMap<AdjustmentTypeUpdateModel, AdjustmentType>().ReverseMap();
         }
     }
 }

@@ -26,6 +26,7 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
         public IWarrantyRepository WarrantyRepository { get; private set; }
         public IApplicableTaxRepository ApplicableTaxRepository { get; private set; }
         public ISellingPriceTaxRepository SellingPriceTaxRepository { get; private set; }
+        public IAdjustmentTypeRepository AdjustmentTypeRepository { get; private set; }
 
         public ProductUnitOfWork(InventoryDbContext productDbContext,
             IProductRepository productRepository,
@@ -38,7 +39,8 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
             IWarrantyRepository warrantyRepository,
             IBusinessLocationRepository businessLocationRepository, 
             IApplicableTaxRepository applicableTaxRepository,
-            ISellingPriceTaxRepository sellingPriceTaxRepository)
+            ISellingPriceTaxRepository sellingPriceTaxRepository,
+            IAdjustmentTypeRepository adjustmentTypeRepository)
             : base(productDbContext)
         {
             ProductRepository = productRepository;
@@ -52,6 +54,7 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
             WarrantyRepository = warrantyRepository;
             ApplicableTaxRepository = applicableTaxRepository;
             SellingPriceTaxRepository = sellingPriceTaxRepository;
+            AdjustmentTypeRepository = adjustmentTypeRepository;
         }
 
         public async Task<(IList<ProductDto> data, int total, int totalDisplay)> GetPagedProductUsingSPAsync(int pageIndex, int pageSize, ProductSearchDto search, string? order)
@@ -62,7 +65,6 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
                 { "PageIndex", pageIndex },
                 { "PageSize", pageSize },
                 { "OrderBy", order },
-
                 { "ProductName", string.IsNullOrEmpty(search.ProductName) ? null : search.ProductName },
                 { "ProductTypeId", string.IsNullOrEmpty(search.ProductTypeId) ? null : Guid.Parse(search.ProductTypeId) },
                 { "CategoryId", string.IsNullOrEmpty(search.CategoryId) ? null : Guid.Parse(search.CategoryId) },
@@ -71,11 +73,8 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
                 { "BusinessLocationId", string.IsNullOrEmpty(search.BusinessLocationId) ? null : Guid.Parse(search.BusinessLocationId)},
                 { "SellingPriceTaxId", string.IsNullOrEmpty(search.SellingPriceTaxId) ? null : Guid.Parse(search.SellingPriceTaxId)},
                 { "ApplicableTaxId", string.IsNullOrEmpty(search.ApplicableTaxId) ? null : Guid.Parse(search.ApplicableTaxId)},
-                //{ "Status", search.Status >= 0 ? search.Status : (object)null }
-
-
-
             },
+
             new Dictionary<string, Type>
             {
                 { "Total", typeof(int) },

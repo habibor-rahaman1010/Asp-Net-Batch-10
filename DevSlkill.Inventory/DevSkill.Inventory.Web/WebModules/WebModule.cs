@@ -124,9 +124,18 @@ namespace DevSkill.Inventory.Web.WebModules
                 .As<ISellingPriceTaxManagementService>()
                 .InstancePerLifetimeScope();
 
+            builder.RegisterType<AdjustmentTypeRepository>()
+           .As<IAdjustmentTypeRepository>()
+           .InstancePerLifetimeScope();
+
+            builder.RegisterType<AdjustmentTypeManagementService>()
+                .As<IAdjustmentTypeManagementService>()
+                .InstancePerLifetimeScope();
+
             builder.RegisterType<ApplicationTime>()
                 .As<IApplicationTime>()
                 .InstancePerLifetimeScope();
+
         }
     }
 }
