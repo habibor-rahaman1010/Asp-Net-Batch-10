@@ -34,7 +34,7 @@ namespace DevSkill.Inventory.Infrastructure.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //seed data
+            //seeding data of my all some classes...
             modelBuilder.Entity<ApplicableTax>().HasData(
                 new ApplicableTax { Id = Guid.NewGuid(), ApplicableTaxName = "Food" },
                 new ApplicableTax { Id = Guid.NewGuid(), ApplicableTaxName = "Sales Tax" },
@@ -96,52 +96,6 @@ namespace DevSkill.Inventory.Infrastructure.Data
                 new Warranty { Id = Guid.NewGuid(), WarrantyDuration = "2 Years" },
                 new Warranty { Id = Guid.NewGuid(), WarrantyDuration = "3 Years" }
             );
-
-            // Define entity relationships
-            /*modelBuilder.Entity<Product>(entity =>
-            {
-                entity.HasKey(p => p.Id);
-                entity.HasOne(p => p.Category)
-                      .WithMany()
-                      .HasForeignKey("CategoryId");
-
-                entity.HasOne(p => p.Subcategory)
-                      .WithMany()
-                      .HasForeignKey("SubcategoryId");
-
-                entity.HasOne(p => p.Brand)
-                      .WithMany()
-                      .HasForeignKey("BrandId");
-
-                entity.HasOne(p => p.Unit)
-                      .WithMany()
-                      .HasForeignKey("UnitId");
-
-                entity.HasOne(p => p.Warranty)
-                      .WithMany()
-                      .HasForeignKey("WarrantyId");
-
-                entity.HasOne(p => p.BarcodeType)
-                      .WithMany()
-                      .HasForeignKey("BarcodeTypeId");
-
-                entity.HasOne(p => p.BusinessLocation)
-                      .WithMany()
-                      .HasForeignKey("BusinessLocationId");
-
-                entity.HasOne(p => p.SellingPriceTax)
-                      .WithMany()
-                      .HasForeignKey("SellingPriceTaxId");
-
-                entity.HasOne(p => p.ProductType)
-                      .WithMany()
-                      .HasForeignKey("ProductTypeId");
-
-                entity.HasOne(p => p.ApplicableTax)
-                      .WithMany()
-                      .HasForeignKey("ApplicableTaxId");
-            });*/
-
             base.OnModelCreating(modelBuilder);
         }
 
