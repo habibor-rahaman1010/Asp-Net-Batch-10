@@ -12,44 +12,44 @@ namespace DevSkill.Inventory.Application.Services
 {
     public class UnitManagementService : IUnitManagementService
     {
-        private readonly IInventoryUnitOfWork _inventoryUnitOfWork;
+        private readonly IInventoryUnitOfWork _unitMeasurementUnitOfWork;
 
         public UnitManagementService(IInventoryUnitOfWork inventoryUnitOfWork)
         {
-            _inventoryUnitOfWork = inventoryUnitOfWork;
+            _unitMeasurementUnitOfWork = inventoryUnitOfWork;
         }
 
         public async Task AddUnitAsync(Unit unit)
         {
-            await _inventoryUnitOfWork.UnitRepository.AddAsync(unit);
-            await _inventoryUnitOfWork.SaveAsync();
+            await _unitMeasurementUnitOfWork.UnitRepository.AddAsync(unit);
+            await _unitMeasurementUnitOfWork.SaveAsync();
         }
 
         public async Task DeleteUnitAsync(Guid id)
         {
-            await _inventoryUnitOfWork.UnitRepository.RemoveAsync(id);
-            await _inventoryUnitOfWork.SaveAsync();
+            await _unitMeasurementUnitOfWork.UnitRepository.RemoveAsync(id);
+            await _unitMeasurementUnitOfWork.SaveAsync();
         }
 
         public async Task<IList<Unit>> GetAllUnitAsync()
         {
-            return await _inventoryUnitOfWork.UnitRepository.GetAllAsync();
+            return await _unitMeasurementUnitOfWork.UnitRepository.GetAllAsync();
         }
 
         public Task<(IList<Unit> data, int total, int totalDisplay)> GetAllUnitAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
         {
-            return _inventoryUnitOfWork.UnitRepository.GetPagedUnitsAsync(pageIndex, pageSize, search, order);
+            return _unitMeasurementUnitOfWork.UnitRepository.GetPagedUnitsAsync(pageIndex, pageSize, search, order);
         }
 
         public async Task<Unit> GetUnitByIdAsync(Guid id)
         {
-            return await _inventoryUnitOfWork.UnitRepository.GetByIdAsync(id);
+            return await _unitMeasurementUnitOfWork.UnitRepository.GetByIdAsync(id);
         }
 
         public async Task UpdateUnitAsync(Unit unit)
         {
-            await _inventoryUnitOfWork.UnitRepository.EditAsync(unit);
-            await _inventoryUnitOfWork.SaveAsync();
+            await _unitMeasurementUnitOfWork.UnitRepository.EditAsync(unit);
+            await _unitMeasurementUnitOfWork.SaveAsync();
         }
     }
 }

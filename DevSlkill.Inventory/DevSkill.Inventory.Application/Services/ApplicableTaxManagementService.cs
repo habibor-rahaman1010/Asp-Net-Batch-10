@@ -11,21 +11,21 @@ namespace DevSkill.Inventory.Application.Services
 {
     public class ApplicableTaxManagementService : IApplicableTaxManagementService
     {
-        private readonly IInventoryUnitOfWork _inventoryUnitOfWork;
+        private readonly IInventoryUnitOfWork _applicableTaxUnitOfWork;
 
-        public ApplicableTaxManagementService(IInventoryUnitOfWork inventoryUnitOfWork)
+        public ApplicableTaxManagementService(IInventoryUnitOfWork applicableTaxUnitOfWork)
         {
-            _inventoryUnitOfWork = inventoryUnitOfWork;
+            _applicableTaxUnitOfWork = applicableTaxUnitOfWork;
         }
 
         public async Task<IList<ApplicableTax>> GetAllApplicableTax()
         {
-            return await _inventoryUnitOfWork.ApplicableTaxRepository.GetAllAsync();
+            return await _applicableTaxUnitOfWork.ApplicableTaxRepository.GetAllAsync();
         }
 
         public async Task<ApplicableTax> GetApplicableTaxByIdAsync(Guid id)
         {
-            return await _inventoryUnitOfWork.ApplicableTaxRepository.GetByIdAsync(id);
+            return await _applicableTaxUnitOfWork.ApplicableTaxRepository.GetByIdAsync(id);
         }
     }
 }

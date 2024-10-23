@@ -11,21 +11,21 @@ namespace DevSkill.Inventory.Application.Services
 {
     public class BarcodeTypeManagementService : IBarcodeTypeManagementService
     {
-        private readonly IInventoryUnitOfWork _inventoryUnitOfWork;
+        private readonly IInventoryUnitOfWork _barcodeTypeUnitOfWork;
 
-        public BarcodeTypeManagementService(IInventoryUnitOfWork inventoryUnitOfWork)
+        public BarcodeTypeManagementService(IInventoryUnitOfWork barcodeTypeUnitOfWork)
         {
-            _inventoryUnitOfWork = inventoryUnitOfWork;
+            _barcodeTypeUnitOfWork = barcodeTypeUnitOfWork;
         }
 
         public async Task<BarcodeType> GetBarcodeTypeId(Guid id)
         {
-            return await _inventoryUnitOfWork.BarcodeTypeRepository.GetByIdAsync(id);
+            return await _barcodeTypeUnitOfWork.BarcodeTypeRepository.GetByIdAsync(id);
         }
 
         public async Task<IList<BarcodeType>> GetBarCodeTypes()
         {
-            return await _inventoryUnitOfWork.BarcodeTypeRepository.GetAllAsync();
+            return await _barcodeTypeUnitOfWork.BarcodeTypeRepository.GetAllAsync();
         }
     }
 }

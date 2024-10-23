@@ -11,20 +11,20 @@ namespace DevSkill.Inventory.Application.Services
 {
     public class SellingPriceTaxManagementService : ISellingPriceTaxManagementService
     {
-        private readonly IInventoryUnitOfWork _inventoryUnitOfWork;
-        public SellingPriceTaxManagementService(IInventoryUnitOfWork inventoryUnitOfWork)
+        private readonly IInventoryUnitOfWork _sellingPriceUnitOfWork;
+        public SellingPriceTaxManagementService(IInventoryUnitOfWork sellingPriceUnitOfWork)
         {
-            _inventoryUnitOfWork = inventoryUnitOfWork;
+            _sellingPriceUnitOfWork = sellingPriceUnitOfWork;
         }
 
         public async Task<IList<SellingPriceTax>> GetAllSellingPriceTax()
         {
-            return await _inventoryUnitOfWork.SellingPriceTaxRepository.GetAllAsync();
+            return await _sellingPriceUnitOfWork.SellingPriceTaxRepository.GetAllAsync();
         }
 
         public async Task<SellingPriceTax> GetSellingPriceTaxByIdAsync(Guid id)
         {
-            return await _inventoryUnitOfWork.SellingPriceTaxRepository.GetByIdAsync(id);
+            return await _sellingPriceUnitOfWork.SellingPriceTaxRepository.GetByIdAsync(id);
         }
     }
 }

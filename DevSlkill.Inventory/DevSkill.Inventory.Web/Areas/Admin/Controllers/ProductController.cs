@@ -342,7 +342,10 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             string serverFolder = Path.Combine(folderPath, uniqueFileName);
             string newImagePath = Path.Combine(folder, uniqueFileName);
 
-            await productImageFile.CopyToAsync(new FileStream(serverFolder, FileMode.Create));
+            using (var fileStream = new FileStream(serverFolder, FileMode.Create))
+            {
+                await productImageFile.CopyToAsync(fileStream);
+            }
 
             if (!string.IsNullOrEmpty(existingImagePath))
             {

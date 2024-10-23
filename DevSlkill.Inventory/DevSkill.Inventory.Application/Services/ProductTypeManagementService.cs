@@ -11,21 +11,21 @@ namespace DevSkill.Inventory.Application.Services
 {
     public class ProductTypeManagementService : IProductTypeManagementService
     {
-        private readonly IInventoryUnitOfWork _inventoryUnitOfWork;
+        private readonly IInventoryUnitOfWork _productTypeUnitOfWork;
 
-        public ProductTypeManagementService(IInventoryUnitOfWork inventoryUnitOfWork)
+        public ProductTypeManagementService(IInventoryUnitOfWork productTypeUnitOfWork)
         {
-            _inventoryUnitOfWork = inventoryUnitOfWork;
+            _productTypeUnitOfWork = productTypeUnitOfWork;
         }
 
         public async Task<ProductType> GetProductTypeIdAsync(Guid id)
         {
-            return await _inventoryUnitOfWork.ProductTypeRepository.GetByIdAsync(id);
+            return await _productTypeUnitOfWork.ProductTypeRepository.GetByIdAsync(id);
         }
 
         public async Task<IList<ProductType>> GetProductTypesAsync()
         {
-            return await _inventoryUnitOfWork.ProductTypeRepository.GetAllAsync();
+            return await _productTypeUnitOfWork.ProductTypeRepository.GetAllAsync();
         }
     }
 }

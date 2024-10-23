@@ -11,20 +11,20 @@ namespace DevSkill.Inventory.Application.Services
 {
     public class SubCategoryManagementService : ISubCategoryManagementService
     {
-        private readonly IInventoryUnitOfWork _inventoryUnitOfWork;
-        public SubCategoryManagementService(IInventoryUnitOfWork inventoryUnitOfWork)
+        private readonly IInventoryUnitOfWork _subCategoryUnitOfWork;
+        public SubCategoryManagementService(IInventoryUnitOfWork subCategoryUnitOfWork)
         {
-            _inventoryUnitOfWork = inventoryUnitOfWork;
+            _subCategoryUnitOfWork = subCategoryUnitOfWork;
         }
 
         public async Task<IList<Subcategory>> GetAllSubcategoryAsync()
         {
-            return await _inventoryUnitOfWork.SubCategoryRepository.GetAllAsync();
+            return await _subCategoryUnitOfWork.SubCategoryRepository.GetAllAsync();
         }
 
         public async Task<Subcategory> GetSubcategoryByIdAsync(Guid id)
         {
-            return await _inventoryUnitOfWork.SubCategoryRepository.GetByIdAsync(id);
+            return await _subCategoryUnitOfWork.SubCategoryRepository.GetByIdAsync(id);
         }
     }
 }
