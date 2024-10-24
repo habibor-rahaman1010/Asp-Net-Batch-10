@@ -13,9 +13,9 @@ namespace DevSkill.Inventory.Application.Services
     public class WarrantyManagementService : IWarrantyManagementService
     {
         private readonly IInventoryUnitOfWork _warrantyUnitOfWork;
-        public WarrantyManagementService(IInventoryUnitOfWork inventoryUnitOfWork)
+        public WarrantyManagementService(IInventoryUnitOfWork warrantyUnitOfWork)
         {
-            _warrantyUnitOfWork = inventoryUnitOfWork;
+            _warrantyUnitOfWork = warrantyUnitOfWork;
         }
 
         public async Task AddWarrantyAsync(Warranty warranty)

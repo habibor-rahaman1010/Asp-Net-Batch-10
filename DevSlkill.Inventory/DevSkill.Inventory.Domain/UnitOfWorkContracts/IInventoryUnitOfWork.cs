@@ -23,6 +23,7 @@ namespace DevSkill.Inventory.Domain.UnitOfWorkContracts
         IApplicableTaxRepository ApplicableTaxRepository { get; }
         ISellingPriceTaxRepository SellingPriceTaxRepository { get; }
         IAdjustmentTypeRepository AdjustmentTypeRepository { get; }
+        IStockAdjustmentRepository StockAdjustmentRepository { get; }
 
         Task<(IList<ProductDto> data, int total, int totalDisplay)> GetPagedProductUsingSPAsync(int pageIndex,
             int pageSize, ProductSearchDto search, string? order);

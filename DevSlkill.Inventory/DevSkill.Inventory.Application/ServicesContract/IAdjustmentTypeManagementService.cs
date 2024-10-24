@@ -11,12 +11,11 @@ namespace DevSkill.Inventory.Application.ServicesContract
 {
     public interface IAdjustmentTypeManagementService
     {
+        Task<IList<AdjustmentType>> GetAllAdjustmentTypeAsync();
         Task<(IList<AdjustmentType> data, int total, int totalDisplay)> GetAllAdjustmentTypeAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
         Task AddAdjustmentTypeAsync(AdjustmentType adjustmentType);
         Task DeleteAdjustmentTypeAsync(Guid id);
         Task UpdateAdjustmentTypeAsync(AdjustmentType adjustmentType);
         Task<AdjustmentType> GetAdjustmentTypeByIdAsync(Guid id);
-
-        /*Task<IList<Warranty>> GetAllWarrantyAsync();*/
     }
 }

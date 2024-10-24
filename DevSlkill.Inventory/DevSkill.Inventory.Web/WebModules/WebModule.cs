@@ -132,6 +132,14 @@ namespace DevSkill.Inventory.Web.WebModules
                 .As<IAdjustmentTypeManagementService>()
                 .InstancePerLifetimeScope();
 
+            builder.RegisterType<StockAdjustmentRepository>()
+           .As<IStockAdjustmentRepository>()
+           .InstancePerLifetimeScope();
+
+            builder.RegisterType<StockAdjustmentManagementService>()
+           .As<IStockAdjustmentManagementService>()
+           .InstancePerLifetimeScope();
+
             builder.RegisterType<ApplicationTime>()
                 .As<IApplicationTime>()
                 .InstancePerLifetimeScope();

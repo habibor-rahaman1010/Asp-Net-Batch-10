@@ -41,6 +41,11 @@ namespace DevSkill.Inventory.Application.Services
             return await _adjustmentTypeUnitOfWork.AdjustmentTypeRepository.GetPagedAdjustmentTypesAsync(pageIndex, pageSize, search, order);
         }
 
+        public async Task<IList<AdjustmentType>> GetAllAdjustmentTypeAsync()
+        {
+            return await _adjustmentTypeUnitOfWork.AdjustmentTypeRepository.GetAllAsync();
+        }
+
         public async Task UpdateAdjustmentTypeAsync(AdjustmentType adjustmentType)
         {
             await _adjustmentTypeUnitOfWork.AdjustmentTypeRepository.EditAsync(adjustmentType);

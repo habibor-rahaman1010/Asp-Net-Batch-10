@@ -1,4 +1,5 @@
 ﻿using DevSkill.Inventory.Domain.Entities;
+using DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
@@ -77,10 +78,10 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
         }
         
 
-        public static IList<SelectListItem> ConvertBusinessLocations(IList<BusinessLocation> businessLocations)
+        public static IList<SelectListItem> ConvertjustmentTypes(IList<AdjustmentType> adjustmentTypes)
         {
-            var Items = (from c in businessLocations
-                         select new SelectListItem(c.LocationName, c.Id.ToString()))
+            var Items = (from c in adjustmentTypes
+                         select new SelectListItem(c.AdjustmentTypeName, c.Id.ToString()))
                          .ToList();
 
             Items.Insert(0, new SelectListItem("Select", string.Empty));
@@ -114,6 +115,17 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
         {
             var Items = (from c in sellingPriceTaxes
                          select new SelectListItem(c.SellingPriceTaxName, c.Id.ToString()))
+                         .ToList();
+
+            Items.Insert(0, new SelectListItem("Select", string.Empty));
+
+            return Items;
+        }
+
+        public static IList<SelectListItem> ConvertBusinessLocations(IList<BusinessLocation> businessLocations)
+        {
+            var Items = (from c in businessLocations
+                         select new SelectListItem(c.LocationName, c.Id.ToString()))
                          .ToList();
 
             Items.Insert(0, new SelectListItem("Select", string.Empty));

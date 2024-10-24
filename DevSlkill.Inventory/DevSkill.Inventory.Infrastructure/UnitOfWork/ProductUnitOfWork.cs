@@ -27,6 +27,7 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
         public IApplicableTaxRepository ApplicableTaxRepository { get; private set; }
         public ISellingPriceTaxRepository SellingPriceTaxRepository { get; private set; }
         public IAdjustmentTypeRepository AdjustmentTypeRepository { get; private set; }
+        public IStockAdjustmentRepository StockAdjustmentRepository { get; private set; }
 
         public ProductUnitOfWork(InventoryDbContext productDbContext,
             IProductRepository productRepository,
@@ -40,7 +41,8 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
             IBusinessLocationRepository businessLocationRepository, 
             IApplicableTaxRepository applicableTaxRepository,
             ISellingPriceTaxRepository sellingPriceTaxRepository,
-            IAdjustmentTypeRepository adjustmentTypeRepository)
+            IAdjustmentTypeRepository adjustmentTypeRepository,
+            IStockAdjustmentRepository stockAdjustmentRepository)
             : base(productDbContext)
         {
             ProductRepository = productRepository;
@@ -55,6 +57,7 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
             ApplicableTaxRepository = applicableTaxRepository;
             SellingPriceTaxRepository = sellingPriceTaxRepository;
             AdjustmentTypeRepository = adjustmentTypeRepository;
+            StockAdjustmentRepository = stockAdjustmentRepository;
         }
 
         public async Task<(IList<ProductDto> data, int total, int totalDisplay)> GetPagedProductUsingSPAsync(int pageIndex, int pageSize, ProductSearchDto search, string? order)

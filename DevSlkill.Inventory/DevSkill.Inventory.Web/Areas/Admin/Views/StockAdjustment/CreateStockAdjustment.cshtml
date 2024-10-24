@@ -1,0 +1,271 @@
+﻿@model StockAdjustmentCreateModel;
+
+@{
+    ViewData["Title"] = "Create Stock Adjustment";
+}
+
+<style>
+    #container {
+        width: 1000px;
+        margin: 20px auto;
+    }
+
+    .ck-editor__editable[role="textbox"] {
+        min-height: 300px;
+    }
+
+    .ck-content .image {
+        max-width: 80%;
+        margin: 20px auto;
+    }
+
+    #productImage {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    #imageError {
+        color: teal;
+    }
+</style>
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="ml-2">Add Stock Adjustment</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Stock</a></li>
+                    <li class="breadcrumb-item active">Create New</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div>
+            <form asp-antiforgery="true" asp-area="Admin" asp-controller="Product" asp-action="Create" method="post" enctype="multipart/form-data">
+                <!--Form-1 -->
+                <div class="col-sm-12">
+                    <!-- general form elements -->
+                    <div class="card card-primary" style="border-top: 4px solid #3c8dbc;">
+                        <!-- /.card-header -->
+                        <!-- form start -->
+                        <div class="card-body">
+                            <partial name="_ResponsePartial" />
+
+                            <div class="row">
+                                <!-- First row of form inputs -->
+                                <div class="col-sm-3 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="BusinessLocationId">Business Location*</label>
+                                        <select asp-for="BusinessLocationId" asp-items="Model.BusinessLocations" class="form-control"></select>
+                                        <span asp-validation-for="BusinessLocationId" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-3 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="ReferenceNo">Reference No*</label>
+                                        <input type="number" asp-for="ReferenceNo" class="form-control" placeholder="Reference No" value="" />
+                                        <span asp-validation-for="ReferenceNo" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="AdjustmentDate">Store Time*</label>
+                                        <input type="datetime-local" asp-for="AdjustmentDate" class="form-control" value="" />
+                                        <span asp-validation-for="AdjustmentDate" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-3 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="AdjustmentTypeId">Product Barcode Types*</label>
+                                        <select asp-for="AdjustmentTypeId" asp-items="Model.AdjustmentTypes" class="form-control"></select>
+                                        <span asp-validation-for="AdjustmentTypeId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+
+                <!--Form-2 -->
+                <div class="col-sm-12">
+                    <!-- general form elements -->
+                    <div class="card card-primary" style="border-top: 4px solid #3c8dbc;">
+                        <div class="card-body">
+                            <div class="card-header">
+                                <h3 class="card-title">Stock Adjustment</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Search Input for Stock Adjustment -->
+                                    <div class="col-md-8 offset-md-2">
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fa fa-search"></i>
+                                                    </span>
+                                                </div>
+                                                <input type="text"
+                                                       class="form-control ui-autocomplete-input ui-autocomplete-loading"
+                                                       id="search_product_for_stock_adjustment"
+                                                       placeholder="Search products for stock adjustment"
+                                                       name="search_product"
+                                                       autocomplete="off">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <!-- Stock Adjustment Table -->
+                                    <div class="col-md-10 offset-md-1">
+                                        <input type="hidden" id="product_row_index" value="0">
+                                        <input type="hidden" id="total_amount" name="final_total" value="0">
+
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-striped table-hover" id="stock_adjustment_product_table">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th class="text-center">Product</th>
+                                                        <th class="text-center">Quantity</th>
+                                                        <th class="text-center show_price_with_permission">Unit Price</th>
+                                                        <th class="text-center show_price_with_permission">Subtotal</th>
+                                                        <th class="text-center">
+                                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- Dynamically populated rows -->
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr class="text-center show_price_with_permission">
+                                                        <td colspan="3"></td>
+                                                        <td>
+                                                            <div class="float-right">
+                                                                <b>Total Amount:</b>
+                                                                <span id="total_adjustment">0</span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card -->
+                </div>
+
+                <!--Form-3 -->
+                <div class="col-sm-12">
+                    <!-- general form elements -->
+                    <div class="card card-primary" style="border-top: 4px solid #3c8dbc;">
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- First row of form inputs -->
+                                <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="TotalAmountRecover">Total Amount Recover*</label>
+                                        <input type="number" asp-for="TotalAmountRecover" class="form-control" placeholder="Total Amount Recover" value=""/>
+                                        <span asp-validation-for="TotalAmountRecover" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="Reason">Reason*</label>
+                                        <textarea asp-for="Reason" class="form-control" placeholder="Enter reason" style="width: 100%; height: 80px;"></textarea>
+                                        <span asp-validation-for="Reason" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card -->
+                </div>
+
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- /.content -->
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Function to calculate Selling Price
+            function calculateSellingPrice() {
+                var exciseTax = parseFloat($('#exciseTax').val()) || 0;
+                var inclusiveTax = parseFloat($('#inclusiveTax').val()) || 0;
+                var marginTax = parseFloat($('#marginTax').val()) || 0;
+
+                // Calculation formula for SellingPrice
+                var calInclusiveTax = (exciseTax / 100) * inclusiveTax;
+                var calmarginTax = (exciseTax / 100) * marginTax;
+                var sellingPrice = exciseTax + calInclusiveTax + calmarginTax;
+
+                // Update SellingPrice field
+                $('#sellingPrice').val(sellingPrice.toFixed(2));
+            }
+
+            // Attach the calculation function to input events
+            $('#exciseTax, #inclusiveTax, #marginTax').on('input', function () {
+                calculateSellingPrice();
+            });
+        });
+
+        const productImageInput = document.getElementById('productImage');
+        const imageError = document.getElementById('imageError');
+
+        productImageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+
+            if (file) {
+                // Validate file size and aspect ratio
+                if (file.size > 5 * 1024 * 1024) {
+                    imageError.textContent = 'File size is too large.';
+                    productImageInput.value = '';
+                } else if (file.type.startsWith('image/') && file.width === file.height) {
+                    // Handle successful upload or preview
+                    imageError.textContent = '';
+                    // ...
+                } else {
+                    imageError.textContent = 'Invalid image format or aspect ratio.';
+                    productImageInput.value = '';
+                }
+            }
+        });
+
+        document.querySelector('.custom-file-input').addEventListener('change', function (e) {
+            var fileName = e.target.files[0].name;
+            var label = e.target.nextElementSibling;
+            label.textContent = fileName;
+        });
+
+    </script>
+}
+
