@@ -1,4 +1,5 @@
 ﻿using DevSkill.Inventory.Domain;
+using DevSkill.Inventory.Domain.Dtos;
 using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Domain.RepositoryContracts;
 using DevSkill.Inventory.Infrastructure.Data;
@@ -6,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,13 +19,6 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
         {
 
         }
-
-       /* public async Task<Product> GetProductByIdAsync(Guid id)
-        {
-            *//*return (await GetAsync(x => x.Id == id, y => y.Include(z => z.Category))).FirstOrDefault();*//*
-            var product = await GetAsync(x => x.Id == id, y => y.Include(z => z.Category));
-            return product.FirstOrDefault();
-        }*/
 
         public async Task<Product> GetProductByIdAsync(Guid id)
         {
@@ -42,7 +37,6 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
 
             return product.FirstOrDefault();
         }
-
 
         public async Task<(IList<Product> data, int total, int totalDisplay)> GetPagedProductsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
         {
@@ -67,5 +61,11 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
                 return await GetCountAsync(x => x.ProductName == productName) > 0;
             }
         }
+
+        public async Task<IList<Product>> SearchProductsByNameAsync(string searchTerm)
+        {
+            return await GetAsync(p => p.ProductName.Contains(searchTerm), null);
+        }
     }
 }
+ 

@@ -50,7 +50,7 @@
 <section class="content">
     <div class="container-fluid">
         <div>
-            <form asp-antiforgery="true" asp-area="Admin" asp-controller="Product" asp-action="Create" method="post" enctype="multipart/form-data">
+            <form asp-antiforgery="true" asp-area="Admin" asp-controller="StockAdjustment" asp-action="CreateStockAdjustment" method="post" enctype="multipart/form-data">
                 <!--Form-1 -->
                 <div class="col-sm-12">
                     <!-- general form elements -->
@@ -136,7 +136,7 @@
                                     <!-- Stock Adjustment Table -->
                                     <div class="col-md-10 offset-md-1">
                                         <input type="hidden" id="product_row_index" value="0">
-                                        <input type="hidden" id="total_amount" name="final_total" value="0">
+                                        <input type="hidden" asp-for="TotalAmount" id="total_amount" value="0">
 
                                         <div class="table-responsive">
                                             <table class="table table-bordered table-striped table-hover" id="stock_adjustment_product_table">
@@ -197,7 +197,13 @@
                                         <span asp-validation-for="Reason" class="text-danger"></span>
                                     </div>
                                 </div>
-
+                                <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="AddedBy">Added By*</label>
+                                        <input type="text" asp-for="AddedBy" class="form-control" placeholder="Added By" />
+                                        <span asp-validation-for="AddedBy" class="text-danger"></span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -216,56 +222,99 @@
 <!-- /.content -->
 @section Scripts {
     <script>
+        
         $(document).ready(function () {
-            // Function to calculate Selling Price
-            function calculateSellingPrice() {
-                var exciseTax = parseFloat($('#exciseTax').val()) || 0;
-                var inclusiveTax = parseFloat($('#inclusiveTax').val()) || 0;
-                var marginTax = parseFloat($('#marginTax').val()) || 0;
+            // Function to load products based on the search term
+            $('#search_product_for_stock_adjustment').autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Admin/Product/SearchProductsByName', // Replace with your API URL
+                        type: 'GET',
+                        dataType: 'json',
+                        data: {
+                            searchTerm: request.term
+                        },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                console.log(item);
+                                return {
 
-                // Calculation formula for SellingPrice
-                var calInclusiveTax = (exciseTax / 100) * inclusiveTax;
-                var calmarginTax = (exciseTax / 100) * marginTax;
-                var sellingPrice = exciseTax + calInclusiveTax + calmarginTax;
+                                    label: item.productName + ' - ' + item.sku, // Customize display as needed
+                                    value: item.productName, // What gets inserted in the input
+                                    id: item.Id,
+                                    price: item.price
+                                };
+                            }));
+                        },
+                        error: function (xhr, status, error) {
+                            console.log("Error: " + error);
+                        }
+                    });
+                },
+                minLength: 2, // Minimum characters to trigger search
+                select: function (event, ui) {
+                    // When a product is selected, add it to the table
+                    addProductToTable(ui.item);
+                }
+            });
 
-                // Update SellingPrice field
-                $('#sellingPrice').val(sellingPrice.toFixed(2));
+            // Function to add the selected product to the table
+            function addProductToTable(product) {
+                console.log(product);
+                var rowIndex = $('#product_row_index').val();
+                rowIndex++;
+                $('#product_row_index').val(rowIndex);
+
+                var newRow = `
+                    <tr id="row_${rowIndex}">
+                        <td class="text-center">${product.label}</td>
+                        <td class="text-center">
+                            <input type="number" class="form-control text-center" name="quantity_${rowIndex}" id="quantity_${rowIndex}" value="1" min="1">
+                        </td>
+                        <td class="text-center show_price_with_permission">${product.price}</td>
+                        <td class="text-center show_price_with_permission" id="subtotal_${rowIndex}">${product.price}</td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-danger btn-sm remove-product" data-row="${rowIndex}">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+
+                $('#stock_adjustment_product_table tbody').append(newRow);
+                calculateTotalAmount();
             }
 
-            // Attach the calculation function to input events
-            $('#exciseTax, #inclusiveTax, #marginTax').on('input', function () {
-                calculateSellingPrice();
+            // Function to calculate total amount for the stock adjustment
+            function calculateTotalAmount() {
+                var totalAmount = 0;
+                console.log(typeOf(totalAmount))
+                $('#stock_adjustment_product_table tbody tr').each(function () {
+                    var rowIndex = $(this).attr('id').split('_')[1];
+                    var quantity = parseFloat($('#quantity_' + rowIndex).val());
+                    var price = parseFloat($(this).find('td.show_price_with_permission').eq(1).text());
+                    var subtotal = quantity * price;
+                    $('#subtotal_' + rowIndex).text(subtotal.toFixed(2));
+                    totalAmount += subtotal;
+                });
+
+                $('#total_adjustment').text(totalAmount.toFixed(2));
+                $('#total_amount').val(totalAmount.toFixed(2));
+            }
+
+            // Event to recalculate the total amount when the quantity changes
+            $(document).on('change', 'input[name^="quantity_"]', function () {
+                calculateTotalAmount();
+            });
+
+            // Event to remove a product row from the table
+            $(document).on('click', '.remove-product', function () {
+                var rowIndex = $(this).data('row');
+                $('#row_' + rowIndex).remove();
+                calculateTotalAmount();
             });
         });
-
-        const productImageInput = document.getElementById('productImage');
-        const imageError = document.getElementById('imageError');
-
-        productImageInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-
-            if (file) {
-                // Validate file size and aspect ratio
-                if (file.size > 5 * 1024 * 1024) {
-                    imageError.textContent = 'File size is too large.';
-                    productImageInput.value = '';
-                } else if (file.type.startsWith('image/') && file.width === file.height) {
-                    // Handle successful upload or preview
-                    imageError.textContent = '';
-                    // ...
-                } else {
-                    imageError.textContent = 'Invalid image format or aspect ratio.';
-                    productImageInput.value = '';
-                }
-            }
-        });
-
-        document.querySelector('.custom-file-input').addEventListener('change', function (e) {
-            var fileName = e.target.files[0].name;
-            var label = e.target.nextElementSibling;
-            label.textContent = fileName;
-        });
-
+        
     </script>
 }
 

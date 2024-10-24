@@ -2,6 +2,7 @@
 using DevSkill.Inventory.Domain;
 using DevSkill.Inventory.Domain.Dtos;
 using DevSkill.Inventory.Domain.Entities;
+using DevSkill.Inventory.Domain.RepositoryContracts;
 using DevSkill.Inventory.Domain.UnitOfWorkContracts;
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,7 @@ namespace DevSkill.Inventory.Application.Services
             await _productUnitOfWork.SaveAsync();
         }
 
-        public async Task<Product> GetProductAsync(Guid id)
+        public async Task<Product> GetProductByIdAsync(Guid id)
         {
             return await _productUnitOfWork.ProductRepository.GetProductByIdAsync(id);
         }
@@ -52,6 +53,13 @@ namespace DevSkill.Inventory.Application.Services
         public async Task<(IList<ProductDto> data, int total, int totalDisplay)> GetProductsSpAsync(int pageIndex, int pageSize, ProductSearchDto search, string? order)
         {
             return await _productUnitOfWork.GetPagedProductUsingSPAsync(pageIndex, pageSize, search, order);
+        }
+
+        public async Task<IList<Product>> SearchProductsByNameAsync(string searchTerm)
+        {
+            // Fetch products based on the search term
+            var products = await _productUnitOfWork.ProductRepository.SearchProductsByNameAsync(searchTerm);
+            return products;
         }
 
         public async Task UpdateProductAsync(Product product)

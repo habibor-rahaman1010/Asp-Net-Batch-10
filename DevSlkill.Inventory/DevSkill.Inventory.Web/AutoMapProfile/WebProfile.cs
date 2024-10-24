@@ -29,6 +29,8 @@ namespace DevSkill.Inventory.Web.AutoMapProfile
 
             CreateMap<AdjustmentTypeCreateModel, AdjustmentType>().ReverseMap();
             CreateMap<AdjustmentTypeUpdateModel, AdjustmentType>().ReverseMap();
+
+            CreateMap<StockAdjustmentCreateModel, StockAdjustment>().ReverseMap();
         }
     }
 }

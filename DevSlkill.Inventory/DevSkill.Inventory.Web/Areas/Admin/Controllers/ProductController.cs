@@ -10,6 +10,7 @@ using System.IO;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
+using DevSkill.Inventory.Infrastructure.UnitOfWork;
 
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
@@ -104,7 +105,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> GetProductById(Guid id)
         {
-            var product = await _productManagementService.GetProductAsync(id);
+            var product = await _productManagementService.GetProductByIdAsync(id);
             if (product == null)
             {
                 return NotFound();
@@ -248,7 +249,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> UpdateProduct(Guid id)
         {
-            var product = await _productManagementService.GetProductAsync(id);
+            var product = await _productManagementService.GetProductByIdAsync(id);
             var model = _mapper.Map<UpdateProductModel>(product);
 
             model.SetCategoriesValues(await _categoryManagementService.GetCategoriesAsync());
@@ -269,7 +270,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                var product = await _productManagementService.GetProductAsync(model.Id);
+                var product = await _productManagementService.GetProductByIdAsync(model.Id);
                 model.ProductImage = await SaveProductImage(model.ProductImageFile, product.ProductImage);
 
                 product = _mapper.Map(model, product);
@@ -387,5 +388,33 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             }
             return View();
         }
+
+        [HttpGet]
+        public async Task<JsonResult> SearchProductsByName(string searchTerm)
+        {
+            try
+            {
+                var products = await _productManagementService.SearchProductsByNameAsync(searchTerm);
+                if (products == null || !products.Any())
+                {
+                    return Json(new { success = false, message = "No products found." });
+                }
+
+                var result = products.Select(p => new
+                {
+                    Id = p.Id,
+                    ProductName = p.ProductName,
+                    SKU = p.SKU,
+                    Price = p.Price
+                }).ToList();
+
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "No products found." });
+            }
+        }
+
     }
 }
