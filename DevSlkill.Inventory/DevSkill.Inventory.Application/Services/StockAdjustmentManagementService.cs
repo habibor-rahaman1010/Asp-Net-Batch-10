@@ -24,6 +24,12 @@ namespace DevSkill.Inventory.Application.Services
             await _stockAdjustmentUnitOfWork.SaveAsync();
         }
 
+        public async Task DeleteStockAdjustmentAsync(Guid id)
+        {
+            await _stockAdjustmentUnitOfWork.StockAdjustmentRepository.RemoveAsync(id);
+            await _stockAdjustmentUnitOfWork.SaveAsync();
+        }
+
         public async Task<(IList<StockAdjustment> data, int total, int totalDisplay)> GetAllStockAdjustmentAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
         {
             return await _stockAdjustmentUnitOfWork.StockAdjustmentRepository.GetPagedStockAdjustmentsAsync(pageIndex, pageSize, search, order);

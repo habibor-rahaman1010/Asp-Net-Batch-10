@@ -366,11 +366,26 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         {
             try
             {
-               await _productManagementService.DeleteProductAsync(id);
+                // Check if any StockAdjustment records exist for this product
+                var hasStockAdjustments = await _productManagementService.HasStockAdjustmentsAsync(id);
+
+                if (hasStockAdjustments)
+                {
+                    // If there are associated StockAdjustment records, notify the user
+                    TempData.Put("ResponseMessage", new ResponseModel
+                    {
+                        Message = "Cannot delete the product because it has associated stock adjustments.",
+                        Type = ResponseTypes.Danger
+                    });
+                    return RedirectToAction("ProductList"); // Redirect to the product list
+                }
+
+                // Proceed with deletion if there are no associated records
+                await _productManagementService.DeleteProductAsync(id);
 
                 TempData.Put("ResponseMessage", new ResponseModel
                 {
-                    Message = "The product has deleted successfuly",
+                    Message = "The product has been deleted successfully.",
                     Type = ResponseTypes.Success
                 });
 
@@ -378,15 +393,17 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
+                // Log the error and notify the user of the failure
+                _logger.LogError(ex, "The product deletion failed for product ID: {ProductId}", id);
+
                 TempData.Put("ResponseMessage", new ResponseModel
                 {
-                    Message = "The product has deleted failed",
+                    Message = "The product deletion failed due to an unexpected error.",
                     Type = ResponseTypes.Danger
                 });
-
-                _logger.LogError(ex, "The product deleted failed");
             }
-            return View();
+
+            return RedirectToAction("ProductList"); // Redirect in case of an exception to maintain flow
         }
 
         [HttpGet]

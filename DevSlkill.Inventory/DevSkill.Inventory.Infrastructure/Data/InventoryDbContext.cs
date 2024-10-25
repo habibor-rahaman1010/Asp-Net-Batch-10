@@ -104,11 +104,11 @@ namespace DevSkill.Inventory.Infrastructure.Data
 
             modelBuilder.Entity<StockAdjustment>()
                 .Property(sa => sa.TotalAmountRecover)
-                .HasColumnType("decimal(18, 2)"); // Explicit SQL column type
+                .HasColumnType("decimal(18, 2)");
 
             modelBuilder.Entity<StockAdjustment>()
                 .Property(sa => sa.TotalAmount)
-                .HasColumnType("decimal(18, 2)"); // Explicit SQL column type
+                .HasColumnType("decimal(18, 2)");
 
 
              modelBuilder.Entity<StockAdjustment>()

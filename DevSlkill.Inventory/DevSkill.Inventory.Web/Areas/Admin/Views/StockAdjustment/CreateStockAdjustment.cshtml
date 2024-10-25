@@ -73,7 +73,7 @@
                                 <div class="col-sm-3 mb-3 px-3">
                                     <div class="form-group">
                                         <label asp-for="ReferenceNo">Reference No*</label>
-                                        <input type="number" asp-for="ReferenceNo" class="form-control" placeholder="Reference No" value="" />
+                                        <input type="text" asp-for="ReferenceNo" class="form-control" placeholder="Reference No" />
                                         <span asp-validation-for="ReferenceNo" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -137,7 +137,7 @@
                                     <div class="col-md-10 offset-md-1">
                                         <input asp-for="ProductId" type="hidden" id="productId" name="ProductId" />
                                         <input asp-for="TotalAmount" type="hidden" id="total_amount" name="TotalAmount" />
-
+                                        <input asp-for="AdjustmentQuantity" type="hidden" id="adjustment_quantity" name="AdjustmentQuantity" />
 
                                         <div class="table-responsive">
                                             <table class="table table-bordered table-striped table-hover" id="stock_adjustment_product_table">
@@ -294,11 +294,12 @@
 
                 $('#stock_adjustment_product_table tbody tr').each(function () {
                     var rowIndex = $(this).attr('id').split('_')[1];
-                    var quantity = parseFloat($('#quantity_' + rowIndex).val()) || 0;
+                    var quantity = parseFloat($('#quantity_' + rowIndex).val()) || 0;              
                     var price = parseFloat($(this).find('td.show_price_with_permission').eq(0).text()) || 0;
                     var subtotal = quantity * price;
                     $('#subtotal_' + rowIndex).text(subtotal.toFixed(2));
                     totalAmount += subtotal;
+                    $('#adjustment_quantity').val(quantity);
                 });
 
                 $('#total_adjustment').text(totalAmount.toFixed(2));

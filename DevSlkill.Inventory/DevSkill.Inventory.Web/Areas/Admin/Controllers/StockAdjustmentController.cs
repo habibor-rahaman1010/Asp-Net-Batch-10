@@ -87,14 +87,15 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                var product = await _productManagementService.GetProductByIdAsync(model.ProductId);
-
                 var stockAdjustment = _mapper.Map<StockAdjustment>(model);
-
+                var product = await _productManagementService.GetProductByIdAsync(model.ProductId);
                 stockAdjustment.Product = product;
                 stockAdjustment.BusinessLocation = await _businessLocationManagementService.GetBusinessLocationByIdAsync(model.BusinessLocationId);
                 stockAdjustment.AdjustmentType = await _adjustmentTypeManagementService.GetAdjustmentTypeByIdAsync(model.AdjustmentTypeId);
                 stockAdjustment.AdjustmentDate = _applicationTime.GetCurrentDateTime();
+
+                product.CurrentStock += (int) model.AdjustmentQuantity;
+                await _productManagementService.UpdateProductAsync(product);
 
                 try
                 {
@@ -125,5 +126,28 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<JsonResult> DeleteStockAdjustment(Guid id)
+        {
+            try
+            {
+                await _stockAdjustmentManagementService.DeleteStockAdjustmentAsync(id);
+
+                return Json(new
+                {
+                    success = true,
+                    message = "The Stock Adjustment has deleted successfuly"
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "The Stock Adjustment deleted failed");
+                return Json(new
+                {
+                    success = false,
+                    message = "The Stoc kAdjustment deleted failed"
+                });
+            }
+        }
     }
 }
