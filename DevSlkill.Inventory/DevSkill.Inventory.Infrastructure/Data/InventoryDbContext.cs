@@ -102,24 +102,32 @@ namespace DevSkill.Inventory.Infrastructure.Data
                 new AdjustmentType { Id = Guid.NewGuid(), AdjustmentTypeName = "Abnormal" }
             );
 
+            modelBuilder.Entity<StockAdjustment>()
+                .Property(sa => sa.TotalAmountRecover)
+                .HasColumnType("decimal(18, 2)"); // Explicit SQL column type
 
             modelBuilder.Entity<StockAdjustment>()
-               .HasOne(sa => sa.Product)
-               .WithMany()
-               .HasForeignKey(sa => sa.ProductId)
-               .OnDelete(DeleteBehavior.Restrict); // Prevents cascade delete on Product
+                .Property(sa => sa.TotalAmount)
+                .HasColumnType("decimal(18, 2)"); // Explicit SQL column type
 
-            modelBuilder.Entity<StockAdjustment>()
-                .HasOne(sa => sa.BusinessLocation)
+
+             modelBuilder.Entity<StockAdjustment>()
+                .HasOne(sa => sa.Product)
                 .WithMany()
-                .HasForeignKey(sa => sa.BusinessLocationId)
-                .OnDelete(DeleteBehavior.Cascade); // This can cascade if desired
+                .HasForeignKey(sa => sa.ProductId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevents cascade delete on Product
 
-            modelBuilder.Entity<StockAdjustment>()
-                .HasOne(sa => sa.AdjustmentType)
-                .WithMany()
-                .HasForeignKey(sa => sa.AdjustmentTypeId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevents cascade delete on AdjustmentType
+             modelBuilder.Entity<StockAdjustment>()
+                 .HasOne(sa => sa.BusinessLocation)
+                 .WithMany()
+                 .HasForeignKey(sa => sa.BusinessLocationId)
+                 .OnDelete(DeleteBehavior.Cascade); // This can cascade if desired
+
+             modelBuilder.Entity<StockAdjustment>()
+                 .HasOne(sa => sa.AdjustmentType)
+                 .WithMany()
+                 .HasForeignKey(sa => sa.AdjustmentTypeId)
+                 .OnDelete(DeleteBehavior.Restrict); // Prevents cascade delete on AdjustmentType
 
             base.OnModelCreating(modelBuilder);
         }

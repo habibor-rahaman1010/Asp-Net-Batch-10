@@ -82,25 +82,27 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateStockAdjustment(StockAdjustmentCreateModel model)
         {
             if (ModelState.IsValid)
             {
+                var product = await _productManagementService.GetProductByIdAsync(model.ProductId);
+
                 var stockAdjustment = _mapper.Map<StockAdjustment>(model);
+
+                stockAdjustment.Product = product;
                 stockAdjustment.BusinessLocation = await _businessLocationManagementService.GetBusinessLocationByIdAsync(model.BusinessLocationId);
                 stockAdjustment.AdjustmentType = await _adjustmentTypeManagementService.GetAdjustmentTypeByIdAsync(model.AdjustmentTypeId);
-
                 stockAdjustment.AdjustmentDate = _applicationTime.GetCurrentDateTime();
-                
+
                 try
                 {
                     await _stockAdjustmentManagementService.AddStockAdjustmentAsync(stockAdjustment);
 
                     TempData.Put("ResponseMessage", new ResponseModel
                     {
-                        Message = "The Stock AdjustmentList has been created successfuly!",
+                        Message = "The Stock AdjustmentList has been created successfully!",
                         Type = ResponseTypes.Success
                     });
 
@@ -113,88 +115,15 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                         Message = "The Stock AdjustmentList creation has failed!",
                         Type = ResponseTypes.Danger
                     });
-                    _logger.LogError(ex, "Ultimatly the product creation failed!");
-                }
-            }
-            model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
-            model.SetAdjustmentTypeValues(await _adjustmentTypeManagementService.GetAllAdjustmentTypeAsync());
-            return View(model);
-        }
-
-
-       /* [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateStockAdjustment(StockAdjustmentCreateModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                // Map the StockAdjustment model to the entity
-                var stockAdjustment = _mapper.Map<StockAdjustment>(model);
-
-                // Retrieve BusinessLocation and AdjustmentType
-                stockAdjustment.BusinessLocation = await _businessLocationManagementService.GetBusinessLocationByIdAsync(model.BusinessLocationId);
-                stockAdjustment.AdjustmentType = await _adjustmentTypeManagementService.GetAdjustmentTypeByIdAsync(model.AdjustmentTypeId);
-
-                // Set the current adjustment date
-                stockAdjustment.AdjustmentDate = _applicationTime.GetCurrentDateTime();
-
-                // Check if the product already exists, if not, create a new product
-                if (model.ProductId == Guid.Empty)
-                {
-                    var newProduct = _mapper.Map<Product>(model.Product);
-
-                    // You may have validation checks for product creation here
-                    if (newProduct != null)
-                    {
-                        // Add the new product to the database
-                        await _productManagementService.CreateProduct(newProduct);
-
-                        // Associate the new product with the stock adjustment
-                        stockAdjustment.Product = newProduct;
-                    }
-                    else
-                    {
-                        TempData.Put("ResponseMessage", new ResponseModel
-                        {
-                            Message = "The product creation failed!",
-                            Type = ResponseTypes.Danger
-                        });
-                        return View(model);
-                    }
-                }
-                else
-                {
-                    // If product exists, retrieve and associate it with the stock adjustment
-                    stockAdjustment.Product = await _productManagementService.GetProductByIdAsync(model.ProductId);
-                }
-
-                try
-                {
-                    // Add the stock adjustment
-                    await _stockAdjustmentManagementService.AddStockAdjustmentAsync(stockAdjustment);
-
-                    TempData.Put("ResponseMessage", new ResponseModel
-                    {
-                        Message = "The Stock Adjustment has been created successfully!",
-                        Type = ResponseTypes.Success
-                    });
-
-                    return RedirectToAction("StockAdjustmentList");
-                }
-                catch (Exception ex)
-                {
-                    TempData.Put("ResponseMessage", new ResponseModel
-                    {
-                        Message = "The Stock Adjustment creation has failed!",
-                        Type = ResponseTypes.Danger
-                    });
-                    _logger.LogError(ex, "The stock adjustment creation failed!");
+                    _logger.LogError(ex, "Ultimately, the stock adjustment creation failed!");
                 }
             }
 
             model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
             model.SetAdjustmentTypeValues(await _adjustmentTypeManagementService.GetAllAdjustmentTypeAsync());
+
             return View(model);
         }
-        */
+
     }
 }

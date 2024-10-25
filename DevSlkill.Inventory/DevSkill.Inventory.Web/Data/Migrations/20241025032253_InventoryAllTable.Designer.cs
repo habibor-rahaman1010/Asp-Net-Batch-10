@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DevSkill.Inventory.Web.Migrations
+namespace DevSkill.Inventory.Web.Data.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    [Migration("20241023184009_StockAdjustmentTable")]
-    partial class StockAdjustmentTable
+    [Migration("20241025032253_InventoryAllTable")]
+    partial class InventoryAllTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,17 +42,17 @@ namespace DevSkill.Inventory.Web.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8998a696-a113-4a6e-9077-9135779b368b"),
+                            Id = new Guid("c264b3f9-7a62-4ebd-9ef0-1cf1541cf8c4"),
                             ApplicableTaxName = "Food"
                         },
                         new
                         {
-                            Id = new Guid("4f2933c5-3223-46c2-adc4-6bba64661aa5"),
+                            Id = new Guid("cf90a96a-5386-4dd0-b297-79a4b038c652"),
                             ApplicableTaxName = "Sales Tax"
                         },
                         new
                         {
-                            Id = new Guid("cb9792c8-c31e-4564-93c0-5390e2ecd55a"),
+                            Id = new Guid("c6b5273b-9892-49d5-96c2-1b551c884934"),
                             ApplicableTaxName = "Fruits"
                         });
                 });
@@ -74,17 +74,17 @@ namespace DevSkill.Inventory.Web.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("908d3232-5947-4723-ac8b-b82b800fd81d"),
+                            Id = new Guid("2a021909-9ae8-42c8-8fe7-e67e02940999"),
                             BarcodeTypeName = "QR Code"
                         },
                         new
                         {
-                            Id = new Guid("2b6088cb-69af-4e22-b243-5c37d403e228"),
+                            Id = new Guid("28628019-c539-484f-8641-ae9e0f2dd888"),
                             BarcodeTypeName = "UPC"
                         },
                         new
                         {
-                            Id = new Guid("a418f1c5-e0c6-4ccf-9f51-4080e4084f14"),
+                            Id = new Guid("b848c430-96f5-4bd2-877a-8f5b6e7cc3fa"),
                             BarcodeTypeName = "NFC"
                         });
                 });
@@ -114,21 +114,21 @@ namespace DevSkill.Inventory.Web.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d0e21e7e-8794-4eef-9159-ffbc2a44251a"),
+                            Id = new Guid("e995cab2-bd88-4597-ae01-31a713e2c2af"),
                             BandOrigin = "",
                             BrandName = "Apple",
                             Description = ""
                         },
                         new
                         {
-                            Id = new Guid("3ec8fdc5-0a8b-4826-a754-931619f162cc"),
+                            Id = new Guid("3144a24a-9871-4d36-87ec-594304dfc5a5"),
                             BandOrigin = "",
                             BrandName = "Samsung",
                             Description = ""
                         },
                         new
                         {
-                            Id = new Guid("993bc033-3ab4-440b-9cb8-0824d3650e36"),
+                            Id = new Guid("5f6d7589-ebe2-4172-8bd2-a01ac423f933"),
                             BandOrigin = "",
                             BrandName = "Sony",
                             Description = ""
@@ -172,7 +172,7 @@ namespace DevSkill.Inventory.Web.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("83b19ad0-0235-4212-8f0f-e4503d9e17dc"),
+                            Id = new Guid("f6a53bdd-304f-4e75-ba96-483a6a7fa68e"),
                             Address = "",
                             City = "",
                             Country = "",
@@ -182,7 +182,7 @@ namespace DevSkill.Inventory.Web.Migrations
                         },
                         new
                         {
-                            Id = new Guid("857c37e6-4e1b-4863-8e65-a01509b8416c"),
+                            Id = new Guid("3da84706-747f-4b61-9a91-92e1b45e9202"),
                             Address = "",
                             City = "",
                             Country = "",
@@ -192,7 +192,7 @@ namespace DevSkill.Inventory.Web.Migrations
                         },
                         new
                         {
-                            Id = new Guid("ae21fc37-75df-41e3-be63-201af88845f3"),
+                            Id = new Guid("8283ddb8-e5c6-4b8a-9899-c7960d6e792b"),
                             Address = "",
                             City = "",
                             Country = "",
@@ -227,21 +227,21 @@ namespace DevSkill.Inventory.Web.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a1f50a39-e16d-4fea-8709-955f4c7c3151"),
+                            Id = new Guid("17a9d308-d905-4e51-abaf-d5af1deb7968"),
                             CategoryCode = "",
                             CategoryName = "Electronics",
                             Description = ""
                         },
                         new
                         {
-                            Id = new Guid("263f9c13-1317-4898-b3e7-469b0f609209"),
+                            Id = new Guid("e4503a07-4e9f-4ae1-a9cc-707f6dd029c6"),
                             CategoryCode = "",
                             CategoryName = "Home Appliances",
                             Description = ""
                         },
                         new
                         {
-                            Id = new Guid("bf8e51fb-972a-4b57-af8b-97fb96ce1993"),
+                            Id = new Guid("a8a93ef7-e00d-4e03-803b-a15687db8d08"),
                             CategoryCode = "",
                             CategoryName = "Clothing",
                             Description = ""
@@ -397,27 +397,27 @@ namespace DevSkill.Inventory.Web.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("9d4c8600-f9d6-41df-bcf7-a410585a5b2d"),
+                            Id = new Guid("6bf35d50-ddc1-401b-9663-247f16969897"),
                             ProductTypeName = "Electronics"
                         },
                         new
                         {
-                            Id = new Guid("7498fdc8-859f-41c1-ab6d-22258f39009b"),
+                            Id = new Guid("86a77b47-35ff-457b-80f6-92723487effa"),
                             ProductTypeName = "Clothing"
                         },
                         new
                         {
-                            Id = new Guid("3e647bd7-abea-4e5c-bab9-6a8f4433372f"),
+                            Id = new Guid("8915f6f3-345b-427b-aeee-8f3f5f527aa1"),
                             ProductTypeName = "Food"
                         },
                         new
                         {
-                            Id = new Guid("d752144f-3f3f-486a-8175-13be530c5421"),
+                            Id = new Guid("48e71b16-8973-4a47-acc9-b56174c5b474"),
                             ProductTypeName = "Furniture"
                         },
                         new
                         {
-                            Id = new Guid("f828cac4-46db-43ff-980f-02c31d348360"),
+                            Id = new Guid("e1609561-adcb-4fa4-9f42-8f3f8f09b08c"),
                             ProductTypeName = "Toys"
                         });
                 });
@@ -439,17 +439,17 @@ namespace DevSkill.Inventory.Web.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("6e5c220e-1ff8-46be-ac30-d238d54904bb"),
+                            Id = new Guid("43e09a64-f917-40df-abec-3b8315101fbd"),
                             SellingPriceTaxName = "Exclusive"
                         },
                         new
                         {
-                            Id = new Guid("8c04d5cf-53b9-4900-9cb0-47cb3e4e57c8"),
+                            Id = new Guid("d531544d-af73-4e96-8b81-ca96f1af8811"),
                             SellingPriceTaxName = "Inclusive"
                         },
                         new
                         {
-                            Id = new Guid("8e8e53d0-6205-4d97-aa97-7a5da8f80545"),
+                            Id = new Guid("24835120-9ab3-4156-b139-dc6d4c47e8cb"),
                             SellingPriceTaxName = "Zero Rate"
                         });
                 });
@@ -475,13 +475,13 @@ namespace DevSkill.Inventory.Web.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("449adae8-2eb5-4659-9759-484ee10f11fb"),
+                            Id = new Guid("019d9193-08d7-434a-8ac4-c5af7eb58a00"),
                             AdjustmentTypeName = "Normal",
                             Description = ""
                         },
                         new
                         {
-                            Id = new Guid("fac4a467-9e30-4bae-a60d-19ff5296b4f6"),
+                            Id = new Guid("fbefbd69-6b34-40e8-a23a-9aac1904d70d"),
                             AdjustmentTypeName = "Abnormal",
                             Description = ""
                         });
@@ -513,14 +513,15 @@ namespace DevSkill.Inventory.Web.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ReferenceNo")
-                        .HasColumnType("int");
+                    b.Property<string>("ReferenceNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TotalAmount")
-                        .HasColumnType("int");
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18, 2)");
 
-                    b.Property<int>("TotalAmountRecover")
-                        .HasColumnType("int");
+                    b.Property<decimal>("TotalAmountRecover")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.HasKey("Id");
 
@@ -550,17 +551,17 @@ namespace DevSkill.Inventory.Web.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("fb24a0a8-8c74-4b15-989c-b0160cb0accd"),
+                            Id = new Guid("d0bd1ed4-09af-47b2-900e-3850682f8365"),
                             SubcategoryName = "Smartphones"
                         },
                         new
                         {
-                            Id = new Guid("9ba100dc-60a4-4bbb-8b86-0f2a1645bf69"),
+                            Id = new Guid("4c9e0bf1-39f8-4e24-bc84-02eb0e06299d"),
                             SubcategoryName = "Laptops"
                         },
                         new
                         {
-                            Id = new Guid("7dfb69b2-4b45-4013-8425-f91f2e6f6166"),
+                            Id = new Guid("482f7c94-0a89-41f1-8328-d15f9858d1c4"),
                             SubcategoryName = "Televisions"
                         });
                 });
@@ -589,21 +590,21 @@ namespace DevSkill.Inventory.Web.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("f406c65b-b75d-4687-bc8e-52ca31750d06"),
+                            Id = new Guid("01f4bd14-cd2a-44b8-8af2-1022a671c9c7"),
                             AllowDecimal = 0,
                             ShortName = "",
                             UnitName = "Kilogram"
                         },
                         new
                         {
-                            Id = new Guid("9d822f80-ffed-4065-b8c2-1c560c098c45"),
+                            Id = new Guid("4fcaf20e-4753-4b91-93d5-c52b7f510b1b"),
                             AllowDecimal = 0,
                             ShortName = "",
                             UnitName = "Liter"
                         },
                         new
                         {
-                            Id = new Guid("37d47f2f-55e0-4b82-88c8-7752e2d921a1"),
+                            Id = new Guid("c594b92f-38ab-42b5-bedc-814a51ea5aad"),
                             AllowDecimal = 0,
                             ShortName = "",
                             UnitName = "Piece"
@@ -635,21 +636,21 @@ namespace DevSkill.Inventory.Web.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("0a927419-8095-45b7-8f60-21c05a8e0994"),
+                            Id = new Guid("d525efd7-0fdd-4142-8b6d-f6a5ce1fc75a"),
                             Description = "",
                             Name = "",
                             WarrantyDuration = "1 Year"
                         },
                         new
                         {
-                            Id = new Guid("93039997-783c-4c4c-9168-b1ad55bcd352"),
+                            Id = new Guid("bed9bf32-e1ba-4b97-b88b-78bcd3aa127e"),
                             Description = "",
                             Name = "",
                             WarrantyDuration = "2 Years"
                         },
                         new
                         {
-                            Id = new Guid("ced27238-7ffa-40f9-bb30-caf6e53913f7"),
+                            Id = new Guid("3071b0d8-6904-4763-8a01-96ccce260ad3"),
                             Description = "",
                             Name = "",
                             WarrantyDuration = "3 Years"

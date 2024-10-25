@@ -10,9 +10,9 @@ namespace DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites
     {
         public Guid Id { get; set; }
         public DateTime AdjustmentDate { get; set; }
-        public int ReferenceNo { get; set; }
-        public int TotalAmount { get; set; }
-        public int TotalAmountRecover { get; set; }
+        public string ReferenceNo { get; set; } = string.Empty;
+        public decimal TotalAmount { get; set; }
+        public decimal TotalAmountRecover { get; set; }
         public string Reason { get; set; } = string.Empty;
         public string AddedBy { get; set; } = string.Empty;
 
