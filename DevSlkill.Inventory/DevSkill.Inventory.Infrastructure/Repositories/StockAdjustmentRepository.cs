@@ -24,7 +24,7 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
             if (string.IsNullOrWhiteSpace(search.Value))
             {
                 return await GetDynamicAsync(null, order, 
-                    x => x.Include(l => l.BusinessLocation).Include(y => y.AdjustmentType), 
+                    x => x.Include(l => l.BusinessLocation).Include(y => y.AdjustmentType).Include(p => p.Product), 
                     pageIndex, pageSize, true);
             }
             else
@@ -33,6 +33,16 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
                 || x.AdjustmentType.AdjustmentTypeName.Contains(search.Value), 
                 order, x => x.Include(l => l.BusinessLocation).Include(y => y.AdjustmentType), pageIndex, pageSize, true);
             }
+        }
+
+        public async Task<StockAdjustment> GetStockAdjustmentyByIdAsync(Guid id)
+        {
+            var stockAdjustment = await GetAsync(x => x.Id == id, y => y
+                .Include(b => b.BusinessLocation)
+                .Include(a => a.AdjustmentType)
+                .Include(p => p.Product)
+            );
+            return stockAdjustment.FirstOrDefault();
         }
 
         public async Task<bool> HasStockAdjustmentsAsync(Guid productId)

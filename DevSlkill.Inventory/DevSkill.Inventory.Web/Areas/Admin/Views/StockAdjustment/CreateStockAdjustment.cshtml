@@ -169,6 +169,7 @@
                                         <input asp-for="ProductId" type="hidden" id="productId" name="ProductId" />
                                         <input asp-for="TotalAmount" type="hidden" id="total_amount" name="TotalAmount" />
                                         <input asp-for="AdjustmentQuantity" type="hidden" id="adjustment_quantity" name="AdjustmentQuantity" />
+                                        <input asp-for="UnitPrice" type="hidden" id="unitPrice" name="UnitPrice" />
 
                                         <div class="table-responsive">
                                             <table class="table table-bordered table-striped table-hover" id="stock_adjustment_product_table">
@@ -358,6 +359,7 @@
                     $('#subtotal_' + rowIndex).text(subtotal.toFixed(2));
                     totalAmount += subtotal;
                     $('#adjustment_quantity').val(quantity);
+                    $('#unitPrice').val(price);
                 });
 
                 $('#total_adjustment').text(totalAmount.toFixed(2));

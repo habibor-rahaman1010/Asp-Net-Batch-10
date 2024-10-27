@@ -72,6 +72,7 @@
                                 <tr>
                                     <th>Location Name</th>
                                     <th>Adjustment Type</th>
+                                    <th>Product Name</th>
                                     <th>Reference No</th>
                                     <th>TotalAmount</th>
                                     <th>TotalAmountRecover</th>
@@ -86,6 +87,7 @@
                                 <tr>
                                     <th>Location Name</th>
                                     <th>Adjustment Type</th>
+                                    <th>Product Name</th>
                                     <th>Reference No</th>
                                     <th>TotalAmount</th>
                                     <th>TotalAmountRecover</th>
@@ -107,6 +109,8 @@
     </div>
     <!-- /.container-fluid -->
 </section>
+
+<partial name="_StockAdjustmentDetailsPartial" />
 
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
@@ -174,21 +178,10 @@
                 },
 
                 columnDefs: [
-                    {
-                        // Render description column with only 20 words
-                        targets: 1,
-                        render: function (data, type, row) {
-                            var words = data.split(" ");
-                            if (words.length > 10) {
-                                return words.slice(0, 10).join(" ") + '...';
-                            }
-                            return data;
-                        }
-                    },
 
                     {
                         orderable: false,
-                        targets: 8,
+                        targets: 9,
                         render: function (data, type, row) {
                             return `
                                     <button type="submit" class="btn btn-danger btn-sm show-bs-modal" data-id='${data}' value='${data}'>
@@ -198,6 +191,15 @@
                                     </button>`;
                         }
                     },
+                    ...[0, 1, 2, 3, 4, 5, 6, 8].map(function (target) {
+                        return {
+                            targets: target,
+                            createdCell: function (td, type, data) {
+                                $(td).addClass('table-row');
+                                $(td).attr('data-id', data[9]);
+                            }
+                        };
+                    })
                 ],
 
                 dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
@@ -259,130 +261,41 @@
                 });
             });
 
-            /*
-            //This code create a new warranty...
-            $(document).ready(function () {
-                // Handle form submission
-                $('#addAdjustmentTypeForm').on('submit', function (e) {
-                    e.preventDefault();
 
-                    $.ajax({
-                        url: '/Admin/AdjustmentType/AddAdjustmentType',
-                        method: 'POST',
-                        data: $(this).serialize(),
-                        success: function (response) {
-                            if (response.success) {
-                                // Close the modal
-                                $('#adjustmentTypeModal').modal('hide');
-                                $('#addAdjustmentTypeForm')[0].reset();
+            // This code for product details
+            $('#adjustmentTypes tbody').on('click', '.table-row', function () {
+                console.log("clicked");
+                var productId = $(this).data().id;
+                $.ajax({
+                    url: `/Admin/StockAdjustment/GetStockAdjustmentyById/${productId}`,
+                    method: 'GET',
+                    success: function (data) {
+                        console.log(data);
 
-                                // Display toast notification
-                                $('#toastMessage').text(response.message);
-                                $('#adjustmentTypeToast').toast({
-                                    delay: 3000
-                                });
-                                $('#adjustmentTypeToast').toast('show');
-                                // Refresh the DataTable
-                                $('#adjustmentTypes').DataTable().ajax.reload();
-                            }
-                            else {
-                                // Handle validation errors or any other errors
-                                // Display toast notification
-                                $('#toastMessage').text(response.message);
-                                $('#adjustmentTypeToast').toast({
-                                    delay: 3000
-                                });
-                                $('#adjustmentTypeToast').toast('show');
-                            }
-                        },
-                        error: function (error) {
-                            $('#toastMessage').text('There was an error adding the brand.');
-                            $('#adjustmentTypeToast').toast({
-                                delay: 3000
-                            });
-                            $('#adjustmentTypeToast').toast('show');
-                        }
-                    });
+                        // Display data or 'N/A' if value is empty
+                        $('#id').text(data.id || 'N/A');
+                        $('#ReferenceNo').text(data.referenceNo || 'N/A');
+                        $('#AdjustmentDate').text(data.adjustmentDate || 'N/A');
+                        $('#TotalAmount').text(data.totalAmount || 'N/A');
+                        $('#TotalAmountRecover').text(data.totalAmountRecover || 'N/A');
+                        $('#Reason').text(data.reason || 'N/A');
+                        $('#AddedBy').text(data.addedBy || 'N/A');
+                        $('#BusinessLocationName').text(data.businessLocation?.locationName || 'N/A');
+                        $('#AdjustmentTypeName').text(data.adjustmentType?.adjustmentTypeName || 'N/A');
+                        $('#ProductId').text(data.product?.id || 'N/A');
+                        $('#ProductName').text(data.product?.productName || 'N/A');
+                        $('#ProductPrice').text(data.product?.price || 'N/A');
+
+                        // Show the modal
+                        $('#productDetailsModal').modal('show');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching product data:", error);
+                        alert('Failed to load product details.');
+                    }
                 });
             });
 
-
-            //This code for adjustment Update...
-            $(document).ready(function () {
-                // Handle the click event for the edit button
-                $('#adjustmentTypes').on('click', '.update-adjustment', function () {
-                    var warrantyId = $(this).data('id');
-                    console.log("button is clicked");
-                    console.log(warrantyId)
-                    // Use AJAX to fetch the category data
-                    $.ajax({
-                        url: '/Admin/AdjustmentType/GetAdjustmentTypeById',
-                        method: 'GET',
-                        data: { id: warrantyId },
-                        success: function (response) {
-                            console.log(response)
-                            if (response.success) {
-                                // Populate the modal fields with the category data
-                                $('#updateAdjustmentTypeId').val(response.data.result.id);
-                                $('#editAdjustmentTypeName').val(response.data.result.adjustmentTypeName);
-                                $('#editDescription').val(response.data.result.description);
-
-                                // Open the modal (bootstrap handles this)
-                                $('#updateAdjustmentTypeModal').modal('show');
-                            }
-                            else {
-                                alert('Error fetching category data');
-                            }
-                        },
-                        error: function () {
-                            alert('An error occurred while fetching the category data.');
-                        }
-                    });
-                });
-
-                // Handle the form submission for editing a category
-                $('#updateAdjustmentTypeForm').on('submit', function (e) {
-                    e.preventDefault();
-
-                    $.ajax({
-                        url: '/Admin/AdjustmentType/EditAdjustmentType',
-                        method: 'POST',
-                        data: $(this).serialize(),
-                        success: function (response) {
-
-                            if (response.success) {
-                                // Close the modal and reset
-                                $('#updateAdjustmentTypeModal').modal('hide');
-                                $('#updateAdjustmentTypeForm')[0].reset();
-
-                                // Display toast notification
-                                $('#toastMessage').text(response.message);
-                                $('#adjustmentTypeToast').toast({
-                                    delay: 3000
-                                });
-                                $('#adjustmentTypeToast').toast('show');
-
-                                // Refresh the DataTable
-                                $('#adjustmentTypes').DataTable().ajax.reload();
-                            }
-                            else {
-                                $('#toastMessage').text(response.message);
-                                $('#adjustmentTypeToast').toast({
-                                    delay: 3000
-                                });
-                                $('#adjustmentTypeToast').toast('show');
-                            }
-                        },
-                        error: function () {
-                            $('#toastMessage').text('There was an error editing the brand.');
-                            $('#adjustmentTypeToast').toast({
-                                delay: 3000
-                            });
-                            $('#adjustmentTypeToast').toast('show');
-                        }
-                    });
-                });
-            }); */
 
             //This code for temp data response fadeOut
             $(document).ready(function () {

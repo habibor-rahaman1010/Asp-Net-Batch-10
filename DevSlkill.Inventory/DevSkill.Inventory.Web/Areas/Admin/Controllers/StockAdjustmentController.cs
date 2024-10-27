@@ -48,7 +48,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         public async Task<JsonResult> GetStockAdjustmentJsonData([FromBody] StockAdjustmentListModel model)
         {
             var result = await _stockAdjustmentManagementService.GetAllStockAdjustmentAsync(model.PageIndex, model.PageSize, model.Search,
-               model.FormatSortExpression("BusinessLocation", "AdjustmentType", "ReferenceNo", "TotalAmount", "TotalAmountRecover", "Reason", "AdjustmentDate", "AddedBy"));
+               model.FormatSortExpression("BusinessLocation", "AdjustmentType", "Product", "ReferenceNo", "TotalAmount", "TotalAmountRecover", "Reason", "AdjustmentDate", "AddedBy"));
 
             var productJsonData = new
             {
@@ -59,6 +59,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                         {
                             HttpUtility.HtmlEncode(record.BusinessLocation.LocationName),
                             HttpUtility.HtmlEncode(record.AdjustmentType.AdjustmentTypeName),
+                            HttpUtility.HtmlEncode(record.Product.ProductName),
                             HttpUtility.HtmlEncode(record.ReferenceNo),
                             HttpUtility.HtmlEncode(record.TotalAmount),
                             HttpUtility.HtmlEncode(record.TotalAmountRecover),
@@ -147,6 +148,17 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     message = "The Stoc kAdjustment deleted failed"
                 });
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetStockAdjustmentyById(Guid id)
+        {
+            var stockAdjustment = await _stockAdjustmentManagementService.GetStockAdjustmentyByIdAsync(id);
+            if (stockAdjustment == null)
+            {
+                return NotFound();
+            }
+            return Json(stockAdjustment);
         }
     }
 }
