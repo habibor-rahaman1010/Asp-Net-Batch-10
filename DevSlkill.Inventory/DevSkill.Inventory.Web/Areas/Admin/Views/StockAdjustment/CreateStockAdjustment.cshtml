@@ -252,6 +252,27 @@
 </section>
 <!-- /.content -->
 
+<!-- Bootstrap Modal for "No Product Found" -->
+<div class="modal fade" id="noProductFoundModal" tabindex="-1" role="dialog" aria-labelledby="noProductFoundLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="noProductFoundLabel">No Product Found</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Sorry, no products were found matching your search.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- This is jquery portion  -->
 @section Scripts {
     <script>
@@ -267,8 +288,7 @@
                         },
                         success: function (data) {
                             if (data.success === false || data.length === 0) {
-                                //alert("not found");
-                                response([{ label: "Product not found", value: "" }]);
+                                $('#noProductFoundModal').modal('show');
                             } 
                             else {
                                 response($.map(data, function (item) {
@@ -291,12 +311,8 @@
                 select: function (event, ui) {
                     console.log(ui);
                     addProductToTable(ui.item);
-                },
-                response: function (event, ui) {
-                    if (ui.content.length === 0) {
-                        ui.content.push({ label: "Product not found", value: "" });
-                    }
                 }
+
             });
 
             function addProductToTable(product) {

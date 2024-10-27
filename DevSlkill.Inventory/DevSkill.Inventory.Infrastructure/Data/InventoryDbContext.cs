@@ -102,6 +102,69 @@ namespace DevSkill.Inventory.Infrastructure.Data
                 new AdjustmentType { Id = Guid.NewGuid(), AdjustmentTypeName = "Abnormal" }
             );
 
+
+            //Here relation product to other tables...
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.BarcodeType)
+                .WithMany()
+                .HasForeignKey(p => p.BarcodeTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Unit)
+                .WithMany()
+                .HasForeignKey(p => p.UnitId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Brand)
+                .WithMany()
+                .HasForeignKey(p => p.BrandId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Category)
+                .WithMany()
+                .HasForeignKey(p => p.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Subcategory)
+                .WithMany()
+                .HasForeignKey(p => p.SubcategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.BusinessLocation)
+                .WithMany()
+                .HasForeignKey(p => p.BusinessLocationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Warranty)
+                .WithMany()
+                .HasForeignKey(p => p.WarrantyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.ProductType)
+                .WithMany()
+                .HasForeignKey(p => p.ProductTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.ApplicableTax)
+                .WithMany()
+                .HasForeignKey(p => p.ApplicableTaxId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.SellingPriceTax)
+                .WithMany()
+                .HasForeignKey(p => p.SellingPriceTaxId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
             modelBuilder.Entity<StockAdjustment>()
                 .Property(sa => sa.TotalAmountRecover)
                 .HasColumnType("decimal(18, 2)");
@@ -111,23 +174,26 @@ namespace DevSkill.Inventory.Infrastructure.Data
                 .HasColumnType("decimal(18, 2)");
 
 
-             modelBuilder.Entity<StockAdjustment>()
+            // StockAdjustment and Product relationship
+            modelBuilder.Entity<StockAdjustment>()
                 .HasOne(sa => sa.Product)
                 .WithMany()
                 .HasForeignKey(sa => sa.ProductId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevents cascade delete on Product
+                .OnDelete(DeleteBehavior.Restrict);
 
-             modelBuilder.Entity<StockAdjustment>()
-                 .HasOne(sa => sa.BusinessLocation)
-                 .WithMany()
-                 .HasForeignKey(sa => sa.BusinessLocationId)
-                 .OnDelete(DeleteBehavior.Cascade); // This can cascade if desired
+            // StockAdjustment and BusinessLocation relationship
+            modelBuilder.Entity<StockAdjustment>()
+                .HasOne(sa => sa.BusinessLocation)
+                .WithMany()
+                .HasForeignKey(sa => sa.BusinessLocationId)
+                .OnDelete(DeleteBehavior.Restrict); 
 
-             modelBuilder.Entity<StockAdjustment>()
-                 .HasOne(sa => sa.AdjustmentType)
-                 .WithMany()
-                 .HasForeignKey(sa => sa.AdjustmentTypeId)
-                 .OnDelete(DeleteBehavior.Restrict); // Prevents cascade delete on AdjustmentType
+            // StockAdjustment and AdjustmentType relationship
+            modelBuilder.Entity<StockAdjustment>()
+                .HasOne(sa => sa.AdjustmentType)
+                .WithMany()
+                .HasForeignKey(sa => sa.AdjustmentTypeId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
 
             base.OnModelCreating(modelBuilder);
         }

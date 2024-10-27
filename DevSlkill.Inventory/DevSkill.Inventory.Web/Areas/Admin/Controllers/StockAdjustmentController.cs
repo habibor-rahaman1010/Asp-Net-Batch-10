@@ -73,7 +73,6 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(productJsonData);
         }
 
-
         public async Task<IActionResult> CreateStockAdjustment()
         {
             var model = new StockAdjustmentCreateModel();

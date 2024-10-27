@@ -107,9 +107,6 @@
     </div>
     <!-- /.container-fluid -->
 </section>
-@* 
-<partial name="_AddAdjustmentTypeModal" />
-<partial name="_UpdateAdjustmentTypeModal" /> *@
 
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
@@ -193,15 +190,12 @@
                         orderable: false,
                         targets: 8,
                         render: function (data, type, row) {
-                            return `<button type="button" class="btn btn-info btn-sm update-adjustment" data-id='${data}' data-toggle="modal" data-target="#updateAdjustmentTypeModal">
-                                                                                <i class="fas fa-pencil-alt"></i> Edit
-                                                                            </button>
-
-                                                                            <button type="submit" class="btn btn-danger btn-sm show-bs-modal" data-id='${data}' value='${data}'>
-                                                                                <i class="fas fa-trash">
-                                                                                </i>
-                                                                                Delete
-                                                                            </button>`;
+                            return `
+                                    <button type="submit" class="btn btn-danger btn-sm show-bs-modal" data-id='${data}' value='${data}'>
+                                        <i class="fas fa-trash">
+                                        </i>
+                                        Delete
+                                    </button>`;
                         }
                     },
                 ],
