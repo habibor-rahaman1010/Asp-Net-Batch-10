@@ -55,9 +55,9 @@ namespace DevSkill.Inventory.Application.Services
             return await _productUnitOfWork.GetPagedProductUsingSPAsync(pageIndex, pageSize, search, order);
         }
 
-        public Task<bool> HasStockAdjustmentsAsync(Guid productId)
+        public async Task<bool> HasStockAdjustmentsAsync(Guid productId)
         {
-            throw new NotImplementedException();
+            return await _productUnitOfWork.StockAdjustmentRepository.HasStockAdjustmentsAsync(productId);
         }
 
         // Fetch products based on the search term

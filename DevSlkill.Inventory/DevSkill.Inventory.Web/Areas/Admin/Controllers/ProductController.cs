@@ -374,10 +374,11 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     // If there are associated StockAdjustment records, notify the user
                     TempData.Put("ResponseMessage", new ResponseModel
                     {
-                        Message = "Cannot delete the product because it has associated stock adjustments.",
-                        Type = ResponseTypes.Danger
+                        Message = "Cannot delete the product because it has associated with stock adjustments. \n" +
+                        "If you want to delete the product before you delete the ",
+                        Type = ResponseTypes.Warning
                     });
-                    return RedirectToAction("ProductList"); // Redirect to the product list
+                    return RedirectToAction("ProductList");
                 }
 
                 // Proceed with deletion if there are no associated records

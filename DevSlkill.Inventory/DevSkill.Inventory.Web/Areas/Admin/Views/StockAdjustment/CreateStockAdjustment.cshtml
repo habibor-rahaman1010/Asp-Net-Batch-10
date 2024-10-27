@@ -27,7 +27,38 @@
     #imageError {
         color: teal;
     }
+
+    .ui-autocomplete {
+        border: 1px solid #007bff;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        max-height: 200px;
+        overflow-y: auto;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        width: 50% !important;
+    }
+
+    .ui-menu {
+        list-style-type: none;
+        padding: 2px;
+        margin: 2px;
+    }
+
+    .ui-menu-item {
+        padding: 8px 12px;
+        font-size: 14px;
+        cursor: pointer;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .ui-menu-item:hover {
+        background-color: #007bff;
+        color: white;
+    }
 </style>
+
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
@@ -107,7 +138,7 @@
                     <div class="card card-primary" style="border-top: 4px solid #3c8dbc;">
                         <div class="card-body">
                             <div class="card-header">
-                                <h3 class="card-title">Stock Adjustment</h3>
+                                <h3 class="card-title">Search your product</h3>
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
@@ -235,17 +266,22 @@
                             searchTerm: request.term
                         },
                         success: function (data) {
-                            response($.map(data, function (item) {
-                                console.log(item);
-                                return {
-                                    label: item.productName + ' - ' + item.sku,
-                                    value: item.productName,
-                                    id: item.id,
-                                    price: item.price,
-
-                                };
-                            }));
+                            if (data.success === false || data.length === 0) {
+                                //alert("not found");
+                                response([{ label: "Product not found", value: "" }]);
+                            } 
+                            else {
+                                response($.map(data, function (item) {
+                                    return {
+                                        label: item.productName + ' - ' + item.sku,
+                                        value: item.productName,
+                                        id: item.id,
+                                        price: item.price
+                                    };
+                                }));
+                            }
                         },
+
                         error: function (xhr, status, error) {
                             console.log("Error: " + error);
                         }
@@ -253,7 +289,13 @@
                 },
                 minLength: 1,
                 select: function (event, ui) {
+                    console.log(ui);
                     addProductToTable(ui.item);
+                },
+                response: function (event, ui) {
+                    if (ui.content.length === 0) {
+                        ui.content.push({ label: "Product not found", value: "" });
+                    }
                 }
             });
 

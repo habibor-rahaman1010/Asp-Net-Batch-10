@@ -14,9 +14,13 @@ namespace DevSkill.Inventory.Application.ServicesContract
         Task<(IList<StockAdjustment> data, int total, int totalDisplay)> GetAllStockAdjustmentAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
         Task AddStockAdjustmentAsync(StockAdjustment stockAdjustment);
         Task DeleteStockAdjustmentAsync(Guid id);
-       
+
         /* Task<IList<Warranty>> GetAllWarrantyAsync();
         Task<Warranty> GetWarrantyByIdAsync(Guid id);
         Task UpdateWarrantyAsync(Warranty warranty);*/
+
+ 
+      
+
     }
 }

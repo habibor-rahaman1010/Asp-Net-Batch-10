@@ -13,8 +13,10 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
 {
     public class StockAdjustmentRepository : Repository<StockAdjustment, Guid>, IStockAdjustmentRepository
     {
+        private readonly InventoryDbContext _inventoryDbContext; 
         public StockAdjustmentRepository(InventoryDbContext context) : base(context)
         {
+            _inventoryDbContext = context;
         }
 
         public async Task<(IList<StockAdjustment> data, int total, int totalDisplay)> GetPagedStockAdjustmentsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
@@ -31,6 +33,11 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
                 || x.AdjustmentType.AdjustmentTypeName.Contains(search.Value), 
                 order, x => x.Include(l => l.BusinessLocation).Include(y => y.AdjustmentType), pageIndex, pageSize, true);
             }
+        }
+
+        public async Task<bool> HasStockAdjustmentsAsync(Guid productId)
+        {
+            return await _inventoryDbContext.StockAdjustments.AnyAsync(sa => sa.ProductId == productId);
         }
     }
 }

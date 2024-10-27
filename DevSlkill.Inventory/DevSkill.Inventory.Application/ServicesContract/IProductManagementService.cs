@@ -18,6 +18,7 @@ namespace DevSkill.Inventory.Application.ServicesContract
         Task<(IList<ProductDto> data, int total, int totalDisplay)> GetProductsSpAsync(int pageIndex, int pageSize, ProductSearchDto search, string? order);
         Task UpdateProductAsync(Product product);
         Task<IList<Product>> SearchProductsByNameAsync(string searchTerm);
+
         Task<bool> HasStockAdjustmentsAsync(Guid productId);
     }
 }
