@@ -9,6 +9,8 @@ namespace DevSkill.Inventory.Domain.Entities
     public class Subcategory : IEntity<Guid>
     {
         public Guid Id { get; set; }
-        public string SubcategoryName { get; set; } = string.Empty;
+        public string SubCategoryName { get; set; } = string.Empty; 
+        public string Description { get; set; } = string.Empty;
+        public string CategoryCode { get; set; } = string.Empty;
     }
 }

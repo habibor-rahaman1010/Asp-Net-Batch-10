@@ -81,9 +81,9 @@ namespace DevSkill.Inventory.Infrastructure.Data
             );
 
             modelBuilder.Entity<Subcategory>().HasData(
-                new Subcategory { Id = Guid.NewGuid(), SubcategoryName = "Smartphones" },
-                new Subcategory { Id = Guid.NewGuid(), SubcategoryName = "Laptops" },
-                new Subcategory { Id = Guid.NewGuid(), SubcategoryName = "Televisions" }
+                new Subcategory { Id = Guid.NewGuid(), SubCategoryName = "Smartphones" },
+                new Subcategory { Id = Guid.NewGuid(), SubCategoryName = "Laptops" },
+                new Subcategory { Id = Guid.NewGuid(), SubCategoryName = "Televisions" }
             );
 
             modelBuilder.Entity<Unit>().HasData(

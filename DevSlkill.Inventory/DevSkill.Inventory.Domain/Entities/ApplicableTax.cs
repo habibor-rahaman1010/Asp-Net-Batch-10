@@ -9,6 +9,8 @@ namespace DevSkill.Inventory.Domain.Entities
     public class ApplicableTax : IEntity<Guid>
     {
         public Guid Id { get; set; }
-        public string ApplicableTaxName { get; set; } = string.Empty;
+        public string ApplicableTaxName { get; set; } = string.Empty; 
+        public string Description { get; set; } = string.Empty;
+        public decimal TaxRate { get; set; }
     }
 }

@@ -10,5 +10,7 @@ namespace DevSkill.Inventory.Domain.Entities
     {
         public Guid Id {  get; set; }
         public string SellingPriceTaxName { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public decimal TaxRate { get; set; }
     }
 }

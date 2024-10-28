@@ -36,7 +36,7 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
         public static IList<SelectListItem> ConvertSubCatrgory(IList<Subcategory> subcategories)
         {
             var Items = (from c in subcategories
-                         select new SelectListItem(c.SubcategoryName, c.Id.ToString()))
+                         select new SelectListItem(c.SubCategoryName, c.Id.ToString()))
                          .ToList();
 
             Items.Insert(0, new SelectListItem("Select", string.Empty));
