@@ -9,5 +9,6 @@ namespace DevSkill.Inventory.Domain.RepositoryContracts
 {
     public interface IBarcodeTypeRepository : IRepositoryBase<BarcodeType, Guid>
     {
+        Task<(IList<BarcodeType> data, int total, int totalDisplay)> GetPagedBarcodeTypesAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
     }
 }

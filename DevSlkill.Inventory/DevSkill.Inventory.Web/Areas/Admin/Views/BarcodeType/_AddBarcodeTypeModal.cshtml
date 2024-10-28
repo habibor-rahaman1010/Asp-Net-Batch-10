@@ -1,0 +1,34 @@
+﻿@model BarcodeTypeCreateModel
+<!-- Modal for adding a new warranty -->
+<div class="modal fade" id="addBarcodeTypeModal" tabindex="-1" role="dialog" aria-labelledby="barcodeTypeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="barcodeTypeModalLabel">Add New Barcode Type</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-antiforgery="true" id="barcodeTypeForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label asp-for="BarcodeTypeName">Barcode Type Name</label>
+                        <input asp-for="BarcodeTypeName" type="text" class="form-control" id="barcodeTypeName" name="BarcodeTypeName" required>
+                        <span asp-validation-for="BarcodeTypeName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="BarcodeTypeCode">Barcode Type Code</label>
+                        <input asp-for="BarcodeTypeCode" type="text" class="form-control" id="barcodeTypeCode" name="BarcodeTypeCode" required>
+                        <span asp-validation-for="BarcodeTypeCode" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="BarcodeDescription">Barcode Description</label>
+                        <textarea asp-for="BarcodeDescription" class="form-control" id="barcodeDescription" name="BarcodeDescription" rows="3"></textarea>
+                        <span asp-validation-for="BarcodeDescription" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

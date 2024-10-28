@@ -28,7 +28,7 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
         public ISellingPriceTaxRepository SellingPriceTaxRepository { get; private set; }
         public IAdjustmentTypeRepository AdjustmentTypeRepository { get; private set; }
         public IStockAdjustmentRepository StockAdjustmentRepository { get; private set; }
-
+        
         public ProductUnitOfWork(InventoryDbContext productDbContext,
             IProductRepository productRepository,
             ICategoryRepository categoryRepository,

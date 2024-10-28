@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Waranty List";
+    ViewData["Title"] = "Barcode Type List";
 }
 
 <style>
@@ -24,7 +24,7 @@
 
 <!-- Toast container -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
-    <div id="adjustmentTypeToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div id="barcodeTypeToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-body d-flex" id="toastMessage">
             <!-- Toast message will be dynamically set here -->
         </div>
@@ -36,12 +36,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>All Stock Adjustment List</h1>
+                <h1>All Warranty List</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">Stock Adjustment</li>
+                    <li class="breadcrumb-item active">Warranty</li>
                 </ol>
             </div>
         </div>
@@ -55,45 +55,34 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">All available stock adjustment are here!</h3>
+                        <h3 class="card-title">All available Wrranty are here!</h3>
 
-                        <a class="btn btn-primary float-right" asp-area="Admin" asp-controller="StockAdjustment" asp-action="CreateStockAdjustment">
+                        <a class="btn btn-primary float-right" data-toggle="modal" data-target="#addBarcodeTypeModal">
                             <i class="nav-icon"></i>
-                            <i class="fas fa-plus"></i> Add Stock Adjustment
+                            <i class="fas fa-plus"></i> Add Barcode Type
                         </a>
+
 
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body">
                         <partial name="_ResponsePartial" />
                         <partial name="_ModalPartial" />
-                        <table id="adjustmentTypes" class="table table-bordered table-striped">
+                        <table id="barcodeTypes" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th>Location Name</th>
-                                    <th>Adjustment Type</th>
-                                    <th>Product Name</th>
-                                    <th>Reference No</th>
-                                    <th>TotalAmount</th>
-                                    <th>TotalAmountRecover</th>
-                                    <th>Reason</th>
-                                    <th>AdjustmentDate</th>
-                                    <th>AddedBy</th>
+                                    <th>Barcode Type Name</th>
+                                    <th>Description</th>
+                                    <th>Barcode Type Code</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
 
                             <tfoot>
                                 <tr>
-                                    <th>Location Name</th>
-                                    <th>Adjustment Type</th>
-                                    <th>Product Name</th>
-                                    <th>Reference No</th>
-                                    <th>TotalAmount</th>
-                                    <th>TotalAmountRecover</th>
-                                    <th>Reason</th>
-                                    <th>AdjustmentDate</th>
-                                    <th>AddedBy</th>
+                                    <th>Barcode Type Name</th>
+                                    <th>Description</th>
+                                    <th>Barcode Type Code</th>
                                     <th>Actions</th>
                                 </tr>
                             </tfoot>
@@ -110,7 +99,8 @@
     <!-- /.container-fluid -->
 </section>
 
-<partial name="_StockAdjustmentDetailsPartial" />
+<partial name="_AddBarcodeTypeModal" />
+<partial name="_UpdateBarcodeTypeModal" />
 
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
@@ -158,7 +148,7 @@
     <script type="text/javascript">
         //Load data in table used by DataTable...
         $(function () {
-            $("#adjustmentTypes").DataTable({
+            $("#barcodeTypes").DataTable({
                 processing: true,
                 serverSide: true,
                 responsive: true,
@@ -168,7 +158,7 @@
                 info: true,
                 autoWidth: false,
                 ajax: {
-                    url: "/Admin/StockAdjustment/GetStockAdjustmentJsonData",
+                    url: "/Admin/BarcodeType/GetBarcodeTypeJsonData",
                     type: "POST",
                     contentType: "application/json",
                     dataType: "json",
@@ -178,40 +168,171 @@
                 },
 
                 columnDefs: [
+                    {
+                        // Render description column with only 20 words
+                        targets: 1,
+                        render: function (data, type, row) {
+                            var words = data.split(" ");
+                            if (words.length > 10) {
+                                return words.slice(0, 10).join(" ") + '...';
+                            }
+                            return data;
+                        }
+                    },
 
                     {
                         orderable: false,
-                        targets: 9,
+                        targets: 3,
                         render: function (data, type, row) {
-                            return `
-                                    <button type="submit" class="btn btn-danger btn-sm show-bs-modal" data-id='${data}' value='${data}'>
-                                        <i class="fas fa-trash">
-                                        </i>
-                                        Delete
-                                    </button>`;
+                            return `<button type="button" class="btn btn-info btn-sm update-barcodeType" data-id='${data}' data-toggle="modal" data-target="#updateBarcodeTypeModal">
+                                                                        <i class="fas fa-pencil-alt"></i> Edit
+                                                                    </button>
+
+                                                                    <button type="submit" class="btn btn-danger btn-sm show-bs-modal" data-id='${data}' value='${data}'>
+                                                                        <i class="fas fa-trash">
+                                                                        </i>
+                                                                        Delete
+                                                                    </button>`;
                         }
                     },
-                    ...[0, 1, 2, 3, 4, 5, 6, 8].map(function (target) {
-                        return {
-                            targets: target,
-                            createdCell: function (td, type, data) {
-                                $(td).addClass('table-row');
-                                $(td).attr('data-id', data[9]);
-                            }
-                        };
-                    })
                 ],
 
                 dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
 
-            }).buttons().container().appendTo('#adjustmentTypes_wrapper .col-md-6:eq(0)');
+            }).buttons().container().appendTo('#barcodeTypes_wrapper .col-md-6:eq(0)');
 
+
+            //This code create a new BarcodeType...
+            $(document).ready(function () {
+                // Handle form submission
+                $('#barcodeTypeForm').on('submit', function (e) {
+                    e.preventDefault();
+
+                    $.ajax({
+                        url: '/Admin/BarcodeType/AddBarcodeType',
+                        method: 'POST',
+                        data: $(this).serialize(),
+                        success: function (response) {
+                            if (response.success) {
+                                // Close the modal
+                                $('#addBarcodeTypeModal').modal('hide');
+                                $('#barcodeTypeForm')[0].reset();
+
+                                // Display toast notification
+                                $('#toastMessage').text(response.message);
+                                $('#barcodeTypeToast').toast({
+                                    delay: 3000
+                                });
+                                $('#barcodeTypeToast').toast('show');
+                                // Refresh the DataTable
+                                $('#barcodeTypes').DataTable().ajax.reload();
+                            }
+                            else {
+                                // Handle validation errors or any other errors
+                                // Display toast notification
+                                $('#toastMessage').text(response.message);
+                                $('#barcodeTypeToast').toast({
+                                    delay: 3000
+                                });
+                                $('#barcodeTypeToast').toast('show');
+                            }
+                        },
+                        error: function (error) {
+                            $('#toastMessage').text('There was an error adding the brand.');
+                            $('#barcodeTypeToast').toast({
+                                delay: 3000
+                            });
+                            $('#barcodeTypeToast').toast('show');
+                        }
+                    });
+                });
+            });
+
+        
+            //This code for Barcode Type Update...
+            $(document).ready(function () {
+                // Handle the click event for the edit button
+                $('#barcodeTypes').on('click', '.update-barcodeType', function () {
+                    var warrantyId = $(this).data('id');
+                    console.log("button is clicked");
+
+                    // Use AJAX to fetch the category data
+                    $.ajax({
+                        url: '/Admin/BarcodeType/GetBarcodeTypeById',
+                        method: 'GET',
+                        data: { id: warrantyId },
+                        success: function (response) {
+                            console.log(response)
+                            if (response.success) {
+                                // Populate the modal fields with the category data
+                                $('#updateBarcodeTypeId').val(response.data.id);
+                                $('#editBarcodeTypeName').val(response.data.barcodeTypeName);
+                                $('#editBarcodeDescription').val(response.data.barcodeDescription);
+                                $('#editBarcodeTypeCode').val(response.data.barcodeTypeCode);
+
+                                // Open the modal (bootstrap handles this)
+                                $('#updateBarcodeTypeModal').modal('show');
+                            }
+                            else {
+                                alert('Error fetching category data');
+                            }
+                        },
+                        error: function () {
+                            alert('An error occurred while fetching the category data.');
+                        }
+                    });
+                });
+
+                // Handle the form submission for editing a category
+                $('#updateBarcodeTypeForm').on('submit', function (e) {
+                    e.preventDefault();
+
+                    $.ajax({
+                        url: '/Admin/BarcodeType/UpdateBarcodeType',
+                        method: 'POST',
+                        data: $(this).serialize(),
+                        success: function (response) {
+                            console.log(response);
+                            if (response.success) {
+                                // Close the modal and reset
+                                $('#updateBarcodeTypeModal').modal('hide');
+                                $('#updateBarcodeTypeForm')[0].reset();
+
+                                // Display toast notification
+                                $('#toastMessage').text(response.message);
+                                $('#barcodeTypeToast').toast({
+                                    delay: 3000
+                                });
+                                $('#barcodeTypeToast').toast('show');
+
+                                // Refresh the DataTable
+                                $('#barcodeTypes').DataTable().ajax.reload();
+                            }
+                            else {
+                                $('#toastMessage').text(response.message);
+                                $('#barcodeTypeToast').toast({
+                                    delay: 3000
+                                });
+                                $('#barcodeTypeToast').toast('show');
+                            }
+                        },
+                        error: function () {
+                            $('#toastMessage').text('There was an error editing the brand.');
+                            $('#barcodeTypeToast').toast({
+                                delay: 3000
+                            });
+                            $('#barcodeTypeToast').toast('show');
+                        }
+                    });
+                });
+            });
             
+
             //This is code delete the adjustment type...
             $(document).ready(function () {
                 // Handle the click event on delete buttons in the list
-                $('#adjustmentTypes').on('click', '.show-bs-modal', function (e) {
+                $('#barcodeTypes').on('click', '.show-bs-modal', function (e) {
                     let id = $(this).data("id");  // Get the ID of the item to delete
                     $("#delete-id").val(id);  // Set the hidden input value with the ID
                     $("#delete-modal").modal('show');  // Show the delete confirmation modal
@@ -260,46 +381,6 @@
                     });
                 });
             });
-
-
-            // This code for product details
-            $('#adjustmentTypes tbody').on('click', '.table-row', function () {
-                console.log("clicked");
-                var productId = $(this).data().id;
-                $.ajax({
-                    url: `/Admin/StockAdjustment/GetStockAdjustmentyById/${productId}`,
-                    method: 'GET',
-                    success: function (data) {
-                        console.log(data);
-
-                        // Display data or 'N/A' if value is empty
-                        $('#id').text(data.id || 'N/A');
-                        $('#ReferenceNo').text(data.referenceNo || 'N/A');
-                        $('#AdjustmentDate').text(data.adjustmentDate || 'N/A');
-                        $('#TotalAmount').text(data.totalAmount || 'N/A');
-                        $('#TotalAmountRecover').text(data.totalAmountRecover || 'N/A');
-                        $('#Reason').text(data.reason || 'N/A');
-                        $('#AddedBy').text(data.addedBy || 'N/A');
-                        $('#BusinessLocationName').text(data.businessLocation?.locationName || 'N/A');
-                        $('#AdjustmentTypeName').text(data.adjustmentType?.adjustmentTypeName || 'N/A');
-                        $('#ProductId').text(data.product?.id || 'N/A');
-                        $('#ProductName').text(data.product?.productName || 'N/A');
-                        $('#ProductPrice').text(data.product?.price || 'N/A');
-
-                        $('#ProductTableName').text(data.product?.productName || 'N/A');
-                        $('#ProductQuantity').text(data.adjustmentQuantity || 'N/A');
-                        $('#ProductUnitPrice').text(data.unitPrice || 'N/A');
-                        $('#ProductSubtotal').text(data.totalAmount || 'N/A');
-                        // Show the modal
-                        $('#productDetailsModal').modal('show');
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("Error fetching product data:", error);
-                        alert('Failed to load product details.');
-                    }
-                });
-            });
-
 
             //This code for temp data response fadeOut
             $(document).ready(function () {

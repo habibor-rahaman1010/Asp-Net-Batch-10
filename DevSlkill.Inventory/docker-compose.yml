@@ -7,8 +7,13 @@ services:
         image: devskill-inventory
         env_file: 
             - web.env
+        volumes:
+            - inventory-data:/app/Logs
         ports:
             - "8080:80"
         environment:
             - ASPNETCORE_ENVIRONMENT=Production
         entrypoint: ["dotnet", "DevSkill.Inventory.Web.dll"]
+volumes:
+    inventory-data:
+        external: true

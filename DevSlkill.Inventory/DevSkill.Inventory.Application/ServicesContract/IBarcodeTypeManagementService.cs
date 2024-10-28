@@ -1,4 +1,5 @@
-﻿using DevSkill.Inventory.Domain.Entities;
+﻿using DevSkill.Inventory.Domain;
+using DevSkill.Inventory.Domain.Entities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,5 +13,9 @@ namespace DevSkill.Inventory.Application.ServicesContract
     {
         Task<IList<BarcodeType>> GetBarCodeTypes();
         Task<BarcodeType> GetBarcodeTypeId(Guid id);
+        Task<(IList<BarcodeType> data, int total, int totalDisplay)> GetAllBarcodeTypeAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
+        Task AddBarcodeTypeAsync(BarcodeType barcodeType);
+        Task UpdateBarcodeTypeAsync(BarcodeType barcodeType);
+        Task DeleteBarcodeTypeAsync(Guid id);
     }
 }

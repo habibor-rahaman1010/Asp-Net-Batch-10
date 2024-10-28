@@ -117,9 +117,9 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(nameof(WarrantyList));
         }
 
-        public IActionResult GetWarrantyById(Guid id)
+        public async Task<IActionResult> GetWarrantyById(Guid id)
         {
-            var warranty = _warrantyManagementService.GetWarrantyByIdAsync(id);
+            var warranty = await _warrantyManagementService.GetWarrantyByIdAsync(id);
             if (warranty != null)
             {
                 return Json(new { success = true, data = warranty });
