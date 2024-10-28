@@ -145,7 +145,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 return Json(new
                 {
                     success = false,
-                    message = "The Stoc kAdjustment deleted failed"
+                    message = "The Stock Adjustment deleted failed"
                 });
             }
         }

@@ -4,6 +4,7 @@ using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Web;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
@@ -101,6 +102,19 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateBarcodeType(BarcodeTypeUpdateModel model)
         {
+
+           /* foreach (var modelState in ViewData.ModelState.Values)
+            {
+                foreach (ModelError error in modelState.Errors)
+                {
+                    _logger.LogError(error.ErrorMessage);
+                }
+            }
+
+            var messages = string.Join("; ", ModelState.Values
+                                        .SelectMany(x => x.Errors)
+                                        .Select(x => x.ErrorMessage));*/
+
             if (ModelState.IsValid)
             {
                 var barcodeType = await _barcodeTypeManagementService.GetBarcodeTypeId(model.Id);
@@ -119,21 +133,21 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         {
             try
             {
-                await _stockAdjustmentManagementService.DeleteStockAdjustmentAsync(id);
+                await _barcodeTypeManagementService.DeleteBarcodeTypeAsync(id);
 
                 return Json(new
                 {
                     success = true,
-                    message = "The Stock Adjustment has deleted successfuly"
+                    message = "The Barcode Type has deleted successfuly"
                 });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "The Stock Adjustment deleted failed");
+                _logger.LogError(ex, "The Barcode Type deleted failed");
                 return Json(new
                 {
                     success = false,
-                    message = "The Stoc kAdjustment deleted failed"
+                    message = "The Barcode Type deleted failed"
                 });
             }
         }
