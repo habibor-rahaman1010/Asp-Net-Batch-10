@@ -9,5 +9,6 @@ namespace DevSkill.Inventory.Domain.RepositoryContracts
 {
     public interface ISellingPriceTaxRepository : IRepositoryBase<SellingPriceTax, Guid>
     {
+        Task<(IList<SellingPriceTax> data, int total, int totalDisplay)> GetPagedSellingPriceTaxesAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
     }
 }

@@ -9,5 +9,6 @@ namespace DevSkill.Inventory.Domain.RepositoryContracts
 {
     public interface ISubCategoryRepository : IRepositoryBase<Subcategory, Guid>
     {
+        Task<(IList<Subcategory> data, int total, int totalDisplay)> GetPagedSubCategoriesAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
     }
 }
