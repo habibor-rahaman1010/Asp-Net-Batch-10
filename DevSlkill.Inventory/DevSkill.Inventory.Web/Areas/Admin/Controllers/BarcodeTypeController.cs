@@ -35,7 +35,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             var result = await _barcodeTypeManagementService.GetAllBarcodeTypeAsync(model.PageIndex, model.PageSize, model.Search,
                model.FormatSortExpression("Id, BarcodeTypeName", "BarcodeDescription", "BarcodeTypeCode"));
 
-            var productJsonData = new
+            var barcodeTypeJsonData = new
             {
                 recordsTotal = result.total,
                 recordsFiltered = result.totalDisplay,
@@ -50,7 +50,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     ).ToArray()
             };
 
-            return Json(productJsonData);
+            return Json(barcodeTypeJsonData);
         }
 
         [HttpPost, ValidateAntiForgeryToken]

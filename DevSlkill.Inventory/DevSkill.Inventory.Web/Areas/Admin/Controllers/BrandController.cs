@@ -32,7 +32,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             var result = await _brandManagementService.GetBrandsAsync(model.PageIndex, model.PageSize, model.Search,
                 model.FormatSortExpression("Id, BrandName", "BandOrigin", "Description"));
 
-            var productJsonData = new
+            var brandJsonData = new
             {
                 recordsTotal = result.total,
                 recordsFiltered = result.totalDisplay,
@@ -47,7 +47,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     ).ToArray()
             };
 
-            return Json(productJsonData);
+            return Json(brandJsonData);
         }
 
         [HttpPost, ValidateAntiForgeryToken]

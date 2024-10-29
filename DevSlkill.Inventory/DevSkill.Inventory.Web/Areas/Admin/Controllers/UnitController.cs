@@ -91,7 +91,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             var result = await _unitManagementService.GetAllUnitAsync(model.PageIndex, model.PageSize, model.Search,
                model.FormatSortExpression("Id, UnitName", "ShortName", "AllowDecimal"));
 
-            var productJsonData = new
+            var unitJsonData = new
             {
                 recordsTotal = result.total,
                 recordsFiltered = result.totalDisplay,
@@ -106,7 +106,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     ).ToArray()
             };
 
-            return Json(productJsonData);
+            return Json(unitJsonData);
         }
 
         [HttpPost, ValidateAntiForgeryToken]

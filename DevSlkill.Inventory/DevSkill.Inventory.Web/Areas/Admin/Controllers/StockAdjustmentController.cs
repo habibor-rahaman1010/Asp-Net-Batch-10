@@ -50,7 +50,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             var result = await _stockAdjustmentManagementService.GetAllStockAdjustmentAsync(model.PageIndex, model.PageSize, model.Search,
                model.FormatSortExpression("BusinessLocation", "AdjustmentType", "Product", "ReferenceNo", "TotalAmount", "TotalAmountRecover", "Reason", "AdjustmentDate", "AddedBy"));
 
-            var productJsonData = new
+            var stockAdjustmentJsonData = new
             {
                 recordsTotal = result.total,
                 recordsFiltered = result.totalDisplay,
@@ -71,7 +71,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     ).ToArray()
             };
 
-            return Json(productJsonData);
+            return Json(stockAdjustmentJsonData);
         }
 
         public async Task<IActionResult> CreateStockAdjustment()

@@ -35,7 +35,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             var result = await _warrantyManagementService.GetAllWarrantyAsync(model.PageIndex, model.PageSize, model.Search,
                model.FormatSortExpression("Id, Name", "Description", "WarrantyDuration"));
 
-            var productJsonData = new
+            var warrantyJsonData = new
             {
                 recordsTotal = result.total,
                 recordsFiltered = result.totalDisplay,
@@ -50,7 +50,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     ).ToArray()
             };
 
-            return Json(productJsonData);
+            return Json(warrantyJsonData);
         }
 
         [HttpPost, ValidateAntiForgeryToken]

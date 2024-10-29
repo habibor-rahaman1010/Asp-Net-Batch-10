@@ -36,7 +36,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             var result = await _categoryManagementService.GetCategoriesAsync(model.PageIndex, model.PageSize, model.Search,
                 model.FormatSortExpression("CategoryName", "CategoryCode", "Description"));
 
-            var productJsonData = new
+            var categoryJsonData = new
             {
                 recordsTotal = result.total,
                 recordsFiltered = result.totalDisplay,
@@ -51,7 +51,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     ).ToArray()
             };
 
-            return Json(productJsonData);
+            return Json(categoryJsonData);
         }
 
         public IActionResult AddCategory()

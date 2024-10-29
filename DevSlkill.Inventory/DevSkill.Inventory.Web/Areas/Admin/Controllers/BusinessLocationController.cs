@@ -35,7 +35,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             var result = await _businessLocationManagementService.GetAllBusinessLocationAsync(model.PageIndex, model.PageSize, model.Search,
                model.FormatSortExpression("Id, LocationName", "Address", "City", "State", "ZipCode", "Country"));
 
-            var productJsonData = new
+            var businessLocationJsonData = new
             {
                 recordsTotal = result.total,
                 recordsFiltered = result.totalDisplay,
@@ -53,7 +53,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     ).ToArray()
             };
 
-            return Json(productJsonData);
+            return Json(businessLocationJsonData);
         }
 
         [HttpPost, ValidateAntiForgeryToken]

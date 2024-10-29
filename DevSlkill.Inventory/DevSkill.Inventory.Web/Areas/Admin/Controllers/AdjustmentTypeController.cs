@@ -36,7 +36,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             var result = await _adjustmentTypeManagementService.GetAllAdjustmentTypeAsync(model.PageIndex, model.PageSize, model.Search,
                model.FormatSortExpression("Id, AdjustmentTypeName", "Description" ));
 
-            var productJsonData = new
+            var adjustmentTypeJsonData = new
             {
                 recordsTotal = result.total,
                 recordsFiltered = result.totalDisplay,
@@ -50,7 +50,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     ).ToArray()
             };
 
-            return Json(productJsonData);
+            return Json(adjustmentTypeJsonData);
         }
 
         [HttpPost, ValidateAntiForgeryToken]

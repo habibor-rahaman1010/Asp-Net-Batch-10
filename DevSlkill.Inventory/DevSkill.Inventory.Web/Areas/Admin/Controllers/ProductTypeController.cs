@@ -28,13 +28,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         {
             return View();
         }
+
         //Get all product type data 
         public async Task<JsonResult> GetProductTypeJsonData([FromBody] ProductTypeListModel model)
         {
             var result = await _productTypeManagementService.GetAllProductTypeAsync(model.PageIndex, model.PageSize, model.Search,
                model.FormatSortExpression("Id, ProductTypeName", "Description", "ProductTypeCode"));
 
-            var productJsonData = new
+            var productTypeJsonData = new
             {
                 recordsTotal = result.total,
                 recordsFiltered = result.totalDisplay,
@@ -49,7 +50,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     ).ToArray()
             };
 
-            return Json(productJsonData);
+            return Json(productTypeJsonData);
         }
 
         //This is method for create new product type
