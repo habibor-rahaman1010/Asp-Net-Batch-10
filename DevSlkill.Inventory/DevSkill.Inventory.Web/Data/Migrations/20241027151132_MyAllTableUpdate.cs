@@ -183,17 +183,17 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 keyValue: new Guid("d531544d-af73-4e96-8b81-ca96f1af8811"));
 
             migrationBuilder.DeleteData(
-                table: "Subcategories",
+                table: "SubCategories",
                 keyColumn: "Id",
                 keyValue: new Guid("482f7c94-0a89-41f1-8328-d15f9858d1c4"));
 
             migrationBuilder.DeleteData(
-                table: "Subcategories",
+                table: "SubCategories",
                 keyColumn: "Id",
                 keyValue: new Guid("4c9e0bf1-39f8-4e24-bc84-02eb0e06299d"));
 
             migrationBuilder.DeleteData(
-                table: "Subcategories",
+                table: "SubCategories",
                 keyColumn: "Id",
                 keyValue: new Guid("d0bd1ed4-09af-47b2-900e-3850682f8365"));
 
@@ -333,7 +333,7 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 });
 
             migrationBuilder.InsertData(
-                table: "Subcategories",
+                table: "SubCategories",
                 columns: new[] { "Id", "SubcategoryName" },
                 values: new object[,]
                 {
@@ -422,7 +422,7 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 name: "FK_Products_Subcategories_SubcategoryId",
                 table: "Products",
                 column: "SubcategoryId",
-                principalTable: "Subcategories",
+                principalTable: "SubCategories",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
@@ -624,17 +624,17 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 keyValue: new Guid("ee4874cf-30c8-475c-adfe-cc199e463867"));
 
             migrationBuilder.DeleteData(
-                table: "Subcategories",
+                table: "SubCategories",
                 keyColumn: "Id",
                 keyValue: new Guid("004edaed-73fe-49e7-a5d4-47c8e9293526"));
 
             migrationBuilder.DeleteData(
-                table: "Subcategories",
+                table: "SubCategories",
                 keyColumn: "Id",
                 keyValue: new Guid("475840b1-5e89-495c-9ac1-4a36461238e8"));
 
             migrationBuilder.DeleteData(
-                table: "Subcategories",
+                table: "SubCategories",
                 keyColumn: "Id",
                 keyValue: new Guid("ed5f6a26-ebcd-479d-ba98-4d74d5b1eda0"));
 
@@ -780,7 +780,7 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 });
 
             migrationBuilder.InsertData(
-                table: "Subcategories",
+                table: "SubCategories",
                 columns: new[] { "Id", "SubcategoryName" },
                 values: new object[,]
                 {
@@ -869,7 +869,7 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 name: "FK_Products_Subcategories_SubcategoryId",
                 table: "Products",
                 column: "SubcategoryId",
-                principalTable: "Subcategories",
+                principalTable: "SubCategories",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 

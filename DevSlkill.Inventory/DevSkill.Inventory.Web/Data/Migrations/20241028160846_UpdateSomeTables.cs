@@ -139,17 +139,17 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 keyValue: new Guid("eaf70cf2-9675-4ac6-8520-9f683f586ae7"));
 
             migrationBuilder.DeleteData(
-                table: "Subcategories",
+                table: "SubCategories",
                 keyColumn: "Id",
                 keyValue: new Guid("1c498c3d-0096-42bc-a2b3-5bc16e4236e2"));
 
             migrationBuilder.DeleteData(
-                table: "Subcategories",
+                table: "SubCategories",
                 keyColumn: "Id",
                 keyValue: new Guid("21dcf7db-831d-4951-9388-aec6e1d7e4ee"));
 
             migrationBuilder.DeleteData(
-                table: "Subcategories",
+                table: "SubCategories",
                 keyColumn: "Id",
                 keyValue: new Guid("3f11b4c1-342f-42bb-a026-5f49bbc4e1bf"));
 
@@ -185,19 +185,19 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
 
             migrationBuilder.RenameColumn(
                 name: "SubcategoryName",
-                table: "Subcategories",
+                table: "SubCategories",
                 newName: "SubCategoryName");
 
             migrationBuilder.AddColumn<string>(
                 name: "CategoryCode",
-                table: "Subcategories",
+                table: "SubCategories",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "");
 
             migrationBuilder.AddColumn<string>(
                 name: "Description",
-                table: "Subcategories",
+                table: "SubCategories",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "");
@@ -326,7 +326,7 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 });
 
             migrationBuilder.InsertData(
-                table: "Subcategories",
+                table: "SubCategories",
                 columns: new[] { "Id", "CategoryCode", "Description", "SubCategoryName" },
                 values: new object[,]
                 {
@@ -485,17 +485,17 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 keyValue: new Guid("f76bf612-7b99-4fcb-ab45-2b0f8c9e1481"));
 
             migrationBuilder.DeleteData(
-                table: "Subcategories",
+                table: "SubCategories",
                 keyColumn: "Id",
                 keyValue: new Guid("02b87e28-e57d-42b3-8ef5-fe692717f7cf"));
 
             migrationBuilder.DeleteData(
-                table: "Subcategories",
+                table: "SubCategories",
                 keyColumn: "Id",
                 keyValue: new Guid("4fa51139-b54b-4712-990e-a17e1c8d65f4"));
 
             migrationBuilder.DeleteData(
-                table: "Subcategories",
+                table: "SubCategories",
                 keyColumn: "Id",
                 keyValue: new Guid("5571fd0c-a7ca-418b-8193-994f1e3fe893"));
 
@@ -531,11 +531,11 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
 
             migrationBuilder.DropColumn(
                 name: "CategoryCode",
-                table: "Subcategories");
+                table: "SubCategories");
 
             migrationBuilder.DropColumn(
                 name: "Description",
-                table: "Subcategories");
+                table: "SubCategories");
 
             migrationBuilder.DropColumn(
                 name: "Description",
@@ -563,7 +563,7 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
 
             migrationBuilder.RenameColumn(
                 name: "SubCategoryName",
-                table: "Subcategories",
+                table: "SubCategories",
                 newName: "SubcategoryName");
 
             migrationBuilder.InsertData(
@@ -648,7 +648,7 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 });
 
             migrationBuilder.InsertData(
-                table: "Subcategories",
+                table: "SubCategories",
                 columns: new[] { "Id", "SubcategoryName" },
                 values: new object[,]
                 {

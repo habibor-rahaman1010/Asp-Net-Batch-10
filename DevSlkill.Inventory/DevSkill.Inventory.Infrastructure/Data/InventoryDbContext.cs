@@ -80,10 +80,10 @@ namespace DevSkill.Inventory.Infrastructure.Data
                 new SellingPriceTax { Id = Guid.NewGuid(), SellingPriceTaxName = "Zero Rate" }
             );
 
-            modelBuilder.Entity<Subcategory>().HasData(
-                new Subcategory { Id = Guid.NewGuid(), SubCategoryName = "Smartphones" },
-                new Subcategory { Id = Guid.NewGuid(), SubCategoryName = "Laptops" },
-                new Subcategory { Id = Guid.NewGuid(), SubCategoryName = "Televisions" }
+            modelBuilder.Entity<SubCategory>().HasData(
+                new SubCategory { Id = Guid.NewGuid(), SubCategoryName = "Smartphones" },
+                new SubCategory { Id = Guid.NewGuid(), SubCategoryName = "Laptops" },
+                new SubCategory { Id = Guid.NewGuid(), SubCategoryName = "Televisions" }
             );
 
             modelBuilder.Entity<Unit>().HasData(
@@ -200,7 +200,7 @@ namespace DevSkill.Inventory.Infrastructure.Data
 
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<Subcategory> Subcategories { get; set; } 
+        public DbSet<SubCategory> SubCategories { get; set; } 
         public DbSet<Brand> Brands { get; set; }          
         public DbSet<Unit> Units { get; set; }         
         public DbSet<BarcodeType> BarcodeTypes { get; set; } 

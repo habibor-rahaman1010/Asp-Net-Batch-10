@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace DevSkill.Inventory.Domain.RepositoryContracts
 {
-    public interface ISubCategoryRepository : IRepositoryBase<Subcategory, Guid>
+    public interface ISubCategoryRepository : IRepositoryBase<SubCategory, Guid>
     {
-        Task<(IList<Subcategory> data, int total, int totalDisplay)> GetPagedSubCategoriesAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
+        Task<(IList<SubCategory> data, int total, int totalDisplay)> GetPagedSubCategoriesAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
     }
 }

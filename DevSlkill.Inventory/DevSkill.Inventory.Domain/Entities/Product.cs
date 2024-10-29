@@ -30,7 +30,7 @@ namespace DevSkill.Inventory.Domain.Entities
         public Category Category { get; set; }
 
         public Guid? SubcategoryId { get; set; }
-        public Subcategory Subcategory { get; set; }
+        public SubCategory Subcategory { get; set; }
 
         public Guid? BusinessLocationId { get; set; }
         public BusinessLocation BusinessLocation { get; set; }
@@ -74,7 +74,7 @@ namespace DevSkill.Inventory.Domain.Entities
             Unit = new Unit();
             Brand = new Brand();
             Category = new Category();
-            Subcategory = new Subcategory();
+            Subcategory = new SubCategory();
             BusinessLocation = new BusinessLocation();
             Warranty = new Warranty();
             ProductType = new ProductType();

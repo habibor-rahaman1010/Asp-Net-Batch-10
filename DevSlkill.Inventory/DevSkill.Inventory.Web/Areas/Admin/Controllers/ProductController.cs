@@ -172,7 +172,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             model.SetBarcodeTypeValues(await _barcodeTypeManagementService.GetBarCodeTypes());
             model.SetUnitValues(await _unitManagementService.GetAllUnitAsync());
             model.SetBrandValues(await _brandManagementService.GetAllBrandAsync());
-            model.SetSubcategoryValues(await _subCategoryManagementService.GetAllSubcategoryAsync());
+            model.SetSubcategoryValues(await _subCategoryManagementService.GetAllSubCategoryAsync());
             model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
             model.SetWarrantyValues(await _warrantyManagementService.GetAllWarrantyAsync());
             model.SetApplicableTaxValues(await _applicableTaxManagementService.GetAllApplicableTax());
@@ -204,7 +204,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 product.BarcodeType = await _barcodeTypeManagementService.GetBarcodeTypeId(model.BarcodeTypeId);
                 product.Unit = await _unitManagementService.GetUnitByIdAsync(model.UnitId);
                 product.Brand = await _brandManagementService.GetBrandByIdAsync(model.BrandId);
-                product.Subcategory = await _subCategoryManagementService.GetSubcategoryByIdAsync(model.SubcategoryId);
+                product.Subcategory = await _subCategoryManagementService.GetSubCategoryByIdAsync(model.SubcategoryId);
                 product.BusinessLocation = await _businessLocationManagementService.GetBusinessLocationByIdAsync(model.BusinessLocationId);
                 product.Warranty = await _warrantyManagementService.GetWarrantyByIdAsync(model.WarrantyId);
                 product.ApplicableTax = await _applicableTaxManagementService.GetApplicableTaxByIdAsync(model.ApplicableTaxId);
@@ -239,7 +239,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             model.SetBarcodeTypeValues(await _barcodeTypeManagementService.GetBarCodeTypes());
             model.SetUnitValues(await _unitManagementService.GetAllUnitAsync());
             model.SetBrandValues(await _brandManagementService.GetAllBrandAsync());
-            model.SetSubcategoryValues(await _subCategoryManagementService.GetAllSubcategoryAsync());
+            model.SetSubcategoryValues(await _subCategoryManagementService.GetAllSubCategoryAsync());
             model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
             model.SetWarrantyValues(await _warrantyManagementService.GetAllWarrantyAsync());
             model.SetApplicableTaxValues(await _applicableTaxManagementService.GetAllApplicableTax());
@@ -257,7 +257,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             model.SetBarcodeTypeValues(await _barcodeTypeManagementService.GetBarCodeTypes());
             model.SetUnitValues(await _unitManagementService.GetAllUnitAsync());
             model.SetBrandValues(await _brandManagementService.GetAllBrandAsync());
-            model.SetSubcategoryValues(await _subCategoryManagementService.GetAllSubcategoryAsync());
+            model.SetSubcategoryValues(await _subCategoryManagementService.GetAllSubCategoryAsync());
             model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
             model.SetWarrantyValues(await _warrantyManagementService.GetAllWarrantyAsync());
             model.SetApplicableTaxValues(await _applicableTaxManagementService.GetAllApplicableTax());
@@ -279,7 +279,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 product.BarcodeType = await _barcodeTypeManagementService.GetBarcodeTypeId(model.BarcodeTypeId);
                 product.Unit = await _unitManagementService.GetUnitByIdAsync(model.UnitId);
                 product.Brand = await _brandManagementService.GetBrandByIdAsync(model.BrandId);
-                product.Subcategory = await _subCategoryManagementService.GetSubcategoryByIdAsync(model.SubcategoryId);
+                product.Subcategory = await _subCategoryManagementService.GetSubCategoryByIdAsync(model.SubcategoryId);
                 product.BusinessLocation = await _businessLocationManagementService.GetBusinessLocationByIdAsync(model.BusinessLocationId);
                 product.Warranty = await _warrantyManagementService.GetWarrantyByIdAsync(model.WarrantyId);
                 product.ApplicableTax = await _applicableTaxManagementService.GetApplicableTaxByIdAsync(model.ApplicableTaxId);
@@ -313,7 +313,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             model.SetBarcodeTypeValues(await _barcodeTypeManagementService.GetBarCodeTypes());
             model.SetUnitValues(await _unitManagementService.GetAllUnitAsync());
             model.SetBrandValues(await _brandManagementService.GetAllBrandAsync());
-            model.SetSubcategoryValues(await _subCategoryManagementService.GetAllSubcategoryAsync());
+            model.SetSubcategoryValues(await _subCategoryManagementService.GetAllSubCategoryAsync());
             model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
             model.SetWarrantyValues(await _warrantyManagementService.GetAllWarrantyAsync());
             model.SetApplicableTaxValues(await _applicableTaxManagementService.GetAllApplicableTax());

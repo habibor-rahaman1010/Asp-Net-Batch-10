@@ -102,7 +102,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
             Brands = Utility.ConvertBrands(brands);
         }
 
-        public void SetSubcategoryValues(IList<Subcategory> subCategories)
+        public void SetSubcategoryValues(IList<SubCategory> subCategories)
         {
             Subcategories = Utility.ConvertSubCatrgory(subCategories);
         }

@@ -35,6 +35,9 @@ namespace DevSkill.Inventory.Web.AutoMapProfile
 
             CreateMap<BarcodeTypeCreateModel, BarcodeType>().ReverseMap();
             CreateMap<BarcodeTypeUpdateModel, BarcodeType>().ReverseMap();
+
+            CreateMap<ProductTypeCreateModel, ProductType>().ReverseMap();
+            CreateMap<ProductTypeUpdateModel, ProductType>().ReverseMap();
         }
     }
 }

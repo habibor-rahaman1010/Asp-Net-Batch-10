@@ -33,7 +33,7 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
             return Items;
         }
 
-        public static IList<SelectListItem> ConvertSubCatrgory(IList<Subcategory> subcategories)
+        public static IList<SelectListItem> ConvertSubCatrgory(IList<SubCategory> subcategories)
         {
             var Items = (from c in subcategories
                          select new SelectListItem(c.SubCategoryName, c.Id.ToString()))

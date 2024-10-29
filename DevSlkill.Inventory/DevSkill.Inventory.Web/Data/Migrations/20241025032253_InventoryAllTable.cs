@@ -120,7 +120,7 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Subcategories",
+                name: "SubCategories",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -244,7 +244,7 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                     table.ForeignKey(
                         name: "FK_Products_Subcategories_SubcategoryId",
                         column: x => x.SubcategoryId,
-                        principalTable: "Subcategories",
+                        principalTable: "SubCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -381,7 +381,7 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Subcategories",
+                table: "SubCategories",
                 columns: new[] { "Id", "SubcategoryName" },
                 values: new object[,]
                 {
@@ -510,7 +510,7 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 name: "SellingPriceTaxes");
 
             migrationBuilder.DropTable(
-                name: "Subcategories");
+                name: "SubCategories");
 
             migrationBuilder.DropTable(
                 name: "Units");

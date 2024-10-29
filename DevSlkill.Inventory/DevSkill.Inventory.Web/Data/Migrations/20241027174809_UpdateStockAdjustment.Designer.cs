@@ -540,7 +540,7 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                     b.ToTable("StockAdjustments");
                 });
 
-            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.Subcategory", b =>
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SubCategory", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -552,7 +552,7 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
 
                     b.HasKey("Id");
 
-                    b.ToTable("Subcategories");
+                    b.ToTable("SubCategories");
 
                     b.HasData(
                         new
@@ -705,7 +705,7 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("DevSkill.Inventory.Domain.Entities.Subcategory", "Subcategory")
+                    b.HasOne("DevSkill.Inventory.Domain.Entities.SubCategory", "SubCategory")
                         .WithMany()
                         .HasForeignKey("SubcategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -736,7 +736,7 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
 
                     b.Navigation("SellingPriceTax");
 
-                    b.Navigation("Subcategory");
+                    b.Navigation("SubCategory");
 
                     b.Navigation("Unit");
 

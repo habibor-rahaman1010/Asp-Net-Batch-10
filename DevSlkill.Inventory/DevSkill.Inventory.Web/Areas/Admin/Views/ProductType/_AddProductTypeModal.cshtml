@@ -1,0 +1,34 @@
+﻿@model ProductTypeCreateModel
+<!-- Modal for adding a new product Type -->
+<div class="modal fade" id="addProductTypeModal" tabindex="-1" role="dialog" aria-labelledby="productTypeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productTypeModalLabel">Add New Product Type</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-antiforgery="true" id="productTypeForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label asp-for="ProductTypeName">Product Type Name</label>
+                        <input asp-for="ProductTypeName" type="text" class="form-control" id="barcodeTypeName"  required>
+                        <span asp-validation-for="ProductTypeName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ProductTypeCode">Product Type Code</label>
+                        <input asp-for="ProductTypeCode" type="text" class="form-control" id="barcodeTypeCode" required>
+                        <span asp-validation-for="ProductTypeCode" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Description"> Prodcut Type Description</label>
+                        <textarea asp-for="Description" class="form-control" id="barcodeDescription" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

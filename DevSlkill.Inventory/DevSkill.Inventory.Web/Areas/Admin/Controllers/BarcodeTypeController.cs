@@ -74,7 +74,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Warranty creation failed");
+                    _logger.LogError(ex, "Barcode creation failed");
                     return Json(new
                     {
                         success = false,

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DevSkill.Inventory.Domain.Entities
 {
-    public class Subcategory : IEntity<Guid>
+    public class SubCategory : IEntity<Guid>
     {
         public Guid Id { get; set; }
         public string SubCategoryName { get; set; } = string.Empty; 

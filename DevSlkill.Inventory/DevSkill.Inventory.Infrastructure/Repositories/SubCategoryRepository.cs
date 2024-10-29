@@ -11,13 +11,13 @@ using System.Threading.Tasks;
 
 namespace DevSkill.Inventory.Infrastructure.Repositories
 {
-    public class SubCategoryRepository : Repository<Subcategory, Guid>, ISubCategoryRepository
+    public class SubCategoryRepository : Repository<SubCategory, Guid>, ISubCategoryRepository
     {
         public SubCategoryRepository(InventoryDbContext context) : base(context)
         {
         }
 
-        public async Task<(IList<Subcategory> data, int total, int totalDisplay)> GetPagedSubCategoriesAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
+        public async Task<(IList<SubCategory> data, int total, int totalDisplay)> GetPagedSubCategoriesAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
         {
             if (string.IsNullOrWhiteSpace(search.Value))
             {

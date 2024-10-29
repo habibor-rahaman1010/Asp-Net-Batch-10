@@ -139,17 +139,17 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 keyValue: new Guid("9b0e1c2e-fdde-4ca0-bbfd-deeb877e9efb"));
 
             migrationBuilder.DeleteData(
-                table: "Subcategories",
+                table: "SubCategories",
                 keyColumn: "Id",
                 keyValue: new Guid("1e5c564b-45fb-4c5c-a85f-f293e09a8d3c"));
 
             migrationBuilder.DeleteData(
-                table: "Subcategories",
+                table: "SubCategories",
                 keyColumn: "Id",
                 keyValue: new Guid("411b1aad-8cb6-4c7d-9311-96d2c27a2627"));
 
             migrationBuilder.DeleteData(
-                table: "Subcategories",
+                table: "SubCategories",
                 keyColumn: "Id",
                 keyValue: new Guid("777bb31d-d0fd-4c51-bee1-594daa91458b"));
 
@@ -279,7 +279,7 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 });
 
             migrationBuilder.InsertData(
-                table: "Subcategories",
+                table: "SubCategories",
                 columns: new[] { "Id", "SubcategoryName" },
                 values: new object[,]
                 {
@@ -438,17 +438,17 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 keyValue: new Guid("64bb2ac7-88b7-4a5d-8a2a-0bb70a4000ff"));
 
             migrationBuilder.DeleteData(
-                table: "Subcategories",
+                table: "SubCategories",
                 keyColumn: "Id",
                 keyValue: new Guid("4e1b482a-e20f-418e-b7d6-4df28b8e3ab1"));
 
             migrationBuilder.DeleteData(
-                table: "Subcategories",
+                table: "SubCategories",
                 keyColumn: "Id",
                 keyValue: new Guid("cfdff4e8-e533-42d7-a739-b2ec75cdfb8a"));
 
             migrationBuilder.DeleteData(
-                table: "Subcategories",
+                table: "SubCategories",
                 keyColumn: "Id",
                 keyValue: new Guid("fdb82154-1c68-410a-af4a-b8911b74c3db"));
 
@@ -572,7 +572,7 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 });
 
             migrationBuilder.InsertData(
-                table: "Subcategories",
+                table: "SubCategories",
                 columns: new[] { "Id", "SubcategoryName" },
                 values: new object[,]
                 {

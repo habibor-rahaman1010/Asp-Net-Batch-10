@@ -1,4 +1,5 @@
-﻿using DevSkill.Inventory.Domain.Entities;
+﻿using DevSkill.Inventory.Domain;
+using DevSkill.Inventory.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,9 @@ namespace DevSkill.Inventory.Application.ServicesContract
     {
         Task<IList<ApplicableTax>> GetAllApplicableTax();
         Task<ApplicableTax> GetApplicableTaxByIdAsync(Guid id);
+        Task<(IList<ApplicableTax> data, int total, int totalDisplay)> GetAllApplicableTaxAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
+        Task AddApplicableTaxAsync(ApplicableTax applicableTax);
+        Task UpdateApplicableTaxAsync(ApplicableTax applicableTax);
+        Task DeleteApplicableTaxAsync(Guid id);
     }
 }
