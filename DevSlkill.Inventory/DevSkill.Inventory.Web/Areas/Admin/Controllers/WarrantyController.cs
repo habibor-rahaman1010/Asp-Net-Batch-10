@@ -33,7 +33,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         public async Task<JsonResult> GetWarrantyJsonData([FromBody] WarrantyListModel model)
         {
             var result = await _warrantyManagementService.GetAllWarrantyAsync(model.PageIndex, model.PageSize, model.Search,
-               model.FormatSortExpression("Id, Name", "Description", "WarrantyDuration"));
+               model.FormatSortExpression("Id", "Name", "Description", "WarrantyDuration"));
 
             var warrantyJsonData = new
             {

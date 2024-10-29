@@ -34,7 +34,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         public async Task<JsonResult> GetCategoryJsonData([FromBody] CategoryListModel model)
         {
             var result = await _categoryManagementService.GetCategoriesAsync(model.PageIndex, model.PageSize, model.Search,
-                model.FormatSortExpression("CategoryName", "CategoryCode", "Description"));
+                model.FormatSortExpression("Id","CategoryName", "CategoryCode", "Description"));
 
             var categoryJsonData = new
             {

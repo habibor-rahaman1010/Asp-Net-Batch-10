@@ -89,7 +89,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         public async Task<JsonResult> GetUnitJsonResponse([FromBody] UnitListModel model)
         {
             var result = await _unitManagementService.GetAllUnitAsync(model.PageIndex, model.PageSize, model.Search,
-               model.FormatSortExpression("Id, UnitName", "ShortName", "AllowDecimal"));
+               model.FormatSortExpression("Id", "UnitName", "ShortName", "AllowDecimal"));
 
             var unitJsonData = new
             {

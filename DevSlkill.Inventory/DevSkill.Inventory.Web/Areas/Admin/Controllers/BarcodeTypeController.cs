@@ -33,7 +33,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         public async Task<JsonResult> GetBarcodeTypeJsonData([FromBody] BarcodeTypeListModel model)
         {
             var result = await _barcodeTypeManagementService.GetAllBarcodeTypeAsync(model.PageIndex, model.PageSize, model.Search,
-               model.FormatSortExpression("Id, BarcodeTypeName", "BarcodeDescription", "BarcodeTypeCode"));
+               model.FormatSortExpression("Id", "BarcodeTypeName", "BarcodeDescription", "BarcodeTypeCode"));
 
             var barcodeTypeJsonData = new
             {

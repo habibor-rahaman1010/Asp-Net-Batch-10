@@ -33,7 +33,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         public async Task<JsonResult> GetProductTypeJsonData([FromBody] ProductTypeListModel model)
         {
             var result = await _productTypeManagementService.GetAllProductTypeAsync(model.PageIndex, model.PageSize, model.Search,
-               model.FormatSortExpression("Id, ProductTypeName", "Description", "ProductTypeCode"));
+               model.FormatSortExpression("Id", "ProductTypeName", "Description", "ProductTypeCode"));
 
             var productTypeJsonData = new
             {

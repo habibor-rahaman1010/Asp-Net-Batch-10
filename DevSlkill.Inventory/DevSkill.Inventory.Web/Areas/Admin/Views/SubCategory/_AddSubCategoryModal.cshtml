@@ -1,0 +1,34 @@
+﻿@model SubCategoryCreateModel
+<!-- Modal for adding a new product Type -->
+<div class="modal fade" id="addSubCategoryModal" tabindex="-1" role="dialog" aria-labelledby="subCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="SubCategoryModalLabel">Add New Sub Category</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-antiforgery="true" id="subCategoryForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label asp-for="SubCategoryName">Sub Category Name</label>
+                        <input asp-for="SubCategoryName" type="text" class="form-control"  required>
+                        <span asp-validation-for="SubCategoryName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="CategoryCode">Sub Category Code</label>
+                        <input asp-for="CategoryCode" type="text" class="form-control" required>
+                        <span asp-validation-for="CategoryCode" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Description">Sub Category Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -30,7 +30,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         public async Task<JsonResult> GetBrandJsonData([FromBody] BrandListModel model)
         {
             var result = await _brandManagementService.GetBrandsAsync(model.PageIndex, model.PageSize, model.Search,
-                model.FormatSortExpression("Id, BrandName", "BandOrigin", "Description"));
+                model.FormatSortExpression("Id", "BrandName", "BandOrigin", "Description"));
 
             var brandJsonData = new
             {

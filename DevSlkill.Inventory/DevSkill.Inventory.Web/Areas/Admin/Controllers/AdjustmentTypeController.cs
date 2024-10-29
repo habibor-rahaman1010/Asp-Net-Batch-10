@@ -34,7 +34,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         public async Task<JsonResult> GetAdjustmentTypeJsonData([FromBody] AdjustmentTypeListModel model)
         {
             var result = await _adjustmentTypeManagementService.GetAllAdjustmentTypeAsync(model.PageIndex, model.PageSize, model.Search,
-               model.FormatSortExpression("Id, AdjustmentTypeName", "Description" ));
+               model.FormatSortExpression("Id", "AdjustmentTypeName", "Description" ));
 
             var adjustmentTypeJsonData = new
             {

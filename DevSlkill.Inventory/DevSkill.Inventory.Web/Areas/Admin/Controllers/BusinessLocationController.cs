@@ -33,7 +33,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         public async Task<JsonResult> GetBusinessLocationJsonData([FromBody] BusinessLocationListModel model)
         {
             var result = await _businessLocationManagementService.GetAllBusinessLocationAsync(model.PageIndex, model.PageSize, model.Search,
-               model.FormatSortExpression("Id, LocationName", "Address", "City", "State", "ZipCode", "Country"));
+               model.FormatSortExpression("Id", "LocationName", "Address", "City", "State", "ZipCode", "Country"));
 
             var businessLocationJsonData = new
             {

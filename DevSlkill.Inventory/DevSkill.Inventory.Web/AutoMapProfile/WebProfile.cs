@@ -38,6 +38,9 @@ namespace DevSkill.Inventory.Web.AutoMapProfile
 
             CreateMap<ProductTypeCreateModel, ProductType>().ReverseMap();
             CreateMap<ProductTypeUpdateModel, ProductType>().ReverseMap();
+
+            CreateMap<SubCategoryCreateModel, SubCategory>().ReverseMap();
+            CreateMap<SubCategoryUpdateModel, SubCategory>().ReverseMap();
         }
     }
 }

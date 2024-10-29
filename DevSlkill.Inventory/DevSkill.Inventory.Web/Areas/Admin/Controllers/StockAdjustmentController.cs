@@ -48,7 +48,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         public async Task<JsonResult> GetStockAdjustmentJsonData([FromBody] StockAdjustmentListModel model)
         {
             var result = await _stockAdjustmentManagementService.GetAllStockAdjustmentAsync(model.PageIndex, model.PageSize, model.Search,
-               model.FormatSortExpression("BusinessLocation", "AdjustmentType", "Product", "ReferenceNo", "TotalAmount", "TotalAmountRecover", "Reason", "AdjustmentDate", "AddedBy"));
+               model.FormatSortExpression("Id", "BusinessLocation", "AdjustmentType", "Product", "ReferenceNo", "TotalAmount", "TotalAmountRecover", "Reason", "AdjustmentDate", "AddedBy"));
 
             var stockAdjustmentJsonData = new
             {
