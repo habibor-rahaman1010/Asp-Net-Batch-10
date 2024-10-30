@@ -10,6 +10,9 @@ using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
 using System.Reflection;
 
+using Autofac.Core;
+using DevSkill.Inventory.Infrastructure.InventoryIdentity;
+
 namespace DevSkill.Inventory.Web
 {
     public class Program
@@ -63,6 +66,18 @@ namespace DevSkill.Inventory.Web
 
                 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+                //This is my extension method here have all identity related configuration...
+                //builder.Services.AddIdentity();
+
+                builder.Services
+                .AddIdentity<ApplicationUser, ApplicationRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddUserManager<ApplicationUserManager>()
+                .AddRoleManager<ApplicationRoleManager>()
+                .AddSignInManager<ApplicationSignInManager>()
+                .AddDefaultTokenProviders();
+
+                //This is Autofac service...
                 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
                 builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
                 {
@@ -72,8 +87,7 @@ namespace DevSkill.Inventory.Web
                 //This service for automapper
                 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-                builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                    .AddEntityFrameworkStores<ApplicationDbContext>();
+               
                 builder.Services.AddControllersWithViews();
 
 
@@ -96,6 +110,7 @@ namespace DevSkill.Inventory.Web
 
                 app.UseRouting();
 
+                app.UseAuthentication();
                 app.UseAuthorization();
 
                 app.MapControllerRoute(
@@ -107,7 +122,7 @@ namespace DevSkill.Inventory.Web
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-                app.MapRazorPages();
+                //app.MapRazorPages();
 
                 app.Run();
             }
