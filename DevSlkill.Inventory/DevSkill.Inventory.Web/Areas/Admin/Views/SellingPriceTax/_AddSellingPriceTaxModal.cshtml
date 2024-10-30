@@ -1,20 +1,20 @@
-﻿@model ApplicableTaxCreateModel
-<!-- Modal for adding a new applicable tax -->
-<div class="modal fade" id="addApplicableTaxModal" tabindex="-1" role="dialog" aria-labelledby="ApplicableTaxModalLabel" aria-hidden="true">
+﻿@model SellingPriceTaxCreateModel
+<!-- Modal for adding a new selling price tax -->
+<div class="modal fade" id="addSellingPriceTaxModal" tabindex="-1" role="dialog" aria-labelledby="SellingPriceTaxModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="ApplicableTaxModalLabel">Add New Applicable Tax</h5>
+                <h5 class="modal-title" id="SellingPriceTaxModalLabel">Add New Selling Price Tax</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form method="post" asp-antiforgery="true" id="applicableTaxForm" enctype="multipart/form-data">
+                <form method="post" asp-antiforgery="true" id="sellingPriceTaxForm" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label asp-for="ApplicableTaxName">Applicable Tax Name</label>
-                        <input asp-for="ApplicableTaxName" type="text" class="form-control" required>
-                        <span asp-validation-for="ApplicableTaxName" class="text-danger"></span>
+                        <label asp-for="SellingPriceTaxName">Selling Price Tax Name</label>
+                        <input asp-for="SellingPriceTaxName" type="text" class="form-control" required>
+                        <span asp-validation-for="SellingPriceTaxName" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">

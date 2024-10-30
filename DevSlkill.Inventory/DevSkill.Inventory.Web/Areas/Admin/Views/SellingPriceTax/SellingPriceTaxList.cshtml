@@ -24,7 +24,7 @@
 
 <!-- Toast container -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
-    <div id="applicableTaxToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div id="sellingPriceTaxToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-body d-flex" id="toastMessage">
             <!-- Toast message will be dynamically set here -->
         </div>
@@ -56,9 +56,9 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">All applicable tax are here!</h3>
-                        <a id="myBtn" class="btn btn-primary float-right" data-toggle="modal" data-target="#addApplicableTaxModal">
+                        <a id="myBtn" class="btn btn-primary float-right" data-toggle="modal" data-target="#addSellingPriceTaxModal">
                             <i class="nav-icon"></i>
-                            <i class="fas fa-plus"></i> Add Applicable Tax
+                            <i class="fas fa-plus"></i> Add Selling Price Tax
                         </a>
 
 
@@ -67,7 +67,7 @@
                     <div class="card-body">
                         <partial name="_ResponsePartial" />
                         <partial name="_ModalPartial" />
-                        <table id="applicableTaxes" class="table table-bordered table-striped">
+                        <table id="sellingPriceTaxes" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>Selling Price Tax Name</th>
@@ -98,8 +98,8 @@
     <!-- /.container-fluid -->
 </section>
 
-@* <partial name="_AddApplicableTaxModal" />
-<partial name="_UpdateApplicableTaxModal" /> *@
+<partial name="_AddSellingPriceTaxModal" />
+<partial name="_UpdateSellingPriceTaxModal" />
 
 
 <!-- Delete Confirmation Modal -->
@@ -118,7 +118,7 @@
             </div>
             <div class="modal-footer">
                 <!-- The form that will be submitted when delete is confirmed -->
-                <form method="POST" id="applicableTaxForm" asp-antiforgery="true" , enctype="multipart/form-data">
+                <form method="POST" id="sellingPriceTaxForm" asp-antiforgery="true" , enctype="multipart/form-data">
                     <!-- Hidden input to store the ID of the item to be deleted -->
                     <input type="hidden" id="delete-id" name="id">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -148,7 +148,7 @@
     <script type="text/javascript">
         //Load data in table used by DataTable...
         $(function () {
-            $("#applicableTaxes").DataTable({
+            $("#sellingPriceTaxes").DataTable({
                 processing: true,
                 serverSide: true,
                 responsive: true,
@@ -184,15 +184,15 @@
                         orderable: false,
                         targets: 3,
                         render: function (data, type, row) {
-                            return `<button type="button" class="btn btn-info btn-sm update-applicableTax" data-id='${data}' data-toggle="modal" data-target="#updateApplicableTaxModal">
-                                                        <i class="fas fa-pencil-alt"></i> Edit
-                                                    </button>
+                            return `<button type="button" class="btn btn-info btn-sm update-sellingTax" data-id='${data}' data-toggle="modal" data-target="#updateSellingPriceTaxModal">
+                                                                <i class="fas fa-pencil-alt"></i> Edit
+                                                            </button>
 
-                                                    <button type="submit" class="btn btn-danger btn-sm delete-applicableTax" data-id='${data}' value='${data}'>
-                                                        <i class="fas fa-trash">
-                                                        </i>
-                                                        Delete
-                                                    </button>`;
+                                                            <button type="submit" class="btn btn-danger btn-sm delete-sellingTax" data-id='${data}' value='${data}'>
+                                                                <i class="fas fa-trash">
+                                                                </i>
+                                                                Delete
+                                                            </button>`;
                         }
                     },
                 ],
@@ -200,56 +200,55 @@
                 dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
 
-            }).buttons().container().appendTo('#applicableTaxes_wrapper .col-md-6:eq(0)');
+            }).buttons().container().appendTo('#sellingPriceTaxes_wrapper .col-md-6:eq(0)');
 
-        /*
-            //This code create a new product Type...
+
+            //This code create a new selling price tax...
             $(document).ready(function () {
-                // if we use ---data-target="#use_modal_id"--- so we no need to manually open the modal
-                //$('#myBtn').on('click', function() {
-                    //$('#addApplicableTaxModal').modal('show');
-                //})
-                
+                /*if we use ---data-target="#use_modal_id"--- so we no need to manually open the modal
+                $('#myBtn').on('click', function() {
+                    $('#addSellingPriceTaxModal').modal('show');
+                })*/
 
                 // Handle form submission
-                $('#applicableTaxForm').on('submit', function (e) {
+                $('#sellingPriceTaxForm').on('submit', function (e) {
                     e.preventDefault();
                     console.log("click");
                     $.ajax({
-                        url: '/Admin/ApplicableTax/AddApplicableTax',
+                        url: '/Admin/SellingPriceTax/AddSellingPriceTax',
                         method: 'POST',
                         data: $(this).serialize(),
                         success: function (response) {
                             if (response.success) {
                                 // Close the modal
-                                $('#addApplicableTaxModal').modal('hide');
-                                $('#applicableTaxForm')[0].reset();
+                                $('#addSellingPriceTaxModal').modal('hide');
+                                $('#sellingPriceTaxForm')[0].reset();
 
                                 // Display toast notification
                                 $('#toastMessage').text(response.message);
-                                $('#applicableTaxToast').toast({
+                                $('#sellingPriceTaxToast').toast({
                                     delay: 3000
                                 });
-                                $('#applicableTaxToast').toast('show');
+                                $('#sellingPriceTaxToast').toast('show');
                                 // Refresh the DataTable
-                                $('#applicableTaxes').DataTable().ajax.reload();
+                                $('#sellingPriceTaxes').DataTable().ajax.reload();
                             }
                             else {
                                 // Handle validation errors or any other errors
                                 // Display toast notification
                                 $('#toastMessage').text(response.message);
-                                $('#applicableTaxToast').toast({
+                                $('#sellingPriceTaxToast').toast({
                                     delay: 3000
                                 });
-                                $('#applicableTaxToast').toast('show');
+                                $('#sellingPriceTaxToast').toast('show');
                             }
                         },
                         error: function (error) {
                             $('#toastMessage').text('There was an error adding the applicable tax.');
-                            $('#applicableTaxToast').toast({
+                            $('#sellingPriceTaxToast').toast({
                                 delay: 3000
                             });
-                            $('#applicableTaxToast').toast('show');
+                            $('#sellingPriceTaxToast').toast('show');
                         }
                     });
                 });
@@ -259,82 +258,82 @@
             //This code for product Type Update...
             $(document).ready(function () {
                 // Handle the click event for the edit button
-                $('#applicableTaxes').on('click', '.update-applicableTax', function () {
-                    var applicableTaxId = $(this).data('id');
+                $('#sellingPriceTaxes').on('click', '.update-sellingTax', function () {
+                    var sellingPriceTaxId = $(this).data('id');
                     console.log("button is clicked");
 
-                    // Use AJAX to fetch the category data
+                    // Use AJAX to fetch the selling price tax data
                     $.ajax({
-                        url: '/Admin/ApplicableTax/GetApplicableTaxById',
+                        url: '/Admin/SellingPriceTax/GetSellingPriceTaxById',
                         method: 'GET',
-                        data: { id: applicableTaxId },
+                        data: { id: sellingPriceTaxId },
                         success: function (response) {
                             console.log(response)
                             if (response.success) {
-                                // Populate the modal fields with the category data
-                                $('#updateApplicableTaxId').val(response.data.id);
-                                $('#editApplicableTaxName').val(response.data.applicableTaxName);
+                                // Populate the modal fields with the selling price tax data
+                                $('#updateSellingPriceTaxId').val(response.data.id);
+                                $('#editSellingTaxName').val(response.data.sellingPriceTaxName);
                                 $('#editTaxRate').val(response.data.taxRate);
                                 $('#editDescription').val(response.data.description);
 
                                 // Open the modal (bootstrap handles this)
-                                $('#updateApplicableTaxModal').modal('show');
+                                $('#updateSellingPriceTaxModal').modal('show');
                             }
                             else {
                                 alert('Error fetching applicable tax');
                             }
                         },
                         error: function () {
-                            alert('An error occurred while fetching the applicable tax.');
+                            alert('An error occurred while fetching the selling price tax.');
                         }
                     });
                 });
 
-                // Handle the form submission for editing a product type
-                $('#updateApplicableTaxForm').on('submit', function (e) {
+                // Handle the form submission for editing a selling price tax
+                $('#updateSellingPriceTaxForm').on('submit', function (e) {
                     e.preventDefault();
 
                     $.ajax({
-                        url: '/Admin/ApplicableTax/UpdateApplicableTax',
+                        url: '/Admin/SellingPriceTax/UpdateSellingPriceTax',
                         method: 'POST',
                         data: $(this).serialize(),
                         success: function (response) {
                             console.log(response);
                             if (response.success) {
                                 // Close the modal and reset
-                                $('#updateApplicableTaxModal').modal('hide');
-                                $('#updateApplicableTaxForm')[0].reset();
+                                $('#updateSellingPriceTaxModal').modal('hide');
+                                $('#updateSellingPriceTaxForm')[0].reset();
 
                                 // Display toast notification
                                 $('#toastMessage').text(response.message);
-                                $('#applicableTaxToast').toast({
+                                $('#sellingPriceTaxToast').toast({
                                     delay: 3000
                                 });
-                                $('#applicableTaxToast').toast('show');
+                                $('#sellingPriceTaxToast').toast('show');
 
                                 // Refresh the DataTable
-                                $('#applicableTaxes').DataTable().ajax.reload();
+                                $('#sellingPriceTaxes').DataTable().ajax.reload();
                             }
                             else {
                                 $('#toastMessage').text(response.message);
-                                $('#applicableTaxToast').toast({
+                                $('#sellingPriceTaxToast').toast({
                                     delay: 3000
                                 });
-                                $('#applicableTaxToast').toast('show');
+                                $('#sellingPriceTaxToast').toast('show');
                             }
                         },
                         error: function () {
-                            $('#toastMessage').text('There was an error editing the brand.');
-                            $('#applicableTaxToast').toast({
+                            $('#toastMessage').text('There was an error editing the selling price tax.');
+                            $('#sellingPriceTaxToast').toast({
                                 delay: 3000
                             });
-                            $('#applicableTaxToast').toast('show');
+                            $('#sellingPriceTaxToast').toast('show');
                         }
                     });
                 });
             });
 
-
+            
             //This is code delete the product type...
             $(document).ready(function () {
                 // Handle the click event on delete buttons in the list
@@ -363,31 +362,31 @@
 
                                 // Display toast notification
                                 $('#toastMessage').text(response.message);
-                                $('#applicableTaxToast').toast({
+                                $('#sellingPriceTaxToast').toast({
                                     delay: 3000
                                 });
-                                $('#applicableTaxToast').toast('show');
+                                $('#sellingPriceTaxToast').toast('show');
                                 // Refresh the DataTable
                                 $('#applicableTaxes').DataTable().ajax.reload();
                             }
                             else {
                                 $('#toastMessage').text(response.message);
-                                $('#applicableTaxToast').toast({
+                                $('#sellingPriceTaxToast').toast({
                                     delay: 3000
                                 });
-                                $('#applicableTaxToast').toast('show');
+                                $('#sellingPriceTaxToast').toast('show');
                             }
                         },
                         error: function (error) {
                             $('#toastMessage').text('There was an error adding the brand.');
-                            $('#applicableTaxToast').toast({
+                            $('#sellingPriceTaxToast').toast({
                                 delay: 3000
                             });
-                            $('#applicableTaxToast').toast('show');
+                            $('#sellingPriceTaxToast').toast('show');
                         }
                     });
                 });
-            }); */
+            });
 
             //This code for temp data response fadeOut
             $(document).ready(function () {

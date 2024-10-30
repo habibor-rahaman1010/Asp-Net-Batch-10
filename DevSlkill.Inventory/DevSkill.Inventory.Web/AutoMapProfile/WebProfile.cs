@@ -44,6 +44,9 @@ namespace DevSkill.Inventory.Web.AutoMapProfile
 
             CreateMap<ApplicableTaxCreateModel, ApplicableTax>().ReverseMap();
             CreateMap<ApplicableTaxUpdateModel, ApplicableTax>().ReverseMap();
+
+            CreateMap<SellingPriceTaxCreateModel, SellingPriceTax>().ReverseMap();
+            CreateMap<SellingPriceTaxUpdateModel, SellingPriceTax>().ReverseMap();
         }
     }
 }
