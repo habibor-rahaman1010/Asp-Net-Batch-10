@@ -169,7 +169,7 @@
 
                 columnDefs: [
                     {
-                        // Render description column with only 20 words
+                        // Render description column with only 10 words
                         targets: 1,
                         render: function (data, type, row) {
                             var words = data.split(" ");
@@ -239,7 +239,7 @@
                             }
                         },
                         error: function (error) {
-                            $('#toastMessage').text('There was an error adding the brand.');
+                            $('#toastMessage').text('There was an error adding the Barcode Type.');
                             $('#barcodeTypeToast').toast({
                                 delay: 3000
                             });
@@ -257,7 +257,7 @@
                     var warrantyId = $(this).data('id');
                     console.log("button is clicked");
 
-                    // Use AJAX to fetch the category data
+                    // Use AJAX to fetch the Barcode Type data
                     $.ajax({
                         url: '/Admin/BarcodeType/GetBarcodeTypeById',
                         method: 'GET',
@@ -265,7 +265,7 @@
                         success: function (response) {
                             console.log(response)
                             if (response.success) {
-                                // Populate the modal fields with the category data
+                                // Populate the modal fields with the Barcode Type data
                                 $('#updateBarcodeTypeId').val(response.data.id);
                                 $('#editBarcodeTypeName').val(response.data.barcodeTypeName);
                                 $('#editBarcodeDescription').val(response.data.barcodeDescription);
@@ -275,16 +275,16 @@
                                 $('#updateBarcodeTypeModal').modal('show');
                             }
                             else {
-                                alert('Error fetching category data');
+                                alert('Error fetching Barcode Type');
                             }
                         },
                         error: function () {
-                            alert('An error occurred while fetching the category data.');
+                            alert('An error occurred while fetching the Barcode Type.');
                         }
                     });
                 });
 
-                // Handle the form submission for editing a category
+                // Handle the form submission for editing the Barcode Type
                 $('#updateBarcodeTypeForm').on('submit', function (e) {
                     e.preventDefault();
 
@@ -318,7 +318,7 @@
                             }
                         },
                         error: function () {
-                            $('#toastMessage').text('There was an error editing the brand.');
+                            $('#toastMessage').text('There was an error editing the Barcode Type.');
                             $('#barcodeTypeToast').toast({
                                 delay: 3000
                             });
@@ -372,7 +372,7 @@
                             }
                         },
                         error: function (error) {
-                            $('#toastMessage').text('There was an error adding the brand.');
+                            $('#toastMessage').text('There was an error deleting the Barcode Type.');
                             $('#barcodeTypeToast').toast({
                                 delay: 3000
                             });

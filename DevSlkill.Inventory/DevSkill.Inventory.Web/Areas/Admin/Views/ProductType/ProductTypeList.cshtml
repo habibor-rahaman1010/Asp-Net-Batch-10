@@ -169,7 +169,7 @@
 
                 columnDefs: [
                     {
-                        // Render description column with only 20 words
+                        // Render description column with only 10 words
                         targets: 1,
                         render: function (data, type, row) {
                             var words = data.split(" ");
@@ -265,7 +265,7 @@
                         success: function (response) {
                             console.log(response)
                             if (response.success) {
-                                // Populate the modal fields with the category data
+                                // Populate the modal fields with the Product Type data
                                 $('#updateProductTypeId').val(response.data.id);
                                 $('#editProductTypeName').val(response.data.productTypeName);
                                 $('#editProductTypeCode').val(response.data.productTypeCode);
@@ -279,7 +279,7 @@
                             }
                         },
                         error: function () {
-                            alert('An error occurred while fetching the category data.');
+                            alert('An error occurred while fetching the Product Type data.');
                         }
                     });
                 });
@@ -318,7 +318,7 @@
                             }
                         },
                         error: function () {
-                            $('#toastMessage').text('There was an error editing the brand.');
+                            $('#toastMessage').text('There was an error editing the Product Type.');
                             $('#productTypeToast').toast({
                                 delay: 3000
                             });
@@ -372,7 +372,7 @@
                             }
                         },
                         error: function (error) {
-                            $('#toastMessage').text('There was an error adding the brand.');
+                            $('#toastMessage').text('There was an error deleting the Product Type.');
                             $('#productTypeToast').toast({
                                 delay: 3000
                             });

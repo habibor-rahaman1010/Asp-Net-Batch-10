@@ -40,7 +40,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">category</li>
+                    <li class="breadcrumb-item active">Category</li>
                 </ol>
             </div>
         </div>
@@ -154,6 +154,7 @@
     <script src="~/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 
     <script type="text/javascript">
+        //Load data in table used by DataTable...
         $(function () {
             $("#categories").DataTable({
                 processing: true,
@@ -176,7 +177,7 @@
 
                 columnDefs: [
                     {
-                        // Render description column with only 20 words
+                        // Render description column with only 10 words
                         targets: 2,
                         render: function (data, type, row) {
                             var words = data.split(" ");
@@ -230,7 +231,7 @@
             }).buttons().container().appendTo('#categories_wrapper .col-md-6:eq(0)');
         });
 
-        //This code for delete
+        //This code for delete Category
         $('#categories').on('click', '.show-bs-modal', function () {
             let id = $(this).data("id");
             let modal = $("#modal-default");
@@ -290,16 +291,7 @@
         });
 
 
-        //This code for temp data response fadeOut
-        $(document).ready(function () {
-            setTimeout(function () {
-                $('#response-alert').fadeOut('slow');
-            }, 3000);
-        });
-
-
-
-        //for edit code
+        //This code for Update Category
         $(document).ready(function () {
             // Handle the click event for the edit button
             $('#categories').on('click', '.edit-category', function () {
@@ -307,7 +299,7 @@
                 console.log("clciked button");
                 // Use AJAX to fetch the category data
                 $.ajax({
-                    url: '/Admin/Category/GetCategoryById', // Adjust to your route
+                    url: '/Admin/Category/GetCategoryById', 
                     method: 'GET',
                     data: { id: categoryId },
                     success: function (response) {
@@ -337,7 +329,7 @@
                 e.preventDefault();
 
                 $.ajax({
-                    url: '/Admin/Category/EditCategoryModal', // Adjust to your route
+                    url: '/Admin/Category/EditCategoryModal',
                     method: 'POST',
                     data: $(this).serialize(),
                     success: function (response) {
@@ -355,7 +347,8 @@
 
                             // Refresh the DataTable
                             $('#categories').DataTable().ajax.reload();
-                        } else {
+                        } 
+                        else {
                             // Handle validation or other errors
                             $('#toastMessage').text(response.message);
                             $('#categoryToast').toast({
@@ -372,6 +365,13 @@
                         $('#categoryToast').toast('show');
                     }
                 });
+            });
+
+            //This code for temp data response fadeOut
+            $(document).ready(function () {
+                setTimeout(function () {
+                    $('#response-alert').fadeOut('slow');
+                }, 3000);
             });
         });
 

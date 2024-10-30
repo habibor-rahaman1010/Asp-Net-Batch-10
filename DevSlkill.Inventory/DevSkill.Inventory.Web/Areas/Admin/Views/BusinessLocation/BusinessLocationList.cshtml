@@ -176,7 +176,7 @@
 
                 columnDefs: [
                     {
-                        // Render description column with only 20 words
+                        // Render description column with only 10 words
                         targets: 1,
                         render: function (data, type, row) {
                             var words = data.split(" ");
@@ -245,7 +245,7 @@
                             }
                         },
                         error: function (error) {
-                            $('#toastMessage').text('There was an error adding the brand.');
+                            $('#toastMessage').text('There was an error adding the Business Location.');
                             $('#businessLocationsToast').toast({
                                 delay: 3000
                             });
@@ -301,12 +301,12 @@
                             }
                         },
                         error: function () {
-                            alert('An error occurred while fetching the category data.');
+                            alert('An error occurred while fetching the Business Location data.');
                         }
                     });
                 });
 
-                // Handle the form submission for editing a category
+                // Handle the form submission for editing the Business Location
                 $('#updateBusinessLocationForm').on('submit', function (e) {
                     e.preventDefault();
 
@@ -340,7 +340,7 @@
                             }
                         },
                         error: function () {
-                            $('#toastMessage').text('There was an error editing the brand.');
+                            $('#toastMessage').text('There was an error editing the Business Location.');
                             $('#businessLocationsToast').toast({
                                 delay: 3000
                             });

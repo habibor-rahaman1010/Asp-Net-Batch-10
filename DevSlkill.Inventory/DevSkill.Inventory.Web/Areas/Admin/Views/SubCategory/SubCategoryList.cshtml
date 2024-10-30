@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Barcode Type List";
+    ViewData["Title"] = "Sub Category List";
 }
 
 <style>
@@ -41,7 +41,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">Product Type</li>
+                    <li class="breadcrumb-item active">Sub Category</li>
                 </ol>
             </div>
         </div>
@@ -55,7 +55,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">All available product type are here!</h3>
+                        <h3 class="card-title">All available Sub Category are here!</h3>
 
                         <a class="btn btn-primary float-right" data-toggle="modal" data-target="#addSubCategoryModal">
                             <i class="nav-icon"></i>
@@ -169,7 +169,7 @@
 
                 columnDefs: [
                     {
-                        // Render description column with only 20 words
+                        // Render description column with only 10 words
                         targets: 1,
                         render: function (data, type, row) {
                             var words = data.split(" ");
@@ -203,7 +203,7 @@
             }).buttons().container().appendTo('#subCategories_wrapper .col-md-6:eq(0)');
 
 
-            //This code create a new product Type...
+            //This code create a new Sub Category...
             $(document).ready(function () {
                 // Handle form submission
                 $('#subCategoryForm').on('submit', function (e) {
@@ -239,7 +239,7 @@
                             }
                         },
                         error: function (error) {
-                            $('#toastMessage').text('There was an error adding the product type.');
+                            $('#toastMessage').text('There was an error adding the Sub Category.');
                             $('#SubCategoryToast').toast({
                                 delay: 3000
                             });
@@ -249,15 +249,15 @@
                 });
             });
 
-            
-            //This code for product Type Update...
+
+            //This code for Sub Category Update...
             $(document).ready(function () {
                 // Handle the click event for the edit button
                 $('#subCategories').on('click', '.update-SubCategory', function () {
                     var SubCategoryId = $(this).data('id');
                     console.log("button is clicked");
 
-                    // Use AJAX to fetch the category data
+                    // Use AJAX to fetch the Sub Category data
                     $.ajax({
                         url: '/Admin/SubCategory/GetSubCategoryById',
                         method: 'GET',
@@ -265,7 +265,7 @@
                         success: function (response) {
                             console.log(response)
                             if (response.success) {
-                                // Populate the modal fields with the category data
+                                // Populate the modal fields with the Sub Category data
                                 $('#updateSubCategoryId').val(response.data.id);
                                 $('#editSubCategoryName').val(response.data.subCategoryName);
                                 $('#editSubCategoryCode').val(response.data.categoryCode);
@@ -279,12 +279,12 @@
                             }
                         },
                         error: function () {
-                            alert('An error occurred while fetching the category data.');
+                            alert('An error occurred while fetching the Sub Category data.');
                         }
                     });
                 });
 
-                // Handle the form submission for editing a product type
+                // Handle the form submission for editing a Sub Category
                 $('#updateSubCategoryForm').on('submit', function (e) {
                     e.preventDefault();
 
@@ -318,7 +318,7 @@
                             }
                         },
                         error: function () {
-                            $('#toastMessage').text('There was an error editing the brand.');
+                            $('#toastMessage').text('There was an error editing the Sub Category.');
                             $('#SubCategoryToast').toast({
                                 delay: 3000
                             });
@@ -329,7 +329,7 @@
             });
 
 
-            //This is code delete the product type...
+            //This is code delete the Sub Category...
             $(document).ready(function () {
                 // Handle the click event on delete buttons in the list
                 $('#subCategories').on('click', '.delete_SubCategory', function (e) {
@@ -373,7 +373,7 @@
                             }
                         },
                         error: function (error) {
-                            $('#toastMessage').text('There was an error adding the brand.');
+                            $('#toastMessage').text('There was an error deleting the Sub Category.');
                             $('#SubCategoryToast').toast({
                                 delay: 3000
                             });

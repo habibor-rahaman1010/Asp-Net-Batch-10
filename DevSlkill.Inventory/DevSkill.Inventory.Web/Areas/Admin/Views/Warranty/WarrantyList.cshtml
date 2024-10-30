@@ -169,7 +169,7 @@
 
                 columnDefs: [
                     {
-                        // Render description column with only 20 words
+                        // Render description column with only 10 words
                         targets: 1,
                         render: function (data, type, row) {
                             var words = data.split(" ");
@@ -184,7 +184,7 @@
                         orderable: false,
                         targets: 3,
                         render: function (data, type, row) {
-                            return `<button type="button" class="btn btn-info btn-sm update-warranty" data-id='${data}' data-toggle="modal" data-target="#editCategoryModal">
+                            return `<button type="button" class="btn btn-info btn-sm update-warranty" data-id='${data}' data-toggle="modal" data-target="#updateWarrantyModal">
                                                                 <i class="fas fa-pencil-alt"></i> Edit
                                                             </button>
 
@@ -251,7 +251,7 @@
                             }
                         },
                         error: function (error) {
-                            $('#toastMessage').text('There was an error adding the brand.');
+                            $('#toastMessage').text('There was an error adding the Warranty.');
                             $('#warrantyToast').toast({
                                 delay: 3000
                             });
@@ -278,20 +278,20 @@
                             console.log(response)
                             if (response.success) {
                                 // Populate the modal fields with the category data
-                                $('#updateWarrantyId').val(response.data.result.id);
-                                $('#editWarrantyName').val(response.data.result.name);
-                                $('#editDescription').val(response.data.result.description);
-                                $('#editWarrantyDuration').val(response.data.result.warrantyDuration);
+                                $('#updateWarrantyId').val(response.data.id);
+                                $('#editWarrantyName').val(response.data.name);
+                                $('#editDescription').val(response.data.description);
+                                $('#editWarrantyDuration').val(response.data.warrantyDuration);
 
                                 // Open the modal (bootstrap handles this)
                                 $('#updateWarrantyModal').modal('show');
                             } 
                             else {
-                                alert('Error fetching category data');
+                                alert('Error fetching Warranty data');
                             }
                         },
                         error: function () {
-                            alert('An error occurred while fetching the category data.');
+                            alert('An error occurred while fetching the Warranty data.');
                         }
                     });
                 });
@@ -330,7 +330,7 @@
                             }
                         },
                         error: function () {
-                            $('#toastMessage').text('There was an error editing the brand.');
+                            $('#toastMessage').text('There was an error editing the Warranty.');
                             $('#warrantyToast').toast({
                                 delay: 3000
                             });

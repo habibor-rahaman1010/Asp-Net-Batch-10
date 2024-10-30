@@ -13,17 +13,17 @@
                 <form method="post" asp-antiforgery="true" id="productTypeForm" enctype="multipart/form-data">
                     <div class="form-group">
                         <label asp-for="ProductTypeName">Product Type Name</label>
-                        <input asp-for="ProductTypeName" type="text" class="form-control" id="barcodeTypeName"  required>
+                        <input asp-for="ProductTypeName" type="text" class="form-control"   required>
                         <span asp-validation-for="ProductTypeName" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="ProductTypeCode">Product Type Code</label>
-                        <input asp-for="ProductTypeCode" type="text" class="form-control" id="barcodeTypeCode" required>
+                        <input asp-for="ProductTypeCode" type="text" class="form-control" required>
                         <span asp-validation-for="ProductTypeCode" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="Description"> Prodcut Type Description</label>
-                        <textarea asp-for="Description" class="form-control" id="barcodeDescription" rows="3"></textarea>
+                        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
                     <button type="submit" class="btn btn-primary">Save</button>

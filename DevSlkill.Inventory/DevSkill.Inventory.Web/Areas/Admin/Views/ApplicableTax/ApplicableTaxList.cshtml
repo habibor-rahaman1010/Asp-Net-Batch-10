@@ -169,7 +169,7 @@
 
                 columnDefs: [
                     {
-                        // Render description column with only 20 words
+                        // Render description column with only 10 words
                         targets: 1,
                         render: function (data, type, row) {
                             var words = data.split(" ");
@@ -203,7 +203,7 @@
             }).buttons().container().appendTo('#applicableTaxes_wrapper .col-md-6:eq(0)');
 
             
-            //This code create a new product Type...
+            //This code create a new applicable tax...
             $(document).ready(function () {
                 /* if we use ---data-target="#use_modal_id"--- so we no need to manually open the modal
                 $('#myBtn').on('click', function() {
@@ -256,14 +256,14 @@
             });
 
             
-            //This code for product Type Update...
+            //This code for updating applicable tax...
             $(document).ready(function () {
                 // Handle the click event for the edit button
                 $('#applicableTaxes').on('click', '.update-applicableTax', function () {
                     var applicableTaxId = $(this).data('id');
                     console.log("button is clicked");
 
-                    // Use AJAX to fetch the category data
+                    // Use AJAX to fetch the applicable tax data
                     $.ajax({
                         url: '/Admin/ApplicableTax/GetApplicableTaxById',
                         method: 'GET',
@@ -271,7 +271,7 @@
                         success: function (response) {
                             console.log(response)
                             if (response.success) {
-                                // Populate the modal fields with the category data
+                                // Populate the modal fields with the applicable tax data
                                 $('#updateApplicableTaxId').val(response.data.id);
                                 $('#editApplicableTaxName').val(response.data.applicableTaxName);
                                 $('#editTaxRate').val(response.data.taxRate);
@@ -290,7 +290,7 @@
                     });
                 });
 
-                // Handle the form submission for editing a product type
+                // Handle the form submission for editing applicable tax
                 $('#updateApplicableTaxForm').on('submit', function (e) {
                     e.preventDefault();
 
@@ -324,7 +324,7 @@
                             }
                         },
                         error: function () {
-                            $('#toastMessage').text('There was an error editing the brand.');
+                            $('#toastMessage').text('There was an error editing the applicable tax.');
                             $('#applicableTaxToast').toast({
                                 delay: 3000
                             });
@@ -334,8 +334,8 @@
                 });
             });
 
-            
-            //This is code delete the product type...
+
+            //This is code delete applicable tax...
             $(document).ready(function () {
                 // Handle the click event on delete buttons in the list
                 $('#applicableTaxes').on('click', '.delete-applicableTax', function (e) {
@@ -379,7 +379,7 @@
                             }
                         },
                         error: function (error) {
-                            $('#toastMessage').text('There was an error adding the brand.');
+                            $('#toastMessage').text('There was an error deleting the applicable tax.');
                             $('#applicableTaxToast').toast({
                                 delay: 3000
                             });

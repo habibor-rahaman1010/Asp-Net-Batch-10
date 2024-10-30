@@ -191,7 +191,7 @@
 
             }).buttons().container().appendTo('#warranties_wrapper .col-md-6:eq(0)');
 
-            //This code create a new Unit...
+            //This code create a new Unit Magerment...
             $(document).ready(function () {
                 // Handle form submission
                 $('#addUnitForm').on('submit', function (e) {
@@ -227,7 +227,7 @@
                             }
                         },
                         error: function (error) {
-                            $('#toastMessage').text('There was an error adding the brand.');
+                            $('#toastMessage').text('There was an error adding the Unit Magerment.');
                             $('#unitToast').toast({
                                 delay: 3000
                             });
@@ -258,7 +258,7 @@
                     var warrantyId = $(this).data('id');
                     console.log("button is clicked");
 
-                    // Use AJAX to fetch the category data
+                    // Use AJAX to fetch the Unit Magerment data
                     $.ajax({
                         url: '/Admin/Unit/GetUnitById',
                         method: 'GET',
@@ -266,7 +266,7 @@
                         success: function (response) {
                             console.log(response)
                             if (response.success) {
-                                // Populate the modal fields with the category data
+                                // Populate the modal fields with the Unit Magerment data
                                 $('#updateUnitId').val(response.data.result.id);
                                 $('#editUnitName').val(response.data.result.unitName);
                                 $('#editShortName').val(response.data.result.shortName);
@@ -276,16 +276,16 @@
                                 $('#updateUnitModal').modal('show');
                             }
                             else {
-                                alert('Error fetching category data');
+                                alert('Error fetching Unit Magerment data');
                             }
                         },
                         error: function () {
-                            alert('An error occurred while fetching the category data.');
+                            alert('An error occurred while fetching the Unit Magerment data.');
                         }
                     });
                 });
 
-                // Handle the form submission for editing a category
+                // Handle the form submission for editing a Unit Magerment
                 $('#updateUnitForm').on('submit', function (e) {
                     e.preventDefault();
 
@@ -318,7 +318,7 @@
                             }
                         },
                         error: function () {
-                            $('#toastMessage').text('There was an error editing the brand.');
+                            $('#toastMessage').text('There was an error editing the Unit Magerment.');
                             $('#unitToast').toast({
                                 delay: 3000
                             });

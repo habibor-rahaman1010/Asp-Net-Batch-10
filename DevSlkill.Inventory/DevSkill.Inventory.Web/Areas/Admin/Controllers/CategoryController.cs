@@ -153,6 +153,5 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(new { success = false, message = "Error updating category." });
         }
 
-
     }
 }
