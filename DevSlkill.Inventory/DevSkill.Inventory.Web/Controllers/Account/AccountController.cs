@@ -27,6 +27,7 @@ namespace DevSkill.Inventory.Web.Controllers.Account
             _logger = logger;
         }
 
+        //--------Registration Code-----------
         [AllowAnonymous]
         public async Task<IActionResult> RegisterAsync(string returnUrl = null)
         {
@@ -43,7 +44,14 @@ namespace DevSkill.Inventory.Web.Controllers.Account
             model.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { 
+                    FirstName = model.FistName,
+                    LastName = model.LastName,
+                    Email = model.Email,
+                    Address = model.Address,
+                    PhoneNumber = model.PhoneNumber,
+                    UserName = model.Email, 
+                };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -142,6 +150,7 @@ namespace DevSkill.Inventory.Web.Controllers.Account
         }
 
 
+        //--------Logout Code-----------
         [AllowAnonymous]
         public async Task<IActionResult> LogoutAsync(string returnUrl = null)
         {
@@ -152,11 +161,7 @@ namespace DevSkill.Inventory.Web.Controllers.Account
 
             return LocalRedirect(returnUrl);
         }
-
-        public IActionResult AccessDenied()
-        {
-            return View();
-        }
+      
 
     }
 }
