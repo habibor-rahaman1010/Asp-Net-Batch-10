@@ -140,6 +140,10 @@ namespace DevSkill.Inventory.Web.WebModules
            .As<IStockAdjustmentManagementService>()
            .InstancePerLifetimeScope();
 
+            builder.RegisterType<EmailUtility>()
+                .As<IEmailUtility>()
+                .InstancePerLifetimeScope();
+
             builder.RegisterType<ApplicationTime>()
                 .As<IApplicationTime>()
                 .InstancePerLifetimeScope();

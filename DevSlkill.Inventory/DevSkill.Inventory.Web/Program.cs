@@ -12,6 +12,7 @@ using System.Reflection;
 
 using Autofac.Core;
 using DevSkill.Inventory.Infrastructure.InventoryIdentity;
+using DevSkill.Inventory.Domain;
 
 namespace DevSkill.Inventory.Web
 {
@@ -87,7 +88,9 @@ namespace DevSkill.Inventory.Web
                 //This service for automapper
                 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-               
+                //This service for mail servecing
+                builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+
                 builder.Services.AddControllersWithViews();
 
 

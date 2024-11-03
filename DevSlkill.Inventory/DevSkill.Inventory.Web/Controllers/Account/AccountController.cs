@@ -10,6 +10,7 @@ using System.Text;
 using DevSkill.Inventory.Web.Models.Account;
 using Microsoft.AspNetCore.Authorization;
 using DevSkill.Inventory.Web.Areas.Admin.Controllers;
+using DevSkill.Inventory.Domain;
 
 namespace DevSkill.Inventory.Web.Controllers.Account
 {
@@ -17,14 +18,17 @@ namespace DevSkill.Inventory.Web.Controllers.Account
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IEmailUtility _emailUtility; 
         private readonly ILogger<AccountController> _logger;
 
         public AccountController(UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
+            IEmailUtility emailUtility,
             ILogger<AccountController> logger )
         {
             _userManager = userManager;
             _signInManager = signInManager;
+             _emailUtility = emailUtility;
             _logger = logger;
         }
 
@@ -58,19 +62,21 @@ namespace DevSkill.Inventory.Web.Controllers.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    /*
+                    
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
+
+                    var callbackUrl = Url.Action("ConfirmEmail",
+                        "Account",
+                        values: new { area = "", userId = user.Id, code = code, returnUrl = model.ReturnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    if (callbackUrl != null)
+                    {
+                        _emailUtility.SendEmail(model.Email, model.Email, "Confirm Your Email",
+                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.", isHtml: true);
+                    }
 
-                    */
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
@@ -150,7 +156,6 @@ namespace DevSkill.Inventory.Web.Controllers.Account
             return View(model);
         }
 
-
         //--------Logout Code-----------
         [AllowAnonymous]
         public async Task<IActionResult> LogoutAsync(string returnUrl = null)
@@ -162,7 +167,35 @@ namespace DevSkill.Inventory.Web.Controllers.Account
 
             return LocalRedirect(returnUrl);
         }
-      
 
+        //for email confirmation code 
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            if (userId == null || code == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound($"Unable to load user with ID '{userId}'.");
+            }
+
+            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+
+            var model = new EmailConfirmationModel
+            {
+                StatusMessage = result.Succeeded
+                ? "Thank you for confirming your email address."
+                : "Error confirming your email address."
+            };
+
+            return View(model);
+        }
     }
 }
