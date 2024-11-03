@@ -13,6 +13,7 @@ using System.Reflection;
 using Autofac.Core;
 using DevSkill.Inventory.Infrastructure.InventoryIdentity;
 using DevSkill.Inventory.Domain;
+using DevSkill.Inventory.Infrastructure.Extensions;
 
 namespace DevSkill.Inventory.Web
 {
@@ -58,9 +59,6 @@ namespace DevSkill.Inventory.Web
                 }
 
                 //builder.WebHost.UseUrls("http://*:80");
-/*
-                builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlServer(connectionString));*/
 
                 builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString, (x) => x.MigrationsAssembly(migrationAssembly)));
@@ -71,15 +69,7 @@ namespace DevSkill.Inventory.Web
                 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
                 //This is my extension method here have all identity related configuration...
-                //builder.Services.AddIdentity();
-
-                builder.Services
-                .AddIdentity<ApplicationUser, ApplicationRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddUserManager<ApplicationUserManager>()
-                .AddRoleManager<ApplicationRoleManager>()
-                .AddSignInManager<ApplicationSignInManager>()
-                .AddDefaultTokenProviders();
+                builder.Services.AddIdentity();            
 
                 //This is Autofac service...
                 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
