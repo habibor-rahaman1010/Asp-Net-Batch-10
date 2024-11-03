@@ -131,6 +131,13 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         {
             try
             {
+                // When we delete stock the current stock Adjustment Quantity delete the product's current stock.
+                var stock = await _stockAdjustmentManagementService.GetStockAdjustmentyByIdAsync(id);
+                var productId = stock.ProductId;
+                var product = await _productManagementService.GetProductByIdAsync(productId);
+                product.CurrentStock -= stock.AdjustmentQuantity;
+                await _productManagementService.UpdateProductAsync(product);
+
                 await _stockAdjustmentManagementService.DeleteStockAdjustmentAsync(id);
 
                 return Json(new

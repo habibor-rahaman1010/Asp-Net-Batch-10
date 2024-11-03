@@ -1,9 +1,27 @@
 ﻿@model EmailConfirmationModel
 
 @{
-    ViewData["Title"] = "Confirm Email";
+    ViewData["Title"] = "Email Confirmation";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div style="text-align: center; margin-top: 50px;">
+    <h2 style="color: #4CAF50; font-size: 2em;">@ViewData["Title"]</h2>
 
-<p>@Model.StatusMessage</p>
+    <p style="font-size: 1.2em; color: #333; margin-top: 20px;">
+        <span style="font-size: 3em; color: #4CAF50;">✔️</span>
+        <br />
+        Thank you for confirming your email address!
+    </p>
+
+    <p style="font-size: 1.1em; color: #666;">
+        @Model.StatusMessage
+    </p>
+
+    <p style="margin-top: 30px; color: #555;">
+        You’re now all set to enjoy our full range of services. If you have any questions, feel free to <a href="/Contact" style="color: #4CAF50; text-decoration: none;">contact us</a>.
+    </p>
+
+    <a href="https://localhost:7150/Admin/Dashboard" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+        Go to Homepage
+    </a>
+</div>

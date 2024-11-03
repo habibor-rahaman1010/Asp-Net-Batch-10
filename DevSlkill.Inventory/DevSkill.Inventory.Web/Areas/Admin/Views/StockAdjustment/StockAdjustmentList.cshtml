@@ -13,6 +13,9 @@
         text-align: center;
     }
 
+    tbody tr {
+        cursor: pointer;
+    }
 </style>
 
 @section Styles {
@@ -139,7 +142,6 @@
     </div>
 </div>
 
-
 @section Scripts {
     <!-- DataTables  & Plugins -->
     <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -154,6 +156,9 @@
     <script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
     <script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
     <script src="~/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+    <!--This is link for print-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/printThis/1.15.0/printThis.min.js"></script>
 
     <script type="text/javascript">
         //Load data in table used by DataTable...
@@ -191,7 +196,7 @@
                                     </button>`;
                         }
                     },
-                    ...[0, 1, 2, 3, 4, 5, 6, 8].map(function (target) {
+                    ...[0, 1, 2, 3, 4, 5, 6, 7, 8].map(function (target) {
                         return {
                             targets: target,
                             createdCell: function (td, type, data) {
@@ -291,7 +296,7 @@
                         $('#ProductUnitPrice').text(data.unitPrice || 'N/A');
                         $('#ProductSubtotal').text(data.totalAmount || 'N/A');
                         // Show the modal
-                        $('#productDetailsModal').modal('show');
+                        $('#stockAdjustmentDetailModal').modal('show');
                     },
                     error: function (xhr, status, error) {
                         console.error("Error fetching product data:", error);
