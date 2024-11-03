@@ -41,7 +41,7 @@ namespace DevSkill.Inventory.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ApplicableTaxs");
+                    b.ToTable("ApplicableTaxs", (string)null);
 
                     b.HasData(
                         new
@@ -87,7 +87,7 @@ namespace DevSkill.Inventory.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BarcodeTypes");
+                    b.ToTable("BarcodeTypes", (string)null);
 
                     b.HasData(
                         new
@@ -133,7 +133,7 @@ namespace DevSkill.Inventory.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brands");
+                    b.ToTable("Brands", (string)null);
 
                     b.HasData(
                         new
@@ -191,7 +191,7 @@ namespace DevSkill.Inventory.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BusinessLocations");
+                    b.ToTable("BusinessLocations", (string)null);
 
                     b.HasData(
                         new
@@ -246,7 +246,7 @@ namespace DevSkill.Inventory.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
 
                     b.HasData(
                         new
@@ -401,7 +401,7 @@ namespace DevSkill.Inventory.Web.Data.Migrations
 
                     b.HasIndex("WarrantyId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.ProductType", b =>
@@ -424,7 +424,7 @@ namespace DevSkill.Inventory.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductTypes");
+                    b.ToTable("ProductTypes", (string)null);
 
                     b.HasData(
                         new
@@ -483,7 +483,7 @@ namespace DevSkill.Inventory.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SellingPriceTaxes");
+                    b.ToTable("SellingPriceTaxes", (string)null);
 
                     b.HasData(
                         new
@@ -525,7 +525,7 @@ namespace DevSkill.Inventory.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AdjustmentTypes");
+                    b.ToTable("AdjustmentTypes", (string)null);
 
                     b.HasData(
                         new
@@ -592,7 +592,7 @@ namespace DevSkill.Inventory.Web.Data.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("StockAdjustments");
+                    b.ToTable("StockAdjustments", (string)null);
                 });
 
             modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SubCategory", b =>
@@ -660,7 +660,7 @@ namespace DevSkill.Inventory.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Units");
+                    b.ToTable("Units", (string)null);
 
                     b.HasData(
                         new
@@ -706,7 +706,7 @@ namespace DevSkill.Inventory.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Warranties");
+                    b.ToTable("Warranties", (string)null);
 
                     b.HasData(
                         new

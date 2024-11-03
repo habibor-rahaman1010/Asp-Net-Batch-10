@@ -14,6 +14,7 @@ using DevSkill.Inventory.Domain;
 
 namespace DevSkill.Inventory.Web.Controllers.Account
 {
+    [Authorize]
     public class AccountController : Controller
     {
         private readonly SignInManager<ApplicationUser> _signInManager;

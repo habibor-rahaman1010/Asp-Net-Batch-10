@@ -1,4 +1,5 @@
-﻿/*using DevSkill.Inventory.Infrastructure.InventoryIdentity;
+﻿using DevSkill.Inventory.Infrastructure.Data;
+using DevSkill.Inventory.Infrastructure.InventoryIdentity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,7 +55,7 @@ namespace DevSkill.Inventory.Infrastructure.Extensions
                 });
             });
 
-            //add Claim base authentication configuration
+            /*//add Claim base authentication configuration
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("CreatePermission", policy =>
@@ -72,8 +73,7 @@ namespace DevSkill.Inventory.Infrastructure.Extensions
                 });
             });
 
-            services.AddSingleton<IAuthorizationHandler, RequirementHandler>();
+            services.AddSingleton<IAuthorizationHandler, RequirementHandler>();*/
         }
     }
 }
-*/

@@ -58,9 +58,12 @@ namespace DevSkill.Inventory.Web
                 }
 
                 //builder.WebHost.UseUrls("http://*:80");
+/*
+                builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseSqlServer(connectionString));*/
 
                 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlServer(connectionString));
+                options.UseSqlServer(connectionString, (x) => x.MigrationsAssembly(migrationAssembly)));
 
                 builder.Services.AddDbContext<InventoryDbContext>(options =>
                 options.UseSqlServer(connectionString, (x) => x.MigrationsAssembly(migrationAssembly)));
