@@ -9,6 +9,7 @@ using System.Text.Encodings.Web;
 using System.Text;
 using DevSkill.Inventory.Web.Models.Account;
 using Microsoft.AspNetCore.Authorization;
+using DevSkill.Inventory.Web.Areas.Admin.Controllers;
 
 namespace DevSkill.Inventory.Web.Controllers.Account
 {
@@ -78,7 +79,7 @@ namespace DevSkill.Inventory.Web.Controllers.Account
                     else
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(model.ReturnUrl);
+                        return RedirectToAction(nameof(DashboardController.Index), "Dashboard", new {area = "Admin"});
                     }
                 }
                 foreach (var error in result.Errors)
