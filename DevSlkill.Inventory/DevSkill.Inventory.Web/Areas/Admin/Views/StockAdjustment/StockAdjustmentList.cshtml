@@ -280,7 +280,7 @@
                         // Display data or 'N/A' if value is empty
                         $('#id').text(data.id || 'N/A');
                         $('#ReferenceNo').text(data.referenceNo || 'N/A');
-                        $('#AdjustmentDate').text(data.adjustmentDate || 'N/A');
+                        $('#AdjustmentDate').text(data.adjustmentDate ? new Date(data.adjustmentDate).toLocaleString('en-US', { hour12: true }) : 'N/A');
                         $('#TotalAmount').text(data.totalAmount || 'N/A');
                         $('#TotalAmountRecover').text(data.totalAmountRecover || 'N/A');
                         $('#Reason').text(data.reason || 'N/A');

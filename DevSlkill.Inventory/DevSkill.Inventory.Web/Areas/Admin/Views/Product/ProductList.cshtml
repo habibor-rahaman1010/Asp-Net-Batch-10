@@ -353,9 +353,9 @@
                         $('#currentStock').text(data.currentStock !== undefined && data.currentStock !== null && data.currentStock !== '' ? data.currentStock : 'N/A');
                         $('#alertQuantity').text(data.alertQuantity !== undefined && data.alertQuantity !== null && data.alertQuantity !== '' ? data.alertQuantity : 'N/A');
                         $('#ratings').text(data.ratings !== undefined && data.ratings !== null && data.ratings !== '' ? data.ratings : 'N/A');
-                        $('#created').text(data.created ? new Date(data.created).toLocaleString() : 'N/A');
-                        $('#updated').text(data.updated ? new Date(data.updated).toLocaleString() : 'N/A');
-                        $('#storeTime').text(data.storeTime ? new Date(data.storeTime).toLocaleString() : 'N/A');
+                        $('#created').text(data.created ? new Date(data.created).toLocaleString('en-US', { hour12: true }) : 'N/A');
+                        $('#updated').text(data.updated ? new Date(data.updated).toLocaleString('en-US', { hour12: true }) : 'N/A');
+                        $('#storeTime').text(data.storeTime ? new Date(data.storeTime).toLocaleString('en-US', { hour12: true }) : 'N/A');
                         $('#productImage').attr('src', data.productImage ? "/" + data.productImage : 'path/to/default/image.png'); // Set a default image if productImage is not available
                         $('#productDetailsModal').modal('show');
                     },
