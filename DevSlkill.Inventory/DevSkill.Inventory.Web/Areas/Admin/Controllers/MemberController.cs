@@ -161,7 +161,6 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 }
             }
 
-            // If we reach here, something went wrong, redisplay the form
             return View(model);
         }
 
