@@ -256,6 +256,13 @@
                                     </a>
                                 </li>
 
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="AllUser" asp-action="AllUserList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>List Of Users</p>
+                                    </a>
+                                </li>
+
                             </ul>
                         </li>
 
@@ -397,21 +404,21 @@
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fa fas fa-car"></i>
                                 <p>
-                                    Stock Adjustment
+                                    Stock Transfer
                                     <i class="fas fa-angle-left right"></i>
                                     <span class="badge badge-info right">2</span>
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a asp-area="Admin" asp-controller="Product" asp-action="ProductList" class="nav-link">
+                                    <a asp-area="Admin" asp-controller="StockAdjustment" asp-action="StockAdjustmentList" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>List Stock Transfer</p>
                                     </a>
                                 </li>
 
                                 <li class="nav-item">
-                                    <a asp-area="Admin" asp-controller="Product" asp-action="Create" class="nav-link">
+                                    <a asp-area="Admin" asp-controller="StockAdjustment" asp-action="CreateStockAdjustment" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Add Stock Transfer</p>
                                     </a>
