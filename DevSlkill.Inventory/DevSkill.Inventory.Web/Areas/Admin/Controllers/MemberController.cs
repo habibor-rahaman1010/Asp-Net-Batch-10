@@ -38,13 +38,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This is method for new role create...
+        [Authorize(Roles = "Admin")]
         public IActionResult CreateRole()
         {
             var model = new RoleCreateModel();
             return View(model);
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateRole(RoleCreateModel model)
         {
             if (ModelState.IsValid)

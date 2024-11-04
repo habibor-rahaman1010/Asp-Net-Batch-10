@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using DevSkill.Inventory.Infrastructure;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
@@ -30,13 +31,13 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _logger = logger;
         }
 
-        [Route("Admin/AllUser/AllUserList")]
+        [Route("Admin/AllUser/AllUserList"), Authorize(Roles = "Admin")]
         public IActionResult AllUserList()
         {
             return View();
         }
 
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "Admin")]
         [Route("Admin/AllUser/GetAllUsers")]
         public IActionResult GetAllUsers(int draw, int start, int length, string search, List<Order> order)
         {
