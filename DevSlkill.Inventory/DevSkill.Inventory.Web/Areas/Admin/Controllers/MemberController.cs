@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using DevSkill.Inventory.Infrastructure;
 using System.Collections;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
@@ -217,6 +218,48 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             }
 
             return RedirectToAction(nameof(ListRoles));
+        }
+
+        //User Role Change method...
+        [Authorize(Roles = "Admin, Member")]
+        public IActionResult ChangeRole()
+        {
+            var model = new RoleChangeModel();
+            LoadValues(model);
+            return View(model);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin, Member")]
+        public async Task<IActionResult> ChangeRole(RoleChangeModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByIdAsync(model.UserId.ToString());
+                var roles = await _userManager.GetRolesAsync(user);
+                await _userManager.RemoveFromRolesAsync(user, roles);
+                var newRole = await _roleManager.FindByIdAsync(model.RoleId.ToString());
+                await _userManager.AddToRoleAsync(user, newRole.Name);
+            }
+            LoadValues(model);
+            return View(model);
+        }
+
+        private void LoadValues(RoleChangeModel model)
+        {
+            // Get users and roles as lists and insert the default "Select" option at the beginning
+            var usersList = _userManager.Users
+                .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Email })
+                .ToList();
+            usersList.Insert(0, new SelectListItem { Value = "", Text = "--Select A User--" });
+
+            var rolesList = _roleManager.Roles
+                .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name })
+                .ToList();
+            rolesList.Insert(0, new SelectListItem { Value = "", Text = "--Select A Role--" });
+
+            // Assign to model
+            model.Users = new SelectList(usersList, "Value", "Text");
+            model.Roles = new SelectList(rolesList, "Value", "Text");
         }
 
     }
