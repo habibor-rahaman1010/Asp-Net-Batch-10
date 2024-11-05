@@ -56,7 +56,7 @@ namespace DevSkill.Inventory.Web.Controllers.Account
                     Email = model.Email,
                     Address = model.Address,
                     PhoneNumber = model.PhoneNumber,
-                    UserName = model.Email, 
+                    UserName = $"{model.Email.Split("@")[0].ToLower()}", 
                 };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
