@@ -42,6 +42,7 @@
                             <th>Username</th>
                             <th>Email</th>
                             <th>Email Confirmed</th>
+                            <th>Roles</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -50,6 +51,7 @@
                             <th>Username</th>
                             <th>Email</th>
                             <th>Email Confirmed</th>
+                            <th>Roles</th>
                             <th>Actions</th>
                         </tr>
                     </tfoot>
@@ -129,12 +131,14 @@
                     { data: "userName", title: "Username" },
                     { data: "email", title: "Email" },
                     { data: "emailConfirmed", title: "Email Confirmed" },
+                    { data: "roleNames", title: "Roles" },
 
                     {
                         data: "id",
                         title: "Actions",
                         orderable: false,
                         render: function (data, type, row) {
+                            console.log(row);
                             return `<button type="button" class="btn btn-info btn-sm update-user" data-id='${data}' data-toggle="modal" data-target="#updateUserModal">
                                         <i class="fas fa-pencil-alt"></i> Edit
                                     </button>

@@ -31,15 +31,17 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _logger = logger;
         }
 
+        //This method return all users with pagination and with column sorting...
         [Route("Admin/AllUser/AllUserList"), Authorize(Roles = "Admin")]
         public IActionResult AllUserList()
         {
             return View();
         }
 
+        //This method return all users with pagination and with column sorting...
         [HttpPost, Authorize(Roles = "Admin")]
         [Route("Admin/AllUser/GetAllUsers")]
-        public IActionResult GetAllUsers(int draw, int start, int length, string search, List<Order> order)
+        public async Task<IActionResult> GetAllUsers(int draw, int start, int length, string search, List<Order> order)
         {
             var query = _userManager.Users.AsQueryable();
 
@@ -52,50 +54,77 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             // Total count of records after filtering
             var filteredCount = query.Count();
 
+            // Get paginated user data
+            var usersList = query
+                .Skip(start)
+                .Take(length)
+                .ToList();
+
+            // Create a list to store user details along with roles
+            var usersWithRoles = new List<(ApplicationUser User, string RoleNames)>();
+
+            // Fetch roles for each user
+            foreach (var user in usersList)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var roleNames = string.Join(", ", roles);
+                usersWithRoles.Add((user, roleNames));
+            }
+
             // Handle sorting
             if (order != null && order.Count > 0)
             {
                 var columnIndex = order[0].Column; // Get the column index for sorting
-                var sortDirectionection = order[0].Direction; // Get the sort direction (asc or desc)
+                var sortDirection = order[0].Direction; // Get the sort direction (asc or desc)
 
-                // Determine which property to sort by based on the column index
+                // Sort based on the selected column
                 switch (columnIndex)
                 {
                     case 0: // Username
-                        query = sortDirectionection == "asc" ? query.OrderBy(u => u.UserName) : query.OrderByDescending(u => u.UserName);
-                        break;
-                    case 1: // Email
-                        query = sortDirectionection == "asc" ? query.OrderBy(u => u.Email) : query.OrderByDescending(u => u.Email);
+                        usersWithRoles = sortDirection == "asc"
+                            ? usersWithRoles.OrderBy(u => u.User.UserName).ToList()
+                            : usersWithRoles.OrderByDescending(u => u.User.UserName).ToList();
                         break;
 
-                    case 2: // Email
-                        query = sortDirectionection == "asc" ? query.OrderBy(u => u.EmailConfirmed) : query.OrderByDescending(u => u.EmailConfirmed);
+                    case 1: // Email
+                        usersWithRoles = sortDirection == "asc"
+                            ? usersWithRoles.OrderBy(u => u.User.Email).ToList()
+                            : usersWithRoles.OrderByDescending(u => u.User.Email).ToList();
                         break;
-                    // Add more cases for additional columns if necessary
+
+                    case 2: // EmailConfirmed
+                        usersWithRoles = sortDirection == "asc"
+                            ? usersWithRoles.OrderBy(u => u.User.EmailConfirmed).ToList()
+                            : usersWithRoles.OrderByDescending(u => u.User.EmailConfirmed).ToList();
+                        break;
+
+                    case 3: // RoleNames
+                        usersWithRoles = sortDirection == "asc"
+                            ? usersWithRoles.OrderBy(u => u.RoleNames).ToList()
+                            : usersWithRoles.OrderByDescending(u => u.RoleNames).ToList();
+                        break;
+
                     default:
                         break;
                 }
             }
 
-            // Get paginated and filtered user data
-            var users = query
-                .Skip(start)
-                .Take(length)
-                .Select(u => new
-                {
-                    u.UserName,
-                    u.Email,
-                    u.Id,
-                    u.EmailConfirmed
-                })
-                .ToList();
+            // Prepare the final data to return
+            var data = usersWithRoles.Select(u => new
+            {
+                u.User.UserName,
+                u.User.Email,
+                u.User.Id,
+                u.User.EmailConfirmed,
+                RoleNames = u.RoleNames
+            }).ToList();
 
             return Json(new
             {
                 draw = draw,
                 recordsTotal = _userManager.Users.Count(),  // Total records without filtering
                 recordsFiltered = filteredCount,             // Total records after filtering
-                data = users
+                data = data
             });
         }
 
@@ -142,7 +171,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     success = true,
                     message = "The User deleted failed"
                 });
-            } 
+            }
         }
 
         //This is user update method...
