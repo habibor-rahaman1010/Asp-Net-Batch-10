@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using DevSkill.Inventory.Infrastructure;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
@@ -32,14 +33,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This method return all users with pagination and with column sorting...
-        [Route("Admin/AllUser/AllUserList"), Authorize(Roles = "Admin")]
+        [Route("Admin/AllUser/AllUserList"), Authorize(Roles = "Admin, Member")]
         public IActionResult AllUserList()
         {
             return View();
         }
 
         //This method return all users with pagination and with column sorting...
-        [HttpPost, Authorize(Roles = "Admin")]
+        [HttpPost, Authorize(Roles = "Admin, Member")]
         [Route("Admin/AllUser/GetAllUsers")]
         public async Task<IActionResult> GetAllUsers(int draw, int start, int length, string search, List<Order> order)
         {
@@ -130,7 +131,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 
 
         //This is delete user method...
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
             try
@@ -174,7 +175,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             }
         }
 
-        //This is user update method...
+        //This is GetUserById user method for update the user...
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUserById(Guid id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
@@ -185,7 +187,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(new { success = false, message = "The user not found." });
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUser(UserUpdateModel model)
         {
 

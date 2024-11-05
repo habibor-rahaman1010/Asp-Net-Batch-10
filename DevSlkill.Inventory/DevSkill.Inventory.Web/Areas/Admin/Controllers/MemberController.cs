@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
-    [Area("Admin"), Authorize]
+    [Area("Admin")]
     public class MemberController : Controller
     {
         private readonly RoleManager<ApplicationRole> _roleManager;
@@ -32,6 +32,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This is method return lsit of role...
+        [Authorize(Roles = "Admin, Member")]
         public async Task<IActionResult> ListRoles()
         {
             var roles = await _roleManager.Roles.ToListAsync();
@@ -83,6 +84,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This is method for role Update...
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateRole(Guid id)
         {
             // Find the role by its ID
@@ -108,7 +110,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateRole(RoleUpdateModel model)
         {
             if (ModelState.IsValid)
@@ -167,6 +169,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This is method for role delete...
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteRole(Guid id)
         {
             // Find the role by its ID
@@ -221,7 +224,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //User Role Change method...
-        [Authorize(Roles = "Admin, Member")]
+        [Authorize(Roles = "Admin")]
         public IActionResult ChangeRole()
         {
             var model = new RoleChangeModel();
@@ -229,7 +232,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin, Member")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin")]
         public async Task<IActionResult> ChangeRole(RoleChangeModel model)
         {
             if (ModelState.IsValid)
@@ -258,8 +261,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             rolesList.Insert(0, new SelectListItem { Value = "", Text = "--Select A Role--" });
 
             // Assign to model
-            model.Users = new SelectList(usersList, "Value", "Text");
-            model.Roles = new SelectList(rolesList, "Value", "Text");
+            model.Users = new List<SelectListItem>(usersList);
+            model.Roles = new List<SelectListItem>(rolesList);
         }
 
     }
