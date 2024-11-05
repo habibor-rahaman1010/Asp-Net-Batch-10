@@ -44,8 +44,9 @@ namespace DevSkill.Inventory.Infrastructure.Extensions
                 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
                 options.User.RequireUniqueEmail = true;
             });
-
-           /* //add policy role configuration
+            
+            
+            //add policy role configuration
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("CustomAccess", policy =>
@@ -54,7 +55,7 @@ namespace DevSkill.Inventory.Infrastructure.Extensions
                     policy.RequireRole("Support");
                 });
             });
-*/
+
             /*//add Claim base authentication configuration
             services.AddAuthorization(options =>
             {
