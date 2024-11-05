@@ -198,5 +198,10 @@ namespace DevSkill.Inventory.Web.Controllers.Account
 
             return View(model);
         }
+
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
 }
