@@ -203,7 +203,6 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
              return Json(new { success = false, message = "Error updating User." });
          }*/
 
-
         public async Task<IActionResult> GetUserById(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -232,7 +231,6 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             });
         }
 
-
         [HttpPost]
         public async Task<IActionResult> UpdateUser(UserUpdateModel model, string[] Roles)
         {
@@ -246,11 +244,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 }
 
                 // Update user properties
-                user.FirstName = model.FirstName;
-                user.LastName = model.LastName;
-                user.Email = model.Email;
-                user.PhoneNumber = model.PhoneNumber;
-                user.Address = model.Address;
+                user = _mapper.Map(model, user);
 
                 var result = await _userManager.UpdateAsync(user);
 
