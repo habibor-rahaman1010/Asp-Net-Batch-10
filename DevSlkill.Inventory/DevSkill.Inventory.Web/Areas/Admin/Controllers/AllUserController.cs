@@ -175,32 +175,103 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             }
         }
 
-        //This is GetUserById user method for update the user...
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetUserById(Guid id)
+        /* //This is GetUserById user method for update the user...
+         [Authorize(Roles = "Admin")]
+         public async Task<IActionResult> GetUserById(Guid id)
+         {
+             var user = await _userManager.FindByIdAsync(id.ToString());
+             if (user != null)
+             {
+                 return Json(new { success = true, data = user });
+             }
+             return Json(new { success = false, message = "The user not found." });
+         }
+
+         [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin")]
+         public async Task<IActionResult> UpdateUser(UserUpdateModel model)
+         {
+
+             if (ModelState.IsValid)
+             {
+                 var user = await _userManager.FindByIdAsync(model.Id.ToString());
+                 user = _mapper.Map(model, user);
+                 user.Id = model.Id;
+                 await _userManager.UpdateAsync(user);
+
+                 return Json(new { success = true, message = "The User updated successfully." });
+             }
+             return Json(new { success = false, message = "Error updating User." });
+         }*/
+
+
+        public async Task<IActionResult> GetUserById(string id)
         {
-            var user = await _userManager.FindByIdAsync(id.ToString());
-            if (user != null)
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
             {
-                return Json(new { success = true, data = user });
+                return Json(new { success = false });
             }
-            return Json(new { success = false, message = "The user not found." });
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var allRoles = _roleManager.Roles.Select(r => r.Name).ToList();
+
+            return Json(new
+            {
+                success = true,
+                data = new
+                {
+                    id = user.Id,
+                    firstName = user.FirstName,
+                    lastName = user.LastName,
+                    email = user.Email,
+                    phoneNumber = user.PhoneNumber,
+                    address = user.Address,
+                    userRoles = userRoles,       // Current roles
+                    availableRoles = allRoles    // All available roles
+                }
+            });
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateUser(UserUpdateModel model)
-        {
 
+        [HttpPost]
+        public async Task<IActionResult> UpdateUser(UserUpdateModel model, string[] Roles)
+        {
             if (ModelState.IsValid)
             {
+                // Get the user
                 var user = await _userManager.FindByIdAsync(model.Id.ToString());
-                user = _mapper.Map(model, user);
-                user.Id = model.Id;
-                await _userManager.UpdateAsync(user);
+                if (user == null)
+                {
+                    return Json(new { success = false, message = "User not found." });
+                }
 
-                return Json(new { success = true, message = "The User updated successfully." });
+                // Update user properties
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
+                user.Email = model.Email;
+                user.PhoneNumber = model.PhoneNumber;
+                user.Address = model.Address;
+
+                var result = await _userManager.UpdateAsync(user);
+
+                // Update user roles
+                var currentRoles = await _userManager.GetRolesAsync(user);
+                var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+                if (!removeResult.Succeeded)
+                {
+                    return Json(new { success = false, message = "Failed to remove user roles." });
+                }
+
+                var addResult = await _userManager.AddToRolesAsync(user, Roles);
+                if (!addResult.Succeeded)
+                {
+                    return Json(new { success = false, message = "Failed to add new roles." });
+                }
+
+                return Json(new { success = true, message = "User updated successfully." });
             }
-            return Json(new { success = false, message = "Error updating User." });
+            return Json(new { success = false, message = "Invalid data." });
         }
+
     }
 }

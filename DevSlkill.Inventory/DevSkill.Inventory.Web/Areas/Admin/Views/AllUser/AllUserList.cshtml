@@ -208,7 +208,7 @@
             });
         });
 
-
+/*
         //This is our user update code...
         $(document).ready(function () {
             // Handle the click event for the edit button
@@ -288,6 +288,83 @@
                         $('#userToast').toast('show');
                     }
                 });
+            });
+        });
+*/
+
+        $('#AllUsers').on('click', '.update-user', function () {
+            var userId = $(this).data('id');
+
+            $.ajax({
+                url: '/Admin/AllUser/GetUserById',
+                method: 'GET',
+                data: { id: userId },
+                success: function (response) {
+                    if (response.success) {
+                        // Populate user data
+                        $('#updateUserId').val(response.data.id);
+                        $('#editFirstName').val(response.data.firstName);
+                        $('#editLastName').val(response.data.lastName);
+                        $('#editEmail').val(response.data.email);
+                        $('#editPhoneNumber').val(response.data.phoneNumber);
+                        $('#editAddress').val(response.data.address);
+
+                        // Populate roles dropdown
+                        var rolesDropdown = $('#editRoles');
+                        rolesDropdown.empty(); // Clear any previous options
+
+                        $.each(response.data.availableRoles, function (index, role) {
+                            rolesDropdown.append(
+                                $('<option>', {
+                                    value: role,
+                                    text: role,
+                                    selected: response.data.userRoles.includes(role) // Pre-select user roles
+                                })
+                            );
+                        });
+
+                        // Show the update modal
+                        $('#updateUserModal').modal('show');
+                    } else {
+                        alert('Error fetching user data');
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while fetching the user data.');
+                }
+            });
+        });
+
+        $('#updateUserForm').on('submit', function (e) {
+            e.preventDefault();
+
+            var selectedRoles = $('#editRoles').val(); // Get selected roles
+
+            $.ajax({
+                url: '/Admin/AllUser/UpdateUser',
+                method: 'POST',
+                data: $(this).serialize() + '&Roles=' + selectedRoles.join(','),
+                success: function (response) {
+                    if (response.success) {
+                        $('#updateUserModal').modal('hide');
+                        $('#updateUserForm')[0].reset();
+
+                        $('#toastMessage').text(response.message);
+                        $('#userToast').toast({ delay: 3000 });
+                        $('#userToast').toast('show');
+
+                        $('#AllUsers').DataTable().ajax.reload();
+                    } else {
+                        $('#toastMessage').text(response.message);
+                        $('#userToast').toast({ delay: 3000 });
+                        $('#userToast').toast('show');
+                    }
+                },
+                error: function () {
+                    $('#toastMessage').text('There was an error updating the user.');
+                    $('#userToast').toast({ delay: 3000 });
+                    $('#userToast').toast('show');
+                }
             });
         });
 
