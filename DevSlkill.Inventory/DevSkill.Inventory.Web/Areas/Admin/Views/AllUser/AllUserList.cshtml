@@ -208,7 +208,6 @@
             });
         });
 
-
         //This is user update code...
         $('#AllUsers').on('click', '.update-user', function () {
             var userId = $(this).data('id');
@@ -227,18 +226,18 @@
                         $('#editPhoneNumber').val(response.data.phoneNumber);
                         $('#editAddress').val(response.data.address);
 
-                        // Populate roles dropdown
-                        var rolesDropdown = $('#editRoles');
-                        rolesDropdown.empty(); // Clear any previous options
+                        // Populate roles checkboxes
+                        var rolesContainer = $('#editRoles');
+                        rolesContainer.empty(); // Clear any previous checkboxes
 
                         $.each(response.data.availableRoles, function (index, role) {
-                            rolesDropdown.append(
-                                $('<option>', {
-                                    value: role,
-                                    text: role,
-                                    selected: response.data.userRoles.includes(role) // Pre-select user roles
-                                })
-                            );
+                            var isChecked = response.data.userRoles.includes(role) ? 'checked' : '';
+                            rolesContainer.append(`
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="Roles" value="${role}" id="role-${index}" ${isChecked}>
+                                    <label class="form-check-label" for="role-${index}">${role}</label>
+                                </div>
+                            `);
                         });
 
                         // Show the update modal
@@ -256,13 +255,18 @@
         $('#updateUserForm').on('submit', function (e) {
             e.preventDefault();
 
-            var selectedRoles = $('#editRoles').val(); // Get selected roles
+            // Get selected roles
+            var selectedRoles = [];
+            $('#editRoles input[name="Roles"]:checked').each(function () {
+                selectedRoles.push($(this).val());
+            });
 
             $.ajax({
                 url: '/Admin/AllUser/UpdateUser',
                 method: 'POST',
-                data: $(this).serialize() + '&Roles=' + selectedRoles.join(','),
+                data: $(this).serializeArray().concat({ name: "Roles", value: selectedRoles }),
                 success: function (response) {
+                    console.log(response);
                     if (response.success) {
                         $('#updateUserModal').modal('hide');
                         $('#updateUserForm')[0].reset();

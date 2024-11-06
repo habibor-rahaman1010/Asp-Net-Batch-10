@@ -177,9 +177,9 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 
 
         //This mehtod get a user by id for update...
-        public async Task<IActionResult> GetUserById(string id)
+        public async Task<IActionResult> GetUserById(Guid id)
         {
-            var user = await _userManager.FindByIdAsync(id);
+            var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
             {
                 return Json(new { success = false });
