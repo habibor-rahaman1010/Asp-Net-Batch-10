@@ -7,6 +7,7 @@ using DevSkill.Inventory.Infrastructure;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
@@ -218,20 +219,40 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     return Json(new { success = false, message = "User not found." });
                 }
 
+                // Validate the roles to ensure they exist
+                var validRoles = await _roleManager.Roles.Select(r => r.Name).ToListAsync();
+                var invalidRoles = Roles.Where(r => !validRoles.Contains(r)).ToList();
+
+                if (invalidRoles.Any())
+                {
+                    return Json(new { success = false, message = $"The following roles do not exist: {string.Join(", ", invalidRoles)}" });
+                }
+
                 // Update user properties
                 user = _mapper.Map(model, user);
 
                 var result = await _userManager.UpdateAsync(user);
+                if (!result.Succeeded)
+                {
+                    return Json(new { success = false, message = "Failed to update user." });
+                }
 
-                // Update user roles
+                // Get the current roles of the user
                 var currentRoles = await _userManager.GetRolesAsync(user);
-                var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+
+                // Determine roles to remove and add
+                var rolesToRemove = currentRoles.Except(Roles).ToList();
+                var rolesToAdd = Roles.Except(currentRoles).ToList();
+
+                // Remove roles the user no longer has
+                var removeResult = await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
                 if (!removeResult.Succeeded)
                 {
                     return Json(new { success = false, message = "Failed to remove user roles." });
                 }
 
-                var addResult = await _userManager.AddToRolesAsync(user, Roles);
+                // Add new roles the user is assigned
+                var addResult = await _userManager.AddToRolesAsync(user, rolesToAdd);
                 if (!addResult.Succeeded)
                 {
                     return Json(new { success = false, message = "Failed to add new roles." });
@@ -241,6 +262,5 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             }
             return Json(new { success = false, message = "Invalid data." });
         }
-
     }
 }
