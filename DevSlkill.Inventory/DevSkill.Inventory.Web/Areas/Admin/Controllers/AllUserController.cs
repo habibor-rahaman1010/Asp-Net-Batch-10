@@ -175,34 +175,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             }
         }
 
-        /* //This is GetUserById user method for update the user...
-         [Authorize(Roles = "Admin")]
-         public async Task<IActionResult> GetUserById(Guid id)
-         {
-             var user = await _userManager.FindByIdAsync(id.ToString());
-             if (user != null)
-             {
-                 return Json(new { success = true, data = user });
-             }
-             return Json(new { success = false, message = "The user not found." });
-         }
 
-         [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin")]
-         public async Task<IActionResult> UpdateUser(UserUpdateModel model)
-         {
-
-             if (ModelState.IsValid)
-             {
-                 var user = await _userManager.FindByIdAsync(model.Id.ToString());
-                 user = _mapper.Map(model, user);
-                 user.Id = model.Id;
-                 await _userManager.UpdateAsync(user);
-
-                 return Json(new { success = true, message = "The User updated successfully." });
-             }
-             return Json(new { success = false, message = "Error updating User." });
-         }*/
-
+        //This mehtod get a user by id for update...
         public async Task<IActionResult> GetUserById(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -231,8 +205,9 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             });
         }
 
+        //This is user update mehtod...
         [HttpPost]
-        public async Task<IActionResult> UpdateUser(UserUpdateModel model, string[] Roles)
+        public async Task<IActionResult> UpdateUser(UserUpdateModel model, List<string> Roles)
         {
             if (ModelState.IsValid)
             {
