@@ -206,7 +206,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             });
         }
 
-        //This is user update mehtod...
+        //This is user update mehtod also user roles update code...
         [HttpPost]
         public async Task<IActionResult> UpdateUser(UserUpdateModel model, List<string> Roles)
         {

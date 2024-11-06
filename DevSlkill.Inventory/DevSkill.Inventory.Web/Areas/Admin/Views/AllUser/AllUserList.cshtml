@@ -138,7 +138,6 @@
                         title: "Actions",
                         orderable: false,
                         render: function (data, type, row) {
-                            console.log(row);
                             return `<button type="button" class="btn btn-info btn-sm update-user" data-id='${data}' data-toggle="modal" data-target="#updateUserModal">
                                         <i class="fas fa-pencil-alt"></i> Edit
                                     </button>
@@ -208,6 +207,8 @@
             });
         });
 
+
+
         //This is user update code...
         $('#AllUsers').on('click', '.update-user', function () {
             var userId = $(this).data('id');
@@ -261,12 +262,13 @@
                 selectedRoles.push($(this).val());
             });
 
+            console.log(selectedRoles);
+
             $.ajax({
                 url: '/Admin/AllUser/UpdateUser',
                 method: 'POST',
-                data: $(this).serializeArray().concat({ name: "Roles", value: selectedRoles }),
+                data: $(this).serializeArray(),
                 success: function (response) {
-                    console.log(response);
                     if (response.success) {
                         $('#updateUserModal').modal('hide');
                         $('#updateUserForm')[0].reset();
