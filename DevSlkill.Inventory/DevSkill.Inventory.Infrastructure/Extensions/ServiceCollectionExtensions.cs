@@ -63,14 +63,14 @@ namespace DevSkill.Inventory.Infrastructure.Extensions
                 });
             });
 
-            /*//add Claim base authentication configuration
+            //add Claim base authentication configuration
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("CreatePermission", policy =>
                 {
                     policy.RequireClaim("create", "true");
                 });
-            });*/
+            });
 
             /*
             //add requirement base authentication configuration

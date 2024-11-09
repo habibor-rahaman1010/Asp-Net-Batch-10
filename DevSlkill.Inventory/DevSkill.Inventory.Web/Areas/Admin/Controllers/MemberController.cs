@@ -265,5 +265,58 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             model.Roles = new List<SelectListItem>(rolesList);
         }
 
+
+
+        //This is code for get list of claim
+        [Authorize(Policy = "CustomAdminAccess")]
+        public async Task<IActionResult> ListUserClaims()
+        {
+            var usersWithClaims = new List<UserClaimsViewModel>();
+
+            // Get all users
+            var users = _userManager.Users.ToList();
+
+            // Loop through each user and get their claims
+            foreach (var user in users)
+            {
+                var claims = await _userManager.GetClaimsAsync(user);
+                usersWithClaims.Add(new UserClaimsViewModel
+                {
+                    UserId = user.Id,
+                    UserName = user.UserName,
+                    Claims = claims
+                });
+            }
+
+            return View(usersWithClaims);
+        }
+
+
+        //This code for claim create
+        [Authorize(Policy = "CustomAdminAccess")]
+        public IActionResult AddClaim()
+        {
+            var model = new ClaimAddModel();
+            model.Users = new SelectList(from c in _userManager.Users select c, "Id", "UserName");
+            return View(model);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        public async Task<IActionResult> AddClaim(ClaimAddModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByIdAsync(model.UserId.ToString());
+                if (user != null)
+                {
+                    await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim(model.ClaimName, model.ClaimValue));
+                }
+                model.Users = new SelectList(from c in _userManager.Users select c, "Id", "UserName");
+                return View(model);
+            }
+
+            model.Users = new SelectList(from c in _userManager.Users select c, "Id", "UserName");
+            return View(model);
+        }
     }
 }

@@ -167,7 +167,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(productJsonData);
         }
 
-
+        [Authorize(Policy = "CreatePermission")]
         public async Task<IActionResult> Create()
         {
             var model = new ProductCreateModel();
@@ -185,7 +185,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CreatePermission")]
         public async Task<IActionResult> Create(ProductCreateModel model)
         {
             if (ModelState.IsValid)

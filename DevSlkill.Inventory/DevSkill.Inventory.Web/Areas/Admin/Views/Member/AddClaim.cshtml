@@ -1,4 +1,4 @@
-﻿@model RoleCreateModel
+﻿@model ClaimAddModel
 
 @{
     ViewData["Title"] = "Create Role";
@@ -8,12 +8,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Create New Role</h1>
+                <h1>Change Role</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Roles</a></li>
-                    <li class="breadcrumb-item active">Create Role</li>
+                    <li class="breadcrumb-item"><a href="#">Claim</a></li>
+                    <li class="breadcrumb-item active">Add Claim</li>
                 </ol>
             </div>
         </div>
@@ -29,16 +29,29 @@
                 <!-- general form elements -->
                 <div class="card card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">Create New Role</h3>
+                        <h3 class="card-title">Add Claim</h3>
                     </div>
                     <!-- /.card-header -->
                     <!-- form start -->
-                    <form method="post" asp-antiforgery="true" asp-area="Admin" asp-controller="Member" asp-action="CreateRole" enctype="multipart/form-data">
+                    <form asp-antiforgery="true" asp-area="Admin" asp-controller="Member" asp-action="AddClaim" method="post" enctype="multipart/form-data">
+                        <partial name="_ResponsePartial" />
                         <div class="card-body">
                             <div class="form-group">
-                                <label asp-for="RoleName"></label>
-                                <input type="text" asp-for="RoleName" class="form-control" placeholder="Role Name" />
-                                <span asp-validation-for="RoleName" class="text-danger"></span>
+                                <label asp-for="UserId"></label>
+                                <select asp-for="UserId" asp-items="Model.Users" class="form-control"></select>
+                                <span asp-validation-for="UserId" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="ClaimName"></label>
+                                <input type="text" asp-for="ClaimName" class="form-control" placeholder="Claim Name" />
+                                <span asp-validation-for="ClaimName" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="ClaimValue"></label>
+                                <input type="text" asp-for="ClaimValue" class="form-control" placeholder="Claim Value" />
+                                <span asp-validation-for="ClaimValue" class="text-danger"></span>
                             </div>
 
                         </div>
@@ -64,13 +77,5 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
-
-    <script>
-        //This code for temp data response fadeOut
-        $(document).ready(function () {
-            setTimeout(function () {
-                $('#response-alert').fadeOut('slow');
-            }, 3000);
-        });
-    </script>
 }
+
