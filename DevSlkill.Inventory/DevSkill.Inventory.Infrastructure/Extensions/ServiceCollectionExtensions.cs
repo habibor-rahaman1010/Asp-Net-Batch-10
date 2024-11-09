@@ -49,6 +49,13 @@ namespace DevSkill.Inventory.Infrastructure.Extensions
             //add policy role configuration
             services.AddAuthorization(options =>
             {
+                options.AddPolicy("CustomAdminAccess", policy =>
+                {
+                    policy.RequireRole("Admin");
+                    policy.RequireRole("Support");
+                    policy.RequireRole("Member");
+                });
+
                 options.AddPolicy("CustomAccess", policy =>
                 {
                     policy.RequireRole("Member");
@@ -63,8 +70,9 @@ namespace DevSkill.Inventory.Infrastructure.Extensions
                 {
                     policy.RequireClaim("create", "true");
                 });
-            });
+            });*/
 
+            /*
             //add requirement base authentication configuration
             services.AddAuthorization(options =>
             {
@@ -74,7 +82,7 @@ namespace DevSkill.Inventory.Infrastructure.Extensions
                 });
             });
 
-            services.AddSingleton<IAuthorizationHandler, RequirementHandler>();*/
+            services.AddSingleton<IAuthorizationHandler, RequirementHandler>(); */
         }
     }
 }

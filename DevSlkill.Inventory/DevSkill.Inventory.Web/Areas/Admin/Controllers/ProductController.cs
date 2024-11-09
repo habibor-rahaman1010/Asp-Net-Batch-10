@@ -11,11 +11,13 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using DevSkill.Inventory.Infrastructure.UnitOfWork;
+using Microsoft.AspNetCore.Authorization;
+using AutoMapper.Execution;
 
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("Admin"), Authorize(Roles = "Admin")]
     public class ProductController : Controller
     {
         private readonly IProductManagementService _productManagementService;
@@ -74,7 +76,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         [Route("/Admin/Product/GetProductJsonDataAsync")]
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "Member")]
         public async Task<JsonResult> GetProductJsonDataAsync([FromBody] ProductListModel model)
         {
             var result = await _productManagementService.GetProductsAsync(model.PageIndex, model.PageSize, model.Search, 
@@ -103,6 +105,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(productJsonData);
         }
 
+        [Authorize(Roles = "Member")]
         public async Task<IActionResult> GetProductById(Guid id)
         {
             var product = await _productManagementService.GetProductByIdAsync(id);
@@ -113,6 +116,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(product);
         }
 
+        [Authorize(Roles = "Member")]
         public async Task<IActionResult> ProductList()
         {
             var model = new ProductListModel();

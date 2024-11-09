@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("Admin"), Authorize(Policy = "CustomAdminAccess")]
     public class MemberController : Controller
     {
         private readonly RoleManager<ApplicationRole> _roleManager;
@@ -32,7 +32,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This is method return lsit of role...
-        [Authorize(Roles = "Admin, Member")]
+        [Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> ListRoles()
         {
             var roles = await _roleManager.Roles.ToListAsync();
@@ -40,14 +40,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This is method for new role create...
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "CustomAdminAccess")]
         public IActionResult CreateRole()
         {
             var model = new RoleCreateModel();
             return View(model);
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> CreateRole(RoleCreateModel model)
         {
             if (ModelState.IsValid)
@@ -84,7 +84,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This is method for role Update...
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> UpdateRole(Guid id)
         {
             // Find the role by its ID
@@ -110,7 +110,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> UpdateRole(RoleUpdateModel model)
         {
             if (ModelState.IsValid)
@@ -169,7 +169,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This is method for role delete...
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> DeleteRole(Guid id)
         {
             // Find the role by its ID
@@ -224,7 +224,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //User Role Change method...
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "CustomAdminAccess")]
         public IActionResult ChangeRole()
         {
             var model = new RoleChangeModel();
@@ -232,7 +232,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = "Admin")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> ChangeRole(RoleChangeModel model)
         {
             if (ModelState.IsValid)
