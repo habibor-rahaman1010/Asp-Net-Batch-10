@@ -9,6 +9,7 @@ using DevSkill.Inventory.Infrastructure;
 using System.Collections;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
@@ -322,20 +323,20 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 
 
         //This code for delete claim of a user
-       public async Task<IActionResult> DeleteClaim(string userId, string claimType, string claimValue)
+       public async Task<IActionResult> DeleteClaim(Guid userId, string claimType, string claimValue)
         {
             if (userId == null || claimType == null || claimValue == null)
             {
                 return BadRequest("Invalid claim deletion request.");
             }
 
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {
                 return NotFound("User not found.");
             }
 
-            var claim = new System.Security.Claims.Claim(claimType, claimValue);
+            var claim = new Claim(claimType, claimValue);
             var result = await _userManager.RemoveClaimAsync(user, claim);
 
             if (result.Succeeded)
@@ -369,6 +370,76 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             }
 
             return usersWithClaims;
+        }
+
+        //This method for claim edit
+        [Authorize(Policy = "CustomAdminAccess")]
+        public async Task<IActionResult> EditClaim(Guid userId, string claimType, string claimValue)
+        {
+            if (userId == null || claimType == null || claimValue == null)
+            {
+                return BadRequest("Invalid claim edit request.");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Populate the model with the original claim type and value
+            var model = new ClaimEditModel
+            {
+                UserId = userId,
+                OriginalClaimType = claimType,
+                OriginalClaimValue = claimValue,
+                NewClaimType = claimType,
+                NewClaimValue = claimValue
+            };
+
+            return View(model);
+        }
+
+        //This method for claim edit
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        public async Task<IActionResult> EditClaim(ClaimEditModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByIdAsync(model.UserId.ToString());
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Remove the original claim
+            var oldClaim = new System.Security.Claims.Claim(model.OriginalClaimType, model.OriginalClaimValue);
+            var removeResult = await _userManager.RemoveClaimAsync(user, oldClaim);
+            if (!removeResult.Succeeded)
+            {
+                foreach (var error in removeResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(model);
+            }
+
+            // Add the new claim with updated type and value
+            var newClaim = new System.Security.Claims.Claim(model.NewClaimType, model.NewClaimValue);
+            var addResult = await _userManager.AddClaimAsync(user, newClaim);
+            if (!addResult.Succeeded)
+            {
+                foreach (var error in addResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(model);
+            }
+
+            return RedirectToAction(nameof(ListUserClaims));
         }
 
     }

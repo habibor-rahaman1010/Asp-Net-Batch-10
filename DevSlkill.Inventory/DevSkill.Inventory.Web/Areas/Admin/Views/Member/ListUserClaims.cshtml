@@ -50,7 +50,7 @@
                                 <td>@user.Claims[i].Type</td>
                                 <td>@user.Claims[i].Value</td>
                                 <td>
-                                    <a asp-area="Admin" asp-action="EditClaim" asp-route-userId="@user.UserId" asp-route-claimType="@user.Claims[i].Type" class="btn btn-primary btn-sm">Edit</a>
+                                    <a asp-area="Admin" asp-action="EditClaim" asp-route-userId="@user.UserId" asp-route-claimType="@user.Claims[i].Type" asp-route-claimValue="@user.Claims[i].Value" class="btn btn-primary btn-sm">Edit</a>
                                     <a asp-area="Admin" asp-action="DeleteClaim" asp-route-userId="@user.UserId" asp-route-claimType="@user.Claims[i].Type" asp-route-claimValue="@user.Claims[i].Value"
                                        class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this claim?');">Delete</a>
                                 </td>
