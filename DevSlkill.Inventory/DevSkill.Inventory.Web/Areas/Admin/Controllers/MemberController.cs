@@ -283,6 +283,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 usersWithClaims.Add(new UserClaimsViewModel
                 {
                     UserId = user.Id,
+                    Email = user.Email,
                     UserName = user.UserName,
                     Claims = claims
                 });
@@ -312,11 +313,63 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim(model.ClaimName, model.ClaimValue));
                 }
                 model.Users = new SelectList(from c in _userManager.Users select c, "Id", "UserName");
-                return View(model);
+                return RedirectToAction(nameof(ListUserClaims));
             }
 
             model.Users = new SelectList(from c in _userManager.Users select c, "Id", "UserName");
             return View(model);
         }
+
+
+        //This code for delete claim of a user
+       public async Task<IActionResult> DeleteClaim(string userId, string claimType, string claimValue)
+        {
+            if (userId == null || claimType == null || claimValue == null)
+            {
+                return BadRequest("Invalid claim deletion request.");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            var claim = new System.Security.Claims.Claim(claimType, claimValue);
+            var result = await _userManager.RemoveClaimAsync(user, claim);
+
+            if (result.Succeeded)
+            {
+                return RedirectToAction(nameof(ListUserClaims));
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View("ListUserClaims", await GetUsersWithClaims());
+        }
+
+        private async Task<List<UserClaimsViewModel>> GetUsersWithClaims()
+        {
+            var usersWithClaims = new List<UserClaimsViewModel>();
+            var users = _userManager.Users.ToList();
+
+            foreach (var user in users)
+            {
+                var claims = await _userManager.GetClaimsAsync(user);
+                usersWithClaims.Add(new UserClaimsViewModel
+                {
+                    UserId = user.Id,
+                    Email = user.Email,
+                    UserName = user.UserName,
+                    Claims = claims
+                });
+            }
+
+            return usersWithClaims;
+        }
+
     }
 }

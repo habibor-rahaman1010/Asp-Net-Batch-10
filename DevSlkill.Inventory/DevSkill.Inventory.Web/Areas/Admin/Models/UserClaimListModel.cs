@@ -6,6 +6,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
     {
         public Guid UserId { get; set; }
         public string UserName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
         public IList<Claim> Claims { get; set; }
 
         public UserClaimsViewModel()
