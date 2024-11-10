@@ -11,6 +11,7 @@ using DevSkill.Inventory.Web.Models.Account;
 using Microsoft.AspNetCore.Authorization;
 using DevSkill.Inventory.Web.Areas.Admin.Controllers;
 using DevSkill.Inventory.Domain;
+using System.Security.Claims;
 
 namespace DevSkill.Inventory.Web.Controllers.Account
 {
@@ -43,6 +44,7 @@ namespace DevSkill.Inventory.Web.Controllers.Account
             return View(model);
         }
 
+
         [HttpPost, ValidateAntiForgeryToken, AllowAnonymous]
         public async Task<IActionResult> RegisterAsync(RegistrationModel model)
         {
@@ -50,20 +52,33 @@ namespace DevSkill.Inventory.Web.Controllers.Account
             model.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { 
+                var user = new ApplicationUser
+                {
                     FirstName = model.FistName,
                     LastName = model.LastName,
                     Email = model.Email,
                     Address = model.Address,
                     PhoneNumber = model.PhoneNumber,
-                    UserName = $"{model.Email.Split("@")[0].ToLower()}", 
+                    //UserName = $"{model.Email.Split("@")[0].ToLower()}",
+                    UserName = model.Email,
                 };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
                     await _userManager.AddToRoleAsync(user, "Member");
-                    
+
+                    // Add claim for the user Read claim add by deafult a user
+                    var claimResult = await _userManager.AddClaimAsync(user, new Claim("Read", "true"));
+                    if (!claimResult.Succeeded)
+                    {
+                        foreach (var error in claimResult.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                        return View(model); // Return if claim addition fails
+                    }
+
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
@@ -86,7 +101,7 @@ namespace DevSkill.Inventory.Web.Controllers.Account
                     else
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
-                        return RedirectToAction(nameof(DashboardController.Index), "Dashboard", new {area = "Admin"});
+                        return RedirectToAction(nameof(DashboardController.Index), "Dashboard", new { area = "Admin" });
                     }
                 }
                 foreach (var error in result.Errors)
@@ -98,6 +113,7 @@ namespace DevSkill.Inventory.Web.Controllers.Account
             // If we got this far, something failed, redisplay form
             return View(model);
         }
+
 
         //--------Login Code-----------
         [AllowAnonymous]

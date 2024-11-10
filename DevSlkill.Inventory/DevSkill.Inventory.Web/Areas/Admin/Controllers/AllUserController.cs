@@ -140,6 +140,19 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 var user = await _userManager.FindByIdAsync(id.ToString());
                 if (user != null)
                 {
+                    // Remove user roles
+                    var roles = await _userManager.GetRolesAsync(user);
+                    if (roles.Any())
+                    {
+                        await _userManager.RemoveFromRolesAsync(user, roles);
+                    }
+
+                    var claims = await _userManager.GetClaimsAsync(user);
+                    if (claims.Any())
+                    {
+                        await _userManager.RemoveClaimsAsync(user, claims);
+                    }
+
                     var result = await _userManager.DeleteAsync(user);
 
                     if (result.Succeeded)

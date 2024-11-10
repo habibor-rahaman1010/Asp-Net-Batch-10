@@ -197,17 +197,21 @@
                         }
                     },
                     error: function (error) {
-                        $('#toastMessage').text('There was an error deleting the user.');
-                        $('#userToast').toast({
-                            delay: 3000
-                        });
-                        $('#userToast').toast('show');
+                        if (error.status === 403) {
+                            // Redirect to Access Denied page if the status is 403
+                            window.location.href = '/Account/AccessDenied';
+                        }
+                        else {
+                            $('#toastMessage').text('There was an error deleting the user.');
+                            $('#userToast').toast({
+                                delay: 3000
+                            });
+                            $('#userToast').toast('show');
+                        }
                     }
                 });
             });
         });
-
-
 
         //This is user update code...
         $('#AllUsers').on('click', '.update-user', function () {

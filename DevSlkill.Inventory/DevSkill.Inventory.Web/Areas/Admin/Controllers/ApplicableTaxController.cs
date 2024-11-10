@@ -3,12 +3,13 @@ using DevSkill.Inventory.Application.Services;
 using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("Admin"), Authorize(Roles = "Admin")]
     public class ApplicableTaxController : Controller
     {
         private readonly IApplicableTaxManagementService _applicableTaxManagementService;
@@ -24,12 +25,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _logger = logger;
         }
 
+        [Authorize(Policy = "ReadPermission")]
         public IActionResult ApplicableTaxList()
         {
             return View();
         }
 
         //Get all applicable tax data... 
+        [Authorize(Policy = "ReadPermission")]
         public async Task<IActionResult> GetApplicableTaxJsonData([FromBody] ApplicableTaxListModel model)
         {
             var result = await _applicableTaxManagementService.GetAllApplicableTaxAsync(model.PageIndex, model.PageSize, model.Search,
