@@ -256,11 +256,18 @@
                             }
                         },
                         error: function (error) {
-                            $('#toastMessage').text('There was an error adding the brand.');
-                            $('#adjustmentTypeToast').toast({
-                                delay: 3000
-                            });
-                            $('#adjustmentTypeToast').toast('show');
+                            if (error.status === 403) {
+                                // Redirect to Access Denied page if the status is 403
+                                window.location.href = '/Account/AccessDenied';
+                            }
+                            else 
+                            {
+                                $('#toastMessage').text('There was an error adding the brand.');
+                                $('#adjustmentTypeToast').toast({
+                                    delay: 3000
+                                });
+                                $('#adjustmentTypeToast').toast('show');
+                            }
                         }
                     });
                 });
@@ -299,8 +306,15 @@
                         $('#stockAdjustmentDetailModal').modal('show');
                     },
                     error: function (xhr, status, error) {
-                        console.error("Error fetching product data:", error);
-                        alert('Failed to load product details.');
+                        if (xhr.status === 403) {
+                            // Redirect to Access Denied page if the status is 403
+                            window.location.href = '/Account/AccessDenied';
+                        }
+                        else 
+                        {
+                            console.error("Error fetching product data:", error);
+                            alert('Failed to load product details.');
+                        }
                     }
                 });
             });

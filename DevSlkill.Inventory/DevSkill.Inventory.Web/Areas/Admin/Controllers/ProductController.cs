@@ -251,6 +251,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
+        [Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> UpdateProduct(Guid id)
         {
             var product = await _productManagementService.GetProductByIdAsync(id);
@@ -269,7 +270,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, AutoValidateAntiforgeryToken]
+        [HttpPost, AutoValidateAntiforgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> UpdateProduct (UpdateProductModel model)
         {
             if (ModelState.IsValid)
@@ -365,7 +366,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> Delete(Guid id)
         {
             try

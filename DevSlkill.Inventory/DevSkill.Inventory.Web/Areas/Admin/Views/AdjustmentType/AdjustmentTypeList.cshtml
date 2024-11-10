@@ -242,12 +242,18 @@
                                 $('#adjustmentTypeToast').toast('show');
                             }
                         },
-                        error: function (error) {
-                            $('#toastMessage').text('There was an error adding the Adjustment Tyep.');
-                            $('#adjustmentTypeToast').toast({
-                                delay: 3000
-                            });
-                            $('#adjustmentTypeToast').toast('show');
+                        error: function (xhr) {
+                            if(xhr.status === 403){
+                                // Redirect to Access Denied page if the status is 403
+                                window.location.href = '/Account/AccessDenied';
+                            }
+                            else {
+                                $('#toastMessage').text('There was an error adding the Adjustment Tyep.');
+                                $('#adjustmentTypeToast').toast({
+                                    delay: 3000
+                                });
+                                $('#adjustmentTypeToast').toast('show');
+                            }
                         }
                     });
                 });
@@ -289,12 +295,18 @@
                                 $('#adjustmentTypeToast').toast('show');
                             }
                         },
-                        error: function (error) {
-                            $('#toastMessage').text('There was an error adding the Adjustment Tyep.');
-                            $('#adjustmentTypeToast').toast({
-                                delay: 3000
-                            });
-                            $('#adjustmentTypeToast').toast('show');
+                        error: function (xhr) {
+                            if (xhr.status === 403) {
+                                // Redirect to Access Denied page if the status is 403
+                                window.location.href = '/Account/AccessDenied';
+                            }
+                            else {
+                                $('#toastMessage').text('There was an error adding the Adjustment Tyep.');
+                                $('#adjustmentTypeToast').toast({
+                                    delay: 3000
+                                });
+                                $('#adjustmentTypeToast').toast('show');
+                            }
                         }
                     });
                 });
@@ -328,8 +340,14 @@
                                 alert('Error fetching category data');
                             }
                         },
-                        error: function () {
-                            alert('An error occurred while fetching the Adjustment Tyep.');
+                        error: function (xhr) {
+                            if (xhr.status === 403) {
+                                // Redirect to Access Denied page if the status is 403
+                                window.location.href = '/Account/AccessDenied';
+                            }
+                            else {
+                                alert('An error occurred while fetching the Adjustment Tyep.');
+                            }
                         }
                     });
                 });
@@ -367,12 +385,18 @@
                                 $('#adjustmentTypeToast').toast('show');
                             }
                         },
-                        error: function () {
-                            $('#toastMessage').text('There was an error editing the Adjustment Tyep.');
-                            $('#adjustmentTypeToast').toast({
-                                delay: 3000
-                            });
-                            $('#adjustmentTypeToast').toast('show');
+                        error: function (xhr) {
+                            if (xhr.status === 403) {
+                                // Redirect to Access Denied page if the status is 403
+                                window.location.href = '/Account/AccessDenied';
+                            }
+                            else {
+                                $('#toastMessage').text('There was an error editing the Adjustment Tyep.');
+                                $('#adjustmentTypeToast').toast({
+                                    delay: 3000
+                                });
+                                $('#adjustmentTypeToast').toast('show');
+                            }
                         }
                     });
                 });

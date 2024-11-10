@@ -5,17 +5,18 @@ using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites;
 using DevSkill.Inventory.Infrastructure;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("Admin"), Authorize(Roles = "Admin")]
     public class AdjustmentTypeController : Controller
     {
         private readonly IAdjustmentTypeManagementService _adjustmentTypeManagementService;
         private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+        private readonly ILogger<AdjustmentTypeController> _logger;
 
         public AdjustmentTypeController(IAdjustmentTypeManagementService adjustmentTypeManagementService,
             IMapper mapper,
@@ -26,11 +27,13 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _logger = logger;
         }
 
+        [Authorize(Roles ="Member")]
         public IActionResult AdjustmentTypeList()
         {
             return View();
         }
 
+        [Authorize(Roles = "Member")]
         public async Task<JsonResult> GetAdjustmentTypeJsonData([FromBody] AdjustmentTypeListModel model)
         {
             var result = await _adjustmentTypeManagementService.GetAllAdjustmentTypeAsync(model.PageIndex, model.PageSize, model.Search,
@@ -53,7 +56,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(adjustmentTypeJsonData);
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<JsonResult> AddAdjustmentType(AdjustmentTypeCreateModel model)
         {
             if (ModelState.IsValid)
@@ -89,7 +92,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             });
         }    
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<JsonResult> DeleteAdjustmentType(Guid id)
         {
             try
@@ -113,6 +116,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             }
         }
 
+        [Authorize(Policy = "CustomAdminAccess")]
         public IActionResult GetAdjustmentTypeById(Guid id)
         {
             var adjustmentType = _adjustmentTypeManagementService.GetAdjustmentTypeByIdAsync(id);
@@ -123,7 +127,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(new { success = false, message = "Adjustment Type not found." });
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> EditAdjustmentType(AdjustmentTypeUpdateModel model)
         {
             if (ModelState.IsValid)

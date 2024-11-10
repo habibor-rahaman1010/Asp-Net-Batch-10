@@ -9,10 +9,11 @@ using DevSkill.Inventory.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("Admin"), Authorize(Roles = "Admin")]
     public class StockAdjustmentController : Controller
     {
         private readonly IStockAdjustmentManagementService _stockAdjustmentManagementService;
@@ -40,11 +41,13 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _logger = logger;
         }
 
+        [Authorize(Policy = "ReadPermission")]
         public IActionResult StockAdjustmentList()
         {
             return View();
         }
 
+        [Authorize(Policy = "ReadPermission")]
         public async Task<JsonResult> GetStockAdjustmentJsonData([FromBody] StockAdjustmentListModel model)
         {
             var result = await _stockAdjustmentManagementService.GetAllStockAdjustmentAsync(model.PageIndex, model.PageSize, model.Search,
@@ -74,6 +77,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(stockAdjustmentJsonData);
         }
 
+        [Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> CreateStockAdjustment()
         {
             var model = new StockAdjustmentCreateModel();
@@ -82,7 +86,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> CreateStockAdjustment(StockAdjustmentCreateModel model)
         {
             if (ModelState.IsValid)
@@ -126,7 +130,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<JsonResult> DeleteStockAdjustment(Guid id)
         {
             try
@@ -157,7 +161,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet, Authorize(Policy = "ReadPermission")]
         public async Task<IActionResult> GetStockAdjustmentyById(Guid id)
         {
             var stockAdjustment = await _stockAdjustmentManagementService.GetStockAdjustmentyByIdAsync(id);

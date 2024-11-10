@@ -311,7 +311,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 var user = await _userManager.FindByIdAsync(model.UserId.ToString());
                 if (user != null)
                 {
-                    await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim(model.ClaimName, model.ClaimValue));
+                    await _userManager.AddClaimAsync(user, new Claim(model.ClaimName, model.ClaimValue));
                 }
                 model.Users = new SelectList(from c in _userManager.Users select c, "Id", "UserName");
                 return RedirectToAction(nameof(ListUserClaims));
