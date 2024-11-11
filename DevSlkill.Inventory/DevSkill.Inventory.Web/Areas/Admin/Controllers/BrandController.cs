@@ -6,10 +6,11 @@ using DevSkill.Inventory.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
 using DevSkill.Inventory.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("Admin"), Authorize]
     public class BrandController : Controller
     {
         private readonly IBrandManagementService _brandManagementService;
@@ -22,11 +23,13 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _logger = logger;
         }
 
+        [Authorize(Policy = "ReadPermission")]
         public IActionResult BrandList()
         {
             return View();
         }
 
+        [Authorize(Policy = "ReadPermission")]
         public async Task<JsonResult> GetBrandJsonData([FromBody] BrandListModel model)
         {
             var result = await _brandManagementService.GetBrandsAsync(model.PageIndex, model.PageSize, model.Search,
@@ -50,7 +53,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(brandJsonData);
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<JsonResult> AddBrand(CreateBrandModel model)
         {
             if (ModelState.IsValid)
@@ -88,7 +91,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> BrandDelete(Guid id)
         {
             try
@@ -116,6 +119,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(nameof(BrandList));
         }
 
+        [Authorize(Policy = "CustomAdminAccess")]
         public IActionResult GetBrandById(Guid id)
         {
             var brand = _brandManagementService.GetBrandByIdAsync(id);
@@ -126,7 +130,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(new { success = false, message = "Brand not found." });
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> EditBrand(UpdateBrandModel model)
         {
             if (ModelState.IsValid)

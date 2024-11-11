@@ -3,18 +3,19 @@ using DevSkill.Inventory.Application.Services;
 using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Web;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("Admin"), Authorize]
     public class BarcodeTypeController : Controller
     {
         private readonly IBarcodeTypeManagementService _barcodeTypeManagementService;
         private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+        private readonly ILogger<BarcodeTypeController> _logger;
 
         public BarcodeTypeController(IBarcodeTypeManagementService barcodeTypeManagementService,
             IMapper mapper,
@@ -25,11 +26,13 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _logger = logger;
         }
 
+        [Authorize(Policy = "ReadPermission")]
         public IActionResult BarcodeTypeList()
         {
             return View();
         }
 
+        [Authorize(Policy = "ReadPermission")]
         public async Task<JsonResult> GetBarcodeTypeJsonData([FromBody] BarcodeTypeListModel model)
         {
             var result = await _barcodeTypeManagementService.GetAllBarcodeTypeAsync(model.PageIndex, model.PageSize, model.Search,
@@ -53,7 +56,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(barcodeTypeJsonData);
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<JsonResult> AddBarcodeType(BarcodeTypeCreateModel model)
         {
             if (ModelState.IsValid)
@@ -89,6 +92,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             });
         }
 
+        [Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> GetBarcodeTypeById(Guid id)
         {
             var barcodeType = await _barcodeTypeManagementService.GetBarcodeTypeId(id);
@@ -99,7 +103,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(new { success = false, message = "Barcode Type not found." });
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> UpdateBarcodeType(BarcodeTypeUpdateModel model)
         {
 
@@ -127,8 +131,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(new { success = false, message = "Error updating Barcode Type." });
         }
 
-        //this code for delete
-        [HttpPost, ValidateAntiForgeryToken]
+        //This code for delete
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<JsonResult> DeleteBarcodeType(Guid id)
         {
             try

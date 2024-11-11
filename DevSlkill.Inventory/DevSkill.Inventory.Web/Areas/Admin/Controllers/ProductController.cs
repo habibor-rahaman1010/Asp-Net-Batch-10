@@ -17,7 +17,7 @@ using AutoMapper.Execution;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
-    [Area("Admin"), Authorize(Roles = "Admin")]
+    [Area("Admin"), Authorize]
     public class ProductController : Controller
     {
         private readonly IProductManagementService _productManagementService;
@@ -70,13 +70,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
+        [Authorize(Policy = "ReadPermission")]
         public IActionResult Index()
         {
             return View();
         }
 
         [Route("/Admin/Product/GetProductJsonDataAsync")]
-        [HttpPost, Authorize(Roles = "Member")]
+        [HttpPost, Authorize(Policy = "ReadPermission")]
         public async Task<JsonResult> GetProductJsonDataAsync([FromBody] ProductListModel model)
         {
             var result = await _productManagementService.GetProductsAsync(model.PageIndex, model.PageSize, model.Search, 
@@ -105,7 +106,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(productJsonData);
         }
 
-        [Authorize(Roles = "Member")]
+        [Authorize(Policy = "ReadPermission")]
         public async Task<IActionResult> GetProductById(Guid id)
         {
             var product = await _productManagementService.GetProductByIdAsync(id);
@@ -116,7 +117,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(product);
         }
 
-        [Authorize(Roles = "Member")]
+        [Authorize(Policy = "ReadPermission")]
         public async Task<IActionResult> ProductList()
         {
             var model = new ProductListModel();
@@ -132,7 +133,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 
         //Here used stored procedure for data retrive
         [Route("/Admin/Product/GetProductJsonDataSpAsync")]
-        [HttpPost]
+        [HttpPost, Authorize("ReadPermission")]
         public async Task<JsonResult> GetProductJsonDataSpAsync([FromBody] ProductListModel model)
         {
             var result = await _productManagementService.GetProductsSpAsync(model.PageIndex, model.PageSize, model.SearchItem,
@@ -167,7 +168,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(productJsonData);
         }
 
-        [Authorize(Policy = "AgeRestriction")]
+        [Authorize(Policy = "CreatePermission")]
         public async Task<IActionResult> Create()
         {
             var model = new ProductCreateModel();
@@ -185,7 +186,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AgeRestriction")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CreatePermission")]
         public async Task<IActionResult> Create(ProductCreateModel model)
         {
             if (ModelState.IsValid)
@@ -251,7 +252,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-        [Authorize(Policy = "CustomAdminAccess")]
+        [Authorize(Policy = "UpdatePermission")]
         public async Task<IActionResult> UpdateProduct(Guid id)
         {
             var product = await _productManagementService.GetProductByIdAsync(id);
@@ -270,7 +271,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, AutoValidateAntiforgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, AutoValidateAntiforgeryToken, Authorize(Policy = "UpdatePermission")]
         public async Task<IActionResult> UpdateProduct (UpdateProductModel model)
         {
             if (ModelState.IsValid)
@@ -412,7 +413,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return RedirectToAction("ProductList"); // Redirect in case of an exception to maintain flow
         }
 
-        [HttpGet]
+        [HttpGet, Authorize(Policy = "CustomAdminAccess")]
         public async Task<JsonResult> SearchProductsByName(string searchTerm)
         {
             try

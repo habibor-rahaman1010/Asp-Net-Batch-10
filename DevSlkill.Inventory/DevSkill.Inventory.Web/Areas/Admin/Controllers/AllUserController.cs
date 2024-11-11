@@ -18,7 +18,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IMapper _mapper;
-        ILogger<AllUserController> _logger;
+        private readonly ILogger<AllUserController> _logger;
 
         public AllUserController(RoleManager<ApplicationRole> roleManager,
             UserManager<ApplicationUser> userManager,
