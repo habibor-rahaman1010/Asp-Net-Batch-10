@@ -15,7 +15,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
     {
         private readonly IBrandManagementService _brandManagementService;
         private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+        private readonly ILogger<BrandController> _logger;
         public BrandController(IBrandManagementService brandManagementService, IMapper mapper, ILogger<BrandController> logger)
         {
             _brandManagementService = brandManagementService;

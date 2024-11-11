@@ -17,14 +17,14 @@
                         <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <label asp-for="Description">Description</label>
-                        <input asp-for="Description" type="text" class="form-control" id="description" name="Description" required>
-                        <span asp-validation-for="Description" class="text-danger"></span>
+                        <label asp-for="WarrantyDuration">Warranty Duration</label>
+                        <input asp-for="WarrantyDuration" type="text" class="form-control" id="WarrantyDuration" name="WarrantyDuration" required>
+                        <span asp-validation-for="WarrantyDuration" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <label asp-for="WarrantyDuration">Warranty Duration</label>
-                        <textarea asp-for="WarrantyDuration" class="form-control" id="WarrantyDuration" name="WarrantyDuration" rows="3"></textarea>
-                        <span asp-validation-for="WarrantyDuration" class="text-danger"></span>
+                        <label asp-for="Description">Description</label>
+                        <textarea asp-for="Description" class="form-control" id="description" name="Description" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
                     <button type="submit" class="btn btn-primary">Save</button>
                 </form>

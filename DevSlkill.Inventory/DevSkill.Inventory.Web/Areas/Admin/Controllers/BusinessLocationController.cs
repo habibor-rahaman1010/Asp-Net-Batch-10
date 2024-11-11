@@ -16,7 +16,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
     {
         private readonly IBusinessLocationManagementService _businessLocationManagementService;
         private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+        private readonly ILogger<BusinessLocationController> _logger;
 
         public BusinessLocationController(IBusinessLocationManagementService businessLocationManagementService,
             IMapper mapper,

@@ -19,7 +19,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IApplicationTime _applicationTime;
-        ILogger<MemberController> _logger;
+        private readonly ILogger<MemberController> _logger;
 
         public MemberController(RoleManager<ApplicationRole> roleManager,
             UserManager<ApplicationUser> userManager,

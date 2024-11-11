@@ -3,12 +3,13 @@ using DevSkill.Inventory.Application.Services;
 using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("Admin"), Authorize]
     public class ProductTypeController : Controller
     {
         private readonly IProductTypeManagementService _productTypeManagementService;
@@ -24,12 +25,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _logger = logger;
         }
 
+        [Authorize(Policy = "ReadPermission")]
         public IActionResult ProductTypeList()
         {
             return View();
         }
 
         //Get all product type data 
+        [Authorize(Policy = "ReadPermission")]
         public async Task<JsonResult> GetProductTypeJsonData([FromBody] ProductTypeListModel model)
         {
             var result = await _productTypeManagementService.GetAllProductTypeAsync(model.PageIndex, model.PageSize, model.Search,
@@ -54,7 +57,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This is method for create new product type
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<JsonResult> AddProductType(ProductTypeCreateModel model)
         {
             if (ModelState.IsValid)
@@ -91,6 +94,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This code for product type update
+        [Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> GetProductTypeById(Guid id)
         {
             var productType = await _productTypeManagementService.GetProductTypeIdAsync(id);
@@ -101,7 +105,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(new { success = false, message = "Product Type not found." });
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> UpdateProductType(ProductTypeUpdateModel model)
         {
 
@@ -118,7 +122,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This code for delete
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<JsonResult> DeleteProductType(Guid id)
         {
             try

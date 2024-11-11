@@ -244,11 +244,17 @@
                             }
                         },
                         error: function (error) {
-                            $('#toastMessage').text('There was an error adding the Selling Price Tax.');
-                            $('#sellingPriceTaxToast').toast({
-                                delay: 3000
-                            });
-                            $('#sellingPriceTaxToast').toast('show');
+                            if (error.status === 403) {
+                                // Redirect to Access Denied page if the status is 403
+                                window.location.href = '/Account/AccessDenied';
+                            }
+                            else {
+                                $('#toastMessage').text('There was an error adding the Selling Price Tax.');
+                                $('#sellingPriceTaxToast').toast({
+                                    delay: 3000
+                                });
+                                $('#sellingPriceTaxToast').toast('show');
+                            }
                         }
                     });
                 });
@@ -283,8 +289,14 @@
                                 alert('Error fetching applicable tax');
                             }
                         },
-                        error: function () {
-                            alert('An error occurred while fetching the selling price tax.');
+                        error: function (xhr) {
+                            if (xhr.status === 403) {
+                                // Redirect to Access Denied page if the status is 403
+                                window.location.href = '/Account/AccessDenied';
+                            }
+                            else { 
+                                alert('An error occurred while fetching the selling price tax.');
+                            }
                         }
                     });
                 });
@@ -322,12 +334,18 @@
                                 $('#sellingPriceTaxToast').toast('show');
                             }
                         },
-                        error: function () {
-                            $('#toastMessage').text('There was an error editing the selling price tax.');
-                            $('#sellingPriceTaxToast').toast({
-                                delay: 3000
-                            });
-                            $('#sellingPriceTaxToast').toast('show');
+                        error: function (xhr) {
+                            if (xhr.status === 403) {
+                                // Redirect to Access Denied page if the status is 403
+                                window.location.href = '/Account/AccessDenied';
+                            }
+                            else {
+                                $('#toastMessage').text('There was an error editing the selling price tax.');
+                                $('#sellingPriceTaxToast').toast({
+                                    delay: 3000
+                                });
+                                $('#sellingPriceTaxToast').toast('show');
+                            }
                         }
                     });
                 });
@@ -378,11 +396,17 @@
                             }
                         },
                         error: function (error) {
-                            $('#toastMessage').text('There was an error deleting Selling Price Tax.');
-                            $('#sellingPriceTaxToast').toast({
-                                delay: 3000
-                            });
-                            $('#sellingPriceTaxToast').toast('show');
+                            if (error.status === 403) {
+                                // Redirect to Access Denied page if the status is 403
+                                window.location.href = '/Account/AccessDenied';
+                            }
+                            else {
+                                $('#toastMessage').text('There was an error deleting Selling Price Tax.');
+                                $('#sellingPriceTaxToast').toast({
+                                    delay: 3000
+                                });
+                                $('#sellingPriceTaxToast').toast('show');
+                            }
                         }
                     });
                 });

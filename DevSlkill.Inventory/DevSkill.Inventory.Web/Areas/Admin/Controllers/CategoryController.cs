@@ -6,11 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using DevSkill.Inventory.Infrastructure;
 using System.Web;
 using DevSkill.Inventory.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("Admin"), Authorize]
     public class CategoryController : Controller
     {
         private readonly ICategoryManagementService _categoryManagementService;
@@ -26,11 +27,13 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _logger = logger;
         }
 
+        [Authorize(Policy = "ReadPermission")]
         public IActionResult CategoryList()
         {
             return View();
         }
 
+        [Authorize(Policy = "ReadPermission")]
         public async Task<JsonResult> GetCategoryJsonData([FromBody] CategoryListModel model)
         {
             var result = await _categoryManagementService.GetCategoriesAsync(model.PageIndex, model.PageSize, model.Search,
@@ -52,14 +55,9 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             };
 
             return Json(categoryJsonData);
-        }
+        }       
 
-        public IActionResult AddCategory()
-        {
-            return View();
-        }
-
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<JsonResult> AddCategory(CategoryCreateModel model)
         {
             if (ModelState.IsValid)
@@ -96,7 +94,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             });
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> CategoryDelete(Guid id)
         {
             try
@@ -124,7 +122,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View();
         }
 
-
+        [Authorize(Policy = "CustomAdminAccess")]
         public IActionResult GetCategoryById(Guid id)
         {
             var category = _categoryManagementService.GetCategoryById(id);
@@ -135,7 +133,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(new { success = false, message = "Category not found." });
         }
          
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> EditCategoryModal(UpdateCategoryModel model)
         {
             if (ModelState.IsValid)
@@ -152,6 +150,5 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _logger.LogInformation("Updating category with data: {@Model}", model);
             return Json(new { success = false, message = "Error updating category." });
         }
-
     }
 }

@@ -280,11 +280,17 @@
                         }
                     },
                     error: function (error) {
-                        $('#toastMessage').text('There was an error adding the category.');
-                        $('#categoryToast').toast({
-                            delay: 3000
-                        });
-                        $('#categoryToast').toast('show');
+                        if (error.status === 403) {
+                            // Redirect to Access Denied page if the status is 403
+                            window.location.href = '/Account/AccessDenied';
+                        }
+                        else {
+                            $('#toastMessage').text('There was an error adding the category.');
+                            $('#categoryToast').toast({
+                                delay: 3000
+                            });
+                            $('#categoryToast').toast('show');
+                        }
                     }
                 });
             });
@@ -318,8 +324,14 @@
                             alert('Error fetching category data');
                         }
                     },
-                    error: function () {
-                        alert('An error occurred while fetching the category data.');
+                    error: function (xhr) {
+                        if (xhr.status === 403) {
+                            // Redirect to Access Denied page if the status is 403
+                            window.location.href = '/Account/AccessDenied';
+                        }
+                        else {
+                            alert('An error occurred while fetching the category data.');
+                        }
                     }
                 });
             });
@@ -357,12 +369,18 @@
                             $('#categoryToast').toast('show');
                         }
                     },
-                    error: function () {
-                        $('#toastMessage').text('There was an error editing the category.');
-                        $('#categoryToast').toast({
-                            delay: 3000
-                        });
-                        $('#categoryToast').toast('show');
+                    error: function (xhr) {
+                        if (xhr.status === 403) {
+                            // Redirect to Access Denied page if the status is 403
+                            window.location.href = '/Account/AccessDenied';
+                        }
+                        else {
+                            $('#toastMessage').text('There was an error editing the category.');
+                            $('#categoryToast').toast({
+                                delay: 3000
+                            });
+                            $('#categoryToast').toast('show');
+                        }
                     }
                 });
             });

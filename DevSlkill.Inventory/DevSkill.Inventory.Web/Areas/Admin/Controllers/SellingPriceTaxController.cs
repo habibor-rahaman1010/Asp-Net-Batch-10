@@ -3,17 +3,18 @@ using DevSkill.Inventory.Application.Services;
 using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("Admin"), Authorize]
     public class SellingPriceTaxController : Controller
     {
         private readonly ISellingPriceTaxManagementService _sellingPriceTaxManagementService;
         private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+        private readonly ILogger<SellingPriceTaxController> _logger;
         public SellingPriceTaxController(ISellingPriceTaxManagementService sellingPriceTaxManagementService,
             IMapper mapper,
             ILogger<SellingPriceTaxController> logger)
@@ -23,12 +24,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _logger = logger;
         }
 
+        [Authorize(Policy = "ReadPermission")]
         public IActionResult SellingPriceTaxList()
         {
             return View();
         }
 
         //Get all selling price tax data... 
+        [Authorize(Policy = "ReadPermission")]
         public async Task<IActionResult> GetSellingPriceTaxJsonData([FromBody] SellingPriceTaxListModel model)
         {
             var result = await _sellingPriceTaxManagementService.GetAllSellingPriceTaxAsync(model.PageIndex, model.PageSize, model.Search,
@@ -53,7 +56,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This is method for create new selling price tax 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> AddSellingPriceTax(SellingPriceTaxCreateModel model)
         {
             if (ModelState.IsValid)
@@ -90,6 +93,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This code for Selling Price tax update...
+        [Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> GetSellingPriceTaxById(Guid id)
         {
             var sellingPriceTax = await _sellingPriceTaxManagementService.GetSellingPriceTaxByIdAsync(id);
@@ -100,7 +104,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(new { success = false, message = "Selling price tax not found." });
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> UpdateSellingPriceTax(SellingPriceTaxUpdateModel model)
         {
 
@@ -117,7 +121,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This code for delete
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<JsonResult> DeleteSellingPriceTax(Guid id)
         {
             try
