@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
-    [Area("Admin"), Authorize(Roles = "Admin")]
+    [Area("Admin"), Authorize]
     public class StockAdjustmentController : Controller
     {
         private readonly IStockAdjustmentManagementService _stockAdjustmentManagementService;

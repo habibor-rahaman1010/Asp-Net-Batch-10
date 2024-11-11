@@ -11,7 +11,7 @@ using System.Web;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
-    [Area("Admin"), Authorize(Roles = "Admin")]
+    [Area("Admin"), Authorize]
     public class AdjustmentTypeController : Controller
     {
         private readonly IAdjustmentTypeManagementService _adjustmentTypeManagementService;
@@ -27,13 +27,13 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _logger = logger;
         }
 
-        [Authorize(Roles ="Member")]
+        [Authorize(Policy = "ReadPermission")]
         public IActionResult AdjustmentTypeList()
         {
             return View();
         }
 
-        [Authorize(Roles = "Member")]
+        [Authorize(Policy = "ReadPermission")]
         public async Task<JsonResult> GetAdjustmentTypeJsonData([FromBody] AdjustmentTypeListModel model)
         {
             var result = await _adjustmentTypeManagementService.GetAllAdjustmentTypeAsync(model.PageIndex, model.PageSize, model.Search,
