@@ -245,11 +245,17 @@
                             }
                         },
                         error: function (error) {
-                            $('#toastMessage').text('There was an error adding the Business Location.');
-                            $('#businessLocationsToast').toast({
-                                delay: 3000
-                            });
-                            $('#businessLocationsToast').toast('show');
+                            if (error.status === 403) {
+                                // Redirect to Access Denied page if the status is 403
+                                window.location.href = '/Account/AccessDenied';
+                            }
+                            else {
+                                $('#toastMessage').text('There was an error adding the Business Location.');
+                                $('#businessLocationsToast').toast({
+                                    delay: 3000
+                                });
+                                $('#businessLocationsToast').toast('show');
+                            }
                         }
                     });
                 });
@@ -300,8 +306,14 @@
                                 alert('Error fetching category data');
                             }
                         },
-                        error: function () {
-                            alert('An error occurred while fetching the Business Location data.');
+                        error: function (xhr) {
+                            if (xhr.status === 403) {
+                                // Redirect to Access Denied page if the status is 403
+                                window.location.href = '/Account/AccessDenied';
+                            }
+                            else{
+                                alert('An error occurred while fetching the Business Location data.');
+                            }
                         }
                     });
                 });
@@ -339,12 +351,18 @@
                                 $('#businessLocationsToast').toast('show');
                             }
                         },
-                        error: function () {
-                            $('#toastMessage').text('There was an error editing the Business Location.');
-                            $('#businessLocationsToast').toast({
-                                delay: 3000
-                            });
-                            $('#businessLocationsToast').toast('show');
+                        error: function (xhr) {
+                            if (xhr.status === 403) {
+                                // Redirect to Access Denied page if the status is 403
+                                window.location.href = '/Account/AccessDenied';
+                            }
+                            else {
+                                $('#toastMessage').text('There was an error editing the Business Location.');
+                                $('#businessLocationsToast').toast({
+                                    delay: 3000
+                                });
+                                $('#businessLocationsToast').toast('show');
+                            }
                         }
                     });
                 });

@@ -6,10 +6,12 @@ using DevSkill.Inventory.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
 using DevSkill.Inventory.Application.Services;
+using Microsoft.AspNetCore.Authorization;
+using System.Text.Json.Serialization;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area("Admin"), Authorize]
     public class BusinessLocationController : Controller
     {
         private readonly IBusinessLocationManagementService _businessLocationManagementService;
@@ -25,11 +27,13 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _logger = logger;
         }
 
+        [Authorize(Policy = "ReadPermission")]
         public IActionResult BusinessLocationList()
         {
             return View();
         }
 
+        [Authorize(Policy = "ReadPermission")]
         public async Task<JsonResult> GetBusinessLocationJsonData([FromBody] BusinessLocationListModel model)
         {
             var result = await _businessLocationManagementService.GetAllBusinessLocationAsync(model.PageIndex, model.PageSize, model.Search,
@@ -56,7 +60,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(businessLocationJsonData);
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<JsonResult> AddBussinessLocation(BusinessLocationCreateModel model)
         {
             if (ModelState.IsValid)
@@ -92,7 +96,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             });
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> DeleteBussinessLocation(Guid id)
         {
             try
@@ -120,6 +124,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(nameof(BusinessLocationList));
         }
 
+        [Authorize(Policy = "CustomAdminAccess")]
         public IActionResult GetBusinessLocationById(Guid id)
         {
             var businessLocation = _businessLocationManagementService.GetBusinessLocationByIdAsync(id);
@@ -130,7 +135,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(new { success = false, message = "Business Location not found." });
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
         public async Task<IActionResult> EditBusinessLocation(BusinessLocationUpdateModel model)
         {
             if (ModelState.IsValid)
