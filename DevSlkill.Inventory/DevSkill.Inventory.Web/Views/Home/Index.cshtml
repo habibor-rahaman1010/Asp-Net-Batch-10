@@ -2,7 +2,158 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<style>
+    .bg-teal {
+        background-color: #008080;
+        color: white;
+    }
+
+    .content {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+    }
+        .content li {
+            line-height: 3; 
+        }
+</style>
+
+<main role="main" class="pb-4 pt-3">
+    <div class="text-center mb-4">
+        <h1 class="display-6">Welcome to DevSkill Inventory</h1>
+        <p class="lead">Manage your inventory with ease and efficiency.</p>
+        <hr class="my-4">
+    </div>
+
+
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        <div class="col">
+            <div class="card">
+                <img src="~/demoImages/demo1.png" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">Shop & Super Market</h5>
+                    <p class="card-text">এই Accounting Software মাধ্যমে আপনি এক কিংবা একাদিক শপের, Inventory Management, POS, Accounts, Whole sale, Retail, Invoicing যাবতীয় সব কিছু কন্ট্রোল করতে পারবেন </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card">
+                <img src="~/demoImages/demo2.jpg" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">Restaurant</h5>
+                    <p class="card-text">এটির মাধ্যমে আপনি এক কিংবা একাদিক রেস্টুরেন্ট, Kitchen, Orders, Bookings, Accounts, Invoicing যাবতীয় সব কিছু কন্ট্রোল করতে পারবেন </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card">
+                <img src="~/demoImages/demo4.jpg" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">Electronics & Mobile Shop</h5>
+                    <p class="card-text">এটির মাধ্যমে আপনি এক কিংবা একাদিক শপের, Inventory Management, POS, Accounts, Whole sale, Retail, Invoicing যাবতীয় সব কিছু কন্ট্রোল করতে পারবেন </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card">
+                <img src="~/demoImages/demo3.jpg" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">All in One For Any Business</h5>
+                    <p class="card-text">এই Accounting Software মাধ্যমে আপনি এক কিংবা একাদিক যেকোনো ব্যবসা যেমন মুদি দোকান, ফার্মেসী, হোটেল বুকিং, যাত্রীবাহী বাস বুকিং, যাবতীয় সকল ব্যবসা করতে পারবেন </p>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+
+
+    <section class="d-flex justify-content-evenly mt-5">
+        <div class="card mb-4 shadow-sm  m-2">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">কোন ব্যবসার জন্য এই Accounting Software টি প্রযোজ্য?</h4>
+            </div>
+            <div class="card-body">
+                <p>আনুমানিক সকল ব্যবসার জন্য এটি প্রযোজ্য, এর মধ্যে রয়েছে –</p>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Shop & Super Shop</li>
+                    <li class="list-group-item">Fashion & Clothing</li>
+                    <li class="list-group-item">Footwear</li>
+                    <li class="list-group-item">Sanitary</li>
+                    <li class="list-group-item">Department Stores</li>
+                    <li class="list-group-item">Salon & Spa</li>
+                    <li class="list-group-item">Electronics & Home Appliances</li>
+                    <li class="list-group-item">Mobile & Appliances</li>
+                    <li class="list-group-item">All Daily Needs Stores</li>
+                    <li class="list-group-item">Web & Hosting Agencies</li>
+                    <li class="list-group-item">Repair Shops</li>
+                    <li class="list-group-item">Restaurants</li>
+                    <li class="list-group-item">And Many More...</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Section: Software Features -->
+        <div class="card shadow-sm m-2">
+            <div class="card-header bg-success text-white">
+                <h4 class="card-title mb-0">এই Accounting Software থেকে কি কি পাবেন?</h4>
+            </div>
+            <div class="card-body">
+                <p>এই software এর মাধ্যমে আপনি যেকোনো স্থানের থেকে আপনার ব্যবসা কন্ট্রোল করতে পারবেন, যেমন –</p>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Stock Management</li>
+                    <li class="list-group-item">Invoicing</li>
+                    <li class="list-group-item">Wholesale</li>
+                    <li class="list-group-item">POS Sale</li>
+                    <li class="list-group-item">Business Management</li>
+                    <li class="list-group-item">Product Purchases</li>
+                    <li class="list-group-item">Sell & POS Terminal</li>
+                    <li class="list-group-item">Suppliers & Customers Management</li>
+                    <li class="list-group-item">Staff, Salesperson, Cashier Management</li>
+                    <li class="list-group-item">Report Status</li>
+                    <li class="list-group-item">Others (SMS & Email Notifications, More)</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container my-5">
+            <!-- Header Section -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-teal">
+                    <h4 class="mb-0">হিসাব নিকাশ সফটওয়্যারের মাধ্যমে যে সকল কার্যাবলী পরিচালনা করা যাবে তার তালিকা নিম্নরূপঃ</h4>
+                </div>
+                <div class="card-body content">
+                    <ol>
+                        <li>
+                            সফটওয়‍্যারটি সম্পূর্ণ অন-লাইন (ক্লাউড বেসিস) যেটি যেকোন জায়গা থেকে পরিচালনা করা যাবে।
+                            <ul>
+                                <li>আপনার একাউন্টের ডাটা থাকবে নিরাপদে Google Cloud-এ। সার্ভার স্পিড হবে গুগল এর মতো সুপার ফাস্ট। সার্ভার ডাউন হওয়ার কোনো পসিবিলিটি নেই।</li>
+                            </ul>
+                        </li>
+                        <li>কোন প্রকারের হিডেন চার্জ নেই।</li>
+                        <li>সফটওয়‍্যারের আউটপুট এক্সেল সিটে রয়েছে, যেটি অবশ্যই ইডিট করার অপশন ও রয়েছে।</li>
+                        <li>প্রতি বছরের জন্য প্রতিষ্ঠানের ইনভেন্টরী করা যাবে।</li>
+                        <li>প্রতিটি আইটেম/জিনিসপত্রের বারকোড জেনারেট করা যাবে।</li>
+                        <li>স্টোরে ব্যবহৃত সকল আইটেমের বারকোড জেনারেট করা ও সঠিকভাবে তা সংরক্ষণ করা যাবে।</li>
+                        <li>প্রতিষ্ঠানের কোন আইটেম/জিনিস ক্রয় করার পর সেই আইটেমের বারকোড করা ও সঠিকভাবে আউটপুট করা যাবে।</li>
+                        <li>স্টোরের সকল আইটেমের বন্টন করা যাবে রিকুইজিশনের মাধ্যমে।</li>
+                        <li>নতুন কোন পণ্য/আইটেম ক্রয় করার পর গুণাগুণ ও দ্রব্যগ্রহণ প্রক্রিয়ার কাজ সফটওয়্যার মাধ্যমে সম্পাদন করা যাবে।</li>
+                        <li>ক্রয়কৃত মালামালের গুণাগুণ ও দ্রব্যগ্রহণ করার জন্য সংশ্লিষ্ট ব্যক্তি বা কমিটির অনুমোদনের নোটিফিকেশনের (সিস্টেমে অথবা মেইলে) ব্যবস্থা রয়েছে।</li>
+                        <li>সাপ্তাহিক, মাসিক ও বাৎসরিক ব্যবহারকৃত মালামালের সামারি সিট করা যাবে।</li>
+                        <li>প্রত্যেক ব্যক্তি বা প্রতিষ্ঠানের নামে সামারি সিট করা (ব্যবহারকারীদের নামে আলাদা আলাদা সামারি সিট করা যাবে)।</li>
+                        <li>নতুন কোন পণ্য কেনার জন্য সফটওয়্যারের মাধ্যমে চাহিদাপত্র (Quotations) তৈরি করা যাবে।</li>
+                        <li>প্রতিষ্ঠানের সকল মেশিনপত্র, আসবাবপত্র, স্টেশনারি ও প্রয়োজনীয় সকল জিনিসপত্রের ইনভেন্টরি করা যাবে।</li>
+                        <li>প্রয়োজনীয় বিষয়ে রিপোর্ট তৈরির ব্যবস্থা রয়েছে।</li>
+                        <li>হিসাবনিকাশ সফটওয়্যারে বারকোড প্রিন্ট, বারকোড স্ক্যান এবং ইনভয়েস প্রিন্টিং ব্যবস্থা রয়েছে।</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
