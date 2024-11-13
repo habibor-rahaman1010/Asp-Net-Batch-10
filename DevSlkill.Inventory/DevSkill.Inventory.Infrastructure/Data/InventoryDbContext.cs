@@ -198,6 +198,8 @@ namespace DevSkill.Inventory.Infrastructure.Data
             base.OnModelCreating(modelBuilder);
         }
 
+        //This is my project related DbSet<T>
+
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<SubCategory> SubCategories { get; set; } 
