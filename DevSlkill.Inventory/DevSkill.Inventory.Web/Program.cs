@@ -109,6 +109,16 @@ namespace DevSkill.Inventory.Web
                 app.UseAuthentication();
                 app.UseAuthorization();
 
+                app.MapControllerRoute(
+                    name: "areas",
+                    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+                app.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+                //app.MapRazorPages();
+
 
                 // Seed polyciry roles and admin user on startup
                 using (var scope = app.Services.CreateScope())
@@ -124,17 +134,6 @@ namespace DevSkill.Inventory.Web
                         logger.LogError(ex, "An error occurred while seeding the database.");
                     }
                 }
-
-
-                app.MapControllerRoute(
-                    name: "areas",
-                    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
-
-                app.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-                //app.MapRazorPages();
 
                 app.Run();
             }
