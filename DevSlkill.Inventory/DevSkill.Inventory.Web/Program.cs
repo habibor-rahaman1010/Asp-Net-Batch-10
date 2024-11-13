@@ -19,7 +19,7 @@ namespace DevSkill.Inventory.Web
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -108,6 +108,23 @@ namespace DevSkill.Inventory.Web
 
                 app.UseAuthentication();
                 app.UseAuthorization();
+
+
+                // Seed polyciry roles and admin user on startup
+                using (var scope = app.Services.CreateScope())
+                {
+                    var services = scope.ServiceProvider;
+                    try
+                    {
+                        await services.SeedAdminUserAndRolesAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        var logger = services.GetRequiredService<ILogger<Program>>();
+                        logger.LogError(ex, "An error occurred while seeding the database.");
+                    }
+                }
+
 
                 app.MapControllerRoute(
                     name: "areas",

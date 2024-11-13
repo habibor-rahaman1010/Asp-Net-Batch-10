@@ -100,5 +100,41 @@ namespace DevSkill.Inventory.Infrastructure.Extensions
 
             services.AddSingleton<IAuthorizationHandler, AgeRequirementHandler>();
         }
+
+        // Extension method for seeding admin roles and user
+        public static async Task SeedAdminUserAndRolesAsync(this IServiceProvider serviceProvider)
+        {
+            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+
+            string[] rolesName = { "Admin", "Support", "Member" };
+            string adminEmail = "habibor.rahaman1010@gmail.com";
+            string adminPassword = "c++c++c#"; // Make sure to use a strong password
+
+            // Ensure roles exist
+            foreach (var roleName in rolesName)
+            {
+                if (!await roleManager.RoleExistsAsync(roleName))
+                {
+                    await roleManager.CreateAsync(new ApplicationRole() { Name = roleName});   
+                }
+            }
+
+            // Create admin user if it doesn't exist
+            var adminUser = await userManager.FindByEmailAsync(adminEmail);
+            if (adminUser == null)
+            {
+                adminUser = new ApplicationUser { UserName = adminEmail, Email = adminEmail };
+                await userManager.CreateAsync(adminUser, adminPassword);
+
+                // Assign roles to the admin user
+                foreach (var roleName in rolesName)
+                {
+                    await userManager.AddToRoleAsync(adminUser, roleName);
+                }
+            }
+        }
+
+
     }
 }
