@@ -29,7 +29,7 @@ namespace DevSkill.Inventory.Web
             IConfigurationRoot configurationRoot = configurationBuilder1.Build();
 
             string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
-            string? tableName = "Logs";
+            string? tableName = "ApplicationLogs";
             Log.Logger = new LoggerConfiguration().MinimumLevel
                 .Debug().WriteTo.MSSqlServer(
                       connectionString: connection,

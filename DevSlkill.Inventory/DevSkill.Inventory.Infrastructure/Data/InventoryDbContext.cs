@@ -213,5 +213,6 @@ namespace DevSkill.Inventory.Infrastructure.Data
         public DbSet<ApplicableTax> ApplicableTaxs { get; set; }
         public DbSet<AdjustmentType> AdjustmentTypes { get; set; }
         public DbSet<StockAdjustment> StockAdjustments { get; set; }
+        public DbSet<ApplicationLog> ApplicationLogs { get; set; }
     }
 }

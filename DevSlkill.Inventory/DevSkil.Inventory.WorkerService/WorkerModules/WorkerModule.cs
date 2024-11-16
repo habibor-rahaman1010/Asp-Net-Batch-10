@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using DevSkill.Inventory.Infrastructure.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,14 @@ namespace DevSkil.Inventory.WorkerService.WorkerModules
         {
             _connectionString = connectionString;
             _migrationAssemblyName = migrationAssemblyName;
+        }
+
+        protected override void Load(ContainerBuilder builder)
+        {
+            builder.RegisterType<InventoryDbContext>().AsSelf()
+                .WithParameter("connectionString", _connectionString)
+                .WithParameter("migrationAssembly", _migrationAssemblyName)
+                .InstancePerLifetimeScope();
         }
     }
 }
