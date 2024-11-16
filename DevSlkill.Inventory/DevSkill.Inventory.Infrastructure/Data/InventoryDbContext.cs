@@ -108,61 +108,61 @@ namespace DevSkill.Inventory.Infrastructure.Data
                 .HasOne(p => p.BarcodeType)
                 .WithMany()
                 .HasForeignKey(p => p.BarcodeTypeId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Unit)
                 .WithMany()
                 .HasForeignKey(p => p.UnitId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Brand)
                 .WithMany()
                 .HasForeignKey(p => p.BrandId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Category)
                 .WithMany()
                 .HasForeignKey(p => p.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Subcategory)
                 .WithMany()
                 .HasForeignKey(p => p.SubcategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.BusinessLocation)
                 .WithMany()
                 .HasForeignKey(p => p.BusinessLocationId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Warranty)
                 .WithMany()
                 .HasForeignKey(p => p.WarrantyId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.ProductType)
                 .WithMany()
                 .HasForeignKey(p => p.ProductTypeId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.ApplicableTax)
                 .WithMany()
                 .HasForeignKey(p => p.ApplicableTaxId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.SellingPriceTax)
                 .WithMany()
                 .HasForeignKey(p => p.SellingPriceTaxId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
 
             modelBuilder.Entity<StockAdjustment>()
