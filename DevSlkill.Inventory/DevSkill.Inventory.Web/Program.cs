@@ -14,6 +14,7 @@ using Autofac.Core;
 using DevSkill.Inventory.Infrastructure.InventoryIdentity;
 using DevSkill.Inventory.Domain;
 using DevSkill.Inventory.Infrastructure.Extensions;
+using System.Data;
 
 namespace DevSkill.Inventory.Web
 {
@@ -30,10 +31,11 @@ namespace DevSkill.Inventory.Web
 
             string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
             string? tableName = "ApplicationLogs";
+
             Log.Logger = new LoggerConfiguration().MinimumLevel
                 .Debug().WriteTo.MSSqlServer(
                       connectionString: connection,
-                      sinkOptions: new MSSqlServerSinkOptions { TableName = tableName, AutoCreateSqlTable = true })
+                      sinkOptions: new MSSqlServerSinkOptions { TableName = tableName, AutoCreateSqlTable = false })
                 .ReadFrom.Configuration(configurationRoot).CreateBootstrapLogger();
            
 
@@ -44,7 +46,7 @@ namespace DevSkill.Inventory.Web
                 IHostBuilder hostBuilder = builder.Host.UseSerilog((ctx, lc) =>
                     lc.MinimumLevel.Debug().WriteTo.MSSqlServer(
                         connectionString: connection,
-                        sinkOptions: new MSSqlServerSinkOptions { TableName = tableName, AutoCreateSqlTable = true })
+                        sinkOptions: new MSSqlServerSinkOptions { TableName = tableName, AutoCreateSqlTable = false })
                     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                     .Enrich.FromLogContext()
                     .ReadFrom.Configuration(builder.Configuration)                 

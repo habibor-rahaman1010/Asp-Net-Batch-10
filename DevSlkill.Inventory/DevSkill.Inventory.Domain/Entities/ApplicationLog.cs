@@ -14,5 +14,6 @@ namespace DevSkill.Inventory.Domain.Entities
         public string? Level { get; set; }
         public DateTime TimeStamp { get; set; }
         public string? Exception { get; set; }
+        public string? Properties { get; set; }
     }
 }

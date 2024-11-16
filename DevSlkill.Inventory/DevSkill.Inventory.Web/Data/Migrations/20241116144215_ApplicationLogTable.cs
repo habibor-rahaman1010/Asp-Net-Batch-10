@@ -193,7 +193,8 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                     MessageTemplate = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Level = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TimeStamp = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Exception = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Exception = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Properties = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -205,8 +206,8 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 columns: new[] { "Id", "AdjustmentTypeName", "Description" },
                 values: new object[,]
                 {
-                    { new Guid("60affbf8-c65c-4a9b-bf49-d16de45c3f60"), "Abnormal", "" },
-                    { new Guid("a194cd0d-daf6-4e4c-ade7-e31d4b4a3bb1"), "Normal", "" }
+                    { new Guid("2db176b0-9518-48bf-93ec-a7d8d85a0d7e"), "Abnormal", "" },
+                    { new Guid("c2cb93df-fd8e-4057-b569-4602c18b3e77"), "Normal", "" }
                 });
 
             migrationBuilder.InsertData(
@@ -214,9 +215,9 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 columns: new[] { "Id", "ApplicableTaxName", "Description", "TaxRate" },
                 values: new object[,]
                 {
-                    { new Guid("34f491e4-3ec2-4f70-82c1-07ca42f36c74"), "Fruits", "", 0m },
-                    { new Guid("89d697c8-126a-463e-b2f8-00b012ae985f"), "Food", "", 0m },
-                    { new Guid("bc7dc0ca-a444-4b92-b2ef-db0fffd5ec23"), "Sales Tax", "", 0m }
+                    { new Guid("10f08e97-d1a4-49cb-95ce-1bb7f85f6740"), "Food", "", 0m },
+                    { new Guid("6763dc86-c30e-42bf-8892-40d57351db42"), "Sales Tax", "", 0m },
+                    { new Guid("b34f7c4b-93b8-4ce3-ab57-33a4de07ad09"), "Fruits", "", 0m }
                 });
 
             migrationBuilder.InsertData(
@@ -224,9 +225,9 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 columns: new[] { "Id", "BarcodeDescription", "BarcodeTypeCode", "BarcodeTypeName" },
                 values: new object[,]
                 {
-                    { new Guid("3c36b291-1b24-4b5d-9500-99de785ec6ef"), "", "", "QR Code" },
-                    { new Guid("5db5bbe2-40a4-4b67-84f9-4e5b0640c494"), "", "", "NFC" },
-                    { new Guid("f0c586bb-90e7-4d9a-9d6c-47e97bb5352c"), "", "", "UPC" }
+                    { new Guid("5052f7c1-c664-4038-8053-e60466b16750"), "", "", "UPC" },
+                    { new Guid("61585250-67c5-4dff-be66-3f9c98f67c93"), "", "", "NFC" },
+                    { new Guid("dbae37e7-765e-4f66-aae2-4b8a22c1b1b3"), "", "", "QR Code" }
                 });
 
             migrationBuilder.InsertData(
@@ -234,9 +235,9 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 columns: new[] { "Id", "BandOrigin", "BrandName", "Description" },
                 values: new object[,]
                 {
-                    { new Guid("3d6b3360-92ad-41e1-aede-5854a9b4a4c4"), "", "Apple", "" },
-                    { new Guid("5565abbb-ffc1-47e5-91e7-594a7ede659f"), "", "Sony", "" },
-                    { new Guid("7cbcf9fe-8b96-4b51-bdca-3e793ef010ed"), "", "Samsung", "" }
+                    { new Guid("09f2f38e-968f-44a4-a7a3-5e0fdb815500"), "", "Apple", "" },
+                    { new Guid("21daed38-28fd-4400-bbf4-9b348577a147"), "", "Sony", "" },
+                    { new Guid("9948ec7e-a5d9-49e6-91bb-c41085f2a2d6"), "", "Samsung", "" }
                 });
 
             migrationBuilder.InsertData(
@@ -244,9 +245,9 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 columns: new[] { "Id", "Address", "City", "Country", "LocationName", "State", "ZipCode" },
                 values: new object[,]
                 {
-                    { new Guid("20448da1-9e9f-4394-8840-4e0a6743fac7"), "", "", "", "Warehouse A", "", "" },
-                    { new Guid("7a0d15d6-33ae-4bb3-94ea-f506f2e1d01b"), "", "", "", "Downtown Store", "", "" },
-                    { new Guid("91f9f47b-832f-4c30-bc13-38c3b05fc729"), "", "", "", "Warehouse B", "", "" }
+                    { new Guid("2f00a44e-7eb2-423b-8954-cdb54b8ee26d"), "", "", "", "Warehouse A", "", "" },
+                    { new Guid("3a0d2063-435f-401c-849b-bb714d0abac8"), "", "", "", "Downtown Store", "", "" },
+                    { new Guid("3f6db187-6085-4369-ae5b-402195d5a5a1"), "", "", "", "Warehouse B", "", "" }
                 });
 
             migrationBuilder.InsertData(
@@ -254,9 +255,9 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 columns: new[] { "Id", "CategoryCode", "CategoryName", "Description" },
                 values: new object[,]
                 {
-                    { new Guid("66fbc1cc-c74d-4903-b247-821af97c24fb"), "", "Clothing", "" },
-                    { new Guid("8cacf5c4-2890-448f-bbed-a6ff59b3ed08"), "", "Home Appliances", "" },
-                    { new Guid("a75db419-a428-4db7-a33d-4b7e8ec04015"), "", "Electronics", "" }
+                    { new Guid("04598c5a-3cba-4850-bb38-285236e0f171"), "", "Home Appliances", "" },
+                    { new Guid("43d5c5fb-093e-4cb1-8143-1bd55e3d815f"), "", "Electronics", "" },
+                    { new Guid("fa27e962-c9c0-4ba4-86e9-4efde5861390"), "", "Clothing", "" }
                 });
 
             migrationBuilder.InsertData(
@@ -264,11 +265,11 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 columns: new[] { "Id", "Description", "ProductTypeCode", "ProductTypeName" },
                 values: new object[,]
                 {
-                    { new Guid("09444b59-cc82-4782-95dc-2332f1e58fb0"), "", "", "Food" },
-                    { new Guid("15772003-1a24-4c2d-838d-b63f9d48fccc"), "", "", "Furniture" },
-                    { new Guid("95d4963f-789f-4fbc-a7ed-ff79ea48e483"), "", "", "Clothing" },
-                    { new Guid("eebded05-6899-44bc-95df-abd95fcb8822"), "", "", "Toys" },
-                    { new Guid("f9bb5542-23f6-4604-93cd-ac5a8e3aac71"), "", "", "Electronics" }
+                    { new Guid("09a20cd9-23ef-427f-b2c6-a35933a281ec"), "", "", "Furniture" },
+                    { new Guid("17e88774-7c3e-43b6-aa13-7b7a63be56be"), "", "", "Electronics" },
+                    { new Guid("6ca6c5f9-d0f1-467b-b7ae-898d4db3a208"), "", "", "Toys" },
+                    { new Guid("a33d6676-b4cf-42a6-8a6a-509cd8905357"), "", "", "Clothing" },
+                    { new Guid("b098e548-1854-46aa-bd65-e6153e674d23"), "", "", "Food" }
                 });
 
             migrationBuilder.InsertData(
@@ -276,9 +277,9 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 columns: new[] { "Id", "Description", "SellingPriceTaxName", "TaxRate" },
                 values: new object[,]
                 {
-                    { new Guid("384d3d5f-5231-4770-80f4-9070fcc7c7fa"), "", "Zero Rate", 0m },
-                    { new Guid("b056dacb-5326-4863-b5d0-2e33b9b3d04e"), "", "Inclusive", 0m },
-                    { new Guid("c4c00e3e-3c1c-427b-8774-db87f7a4bdb0"), "", "Exclusive", 0m }
+                    { new Guid("7af3d891-411c-4658-9893-efe4e692771f"), "", "Exclusive", 0m },
+                    { new Guid("bd9eb1ff-4fcb-4701-b7bf-16f8bb5ef53f"), "", "Inclusive", 0m },
+                    { new Guid("cb61a02f-7ce1-4537-b555-68d648182c6c"), "", "Zero Rate", 0m }
                 });
 
             migrationBuilder.InsertData(
@@ -286,9 +287,9 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 columns: new[] { "Id", "CategoryCode", "Description", "SubCategoryName" },
                 values: new object[,]
                 {
-                    { new Guid("55cfdff8-a498-4fe7-b645-dc4a1a77aaf9"), "", "", "Smartphones" },
-                    { new Guid("608e7cca-d945-400c-b094-c87bba36c844"), "", "", "Laptops" },
-                    { new Guid("7ea911c6-4d34-4fda-a83c-bec5c2636817"), "", "", "Televisions" }
+                    { new Guid("24d5e704-6613-47c2-8018-a2f9442ff852"), "", "", "Smartphones" },
+                    { new Guid("9c5012f5-bd00-418d-8284-e273a6979672"), "", "", "Televisions" },
+                    { new Guid("e97ad49f-cef0-4d3d-bb52-8e55a2feb904"), "", "", "Laptops" }
                 });
 
             migrationBuilder.InsertData(
@@ -296,9 +297,9 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 columns: new[] { "Id", "AllowDecimal", "ShortName", "UnitName" },
                 values: new object[,]
                 {
-                    { new Guid("16c7b776-500d-4031-8bf6-72ebbc0b78a8"), 0, "", "Kilogram" },
-                    { new Guid("9654a422-7eba-4407-961b-ed1e14c2b3c6"), 0, "", "Liter" },
-                    { new Guid("cd6085b0-0422-46a3-bdf3-433e6c561ce0"), 0, "", "Piece" }
+                    { new Guid("168590df-03d7-4139-a258-319661d11169"), 0, "", "Liter" },
+                    { new Guid("cdb2b94a-67f2-4302-979c-4dffe1dd3099"), 0, "", "Piece" },
+                    { new Guid("f4b51600-8fde-484d-b629-babe5afd50cb"), 0, "", "Kilogram" }
                 });
 
             migrationBuilder.InsertData(
@@ -306,9 +307,9 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
                 columns: new[] { "Id", "Description", "Name", "WarrantyDuration" },
                 values: new object[,]
                 {
-                    { new Guid("11d05e11-b8d3-4921-bf60-7de55dfabccc"), "", "", "2 Years" },
-                    { new Guid("37cd4955-4208-484e-9d6a-e9839ed00548"), "", "", "1 Year" },
-                    { new Guid("93c90547-afab-4e3a-b39f-b01e2d051dd9"), "", "", "3 Years" }
+                    { new Guid("af392588-2bbd-4559-9f99-79e31c635d30"), "", "", "2 Years" },
+                    { new Guid("b61ee5f3-dfd2-4c9a-aa85-e15c8cbaf815"), "", "", "1 Year" },
+                    { new Guid("d7bbbffe-7a19-4601-b76d-eb6cdfef1276"), "", "", "3 Years" }
                 });
         }
 
@@ -321,172 +322,172 @@ namespace DevSkill.Inventory.Web.Migrations.InventoryDb
             migrationBuilder.DeleteData(
                 table: "AdjustmentTypes",
                 keyColumn: "Id",
-                keyValue: new Guid("60affbf8-c65c-4a9b-bf49-d16de45c3f60"));
+                keyValue: new Guid("2db176b0-9518-48bf-93ec-a7d8d85a0d7e"));
 
             migrationBuilder.DeleteData(
                 table: "AdjustmentTypes",
                 keyColumn: "Id",
-                keyValue: new Guid("a194cd0d-daf6-4e4c-ade7-e31d4b4a3bb1"));
+                keyValue: new Guid("c2cb93df-fd8e-4057-b569-4602c18b3e77"));
 
             migrationBuilder.DeleteData(
                 table: "ApplicableTaxs",
                 keyColumn: "Id",
-                keyValue: new Guid("34f491e4-3ec2-4f70-82c1-07ca42f36c74"));
+                keyValue: new Guid("10f08e97-d1a4-49cb-95ce-1bb7f85f6740"));
 
             migrationBuilder.DeleteData(
                 table: "ApplicableTaxs",
                 keyColumn: "Id",
-                keyValue: new Guid("89d697c8-126a-463e-b2f8-00b012ae985f"));
+                keyValue: new Guid("6763dc86-c30e-42bf-8892-40d57351db42"));
 
             migrationBuilder.DeleteData(
                 table: "ApplicableTaxs",
                 keyColumn: "Id",
-                keyValue: new Guid("bc7dc0ca-a444-4b92-b2ef-db0fffd5ec23"));
+                keyValue: new Guid("b34f7c4b-93b8-4ce3-ab57-33a4de07ad09"));
 
             migrationBuilder.DeleteData(
                 table: "BarcodeTypes",
                 keyColumn: "Id",
-                keyValue: new Guid("3c36b291-1b24-4b5d-9500-99de785ec6ef"));
+                keyValue: new Guid("5052f7c1-c664-4038-8053-e60466b16750"));
 
             migrationBuilder.DeleteData(
                 table: "BarcodeTypes",
                 keyColumn: "Id",
-                keyValue: new Guid("5db5bbe2-40a4-4b67-84f9-4e5b0640c494"));
+                keyValue: new Guid("61585250-67c5-4dff-be66-3f9c98f67c93"));
 
             migrationBuilder.DeleteData(
                 table: "BarcodeTypes",
                 keyColumn: "Id",
-                keyValue: new Guid("f0c586bb-90e7-4d9a-9d6c-47e97bb5352c"));
+                keyValue: new Guid("dbae37e7-765e-4f66-aae2-4b8a22c1b1b3"));
 
             migrationBuilder.DeleteData(
                 table: "Brands",
                 keyColumn: "Id",
-                keyValue: new Guid("3d6b3360-92ad-41e1-aede-5854a9b4a4c4"));
+                keyValue: new Guid("09f2f38e-968f-44a4-a7a3-5e0fdb815500"));
 
             migrationBuilder.DeleteData(
                 table: "Brands",
                 keyColumn: "Id",
-                keyValue: new Guid("5565abbb-ffc1-47e5-91e7-594a7ede659f"));
+                keyValue: new Guid("21daed38-28fd-4400-bbf4-9b348577a147"));
 
             migrationBuilder.DeleteData(
                 table: "Brands",
                 keyColumn: "Id",
-                keyValue: new Guid("7cbcf9fe-8b96-4b51-bdca-3e793ef010ed"));
+                keyValue: new Guid("9948ec7e-a5d9-49e6-91bb-c41085f2a2d6"));
 
             migrationBuilder.DeleteData(
                 table: "BusinessLocations",
                 keyColumn: "Id",
-                keyValue: new Guid("20448da1-9e9f-4394-8840-4e0a6743fac7"));
+                keyValue: new Guid("2f00a44e-7eb2-423b-8954-cdb54b8ee26d"));
 
             migrationBuilder.DeleteData(
                 table: "BusinessLocations",
                 keyColumn: "Id",
-                keyValue: new Guid("7a0d15d6-33ae-4bb3-94ea-f506f2e1d01b"));
+                keyValue: new Guid("3a0d2063-435f-401c-849b-bb714d0abac8"));
 
             migrationBuilder.DeleteData(
                 table: "BusinessLocations",
                 keyColumn: "Id",
-                keyValue: new Guid("91f9f47b-832f-4c30-bc13-38c3b05fc729"));
+                keyValue: new Guid("3f6db187-6085-4369-ae5b-402195d5a5a1"));
 
             migrationBuilder.DeleteData(
                 table: "Categories",
                 keyColumn: "Id",
-                keyValue: new Guid("66fbc1cc-c74d-4903-b247-821af97c24fb"));
+                keyValue: new Guid("04598c5a-3cba-4850-bb38-285236e0f171"));
 
             migrationBuilder.DeleteData(
                 table: "Categories",
                 keyColumn: "Id",
-                keyValue: new Guid("8cacf5c4-2890-448f-bbed-a6ff59b3ed08"));
+                keyValue: new Guid("43d5c5fb-093e-4cb1-8143-1bd55e3d815f"));
 
             migrationBuilder.DeleteData(
                 table: "Categories",
                 keyColumn: "Id",
-                keyValue: new Guid("a75db419-a428-4db7-a33d-4b7e8ec04015"));
+                keyValue: new Guid("fa27e962-c9c0-4ba4-86e9-4efde5861390"));
 
             migrationBuilder.DeleteData(
                 table: "ProductTypes",
                 keyColumn: "Id",
-                keyValue: new Guid("09444b59-cc82-4782-95dc-2332f1e58fb0"));
+                keyValue: new Guid("09a20cd9-23ef-427f-b2c6-a35933a281ec"));
 
             migrationBuilder.DeleteData(
                 table: "ProductTypes",
                 keyColumn: "Id",
-                keyValue: new Guid("15772003-1a24-4c2d-838d-b63f9d48fccc"));
+                keyValue: new Guid("17e88774-7c3e-43b6-aa13-7b7a63be56be"));
 
             migrationBuilder.DeleteData(
                 table: "ProductTypes",
                 keyColumn: "Id",
-                keyValue: new Guid("95d4963f-789f-4fbc-a7ed-ff79ea48e483"));
+                keyValue: new Guid("6ca6c5f9-d0f1-467b-b7ae-898d4db3a208"));
 
             migrationBuilder.DeleteData(
                 table: "ProductTypes",
                 keyColumn: "Id",
-                keyValue: new Guid("eebded05-6899-44bc-95df-abd95fcb8822"));
+                keyValue: new Guid("a33d6676-b4cf-42a6-8a6a-509cd8905357"));
 
             migrationBuilder.DeleteData(
                 table: "ProductTypes",
                 keyColumn: "Id",
-                keyValue: new Guid("f9bb5542-23f6-4604-93cd-ac5a8e3aac71"));
+                keyValue: new Guid("b098e548-1854-46aa-bd65-e6153e674d23"));
 
             migrationBuilder.DeleteData(
                 table: "SellingPriceTaxes",
                 keyColumn: "Id",
-                keyValue: new Guid("384d3d5f-5231-4770-80f4-9070fcc7c7fa"));
+                keyValue: new Guid("7af3d891-411c-4658-9893-efe4e692771f"));
 
             migrationBuilder.DeleteData(
                 table: "SellingPriceTaxes",
                 keyColumn: "Id",
-                keyValue: new Guid("b056dacb-5326-4863-b5d0-2e33b9b3d04e"));
+                keyValue: new Guid("bd9eb1ff-4fcb-4701-b7bf-16f8bb5ef53f"));
 
             migrationBuilder.DeleteData(
                 table: "SellingPriceTaxes",
                 keyColumn: "Id",
-                keyValue: new Guid("c4c00e3e-3c1c-427b-8774-db87f7a4bdb0"));
+                keyValue: new Guid("cb61a02f-7ce1-4537-b555-68d648182c6c"));
 
             migrationBuilder.DeleteData(
                 table: "SubCategories",
                 keyColumn: "Id",
-                keyValue: new Guid("55cfdff8-a498-4fe7-b645-dc4a1a77aaf9"));
+                keyValue: new Guid("24d5e704-6613-47c2-8018-a2f9442ff852"));
 
             migrationBuilder.DeleteData(
                 table: "SubCategories",
                 keyColumn: "Id",
-                keyValue: new Guid("608e7cca-d945-400c-b094-c87bba36c844"));
+                keyValue: new Guid("9c5012f5-bd00-418d-8284-e273a6979672"));
 
             migrationBuilder.DeleteData(
                 table: "SubCategories",
                 keyColumn: "Id",
-                keyValue: new Guid("7ea911c6-4d34-4fda-a83c-bec5c2636817"));
+                keyValue: new Guid("e97ad49f-cef0-4d3d-bb52-8e55a2feb904"));
 
             migrationBuilder.DeleteData(
                 table: "Units",
                 keyColumn: "Id",
-                keyValue: new Guid("16c7b776-500d-4031-8bf6-72ebbc0b78a8"));
+                keyValue: new Guid("168590df-03d7-4139-a258-319661d11169"));
 
             migrationBuilder.DeleteData(
                 table: "Units",
                 keyColumn: "Id",
-                keyValue: new Guid("9654a422-7eba-4407-961b-ed1e14c2b3c6"));
+                keyValue: new Guid("cdb2b94a-67f2-4302-979c-4dffe1dd3099"));
 
             migrationBuilder.DeleteData(
                 table: "Units",
                 keyColumn: "Id",
-                keyValue: new Guid("cd6085b0-0422-46a3-bdf3-433e6c561ce0"));
+                keyValue: new Guid("f4b51600-8fde-484d-b629-babe5afd50cb"));
 
             migrationBuilder.DeleteData(
                 table: "Warranties",
                 keyColumn: "Id",
-                keyValue: new Guid("11d05e11-b8d3-4921-bf60-7de55dfabccc"));
+                keyValue: new Guid("af392588-2bbd-4559-9f99-79e31c635d30"));
 
             migrationBuilder.DeleteData(
                 table: "Warranties",
                 keyColumn: "Id",
-                keyValue: new Guid("37cd4955-4208-484e-9d6a-e9839ed00548"));
+                keyValue: new Guid("b61ee5f3-dfd2-4c9a-aa85-e15c8cbaf815"));
 
             migrationBuilder.DeleteData(
                 table: "Warranties",
                 keyColumn: "Id",
-                keyValue: new Guid("93c90547-afab-4e3a-b39f-b01e2d051dd9"));
+                keyValue: new Guid("d7bbbffe-7a19-4601-b76d-eb6cdfef1276"));
 
             migrationBuilder.InsertData(
                 table: "AdjustmentTypes",
