@@ -137,7 +137,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         public async Task<JsonResult> GetProductJsonDataSpAsync([FromBody] ProductListModel model)
         {
             var result = await _productManagementService.GetProductsSpAsync(model.PageIndex, model.PageSize, model.SearchItem,
-                model.FormatSortExpression("Id", "ProductName", "Description", "Price", "Ratings"));
+                model.FormatSortExpression("ProductImage", "ProductName", "LocationName", "Description", "Price", "Price", "SellingPrice", "SKU", "CategoryName", "ProductTypeName", "CurrentStock", "Ratings", "BrandName", "ApplicableTaxName"));
 
             var productJsonData = new
             {
