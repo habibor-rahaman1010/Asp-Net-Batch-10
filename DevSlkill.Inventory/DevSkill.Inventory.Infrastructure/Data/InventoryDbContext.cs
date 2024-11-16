@@ -174,6 +174,7 @@ namespace DevSkill.Inventory.Infrastructure.Data
                 .HasColumnType("decimal(18, 2)");
 
 
+
             // StockAdjustment and Product relationship
             modelBuilder.Entity<StockAdjustment>()
                 .HasOne(sa => sa.Product)
