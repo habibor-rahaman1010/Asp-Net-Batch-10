@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DevSkil.Inventory.WorkerService.WorkerModules
+namespace DevSkill.Inventory.WorkerService.WorkerModules
 {
     public class WorkerModule : Module
     {

@@ -1,7 +1,7 @@
 using DevSkill.Inventory.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace DevSkil.Inventory.WorkerService
+namespace DevSkill.Inventory.WorkerService
 {
     public class Worker : BackgroundService
     {

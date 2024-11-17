@@ -3,9 +3,9 @@ using Serilog;
 using System.Reflection;
 using Autofac.Extensions.DependencyInjection;
 using Autofac;
-using DevSkil.Inventory.WorkerService.WorkerModules;
+using DevSkill.Inventory.WorkerService.WorkerModules;
 
-namespace DevSkil.Inventory.WorkerService
+namespace DevSkill.Inventory.WorkerService
 {
     public class Program
     {

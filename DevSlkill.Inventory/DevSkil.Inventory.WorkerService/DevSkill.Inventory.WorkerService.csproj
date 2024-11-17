@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>dotnet-DevSkil.Inventory.WorkerService-e755b70b-73b6-4b78-8bf3-1e0db53483e5</UserSecretsId>
+    <UserSecretsId>dotnet-DevSkill.Inventory.WorkerService-e755b70b-73b6-4b78-8bf3-1e0db53483e5</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
