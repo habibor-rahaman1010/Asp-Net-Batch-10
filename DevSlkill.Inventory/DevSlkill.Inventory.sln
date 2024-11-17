@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevSkill.Inventory.Applicat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevSkill.Inventory.Infrastructure", "DevSkill.Inventory.Infrastructure\DevSkill.Inventory.Infrastructure.csproj", "{65948B2C-741D-481C-8834-85038526DA45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevSkill.Inventory.WorkerService", "DevSkill.Inventory.WorkerService\DevSkill.Inventory.WorkerService.csproj", "{3F4A34C5-5E65-4B4E-B03A-F464B8CD939E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevSkill.Inventory.WorkerService", "DevSkill.Inventory.WorkerService\DevSkill.Inventory.WorkerService.csproj", "{3F4A34C5-5E65-4B4E-B03A-F464B8CD939E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
