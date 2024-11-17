@@ -41,6 +41,7 @@ namespace DevSkill.Inventory.WorkerService
 
                 _inventoryDbContext.ApplicationLogs.RemoveRange(oldLogs);
                 await _inventoryDbContext.SaveChangesAsync();
+
                 _logger.LogInformation("Old logs deleted successfully.");
             }
             catch (Exception ex)
