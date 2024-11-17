@@ -1,0 +1,35 @@
+﻿@model WarrantyUpdateModel
+<!-- Modal for updating a existing warranty -->
+<div class="modal fade" id="updateWarrantyModal" tabindex="-1" role="dialog" aria-labelledby="updateWarantyModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateWarrantyModalLabel">Update The Warranty</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-antiforgery="true" id="updateWarrantyForm" enctype="multipart/form-data">
+                    <input asp-for="Id" type="hidden" id="updateWarrantyId" name="Id" />
+                    <div class="form-group">
+                        <label asp-for="Name">Warranty Name</label>
+                        <input asp-for="Name" type="text" class="form-control" id="editWarrantyName" name="Name" required>
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="WarrantyDuration">Warranty Duration</label>
+                        <input asp-for="WarrantyDuration" type="text" class="form-control" id="editWarrantyDuration" name="WarrantyDuration" required>
+                        <span asp-validation-for="WarrantyDuration" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Description">Description</label>
+                        <textarea asp-for="Description" class="form-control" id="editDescription" name="Description" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+﻿@model ProductTypeUpdateModel
+<!-- Modal for adding a new warranty -->
+<div class="modal fade" id="updateProductTypeModal" tabindex="-1" role="dialog" aria-labelledby="productTypeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productTypeModalLabel">Update The Product Type</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-antiforgery="true" id="updateProductTypeForm" enctype="multipart/form-data">
+                    <input asp-for="Id" type="hidden" id="updateProductTypeId" name="Id" />
+
+                    <div class="form-group">
+                        <label asp-for="ProductTypeName">Barcode Type Name</label>
+                        <input asp-for="ProductTypeName" type="text" class="form-control" id="editProductTypeName" name="ProductTypeName" required>
+                        <span asp-validation-for="ProductTypeName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ProductTypeCode">Barcode Type Code</label>
+                        <input asp-for="ProductTypeCode" type="text" class="form-control" id="editProductTypeCode" name="ProductTypeCode" required>
+                        <span asp-validation-for="ProductTypeCode" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Description">Barcode Description</label>
+                        <textarea asp-for="Description" class="form-control" id="editProductDescription" name="Description" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

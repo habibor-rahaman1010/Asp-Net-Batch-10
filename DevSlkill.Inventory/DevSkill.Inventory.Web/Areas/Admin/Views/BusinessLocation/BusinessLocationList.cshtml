@@ -1,0 +1,380 @@
+﻿@{
+    ViewData["Title"] = "Business Location List";
+}
+
+<style>
+    .toast {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .toast-body {
+        width: 100%;
+        text-align: center;
+    }
+
+</style>
+
+@section Styles {
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+}
+
+<!-- Toast container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+    <div id="businessLocationsToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-body d-flex" id="toastMessage">
+            <!-- Toast message will be dynamically set here -->
+        </div>
+    </div>
+</div>
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>All Business Location List</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Location</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">All available Business Location are here!</h3>
+
+                        <a class="btn btn-primary float-right" data-toggle="modal" data-target="#addBusinessLocationModal">
+                            <i class="nav-icon"></i>
+                            <i class="fas fa-plus"></i> Add Business Location
+                        </a>
+
+
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <partial name="_ResponsePartial" />
+                        <partial name="_ModalPartial" />
+                        <table id="BusinessLocations" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Location Name</th>
+                                    <th>Address</th>
+                                    <th>City</th>
+                                    <th>State</th>
+                                    <th>Zip Code</th>
+                                    <th>Country</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tfoot>
+                                <tr>
+                                    <th>Location Name</th>
+                                    <th>Address</th>
+                                    <th>City</th>
+                                    <th>State</th>
+                                    <th>Zip Code</th>
+                                    <th>Country</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+<partial name="_AddBusinessLocationModal" />
+
+<partial name="_UpdateBusinessLocationModal" />
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Delete Confirmation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this record?</p>
+                <p>If you delete this it gone forever!</p>
+            </div>
+            <div class="modal-footer">
+                <!-- The form that will be submitted when delete is confirmed -->
+                <form method="POST" id="businessLocation-form" asp-antiforgery="true" , enctype="multipart/form-data">
+                    <!-- Hidden input to store the ID of the item to be deleted -->
+                    <input type="hidden" id="delete-id" name="id">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="businessLocation-delete">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <!-- DataTables  & Plugins -->
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+    <script type="text/javascript">
+        //Load data in table used by DataTable...
+        $(function () {
+            $("#BusinessLocations").DataTable({
+                processing: true,
+                serverSide: true,
+                responsive: true,
+                lengthChange: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                autoWidth: false,
+                ajax: {
+                    url: "/Admin/BusinessLocation/GetBusinessLocationJsonData",
+                    type: "POST",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: function (d) {
+                        return JSON.stringify(d);
+                    }
+                },
+
+                columnDefs: [
+                    {
+                        // Render description column with only 10 words
+                        targets: 1,
+                        render: function (data, type, row) {
+                            var words = data.split(" ");
+                            if (words.length > 10) {
+                                return words.slice(0, 10).join(" ") + '...';
+                            }
+                            return data;
+                        }
+                    },
+
+                    {
+                        orderable: false,
+                        targets: 6,
+                        render: function (data, type, row) {
+                            return `<button type="button" class="btn btn-info btn-sm update-businessLocation" data-id='${data}' data-toggle="modal" data-target="#updateBusinessLocationModal">
+                                                                        <i class="fas fa-pencil-alt"></i> Edit
+                                                                    </button>
+
+                                                                    <button type="submit" class="btn btn-danger btn-sm show-bs-modal" data-id='${data}' value='${data}'>
+                                                                        <i class="fas fa-trash">
+                                                                        </i>
+                                                                        Delete
+                                                                    </button>`;
+                        }
+                    },
+                ],
+
+                dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+
+            }).buttons().container().appendTo('#BusinessLocations_wrapper .col-md-6:eq(0)');
+
+            //This code create a new business location...
+            $(document).ready(function () {
+                // Handle form submission
+                $('#addBusinessLocationForm').on('submit', function (e) {
+                    e.preventDefault();
+
+                    $.ajax({
+                        url: '/Admin/BusinessLocation/AddBussinessLocation',
+                        method: 'POST',
+                        data: $(this).serialize(),
+                        success: function (response) {
+                            if (response.success) {
+                                // Close the modal
+                                $('#addBusinessLocationModal').modal('hide');
+                                $('#addBusinessLocationForm')[0].reset();
+
+                                // Display toast notification
+                                $('#toastMessage').text(response.message);
+                                $('#businessLocationsToast').toast({
+                                    delay: 3000
+                                });
+                                $('#businessLocationsToast').toast('show');
+                                // Refresh the DataTable
+                                $('#BusinessLocations').DataTable().ajax.reload();
+                            }
+                            else {
+                                // Handle validation errors or any other errors
+                                // Display toast notification
+                                $('#toastMessage').text(response.message);
+                                $('#businessLocationsToast').toast({
+                                    delay: 3000
+                                });
+                                $('#businessLocationsToast').toast('show');
+                            }
+                        },
+                        error: function (error) {
+                            if (error.status === 403) {
+                                // Redirect to Access Denied page if the status is 403
+                                window.location.href = '/Account/AccessDenied';
+                            }
+                            else {
+                                $('#toastMessage').text('There was an error adding the Business Location.');
+                                $('#businessLocationsToast').toast({
+                                    delay: 3000
+                                });
+                                $('#businessLocationsToast').toast('show');
+                            }
+                        }
+                    });
+                });
+            });
+
+     
+            //This code for business location delete...
+            $('#BusinessLocations').on('click', '.show-bs-modal', function (e) {
+                let id = $(this).data("id");
+                $("#delete-id").val(id);
+                $("#businessLocation-form").attr("action", "/Admin/BusinessLocation/DeleteBussinessLocation");
+                $("#delete-modal").modal('show')
+            });
+
+            $("#businessLocation-delete").click(function () {
+                $("#businessLocation-form").submit();
+            });
+
+
+            //This code for Business Location Update...
+            $(document).ready(function () {
+                // Handle the click event for the edit button
+                $('#BusinessLocations').on('click', '.update-businessLocation', function () {
+                    var businessLocationId = $(this).data('id');
+                    console.log("button is clicked");
+
+                    // Use AJAX to fetch the category data
+                    $.ajax({
+                        url: '/Admin/BusinessLocation/GetBusinessLocationById',
+                        method: 'GET',
+                        data: { id: businessLocationId },
+                        success: function (response) {
+                            console.log(response)
+                            if (response.success) {
+                                // Populate the modal fields with the category data
+                                $('#updateBusinessLocationId').val(response.data.result.id);
+                                $('#editLocationName').val(response.data.result.locationName);
+                                $('#editAddress').val(response.data.result.address);
+                                $('#editCity').val(response.data.result.city);
+                                $('#editState').val(response.data.result.state);
+                                $('#editZipCode').val(response.data.result.zipCode);
+                                $('#editCountry').val(response.data.result.country);
+
+                                // Open the modal (bootstrap handles this)
+                                $('#updateBusinessLocationModal').modal('show');
+                            }
+                            else {
+                                alert('Error fetching category data');
+                            }
+                        },
+                        error: function (xhr) {
+                            if (xhr.status === 403) {
+                                // Redirect to Access Denied page if the status is 403
+                                window.location.href = '/Account/AccessDenied';
+                            }
+                            else{
+                                alert('An error occurred while fetching the Business Location data.');
+                            }
+                        }
+                    });
+                });
+
+                // Handle the form submission for editing the Business Location
+                $('#updateBusinessLocationForm').on('submit', function (e) {
+                    e.preventDefault();
+
+                    $.ajax({
+                        url: '/Admin/BusinessLocation/EditBusinessLocation',
+                        method: 'POST',
+                        data: $(this).serialize(),
+                        success: function (response) {
+                            console.log(response);
+                            if (response.success) {
+                                // Close the modal and reset
+                                $('#updateBusinessLocationModal').modal('hide');
+                                $('#updateBusinessLocationForm')[0].reset();
+
+                                // Display toast notification
+                                $('#toastMessage').text(response.message);
+                                $('#businessLocationsToast').toast({
+                                    delay: 3000
+                                });
+                                $('#businessLocationsToast').toast('show');
+
+                                // Refresh the DataTable
+                                $('#BusinessLocations').DataTable().ajax.reload();
+                            }
+                            else {
+                                $('#toastMessage').text(response.message);
+                                $('#businessLocationsToast').toast({
+                                    delay: 3000
+                                });
+                                $('#businessLocationsToast').toast('show');
+                            }
+                        },
+                        error: function (xhr) {
+                            if (xhr.status === 403) {
+                                // Redirect to Access Denied page if the status is 403
+                                window.location.href = '/Account/AccessDenied';
+                            }
+                            else {
+                                $('#toastMessage').text('There was an error editing the Business Location.');
+                                $('#businessLocationsToast').toast({
+                                    delay: 3000
+                                });
+                                $('#businessLocationsToast').toast('show');
+                            }
+                        }
+                    });
+                });
+            });
+            
+            //This code for temp data response fadeOut
+            $(document).ready(function () {
+                setTimeout(function () {
+                    $('#response-alert').fadeOut('slow');
+                }, 3000);
+            });
+
+        });
+    </script>
+}

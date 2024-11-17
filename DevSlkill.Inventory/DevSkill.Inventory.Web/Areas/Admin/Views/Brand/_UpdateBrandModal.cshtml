@@ -1,0 +1,37 @@
+﻿@model UpdateBrandModel
+
+<!-- Modal for editing a brand -->
+<div class="modal fade" id="editBrandModal" tabindex="-1" role="dialog" aria-labelledby="editBrandModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editBrandModalLabel">Edit Category</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-antiforgery="true" id="editBrandForm" enctype="multipart/form-data">
+                    <input asp-for="Id" type="hidden" id="editBrandId" name="Id" />
+
+                    <div class="form-group">
+                        <label asp-for="BrandName">Brand Name</label>
+                        <input asp-for="BrandName" type="text" class="form-control" id="editBrandName" name="BrandName" required>
+                        <span asp-validation-for="BrandName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="BandOrigin">Brand Origin</label>
+                        <input asp-for="BandOrigin" type="text" class="form-control" id="editBrandOrigin" name="BandOrigin" required>
+                        <span asp-validation-for="BandOrigin" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Description">Description</label>
+                        <textarea asp-for="Description" class="form-control" id="editDescription" name="Description" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

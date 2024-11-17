@@ -5,11 +5,13 @@ VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevSkill.Inventory.Web", "DevSkill.Inventory.Web\DevSkill.Inventory.Web.csproj", "{EAF98449-A2E7-4ADC-84B9-923FDE1380B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevSkill.Inventory.Domain", "DevSkill.Inventory.Domain\DevSkill.Inventory.Domain.csproj", "{3B12E1A2-50B5-4E4E-9C9E-925407049E09}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevSkill.Inventory.Domain", "DevSkill.Inventory.Domain\DevSkill.Inventory.Domain.csproj", "{3B12E1A2-50B5-4E4E-9C9E-925407049E09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevSkill.Inventory.Application", "DevSkill.Inventory.Application\DevSkill.Inventory.Application.csproj", "{0CE77E28-FF02-414F-B4A1-A6DCFDC1E072}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevSkill.Inventory.Application", "DevSkill.Inventory.Application\DevSkill.Inventory.Application.csproj", "{0CE77E28-FF02-414F-B4A1-A6DCFDC1E072}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevSkill.Inventory.Infrastructure", "DevSkill.Inventory.Infrastructure\DevSkill.Inventory.Infrastructure.csproj", "{65948B2C-741D-481C-8834-85038526DA45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevSkill.Inventory.Infrastructure", "DevSkill.Inventory.Infrastructure\DevSkill.Inventory.Infrastructure.csproj", "{65948B2C-741D-481C-8834-85038526DA45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevSkill.Inventory.WorkerService", "DevSkill.Inventory.WorkerService\DevSkill.Inventory.WorkerService.csproj", "{3F4A34C5-5E65-4B4E-B03A-F464B8CD939E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{65948B2C-741D-481C-8834-85038526DA45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65948B2C-741D-481C-8834-85038526DA45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65948B2C-741D-481C-8834-85038526DA45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F4A34C5-5E65-4B4E-B03A-F464B8CD939E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F4A34C5-5E65-4B4E-B03A-F464B8CD939E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F4A34C5-5E65-4B4E-B03A-F464B8CD939E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F4A34C5-5E65-4B4E-B03A-F464B8CD939E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
