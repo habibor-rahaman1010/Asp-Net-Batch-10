@@ -58,6 +58,8 @@ namespace DevSkill.Inventory.Application.Tests
             };
 
             _categoryUnitOfWorkMock.Setup(x => x.CategoryRepository).Returns(_categoryRepositoryMock.Object);
+            _categoryRepositoryMock.Setup(x => x.AddAsync(category)).Verifiable();
+            _categoryUnitOfWorkMock.Setup(x => x.SaveAsync()).Verifiable();
 
             //Act
             _categoryManagementService.AddCategoryAsync(category);
