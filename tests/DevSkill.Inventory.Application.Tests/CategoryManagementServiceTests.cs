@@ -65,6 +65,9 @@ namespace DevSkill.Inventory.Application.Tests
             _categoryManagementService.AddCategoryAsync(category);
 
             //Assert
+            _categoryRepositoryMock.VerifyAll();
+            _categoryUnitOfWorkMock.VerifyAll();
         }
+
     }
 }
