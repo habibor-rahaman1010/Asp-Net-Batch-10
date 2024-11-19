@@ -1,6 +1,7 @@
 using Autofac.Extras.Moq;
 using DevSkill.Inventory.Application.Services;
 using DevSkill.Inventory.Application.ServicesContract;
+using DevSkill.Inventory.Domain;
 using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Domain.RepositoryContracts;
 using DevSkill.Inventory.Domain.UnitOfWorkContracts;
@@ -107,6 +108,69 @@ namespace DevSkill.Inventory.Application.Tests
             // Assert
             _categoryRepositoryMock.VerifyAll();
             _categoryUnitOfWorkMock.VerifyAll();
+        }
+
+        [Test]
+        public async Task GetCategoriesAsync_ShouldReturnAllCategories_WhenCalled()
+        {
+            // Arrange
+            var mockCategories = new List<Category>
+            {
+                new Category { Id = Guid.NewGuid(), CategoryName = "Category1", CategoryCode = "C001" },
+                new Category { Id = Guid.NewGuid(), CategoryName = "Category2", CategoryCode = "C002" }
+            };
+
+            _categoryRepositoryMock.Setup(x => x.GetAllAsync())
+                .ReturnsAsync(mockCategories);
+
+            // Act
+            var result = await _categoryManagementService.GetCategoriesAsync();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(mockCategories.Count, result.Count);
+            Assert.AreEqual(mockCategories, result);
+
+            _categoryRepositoryMock.Verify(x => x.GetAllAsync(), Times.Once);
+        }
+
+
+        [Test]
+        public async Task GetCategoriesAsync_ShouldReturnPagedCategories_WhenCalledWithValidParameters()
+        {
+            // Arrange
+            var pageIndex = 1;
+            var pageSize = 10;
+
+            var search = new DataTablesSearch
+            {
+                Value = "test",
+                Regex = false
+            };
+            var order = "CategoryName";
+
+            var mockCategories = new List<Category>
+            {
+                new Category { Id = Guid.NewGuid(), CategoryName = "Category1", CategoryCode = "C001" },
+                new Category { Id = Guid.NewGuid(), CategoryName = "Category2", CategoryCode = "C002" }
+            };
+
+            var expectedTotal = 50; 
+            var expectedTotalDisplay = 2;
+
+            _categoryRepositoryMock.Setup(x => x.GetPagedCategoriesAsync(pageIndex, pageSize, search, order))
+                .ReturnsAsync((mockCategories, expectedTotal, expectedTotalDisplay));
+
+            // Act
+            var result = await _categoryManagementService.GetCategoriesAsync(pageIndex, pageSize, search, order);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(mockCategories, result.data);
+            Assert.AreEqual(expectedTotal, result.total);
+            Assert.AreEqual(expectedTotalDisplay, result.totalDisplay);
+
+            _categoryRepositoryMock.VerifyAll();
         }
 
     }
