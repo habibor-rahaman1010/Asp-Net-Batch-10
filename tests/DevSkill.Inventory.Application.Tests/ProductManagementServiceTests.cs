@@ -1,6 +1,7 @@
 ﻿using Autofac.Extras.Moq;
 using DevSkill.Inventory.Application.Services;
 using DevSkill.Inventory.Application.ServicesContract;
+using DevSkill.Inventory.Domain.Dtos;
 using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Domain.RepositoryContracts;
 using DevSkill.Inventory.Domain.UnitOfWorkContracts;
@@ -99,5 +100,147 @@ namespace DevSkill.Inventory.Application.Tests
             _productUnitOfWorkMock.VerifyAll();
         }
 
+
+        // Test for GetProductByIdAsync method
+        [Test]
+        public async Task GetProductByIdAsync_ShouldReturnProduct_WhenProductExists()
+        {
+            // Arrange
+            var productId = Guid.NewGuid();
+            var expectedProduct = new Product
+            {
+                Id = productId,
+                ProductName = "Sample Product",
+                Price = 100
+            };
+
+            // Mock the repository to return the product for the given ID
+            _productRepositoryMock.Setup(repo => repo.GetProductByIdAsync(productId))
+                .ReturnsAsync(expectedProduct).Verifiable();
+
+            // Act
+            var result = await _productManagementService.GetProductByIdAsync(productId);
+
+            // Assert
+            _productRepositoryMock.VerifyAll();
+            _productUnitOfWorkMock.VerifyAll();
+        }
+
+        [Test]
+        public async Task GetProductByIdAsync_ShouldReturnNull_WhenProductDoesNotExist()
+        {
+            // Arrange
+            var productId = Guid.NewGuid();
+
+            // Mock the repository to return null when no product is found for the ID
+            _productRepositoryMock.Setup(repo => repo.GetProductByIdAsync(productId))
+                .ReturnsAsync((Product)null).Verifiable();
+
+            // Act
+            var result = await _productManagementService.GetProductByIdAsync(productId);
+
+            // Assert
+            _productRepositoryMock.VerifyAll();
+            _productUnitOfWorkMock.VerifyAll();
+        }
+
+        // Test for GetProductsSpAsync method
+        [Test]
+        public async Task GetProductsSpAsync_ShouldReturnPagedProductData_WhenValidInputIsProvided()
+        {
+            // Arrange
+            var pageIndex = 1;
+            var pageSize = 10;
+            var search = new ProductSearchDto { ProductName = "Sample" };
+            var order = "ProductName";
+
+            var expectedProducts = new List<ProductDto>
+            {
+                new ProductDto { Id = Guid.NewGuid(), ProductName = "Product1", Price = 100 },
+                new ProductDto { Id = Guid.NewGuid(), ProductName = "Product2", Price = 150 }
+            };
+
+            var total = 20;
+            var totalDisplay = 15;
+
+            _productUnitOfWorkMock.Setup(uow => uow.GetPagedProductUsingSPAsync(pageIndex, pageSize, search, order))
+                .ReturnsAsync((expectedProducts, total, totalDisplay));
+
+            // Act
+            var result = await _productManagementService.GetProductsSpAsync(pageIndex, pageSize, search, order);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expectedProducts, result.data);
+            Assert.AreEqual(total, result.total);
+            Assert.AreEqual(totalDisplay, result.totalDisplay);
+            _productUnitOfWorkMock.Verify(uow => uow.GetPagedProductUsingSPAsync(pageIndex, pageSize, search, order), Times.Once);
+        }
+
+        [Test]
+        public async Task GetProductsSpAsync_ShouldReturnEmptyData_WhenNoProductsMatchSearchCriteria()
+        {
+            // Arrange
+            var pageIndex = 1;
+            var pageSize = 10;
+            var search = new ProductSearchDto
+            {
+                ProductName = "NonExistentProduct" // No products will match this
+            };
+            var order = "ProductName ASC";
+
+            var expectedProducts = new List<ProductDto>(); // No products found
+
+            var total = 0;
+            var totalDisplay = 0;
+
+            // Mock the unit of work to return empty data
+            _productUnitOfWorkMock.Setup(uow => uow.GetPagedProductUsingSPAsync(pageIndex, pageSize, search, order))
+                .ReturnsAsync((expectedProducts, total, totalDisplay));
+
+            // Act
+            var result = await _productManagementService.GetProductsSpAsync(pageIndex, pageSize, search, order);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsEmpty(result.data);
+            Assert.AreEqual(total, result.total);
+            Assert.AreEqual(totalDisplay, result.totalDisplay);
+        }
+
+
+        // Test for DeleteProductAsync method
+        [Test]
+        public async Task DeleteProductAsync_ShouldDeleteProduct_WhenProductExists()
+        {
+            // Arrange
+            var productId = Guid.NewGuid();
+
+            _productRepositoryMock.Setup(repo => repo.RemoveAsync(productId)).Verifiable();
+            _productUnitOfWorkMock.Setup(z => z.SaveAsync()).Verifiable();
+
+            // Act
+            await _productManagementService.DeleteProductAsync(productId);
+
+            // Assert
+            _productRepositoryMock.VerifyAll();
+            _productUnitOfWorkMock.VerifyAll();
+        }
+
+        [Test]
+        public async Task DeleteProductAsync_ShouldNotCallRemoveAsync_WhenProductIdIsEmpty()
+        {
+            // Arrange
+            var emptyProductId = Guid.Empty;
+            _productRepositoryMock.Setup(repo => repo.RemoveAsync(emptyProductId)).Verifiable();
+            _productUnitOfWorkMock.Setup(z => z.SaveAsync()).Verifiable();
+
+            // Act
+            await _productManagementService.DeleteProductAsync(emptyProductId);
+
+            // Assert
+            _productRepositoryMock.VerifyAll();
+            _productUnitOfWorkMock.VerifyAll();
+        }
     }
 }
