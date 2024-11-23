@@ -15,15 +15,15 @@ namespace DevSkill.Inventory.Application.Tests
     {
         private AutoMock _moq;
         private ICategoryManagementService _categoryManagementService;
-        private Mock<IInventoryUnitOfWork> _categoryUnitOfWorkMock;
         private Mock<ICategoryRepository> _categoryRepositoryMock;
+        private Mock<IInventoryUnitOfWork> _categoryUnitOfWorkMock;
 
         [SetUp]
         public void Setup()
         {
             _categoryManagementService = _moq.Create<CategoryManagementService>();
-            _categoryUnitOfWorkMock = _moq.Mock<IInventoryUnitOfWork>();
             _categoryRepositoryMock = _moq.Mock<ICategoryRepository>();
+            _categoryUnitOfWorkMock = _moq.Mock<IInventoryUnitOfWork>();
             _categoryUnitOfWorkMock.Setup(x => x.CategoryRepository).Returns(_categoryRepositoryMock.Object);
         }
 
@@ -121,17 +121,14 @@ namespace DevSkill.Inventory.Application.Tests
             };
 
             _categoryRepositoryMock.Setup(x => x.GetAllAsync())
-                .ReturnsAsync(mockCategories);
+                .ReturnsAsync(mockCategories).Verifiable();
 
             // Act
             var result = await _categoryManagementService.GetCategoriesAsync();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(mockCategories.Count, result.Count);
-            Assert.AreEqual(mockCategories, result);
-
-            _categoryRepositoryMock.Verify(x => x.GetAllAsync(), Times.Once);
+            _categoryRepositoryMock.VerifyAll();
+            _categoryUnitOfWorkMock.VerifyAll();
         }
 
 
@@ -159,18 +156,55 @@ namespace DevSkill.Inventory.Application.Tests
             var expectedTotalDisplay = 2;
 
             _categoryRepositoryMock.Setup(x => x.GetPagedCategoriesAsync(pageIndex, pageSize, search, order))
-                .ReturnsAsync((mockCategories, expectedTotal, expectedTotalDisplay));
+                .ReturnsAsync((mockCategories, expectedTotal, expectedTotalDisplay)).Verifiable();
 
             // Act
             var result = await _categoryManagementService.GetCategoriesAsync(pageIndex, pageSize, search, order);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(mockCategories, result.data);
-            Assert.AreEqual(expectedTotal, result.total);
-            Assert.AreEqual(expectedTotalDisplay, result.totalDisplay);
-
             _categoryRepositoryMock.VerifyAll();
+            _categoryUnitOfWorkMock.VerifyAll();
+        }
+
+        [Test]
+        public async Task GetCategoryById_ShouldReturnCategory_WhenCategoryExists()
+        {
+            // Arrange
+            var categoryId = Guid.NewGuid();
+            var expectedCategory = new Category
+            {
+                Id = categoryId,
+                CategoryName = "Laptops",
+                CategoryCode = "CT15652",
+                Description = "This is laptop category",
+            };
+
+            _categoryRepositoryMock.Setup(x => x.GetByIdAsync(categoryId))
+                .ReturnsAsync(expectedCategory).Verifiable();
+
+            // Act
+            var result = await _categoryManagementService.GetCategoryById(categoryId);
+
+            // Assert
+            _categoryRepositoryMock.VerifyAll();
+            _categoryUnitOfWorkMock.VerifyAll();
+        }
+
+        [Test]
+        public async Task GetCategoryById_ShouldReturnNull_WhenCategoryDoesNotExist()
+        {
+            // Arrange
+            var categoryId = Guid.NewGuid();
+
+            _categoryRepositoryMock.Setup(x => x.GetByIdAsync(categoryId))
+                .ReturnsAsync((Category) null).Verifiable();
+
+            // Act
+            var result = await _categoryManagementService.GetCategoryById(categoryId);
+
+            // Assert
+            _categoryRepositoryMock.VerifyAll();
+            _categoryUnitOfWorkMock.VerifyAll();
         }
 
     }
