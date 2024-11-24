@@ -49,7 +49,6 @@ namespace DevSkill.Inventory.Application.Services
         {
             await _categoryUnitOfWork.CategoryRepository.EditAsync(category);
             await _categoryUnitOfWork.SaveAsync();
-
         }
     }
 }
