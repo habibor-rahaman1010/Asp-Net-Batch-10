@@ -185,11 +185,11 @@ namespace DevSkill.Inventory.Application.Tests
             var pageSize = 10;
             var search = new ProductSearchDto
             {
-                ProductName = "NonExistentProduct" // No products will match this
+                ProductName = "NonExistentProduct" 
             };
             var order = "ProductName ASC";
 
-            var expectedProducts = new List<ProductDto>(); // No products found
+            var expectedProducts = new List<ProductDto>();
 
             var total = 0;
             var totalDisplay = 0;
@@ -228,6 +228,40 @@ namespace DevSkill.Inventory.Application.Tests
         }
 
         [Test]
+        public async Task UpdateProductAsync_ShouldUpdateProduct_WhenProductNameIsUnique()
+        {
+            // Arrange
+            var product = new Product { Id = Guid.NewGuid(), ProductName = "Unique Product", Price = 100 };
+            _productRepositoryMock.Setup(r => r.IsTitleDuplicateAsync(product.ProductName, product.Id)).ReturnsAsync(false); // No duplicate
+            _productRepositoryMock.Setup(r => r.EditAsync(product)).Returns(Task.CompletedTask);
+            _productUnitOfWorkMock.Setup(uow => uow.SaveAsync()).Returns(Task.CompletedTask);
+
+            // Act
+            await _productManagementService.UpdateProductAsync(product);
+
+            // Assert
+            _productRepositoryMock.VerifyAll();
+            _productRepositoryMock.VerifyAll();
+            _productUnitOfWorkMock.VerifyAll(); 
+        }
+
+        [Test]
+        public void UpdateProductAsync_ShouldThrowInvalidOperationException_WhenProductNameIsDuplicate()
+        {
+            // Arrange
+            var product = new Product { Id = Guid.NewGuid(), ProductName = "Duplicate Product", Price = 100 };
+            _productRepositoryMock.Setup(r => r.IsTitleDuplicateAsync(product.ProductName, product.Id)).ReturnsAsync(true); // Duplicate
+
+            // Act
+            var exception = Assert.ThrowsAsync<InvalidOperationException>(async () => await _productManagementService.UpdateProductAsync(product));
+            //Assert
+            Assert.AreEqual("Product name should be unique!", exception.Message);
+            _productRepositoryMock.VerifyAll();
+            _productRepositoryMock.VerifyAll();
+            _productUnitOfWorkMock.VerifyAll();
+        }
+
+        [Test]
         public async Task DeleteProductAsync_ShouldNotCallRemoveAsync_WhenProductIdIsEmpty()
         {
             // Arrange
@@ -241,6 +275,90 @@ namespace DevSkill.Inventory.Application.Tests
             // Assert
             _productRepositoryMock.VerifyAll();
             _productUnitOfWorkMock.VerifyAll();
+        }
+
+
+         [Test]
+        public async Task HasStockAdjustmentsAsync_ShouldReturnTrue_WhenAdjustmentsExist()
+        {
+            // Arrange
+            var productId = Guid.NewGuid();
+            var expected = true;
+
+            // Mock the StockAdjustmentRepository to return true
+            _productUnitOfWorkMock.Setup(uow => uow.StockAdjustmentRepository.HasStockAdjustmentsAsync(productId))
+                .ReturnsAsync(expected).Verifiable();
+
+            // Act
+            var result = await _productManagementService.HasStockAdjustmentsAsync(productId);
+
+            // Assert
+            Assert.IsTrue(result);
+            _productUnitOfWorkMock.Verify(uow => uow.StockAdjustmentRepository.HasStockAdjustmentsAsync(productId), Times.Once);
+        }
+
+        [Test]
+        public async Task HasStockAdjustmentsAsync_ShouldReturnFalse_WhenNoAdjustmentsExist()
+        {
+            // Arrange
+            var productId = Guid.NewGuid();
+            var expected = false;
+
+            // Mock the StockAdjustmentRepository to return false
+            _productUnitOfWorkMock.Setup(uow => uow.StockAdjustmentRepository.HasStockAdjustmentsAsync(productId))
+                .ReturnsAsync(expected).Verifiable();
+
+            // Act
+            var result = await _productManagementService.HasStockAdjustmentsAsync(productId);
+
+            // Assert
+            Assert.IsFalse(result);
+            _productUnitOfWorkMock.Verify(uow => uow.StockAdjustmentRepository.HasStockAdjustmentsAsync(productId), Times.Once);
+
+        }
+
+
+
+        [Test]
+        public async Task SearchProductsByNameAsync_ShouldReturnMatchingProducts_WhenSearchTermIsValid()
+        {
+            // Arrange
+            var searchTerm = "Product";
+            var expectedProducts = new List<Product>
+            {
+                new Product { Id = Guid.NewGuid(), ProductName = "Product1", Price = 100 },
+                new Product { Id = Guid.NewGuid(), ProductName = "Product2", Price = 150 }
+            };
+
+            _productRepositoryMock.Setup(r => r.SearchProductsByNameAsync(searchTerm)).ReturnsAsync(expectedProducts);
+
+            // Act
+            var result = await _productManagementService.SearchProductsByNameAsync(searchTerm);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual("Product1", result[0].ProductName);
+            Assert.AreEqual("Product2", result[1].ProductName);
+            _productRepositoryMock.VerifyAll();
+        }
+
+        [Test]
+        public async Task SearchProductsByNameAsync_ShouldReturnEmptyList_WhenNoProductsMatchSearchTerm()
+        {
+            // Arrange
+            var searchTerm = "NonExistingProduct";
+            var expectedProducts = new List<Product>();
+
+            _productRepositoryMock.Setup(r => r.SearchProductsByNameAsync(searchTerm)).ReturnsAsync(expectedProducts);
+
+            // Act
+            var result = await _productManagementService.SearchProductsByNameAsync(searchTerm);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(0, result.Count);
+            _productRepositoryMock.VerifyAll();
         }
     }
 }

@@ -27,6 +27,12 @@ namespace DevSkill.Inventory.Application.Services
 
         public async Task DeleteProductTypeAsync(Guid id)
         {
+            var productType = await _productTypeUnitOfWork.ProductTypeRepository.GetByIdAsync(id);
+            if (productType == null)
+            {
+                throw new KeyNotFoundException($"Product type with ID {id} not found.");
+            }
+
             await _productTypeUnitOfWork.ProductTypeRepository.RemoveAsync(id);
             await _productTypeUnitOfWork.SaveAsync();
         }

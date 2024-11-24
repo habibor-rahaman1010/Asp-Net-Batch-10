@@ -30,8 +30,8 @@ namespace DevSkill.Inventory.Application.Tests
         [TearDown] 
         public void Teardown() 
         { 
-            _categoryUnitOfWorkMock?.Reset();
             _categoryRepositoryMock?.Reset();
+            _categoryUnitOfWorkMock?.Reset();
         }
 
         [OneTimeSetUp]
