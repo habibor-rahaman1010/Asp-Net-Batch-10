@@ -130,7 +130,11 @@
                 columns: [
                     { data: "userName", title: "Username" },
                     { data: "email", title: "Email" },
-                    { data: "emailConfirmed", title: "Email Confirmed" },
+                    {
+                        data: "emailConfirmed", title: "Email Confirmed", render: function (data, type, row) {
+                            return data ? 'Yes' : 'No';
+                        }
+                    },
                     { data: "roleNames", title: "Roles" },
 
                     {
@@ -154,7 +158,7 @@
             });
         });
 
-        //This is outer user delete code...
+        //This is our user delete code...
         $(document).ready(function () {
             // Handle the click event on delete buttons in the list
             $('#AllUsers').on('click', '.delete-user', function (e) {

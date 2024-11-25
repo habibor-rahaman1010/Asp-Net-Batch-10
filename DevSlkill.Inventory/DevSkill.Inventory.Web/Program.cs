@@ -60,7 +60,7 @@ namespace DevSkill.Inventory.Web
                     throw new InvalidOperationException("Migration assembly not found.");
                 }
 
-                //builder.WebHost.UseUrls("http://*:80");
+                builder.WebHost.UseUrls("http://*:80");
 
                 builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString, (x) => x.MigrationsAssembly(migrationAssembly)));

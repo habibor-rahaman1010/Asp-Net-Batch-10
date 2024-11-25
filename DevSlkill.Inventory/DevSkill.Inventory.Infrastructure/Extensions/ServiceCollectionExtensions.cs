@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -106,17 +107,27 @@ namespace DevSkill.Inventory.Infrastructure.Extensions
         {
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+            var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
 
             string[] rolesName = { "Admin", "Support", "Member" };
             string adminEmail = "habibor.rahaman1010@gmail.com";
-            string adminPassword = "c++c++c#"; // Make sure to use a strong password
+            string adminPassword = "c++c++c#";
+
+            // Retrieve claims from the database dynamically (or set them manually)
+            var userClaims = new List<Claim>
+            {
+                new Claim("Read", "true"),
+                new Claim("Create", "true"),
+                new Claim("Update", "true"),
+                new Claim("Delete", "true")
+            };
 
             // Ensure roles exist
             foreach (var roleName in rolesName)
             {
                 if (!await roleManager.RoleExistsAsync(roleName))
                 {
-                    await roleManager.CreateAsync(new ApplicationRole() { Name = roleName});   
+                    await roleManager.CreateAsync(new ApplicationRole { Name = roleName });
                 }
             }
 
@@ -124,17 +135,45 @@ namespace DevSkill.Inventory.Infrastructure.Extensions
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
             if (adminUser == null)
             {
-                adminUser = new ApplicationUser { UserName = adminEmail, Email = adminEmail };
-                await userManager.CreateAsync(adminUser, adminPassword);
-
-                // Assign roles to the admin user
-                foreach (var roleName in rolesName)
+                adminUser = new ApplicationUser
                 {
-                    await userManager.AddToRoleAsync(adminUser, roleName);
+                    UserName = adminEmail,
+                    Email = adminEmail,
+                    EmailConfirmed = true
+                };
+
+                var result = await userManager.CreateAsync(adminUser, adminPassword);
+                if (result.Succeeded)
+                {
+                    // Assign roles to the admin user
+                    foreach (var roleName in rolesName)
+                    {
+                        await userManager.AddToRoleAsync(adminUser, roleName);
+                    }
+
+                    // Add claims to the user
+                    foreach (var claim in userClaims)
+                    {
+                        var existingClaim = (await userManager.GetClaimsAsync(adminUser))
+                                            .FirstOrDefault(c => c.Type == claim.Type);
+
+                        if (existingClaim == null)  // Ensure not adding duplicate claims
+                        {
+                            await userManager.AddClaimAsync(adminUser, claim);
+                        }
+                    }
+                }
+                else
+                {
+                    // Log errors (optional)
+                    throw new Exception($"Failed to create admin user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
                 }
             }
+            else if (!adminUser.EmailConfirmed)
+            {
+                adminUser.EmailConfirmed = true;
+                await userManager.UpdateAsync(adminUser);
+            }
         }
-
-
     }
 }
