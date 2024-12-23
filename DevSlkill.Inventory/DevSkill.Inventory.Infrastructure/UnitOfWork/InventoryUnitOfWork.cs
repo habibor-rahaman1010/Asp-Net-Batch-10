@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace DevSkill.Inventory.Infrastructure.UnitOfWork
 {
-    public class ProductUnitOfWork : UnitOfWork, IInventoryUnitOfWork
+    public class InventoryUnitOfWork : UnitOfWork, IInventoryUnitOfWork
     {
         public IProductRepository ProductRepository { get; private set; }
         public ICategoryRepository CategoryRepository { get; private set; }
@@ -29,7 +29,7 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
         public IAdjustmentTypeRepository AdjustmentTypeRepository { get; private set; }
         public IStockAdjustmentRepository StockAdjustmentRepository { get; private set; }
         
-        public ProductUnitOfWork(InventoryDbContext productDbContext,
+        public InventoryUnitOfWork(InventoryDbContext productDbContext,
             IProductRepository productRepository,
             ICategoryRepository categoryRepository,
             IProductTypeRepository productTypeRepository,

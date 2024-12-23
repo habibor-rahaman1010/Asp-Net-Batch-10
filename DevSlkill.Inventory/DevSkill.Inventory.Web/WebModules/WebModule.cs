@@ -35,7 +35,7 @@ namespace DevSkill.Inventory.Web.WebModules
                .WithParameter("migrationAssembly", _migrationAssembly)
                .InstancePerLifetimeScope();
 
-            builder.RegisterType<ProductUnitOfWork>()
+            builder.RegisterType<InventoryUnitOfWork>()
                 .As<IInventoryUnitOfWork>()
                 .InstancePerLifetimeScope();
 
