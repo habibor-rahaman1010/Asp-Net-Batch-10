@@ -2,17 +2,14 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using DevSkill.Inventory.Infrastructure.Data;
 using DevSkill.Inventory.Web.WebModules;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
 using System.Reflection;
-using Autofac.Core;
-using DevSkill.Inventory.Infrastructure.InventoryIdentity;
 using DevSkill.Inventory.Domain;
 using DevSkill.Inventory.Infrastructure.Extensions;
-using System.Data;
+
 
 namespace DevSkill.Inventory.Web
 {
@@ -57,7 +54,7 @@ namespace DevSkill.Inventory.Web
                     throw new InvalidOperationException("Migration assembly not found.");
                 }
 
-                builder.WebHost.UseUrls("http://*:80");
+                //builder.WebHost.UseUrls("http://*:80");
 
                 builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString, (x) => x.MigrationsAssembly(migrationAssembly)));

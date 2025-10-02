@@ -56,7 +56,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(barcodeTypeJsonData);
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<JsonResult> AddBarcodeType(BarcodeTypeCreateModel model)
         {
             if (ModelState.IsValid)
@@ -92,7 +92,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             });
         }
 
-        [Authorize(Policy = "CustomAdminAccess")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> GetBarcodeTypeById(Guid id)
         {
             var barcodeType = await _barcodeTypeManagementService.GetBarcodeTypeId(id);
@@ -103,7 +103,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(new { success = false, message = "Barcode Type not found." });
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> UpdateBarcodeType(BarcodeTypeUpdateModel model)
         {
 
@@ -132,7 +132,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This code for delete
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<JsonResult> DeleteBarcodeType(Guid id)
         {
             try
