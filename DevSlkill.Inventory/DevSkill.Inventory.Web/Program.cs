@@ -1,19 +1,15 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using DevSkill.Inventory.Infrastructure.Data;
-using DevSkill.Inventory.Web.Data;
 using DevSkill.Inventory.Web.WebModules;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
 using System.Reflection;
-using Autofac.Core;
-using DevSkill.Inventory.Infrastructure.InventoryIdentity;
 using DevSkill.Inventory.Domain;
 using DevSkill.Inventory.Infrastructure.Extensions;
-using System.Data;
+
 
 namespace DevSkill.Inventory.Web
 {
@@ -21,14 +17,12 @@ namespace DevSkill.Inventory.Web
     {
         public static async Task Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
-
             ConfigurationBuilder configuration = new ConfigurationBuilder();
             IConfigurationBuilder configurationBuilder = configuration.SetBasePath(Directory.GetCurrentDirectory());
             IConfigurationBuilder configurationBuilder1 = configurationBuilder.AddJsonFile("appsettings.json");
             IConfigurationRoot configurationRoot = configurationBuilder1.Build();
 
-            string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
+            string? connection = configurationRoot.GetConnectionString("DefaultConnection");
             string? tableName = "ApplicationLogs";
 
             Log.Logger = new LoggerConfiguration().MinimumLevel
@@ -41,6 +35,7 @@ namespace DevSkill.Inventory.Web
             try
             {
                 Log.Information("Application Starting...");
+                var builder = WebApplication.CreateBuilder(args);
               
                 IHostBuilder hostBuilder = builder.Host.UseSerilog((ctx, lc) =>
                     lc.MinimumLevel.Debug().WriteTo.MSSqlServer(

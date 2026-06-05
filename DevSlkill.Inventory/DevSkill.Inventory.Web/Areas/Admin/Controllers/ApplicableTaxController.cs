@@ -57,7 +57,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This is method for create new applicable tax 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> AddApplicableTax(ApplicableTaxCreateModel model)
         {
             if (ModelState.IsValid)
@@ -94,7 +94,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This code for applicable tax update...
-        [Authorize(Policy = "CustomAdminAccess")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> GetApplicableTaxById(Guid id)
         {
             var applicableTax = await _applicableTaxManagementService.GetApplicableTaxByIdAsync(id);
@@ -105,7 +105,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(new { success = false, message = "Applicable tax not found." });
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> UpdateApplicableTax(ApplicableTaxUpdateModel model)
         {
 
@@ -122,7 +122,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This code for delete
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<JsonResult> DeleteApplicableTax(Guid id)
         {
             try

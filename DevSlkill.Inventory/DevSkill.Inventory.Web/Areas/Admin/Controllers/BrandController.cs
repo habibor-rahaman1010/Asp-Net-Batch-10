@@ -53,7 +53,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(brandJsonData);
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<JsonResult> AddBrand(CreateBrandModel model)
         {
             if (ModelState.IsValid)
@@ -91,7 +91,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> BrandDelete(Guid id)
         {
             try
@@ -119,7 +119,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(nameof(BrandList));
         }
 
-        [Authorize(Policy = "CustomAdminAccess")]
+        [Authorize(Policy = "AdminOnly")]
         public IActionResult GetBrandById(Guid id)
         {
             var brand = _brandManagementService.GetBrandByIdAsync(id);
@@ -130,7 +130,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(new { success = false, message = "Brand not found." });
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> EditBrand(UpdateBrandModel model)
         {
             if (ModelState.IsValid)

@@ -6,13 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Web;
 using AutoMapper;
 using DevSkill.Inventory.Domain;
-using System.IO;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
-using System.Security.Cryptography;
-using Microsoft.EntityFrameworkCore;
-using DevSkill.Inventory.Infrastructure.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
-using AutoMapper.Execution;
 
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
@@ -133,7 +127,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 
         //Here used stored procedure for data retrive
         [Route("/Admin/Product/GetProductJsonDataSpAsync")]
-        [HttpPost, Authorize("ReadPermission")]
+        [HttpPost, Authorize(Policy = "ReadPermission")]
         public async Task<JsonResult> GetProductJsonDataSpAsync([FromBody] ProductListModel model)
         {
             var result = await _productManagementService.GetProductsSpAsync(model.PageIndex, model.PageSize, model.SearchItem,
@@ -367,7 +361,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Delete(Guid id)
         {
             try
@@ -413,7 +407,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return RedirectToAction("ProductList"); // Redirect in case of an exception to maintain flow
         }
 
-        [HttpGet, Authorize(Policy = "CustomAdminAccess")]
+        [HttpGet, Authorize(Policy = "ReadPermission")]
         public async Task<JsonResult> SearchProductsByName(string searchTerm)
         {
             try

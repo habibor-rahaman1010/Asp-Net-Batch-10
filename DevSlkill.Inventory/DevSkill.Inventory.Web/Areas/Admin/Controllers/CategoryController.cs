@@ -57,7 +57,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(categoryJsonData);
         }       
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<JsonResult> AddCategory(CategoryCreateModel model)
         {
             if (ModelState.IsValid)
@@ -94,7 +94,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             });
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> CategoryDelete(Guid id)
         {
             try
@@ -122,7 +122,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View();
         }
 
-        [Authorize(Policy = "CustomAdminAccess")]
+        [Authorize(Policy = "AdminOnly")]
         public IActionResult GetCategoryById(Guid id)
         {
             var category = _categoryManagementService.GetCategoryById(id);
@@ -133,7 +133,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(new { success = false, message = "Category not found." });
         }
          
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> EditCategoryModal(UpdateCategoryModel model)
         {
             if (ModelState.IsValid)

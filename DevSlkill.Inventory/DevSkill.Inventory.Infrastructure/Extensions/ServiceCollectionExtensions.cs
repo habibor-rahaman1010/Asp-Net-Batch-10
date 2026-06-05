@@ -4,12 +4,7 @@ using DevSkill.Inventory.Infrastructure.InventoryIdentity.Requirements;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DevSkill.Inventory.Infrastructure.Extensions
 {
@@ -46,24 +41,27 @@ namespace DevSkill.Inventory.Infrastructure.Extensions
                 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
                 options.User.RequireUniqueEmail = true;
             });
-            
-            
+
+
             //add policy role configuration
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("CustomAdminAccess", policy =>
+                options.AddPolicy("AdminOnly", policy =>
                 {
                     policy.RequireRole("Admin");
-                    policy.RequireRole("Support");
-                    policy.RequireRole("Member");
                 });
 
-                options.AddPolicy("CustomAccess", policy =>
+                options.AddPolicy("SupportAccess", policy =>
                 {
-                    policy.RequireRole("Member");
-                    policy.RequireRole("Support");
+                    policy.RequireRole("Admin", "Support");
+                });
+
+                options.AddPolicy("MemberAccess", policy =>
+                {
+                    policy.RequireRole("Admin", "Support", "Member");
                 });
             });
+
 
             //add Claim base authentication configuration
             services.AddAuthorization(options =>

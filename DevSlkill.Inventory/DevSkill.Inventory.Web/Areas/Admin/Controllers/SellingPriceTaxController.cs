@@ -56,7 +56,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This is method for create new selling price tax 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> AddSellingPriceTax(SellingPriceTaxCreateModel model)
         {
             if (ModelState.IsValid)
@@ -93,7 +93,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This code for Selling Price tax update...
-        [Authorize(Policy = "CustomAdminAccess")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> GetSellingPriceTaxById(Guid id)
         {
             var sellingPriceTax = await _sellingPriceTaxManagementService.GetSellingPriceTaxByIdAsync(id);
@@ -104,7 +104,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(new { success = false, message = "Selling price tax not found." });
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> UpdateSellingPriceTax(SellingPriceTaxUpdateModel model)
         {
 
@@ -121,7 +121,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This code for delete
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<JsonResult> DeleteSellingPriceTax(Guid id)
         {
             try

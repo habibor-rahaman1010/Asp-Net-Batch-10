@@ -77,7 +77,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(stockAdjustmentJsonData);
         }
 
-        [Authorize(Policy = "CustomAdminAccess")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> CreateStockAdjustment()
         {
             var model = new StockAdjustmentCreateModel();
@@ -86,7 +86,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> CreateStockAdjustment(StockAdjustmentCreateModel model)
         {
             if (ModelState.IsValid)
@@ -130,7 +130,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<JsonResult> DeleteStockAdjustment(Guid id)
         {
             try
