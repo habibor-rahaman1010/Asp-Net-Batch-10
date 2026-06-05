@@ -1,0 +1,80 @@
+﻿<!-- Stock Adjustment Details Modal -->
+<div id="stockAdjustmentDetailModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-custom modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Stock Adjustment Details (Reference No: <span id="ReferenceNo"></span>)</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <p><strong>Adjustment Date:</strong> <span id="AdjustmentDate"></span></p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Total Amount:</strong> <span id="TotalAmount"></span></p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Total Amount Recover:</strong> <span id="TotalAmountRecover"></span></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <p><strong>Reason:</strong> <span id="Reason"></span></p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Added By:</strong> <span id="AddedBy"></span></p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Business Location Name:</strong> <span id="BusinessLocationName"></span></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <p><strong>Adjustment Type:</strong> <span id="AdjustmentTypeName"></span></p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Product Id:</strong> <span id="ProductId"></span></p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Product Name:</strong> <span id="ProductName"></span></p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Price:</strong> <span id="ProductPrice"></span></p>
+                    </div>
+                </div>
+
+                <!-- Product Table -->
+                <div class="col-sm-12 col-xs-12">
+                    <div class="table-responsive">
+                        <table class="table table-condensed bg-gray">
+                            <tbody>
+                                <tr class="bg-green">
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                                <tr>
+                                    <td id="ProductTableName"></td>
+                                    <td id="ProductQuantity"></td>
+                                    <td id="ProductUnitPrice"></td>
+                                    <td id="ProductSubtotal"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary no-print" aria-label="Print" onclick="$('#stockAdjustmentDetailModal').printThis();">
+                    <i class="fa fa-print"></i> Print
+                </button>
+                <button type="button" class="btn btn-secondary no-print" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

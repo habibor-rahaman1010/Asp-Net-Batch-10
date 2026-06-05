@@ -23,6 +23,10 @@
     <link rel="stylesheet" href="~/adminlte/plugins/daterangepicker/daterangepicker.css">
     <!-- summernote -->
     <link rel="stylesheet" href="~/adminlte/plugins/summernote/summernote-bs4.min.css">
+    <link rel="stylesheet" href="~/adminlte/css/custom.css">
+
+    @await RenderSectionAsync("Styles", required: false)
+
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -227,20 +231,77 @@
                             </a>
                         </li>
 
+                        <!--User Management-->
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-copy"></i>
+                                <i class="nav-icon fa fas fa-users"></i>
                                 <p>
-                                    Products
+                                    User Management
                                     <i class="fas fa-angle-left right"></i>
                                     <span class="badge badge-info right">6</span>
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a asp-area="Admin" asp-controller="Product" asp-action="Index" class="nav-link">
+                                    <a asp-area="Admin" asp-controller="Member" asp-action="CreateRole" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>All Products</p>
+                                        <p>Create Role</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Member" asp-action="ChangeRole" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Change Role</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Member" asp-action="ListRoles" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>List Of Roles</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Member" asp-action="AddClaim" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Create Claim</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Member" asp-action="ListUserClaims" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>List Of Claims</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="AllUser" asp-action="AllUserList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>List Of Users</p>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
+
+                        <!--Product Management and other stuff-->
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fa fas fa-cubes"></i>
+                                <p>
+                                    Products
+                                    <i class="fas fa-angle-left right"></i>
+                                    <span class="badge badge-info right">12</span>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Product" asp-action="ProductList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>List Products</p>
                                     </a>
                                 </li>
 
@@ -250,9 +311,142 @@
                                         <p>Add Product</p>
                                     </a>
                                 </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Category" asp-action="CategoryList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Categories</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Brand" asp-action="BrandList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Brands</p>
+                                    </a>
+                                </li>
+
+                                 <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Warranty" asp-action="WarrantyList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Warranties</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Unit" asp-action="UnitList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Units</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="BusinessLocation" asp-action="BusinessLocationList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Business Locations</p>
+                                    </a>
+                                </li>
+
+                                <!--Add new-->
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="BarcodeType" asp-action="BarcodeTypeList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Barcode Types</p>
+                                    </a>
+                                </li>
+                                
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="ProductType" asp-action="ProductTypeList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Product Type</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="SubCategory" asp-action="SubCategoryList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Sub Categories</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="ApplicableTax" asp-action="ApplicableTaxList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Applicable Taxes</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="SellingPriceTax" asp-action="SellingPriceTaxList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Selling Price Taxes</p>
+                                    </a>
+                                </li>
+
                             </ul>
                         </li>
 
+                        <!--Stock Adjustment-->
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fa fas fa-database"></i>
+                                <p>
+                                    Stock Adjustment
+                                    <i class="fas fa-angle-left right"></i>
+                                    <span class="badge badge-info right">2</span>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="StockAdjustment" asp-action="StockAdjustmentList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>List Stock Adjustments</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="StockAdjustment" asp-action="CreateStockAdjustment" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Add Stock Adjustment</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="AdjustmentType" asp-action="AdjustmentTypeList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Adjustment Types</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!--Stock Transfer-->
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fa fas fa-car"></i>
+                                <p>
+                                    Stock Transfer
+                                    <i class="fas fa-angle-left right"></i>
+                                    <span class="badge badge-info right">2</span>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="StockAdjustment" asp-action="StockAdjustmentList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>List Stock Transfer</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="StockAdjustment" asp-action="CreateStockAdjustment" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Add Stock Transfer</p>
+                                    </a>
+                                </li>
+     
+                            </ul>
+                        </li>
                         
                     </ul>
                 </nav>
@@ -287,9 +481,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
 
-    @await RenderSectionAsync("Scripts", required: false)
-
-
     <!-- jQuery -->
     <script src="~/adminlte/plugins/jquery/jquery.min.js"></script>
     <!-- jQuery UI 1.11.4 -->
@@ -318,6 +509,8 @@
     <script src="~/adminlte/plugins/summernote/summernote-bs4.min.js"></script>
     <!-- overlayScrollbars -->
     <script src="~/adminlte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
     <!-- AdminLTE App -->
     <script src="~/adminlte/js/adminlte.js"></script>
     <!-- AdminLTE for demo purposes -->
@@ -325,5 +518,14 @@
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     <script src="~/adminlte/js/pages/dashboard.js"></script>
 
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#editor'))
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
 </body>
 </html>

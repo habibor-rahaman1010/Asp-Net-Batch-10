@@ -1,0 +1,36 @@
+﻿@model SellingPriceTaxCreateModel
+<!-- Modal for adding a new selling price tax -->
+<div class="modal fade" id="addSellingPriceTaxModal" tabindex="-1" role="dialog" aria-labelledby="SellingPriceTaxModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="SellingPriceTaxModalLabel">Add New Selling Price Tax</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-antiforgery="true" id="sellingPriceTaxForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label asp-for="SellingPriceTaxName">Selling Price Tax Name</label>
+                        <input asp-for="SellingPriceTaxName" type="text" class="form-control" required>
+                        <span asp-validation-for="SellingPriceTaxName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="TaxRate">Tax Rate</label>
+                        <input asp-for="TaxRate" type="number" class="form-control" value="" required>
+                        <span asp-validation-for="TaxRate" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Description">Selling Price Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

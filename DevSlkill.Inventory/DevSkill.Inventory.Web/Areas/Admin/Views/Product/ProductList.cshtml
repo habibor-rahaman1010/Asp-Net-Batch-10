@@ -1,0 +1,380 @@
+﻿@model ProductListModel
+
+@{
+    ViewData["Title"] = "Product List";
+}
+
+@section Styles {
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>All Product List</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">product</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="col-12">
+        <div class="card card-outline card-primary collapsed-card">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-search mr-1"></i>Search Your Product</h3>
+
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <!-- /.card-tools -->
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Product Name</label>
+                            <input type="text" asp-for="SearchItem.ProductName" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Product Type</label>
+                            <select asp-for="SearchItem.ProductTypeId" asp-items="Model.ProductTypes" class="form-control"></select>
+                        </div>
+                    </div>
+
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Product Category</label>
+                            <select asp-for="SearchItem.CategoryId" asp-items="Model.Categories" class="form-control"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Product Brand</label>
+                            <select asp-for="SearchItem.BrandId" asp-items="Model.Brands" class="form-control"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Product Unit</label>
+                            <select asp-for="SearchItem.UnitId" asp-items="Model.Units" class="form-control"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Business Location</label>
+                            <select asp-for="SearchItem.BusinessLocationId" asp-items="Model.BusinessLocations" class="form-control"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Selling Price Tax</label>
+                            <select asp-for="SearchItem.SellingPriceTaxId" asp-items="Model.SellingPriceTaxes" class="form-control"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Applicable Tax</label>
+                            <select asp-for="SearchItem.ApplicableTaxId" asp-items="Model.ApplicableTaxes" class="form-control"></select>
+                        </div>
+                    </div>    
+                </div>
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer">
+                <button id="searchButton" type="submit" class="btn btn-primary float-right">Search</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">All available products are here!</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <partial name="_ResponsePartial" />
+                        <partial name="_ModalPartial" />
+                        <table id="products" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Product Image</th>
+                                    <th>Product Name</th>
+                                    <th>Business Location</th>
+                                    <th>Description</th>
+                                    <th>Unit Purchase Price</th>
+                                    <th>Price</th>
+                                    <th>Selling Price</th>
+                                    <th>SKU</th>
+                                    <th>Category</th>
+                                    <th>Product Type</th>
+                                    <th>Current Stock</th>
+                                    <th>Rating</th>
+                                    <th>Brand</th>
+                                    <th>Tax</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tfoot>
+                                <tr>
+                                    <th>Product Image</th>
+                                    <th>Product Name</th>
+                                    <th>Business Location</th>
+                                    <th>Description</th>
+                                    <th>Unit Purchase Price</th>
+                                    <th>Price</th>
+                                    <th>Selling Price</th>
+                                    <th>SKU</th>
+                                    <th>Category</th>
+                                    <th>Product Type</th>
+                                    <th>Current Stock</th>
+                                    <th>Rating</th>
+                                    <th>Brand</th>
+                                    <th>Tax</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+<!-- This code for detail modal-->
+<partial name="_ProductDetailsPartial" />
+
+<!-- /.content -->
+@section Scripts {
+
+    <!-- DataTables  & Plugins -->
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+    <!--This is link for print-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/printThis/1.15.0/printThis.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#products").DataTable({
+                processing: true,
+                serverSide: true,
+                responsive: true,
+                lengthChange: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                autoWidth: false,
+                ajax: {
+                    url: "/Admin/Product/GetProductJsonDataSpAsync",
+                    type: "POST",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: function (d) {
+                        d.SearchItem = {
+                            ProductName: $("#SearchItem_ProductName").val(),
+                            ProductTypeId: $("#SearchItem_ProductTypeId").val(),
+                            CategoryId: $("#SearchItem_CategoryId").val(),
+                            BrandId: $("#SearchItem_BrandId").val(),
+                            UnitId: $("#SearchItem_UnitId").val(),
+                            BusinessLocationId: $("#SearchItem_BusinessLocationId").val(),
+                            SellingPriceTaxId: $("#SearchItem_SellingPriceTaxId").val(),
+                            ApplicableTaxId: $("#SearchItem_ApplicableTaxId").val(),                        
+                        };
+                        return JSON.stringify(d);
+                    },
+                },
+
+                columnDefs: [
+                    {
+                        // Render description column with only 5
+                        targets: 3,
+                        render: function (data, type, row) {
+                            var words = data.split(" ");
+                            if (words.length > 5) {
+                                return words.slice(0, 5).join(" ") + '...';
+                            }
+                            return data;
+                        }
+                    },
+
+                   /* {
+                        orderable: false,
+                        targets: 14,
+                        render: function (data, type, row) {
+                            return `<button type="submit" class="btn btn-info btn-sm edit-btn" onclick="window.location.href='/admin/Product/UpdateProduct/${data}'" value='${data}'>
+                                        <i class="fas fa-pencil-alt">
+                                        </i>
+                                        Edit
+                                    </button>
+                                    <button type="submit" class="btn btn-danger btn-sm show-bs-modal delete-btn" data-id='${data}' value='${data}'>
+                                        <i class="fas fa-trash">
+                                        </i>
+                                        Delete
+                                    </button>`;
+                        }
+                    }, */
+
+                    {
+                        orderable: false,
+                        targets: 14,
+                        render: function (data, type, row) {
+                            return `<div class="btn-group">
+                                    <button type="button" class="btn btn-info btn-md dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                        Actions <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right">
+                                        <li>
+                                            <a class="dropdown-item" href="/admin/Product/UpdateProduct/${data}">
+                                                <i class="fas fa-pencil-alt"></i> Edit
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item show-bs-modal delete-btn" href="#" data-id="${data}" value="${data}">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>`;
+                        }
+                    },
+
+                    ...[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map(function (target) {
+                        return {
+                            targets: target,
+                            createdCell: function (td, type, data) {
+                                $(td).addClass('table-row');
+                                $(td).attr('data-id', data[14]);
+                            }
+                        };
+                    })
+                ],
+
+                dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            }).buttons().container().appendTo('#products_wrapper .col-md-6:eq(0)');
+
+            $('#products').on('click', '.show-bs-modal', function () {
+                let id = $(this).data("id");
+                let modal = $("#modal-default");
+                modal.find('.modal-body p').text('Are you sure you want to delete this record?');
+                $("#deleteId").val(id);
+                $("#deleteForm").attr("action", "/admin/Product/delete");
+                modal.modal('show');
+            });
+
+            $("#deleteButton").click(function () {
+                $("#deleteForm").submit();
+            });
+
+            $("#searchButton").click(function () {
+                $('#products').DataTable().ajax.reload(null, false);
+            });
+
+   
+            //This code for product details
+            $('#products tbody').on('click', '.table-row', function () {
+                console.log("clicked");
+                var productId = $(this).data().id;
+                console.log(productId);
+                $.ajax({
+                    url: `/Admin/Product/GetProductById/${productId}`,
+                    method: 'GET',
+                    success: function (data) {
+                        console.log(data);
+                        $('#id').text(data.id !== undefined && data.id !== null && data.id !== '' ? data.id : 'N/A');
+                        $('#productName').text(data.productName !== undefined && data.productName !== null && data.productName !== '' ? data.productName : 'N/A');
+                        $('#description').html(data.description !== undefined && data.description !== null && data.description !== '' ? data.description : 'N/A');
+                        $('#price').html(data.price !== undefined && data.price !== null && data.price !== '' ? data.price : 'N/A');
+                        $('#sku').html(data.sku !== undefined && data.sku !== null && data.sku !== '' ? data.sku : 'N/A');
+                        $('#category').text(data.category && data.category.categoryName ? data.category.categoryName : 'N/A');
+                        $('#subcategory').text(data.subcategory && data.subcategory.subcategoryName ? data.subcategory.subcategoryName : 'N/A');
+                        $('#brand').text(data.brand && data.brand.brandName ? data.brand.brandName : 'N/A');
+                        $('#productType').text(data.productType && data.productType.productTypeName ? data.productType.productTypeName : 'N/A');
+                        $('#businessLocation').text(data.businessLocation && data.businessLocation.locationName ? data.businessLocation.locationName : 'N/A');
+                        $('#unit').text(data.unit && data.unit.unitName ? data.unit.unitName : 'N/A');
+                        $('#weight').text(data.weight !== undefined && data.weight !== null && data.weight !== '' ? data.weight : 'N/A');
+                        $('#status').text(data.status === 0 ? 'Active' : 'Inactive');
+                        $('#warranty').text(data.warranty && data.warranty.warrantyDuration ? data.warranty.warrantyDuration : 'N/A');
+                        $('#barcodeType').text(data.barcodeType && data.barcodeType.barcodeTypeName ? data.barcodeType.barcodeTypeName : 'N/A');
+                        $('#imei').text(data.imei !== undefined && data.imei !== null && data.imei !== '' ? data.imei : 'N/A');
+                        $('#position').text(data.position !== undefined && data.position !== null && data.position !== '' ? data.position : 'N/A');
+                        $('#rack').text(data.rack !== undefined && data.rack !== null && data.rack !== '' ? data.rack : 'N/A');
+                        $('#exciseTax').text(data.exciseTax !== undefined && data.exciseTax !== null && data.exciseTax !== '' ? data.exciseTax : 'N/A');
+                        $('#inclusiveTax').text(data.inclusiveTax !== undefined && data.inclusiveTax !== null && data.inclusiveTax !== '' ? data.inclusiveTax : 'N/A');
+                        $('#marginTax').text(data.marginTax !== undefined && data.marginTax !== null && data.marginTax !== '' ? data.marginTax : 'N/A');
+                        $('#sellingPrice').text(data.sellingPrice !== undefined && data.sellingPrice !== null && data.sellingPrice !== '' ? data.sellingPrice : 'N/A');
+                        $('#sellingPriceTax').text(data.sellingPriceTax && data.sellingPriceTax.sellingPriceTaxName ? data.sellingPriceTax.sellingPriceTaxName : 'N/A');
+                        $('#applicableTax').text(data.applicableTax && data.applicableTax.applicableTaxName ? data.applicableTax.applicableTaxName : 'N/A');
+                        $('#currentStock').text(data.currentStock !== undefined && data.currentStock !== null && data.currentStock !== '' ? data.currentStock : 'N/A');
+                        $('#alertQuantity').text(data.alertQuantity !== undefined && data.alertQuantity !== null && data.alertQuantity !== '' ? data.alertQuantity : 'N/A');
+                        $('#ratings').text(data.ratings !== undefined && data.ratings !== null && data.ratings !== '' ? data.ratings : 'N/A');
+                        $('#created').text(data.created ? new Date(data.created).toLocaleString('en-US', { hour12: true }) : 'N/A');
+                        $('#updated').text(data.updated ? new Date(data.updated).toLocaleString('en-US', { hour12: true }) : 'N/A');
+                        $('#storeTime').text(data.storeTime ? new Date(data.storeTime).toLocaleString('en-US', { hour12: true }) : 'N/A');
+                        $('#productImage').attr('src', data.productImage ? "/" + data.productImage : 'path/to/default/image.png'); // Set a default image if productImage is not available
+                        $('#productDetailsModal').modal('show');
+                    },
+
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching product data:", error);
+                        alert('Failed to load product details.');
+                    }
+                });
+            });
+      
+        });
+
+        //This code for temp data response fadeOut
+        $(document).ready(function () {
+            setTimeout(function () {
+                $('#response-alert').fadeOut('slow');
+            }, 3000);
+        });
+
+    </script>
+}

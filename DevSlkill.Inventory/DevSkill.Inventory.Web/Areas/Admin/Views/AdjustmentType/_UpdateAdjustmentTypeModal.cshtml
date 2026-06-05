@@ -1,0 +1,31 @@
+﻿@model AdjustmentTypeUpdateModel
+<!-- Modal for updating Adjustment type -->
+<div class="modal fade" id="updateAdjustmentTypeModal" tabindex="-1" role="dialog" aria-labelledby="updateAdjustmentTypeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateAdjustmentTypeModalLabel">Update The Adjustment Type</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-antiforgery="true" id="updateAdjustmentTypeForm" enctype="multipart/form-data">
+                    <input asp-for="Id" type="hidden" id="updateAdjustmentTypeId" name="Id" />
+                    <div class="form-group">
+                        <label asp-for="AdjustmentTypeName">Adjustment Type Name</label>
+                        <input asp-for="AdjustmentTypeName" type="text" class="form-control" id="editAdjustmentTypeName" name="AdjustmentTypeName" required>
+                        <span asp-validation-for="AdjustmentTypeName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Description">Description</label>
+                        <input asp-for="Description" type="text" class="form-control" id="editDescription" name="Description" required>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

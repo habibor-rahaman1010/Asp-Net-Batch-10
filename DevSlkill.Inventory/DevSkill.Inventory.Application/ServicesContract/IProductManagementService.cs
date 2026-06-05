@@ -1,4 +1,6 @@
-﻿using DevSkill.Inventory.Domain.Entities;
+﻿using DevSkill.Inventory.Domain;
+using DevSkill.Inventory.Domain.Dtos;
+using DevSkill.Inventory.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,14 @@ namespace DevSkill.Inventory.Application.ServicesContract
 {
     public interface IProductManagementService
     {
-        void CreateProduct(Product product);
+        Task CreateProduct(Product product);
+        Task DeleteProductAsync(Guid id);
+        Task<Product> GetProductByIdAsync(Guid id);
+        Task<(IList<Product> data, int total, int totalDisplay)> GetProductsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
+        Task<(IList<ProductDto> data, int total, int totalDisplay)> GetProductsSpAsync(int pageIndex, int pageSize, ProductSearchDto search, string? order);
+        Task UpdateProductAsync(Product product);
+        Task<IList<Product>> SearchProductsByNameAsync(string searchTerm);
+
+        Task<bool> HasStockAdjustmentsAsync(Guid productId);
     }
 }
