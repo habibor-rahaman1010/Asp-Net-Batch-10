@@ -98,7 +98,6 @@ namespace DevSkill.Inventory.Web
                 else
                 {
                     app.UseExceptionHandler("/Home/Error");
-                    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                     app.UseHsts();
                 }
 
@@ -118,8 +117,6 @@ namespace DevSkill.Inventory.Web
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-                //app.MapRazorPages();
-
 
                 // Seed polyciry roles and admin user on startup
                 using (var scope = app.Services.CreateScope())
@@ -136,7 +133,7 @@ namespace DevSkill.Inventory.Web
                     }
                 }
 
-                app.Run();
+                await app.RunAsync();
             }
 
             catch (Exception ex)
@@ -146,7 +143,7 @@ namespace DevSkill.Inventory.Web
 
             finally
             {
-                Log.CloseAndFlush();
+                await Log.CloseAndFlushAsync();
             }
         }
     }
