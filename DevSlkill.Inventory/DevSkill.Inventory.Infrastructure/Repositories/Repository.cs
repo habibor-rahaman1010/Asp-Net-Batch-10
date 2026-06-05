@@ -1,12 +1,7 @@
 ﻿using DevSkill.Inventory.Domain.Entities;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using System.Linq.Dynamic.Core;
 
 namespace DevSkill.Inventory.Infrastructure.Repositories
@@ -531,6 +526,18 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
             return (orderBy is not null
                 ? await orderBy(query).Select(selector!).FirstOrDefaultAsync()
                 : await query.Select(selector!).FirstOrDefaultAsync())!;
+        }
+
+        public async Task<TEntity> GetSingleAsync(Expression<Func<TEntity, bool>> filter)
+        {
+            try
+            {
+                return await _dbSet.FirstOrDefaultAsync(filter);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Exception Occured: ", ex);
+            }
         }
     }
 }

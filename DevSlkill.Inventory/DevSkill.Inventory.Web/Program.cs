@@ -103,6 +103,7 @@ namespace DevSkill.Inventory.Web
 
                 app.UseAuthentication();
                 app.UseAuthorization();
+                app.UseUserActivityTracking();
 
                 app.MapControllerRoute(
                     name: "areas",

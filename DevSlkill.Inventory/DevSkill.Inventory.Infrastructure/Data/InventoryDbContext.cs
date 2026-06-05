@@ -1,12 +1,6 @@
 ﻿using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites;
-using DevSkill.Inventory.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DevSkill.Inventory.Infrastructure.Data
 {
@@ -199,21 +193,22 @@ namespace DevSkill.Inventory.Infrastructure.Data
             base.OnModelCreating(modelBuilder);
         }
 
-        //This is my project related DbSet<T>
-
-        public DbSet<Product> Products { get; set; }
-        public DbSet<Category> Categories { get; set; }
-        public DbSet<SubCategory> SubCategories { get; set; } 
-        public DbSet<Brand> Brands { get; set; }          
-        public DbSet<Unit> Units { get; set; }         
-        public DbSet<BarcodeType> BarcodeTypes { get; set; } 
-        public DbSet<BusinessLocation> BusinessLocations { get; set; } 
-        public DbSet<Warranty> Warranties { get; set; }
-        public DbSet<SellingPriceTax> SellingPriceTaxes { get; set; }
-        public DbSet<ProductType> ProductTypes { get; set; }
-        public DbSet<ApplicableTax> ApplicableTaxs { get; set; }
-        public DbSet<AdjustmentType> AdjustmentTypes { get; set; }
-        public DbSet<StockAdjustment> StockAdjustments { get; set; }
-        public DbSet<ApplicationLog> ApplicationLogs { get; set; }
+        //Here is my all applcation DbSet<T>
+        public DbSet<Product> Products => Set<Product>();
+        public DbSet<Category> Categories => Set<Category>();
+        public DbSet<SubCategory> SubCategories => Set<SubCategory>();
+        public DbSet<Brand> Brands => Set<Brand>();
+        public DbSet<Unit> Units => Set<Unit>();
+        public DbSet<BarcodeType> BarcodeTypes => Set<BarcodeType>();
+        public DbSet<BusinessLocation> BusinessLocations => Set<BusinessLocation>();
+        public DbSet<Warranty> Warranties => Set<Warranty>();
+        public DbSet<SellingPriceTax> SellingPriceTaxes => Set<SellingPriceTax>();
+        public DbSet<ProductType> ProductTypes => Set<ProductType>();
+        public DbSet<ApplicableTax> ApplicableTaxs => Set<ApplicableTax>();
+        public DbSet<AdjustmentType> AdjustmentTypes => Set<AdjustmentType>();
+        public DbSet<StockAdjustment> StockAdjustments => Set<StockAdjustment>();
+        public DbSet<ApplicationLog> ApplicationLogs => Set<ApplicationLog>();
+        public DbSet<UserActivity> UserActivities => Set<UserActivity>();
+        public DbSet<UserActivityLog> UserActivityLogs => Set<UserActivityLog>();
     }
 }

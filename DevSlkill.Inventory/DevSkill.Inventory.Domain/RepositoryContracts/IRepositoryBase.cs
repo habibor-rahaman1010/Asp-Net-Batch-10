@@ -1,10 +1,5 @@
 ﻿using DevSkill.Inventory.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DevSkill.Inventory.Domain.RepositoryContracts
 {
@@ -28,5 +23,6 @@ namespace DevSkill.Inventory.Domain.RepositoryContracts
         Task RemoveAsync(Expression<Func<TEntity, bool>> filter);
         Task RemoveAsync(TEntity entityToDelete);
         Task RemoveAsync(TKey id);
+        public Task<TEntity> GetSingleAsync(Expression<Func<TEntity, bool>> filter);
     }
 }

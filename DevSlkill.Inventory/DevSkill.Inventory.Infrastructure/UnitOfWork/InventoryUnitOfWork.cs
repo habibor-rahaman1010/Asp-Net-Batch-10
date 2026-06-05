@@ -1,15 +1,7 @@
-﻿using DevSkill.Inventory.Domain;
-using DevSkill.Inventory.Domain.Dtos;
-using DevSkill.Inventory.Domain.Entities;
+﻿using DevSkill.Inventory.Domain.Dtos;
 using DevSkill.Inventory.Domain.RepositoryContracts;
 using DevSkill.Inventory.Domain.UnitOfWorkContracts;
 using DevSkill.Inventory.Infrastructure.Data;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DevSkill.Inventory.Infrastructure.UnitOfWork
 {
@@ -28,7 +20,8 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
         public ISellingPriceTaxRepository SellingPriceTaxRepository { get; private set; }
         public IAdjustmentTypeRepository AdjustmentTypeRepository { get; private set; }
         public IStockAdjustmentRepository StockAdjustmentRepository { get; private set; }
-        
+        public IUserActivityRepository UserActivityRepository { get; private set; }
+
         public InventoryUnitOfWork(InventoryDbContext productDbContext,
             IProductRepository productRepository,
             ICategoryRepository categoryRepository,
@@ -42,7 +35,8 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
             IApplicableTaxRepository applicableTaxRepository,
             ISellingPriceTaxRepository sellingPriceTaxRepository,
             IAdjustmentTypeRepository adjustmentTypeRepository,
-            IStockAdjustmentRepository stockAdjustmentRepository)
+            IStockAdjustmentRepository stockAdjustmentRepository,
+            IUserActivityRepository userActivityRepository)
             : base(productDbContext)
         {
             ProductRepository = productRepository;
@@ -58,6 +52,7 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
             SellingPriceTaxRepository = sellingPriceTaxRepository;
             AdjustmentTypeRepository = adjustmentTypeRepository;
             StockAdjustmentRepository = stockAdjustmentRepository;
+            UserActivityRepository = userActivityRepository;
         }
 
         public async Task<(IList<ProductDto> data, int total, int totalDisplay)> GetPagedProductUsingSPAsync(int pageIndex, int pageSize, ProductSearchDto search, string? order)

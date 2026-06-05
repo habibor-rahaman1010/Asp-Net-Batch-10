@@ -1,17 +1,17 @@
-﻿using DevSkill.Inventory.Infrastructure.InventoryIdentity;
+﻿using DevSkill.Inventory.Application.Services;
+using DevSkill.Inventory.Application.ServicesContract;
+using DevSkill.Inventory.Domain;
+using DevSkill.Inventory.Infrastructure.InventoryIdentity;
+using DevSkill.Inventory.Web.Areas.Admin.Controllers;
+using DevSkill.Inventory.Web.Models.Account;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Encodings.Web;
-using System.Text;
-using DevSkill.Inventory.Web.Models.Account;
-using Microsoft.AspNetCore.Authorization;
-using DevSkill.Inventory.Web.Areas.Admin.Controllers;
-using DevSkill.Inventory.Domain;
 using System.Security.Claims;
+using System.Text;
+using System.Text.Encodings.Web;
 
 namespace DevSkill.Inventory.Web.Controllers.Account
 {
@@ -20,17 +20,20 @@ namespace DevSkill.Inventory.Web.Controllers.Account
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IEmailUtility _emailUtility; 
+        private readonly IEmailUtility _emailUtility;
+        private readonly IUserActivityManagementService _userActivityManagementService;
         private readonly ILogger<AccountController> _logger;
 
         public AccountController(UserManager<ApplicationUser> userManager,
+            IUserActivityManagementService userActivityManagementService,
             SignInManager<ApplicationUser> signInManager,
             IEmailUtility emailUtility,
             ILogger<AccountController> logger )
         {
             _userManager = userManager;
             _signInManager = signInManager;
-             _emailUtility = emailUtility;
+            _emailUtility = emailUtility;
+            _userActivityManagementService = userActivityManagementService;
             _logger = logger;
         }
 
@@ -177,6 +180,15 @@ namespace DevSkill.Inventory.Web.Controllers.Account
         [AllowAnonymous]
         public async Task<IActionResult> LogoutAsync(string returnUrl = null)
         {
+            var userIdString = _userManager.GetUserId(User);
+
+            if (!Guid.TryParse(userIdString, out Guid userId))
+            {
+                throw new Exception("Invalid User Id");
+            }
+
+            await _userActivityManagementService.UpdateLogoutTimeAsync(userId);
+
             await _signInManager.SignOutAsync();
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
