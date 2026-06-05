@@ -1,9 +1,6 @@
 ﻿using AutoMapper;
-using DevSkill.Inventory.Application.Services;
 using DevSkill.Inventory.Application.ServicesContract;
-using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites;
-using DevSkill.Inventory.Infrastructure;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -56,7 +53,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(adjustmentTypeJsonData);
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<JsonResult> AddAdjustmentType(AdjustmentTypeCreateModel model)
         {
             if (ModelState.IsValid)
@@ -92,7 +89,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             });
         }    
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<JsonResult> DeleteAdjustmentType(Guid id)
         {
             try
@@ -116,7 +113,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             }
         }
 
-        [Authorize(Policy = "CustomAdminAccess")]
+        [Authorize(Policy = "AdminOnly")]
         public IActionResult GetAdjustmentTypeById(Guid id)
         {
             var adjustmentType = _adjustmentTypeManagementService.GetAdjustmentTypeByIdAsync(id);
@@ -127,7 +124,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(new { success = false, message = "Adjustment Type not found." });
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> EditAdjustmentType(AdjustmentTypeUpdateModel model)
         {
             if (ModelState.IsValid)

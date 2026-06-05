@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DevSkill.Inventory.Web.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AllTablesMigrations : Migration
+    public partial class AllInventoryTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -334,8 +334,8 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "AdjustmentTypeName", "Description" },
                 values: new object[,]
                 {
-                    { new Guid("0273b07d-efa9-47cb-9d24-3338a89efc4b"), "Abnormal", "" },
-                    { new Guid("2ae54af7-8791-414e-8dd4-d64b9841a848"), "Normal", "" }
+                    { new Guid("0a6a6159-9974-4927-a43c-3ea8341d3daa"), "Normal", "" },
+                    { new Guid("6f38e288-0b02-4e68-911a-ae934694cf2b"), "Abnormal", "" }
                 });
 
             migrationBuilder.InsertData(
@@ -343,9 +343,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "ApplicableTaxName", "Description", "TaxRate" },
                 values: new object[,]
                 {
-                    { new Guid("6591ec1e-3255-4403-8dc0-a7e211a63e35"), "Food", "", 0m },
-                    { new Guid("760dd638-f557-4de0-8063-2adc207b4ced"), "Fruits", "", 0m },
-                    { new Guid("a6e7a6f4-a5e4-4a45-bc66-7a525f7c6ae6"), "Sales Tax", "", 0m }
+                    { new Guid("2cf6f6e2-6c9f-475e-aad7-52442b8c3ec3"), "Sales Tax", "", 0m },
+                    { new Guid("659f2999-0db7-4bd0-ae82-6b38f92b071c"), "Fruits", "", 0m },
+                    { new Guid("a434cafb-f465-4b0c-96e1-81d44603ecf3"), "Food", "", 0m }
                 });
 
             migrationBuilder.InsertData(
@@ -353,9 +353,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "BarcodeDescription", "BarcodeTypeCode", "BarcodeTypeName" },
                 values: new object[,]
                 {
-                    { new Guid("2cdef823-3d69-4362-a32b-7fabdaa3b83c"), "", "", "UPC" },
-                    { new Guid("af45bca1-edef-462e-8b20-c60564988641"), "", "", "NFC" },
-                    { new Guid("cd57d963-1ab7-40d7-98a9-a69545d887ab"), "", "", "QR Code" }
+                    { new Guid("5a8b5cef-b19e-450d-83bc-c46a1596f6d8"), "", "", "QR Code" },
+                    { new Guid("6999843f-0da9-47c0-9d16-7b5a6fa88f5f"), "", "", "NFC" },
+                    { new Guid("8c2534fb-bc9a-4f09-9022-077cfa2ddad3"), "", "", "UPC" }
                 });
 
             migrationBuilder.InsertData(
@@ -363,9 +363,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "BandOrigin", "BrandName", "Description" },
                 values: new object[,]
                 {
-                    { new Guid("0bdeef45-44b7-41a0-b593-d0829668d5f4"), "", "Apple", "" },
-                    { new Guid("5b63f335-4581-4c53-8e42-ce93a04b2d38"), "", "Sony", "" },
-                    { new Guid("d707235e-0275-4069-a495-6af1c18d1903"), "", "Samsung", "" }
+                    { new Guid("743856b5-f162-4ede-8bd4-73e8abe5cd9c"), "", "Sony", "" },
+                    { new Guid("98ff8513-e1e0-4653-af6c-3d9eb8c30855"), "", "Apple", "" },
+                    { new Guid("e6a7e925-3c1b-4393-8df6-ee4c711f573c"), "", "Samsung", "" }
                 });
 
             migrationBuilder.InsertData(
@@ -373,9 +373,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "Address", "City", "Country", "LocationName", "State", "ZipCode" },
                 values: new object[,]
                 {
-                    { new Guid("a36981a3-6760-49ae-ab05-a49392c51af3"), "", "", "", "Downtown Store", "", "" },
-                    { new Guid("d0ffeeae-fc70-4373-a525-fec0132be25a"), "", "", "", "Warehouse A", "", "" },
-                    { new Guid("ec04a673-4b64-434e-bc92-e51948405a2c"), "", "", "", "Warehouse B", "", "" }
+                    { new Guid("61a54343-50a1-447f-84ef-5317c3495969"), "", "", "", "Warehouse B", "", "" },
+                    { new Guid("7425d474-1a1d-4067-bcd3-feb3ebe78791"), "", "", "", "Warehouse A", "", "" },
+                    { new Guid("b3465ffa-44a3-4f4e-bffc-0ef66338be7f"), "", "", "", "Downtown Store", "", "" }
                 });
 
             migrationBuilder.InsertData(
@@ -383,9 +383,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "CategoryCode", "CategoryName", "Description" },
                 values: new object[,]
                 {
-                    { new Guid("562a95a0-c7a5-4e28-813b-a95faf7c16dc"), "", "Electronics", "" },
-                    { new Guid("ce466e33-2437-41bf-8e23-48b468f39b4e"), "", "Home Appliances", "" },
-                    { new Guid("ebff1002-b938-4c06-8e9b-193b05c5a482"), "", "Clothing", "" }
+                    { new Guid("10739c00-8267-4753-9c45-8542c1f12094"), "", "Electronics", "" },
+                    { new Guid("53c0a7e9-16fb-4803-8dfb-3fa5dfa00394"), "", "Clothing", "" },
+                    { new Guid("5c2f5f16-933b-4109-ad6c-bd11176a5e2e"), "", "Home Appliances", "" }
                 });
 
             migrationBuilder.InsertData(
@@ -393,11 +393,11 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "Description", "ProductTypeCode", "ProductTypeName" },
                 values: new object[,]
                 {
-                    { new Guid("4c32dc86-2d38-47c7-94c5-93be89263fd2"), "", "", "Toys" },
-                    { new Guid("56c3d1a9-0848-4790-b4f0-606a64e22d47"), "", "", "Food" },
-                    { new Guid("8676465b-9a30-43a5-ac6d-127a7a019454"), "", "", "Clothing" },
-                    { new Guid("b8160c68-c97c-4b16-aad7-a006d37e6b09"), "", "", "Electronics" },
-                    { new Guid("d54f2427-e6a3-4206-bac6-586819445fe1"), "", "", "Furniture" }
+                    { new Guid("3aa524ee-6c80-4ea3-99d8-54cbff9bc665"), "", "", "Food" },
+                    { new Guid("3fe17aed-4000-46d7-ac18-56061d237ac6"), "", "", "Furniture" },
+                    { new Guid("949a58eb-96f0-41b1-9811-5d4d852cf247"), "", "", "Toys" },
+                    { new Guid("9c96094b-972d-4b60-a2da-2bb82d2bf35f"), "", "", "Clothing" },
+                    { new Guid("a9d3905f-def2-4ba6-8330-f10fe8b52f19"), "", "", "Electronics" }
                 });
 
             migrationBuilder.InsertData(
@@ -405,9 +405,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "Description", "SellingPriceTaxName", "TaxRate" },
                 values: new object[,]
                 {
-                    { new Guid("512b0eaa-402a-4a26-9b4f-aba23719461d"), "", "Exclusive", 0m },
-                    { new Guid("aae72989-4f87-409d-bc79-bd24450e75a3"), "", "Zero Rate", 0m },
-                    { new Guid("edef69e7-b804-4ab0-8343-84869ff25217"), "", "Inclusive", 0m }
+                    { new Guid("16d707b2-94c4-48eb-a864-60e3fd79cf74"), "", "Exclusive", 0m },
+                    { new Guid("37488668-ba0a-4550-8c51-ea806660a4a5"), "", "Inclusive", 0m },
+                    { new Guid("dad90976-363f-4758-a9d9-39643f690984"), "", "Zero Rate", 0m }
                 });
 
             migrationBuilder.InsertData(
@@ -415,9 +415,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "CategoryCode", "Description", "SubCategoryName" },
                 values: new object[,]
                 {
-                    { new Guid("34d0d9a8-fb9d-4e0c-a4ec-6bd712a62e66"), "", "", "Laptops" },
-                    { new Guid("925ef7ad-ef9a-4527-bf75-a0670fe57fcb"), "", "", "Smartphones" },
-                    { new Guid("ac5abd05-0d4a-4f9c-b799-45aa41652499"), "", "", "Televisions" }
+                    { new Guid("18fc1147-ba46-4333-a0ab-65fa2f32ea46"), "", "", "Laptops" },
+                    { new Guid("98372d66-f2b5-4d88-8f82-9a5ec7d26814"), "", "", "Smartphones" },
+                    { new Guid("e946c61f-c4ff-4ddb-81b6-021f223d25e8"), "", "", "Televisions" }
                 });
 
             migrationBuilder.InsertData(
@@ -425,9 +425,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "AllowDecimal", "ShortName", "UnitName" },
                 values: new object[,]
                 {
-                    { new Guid("a6ae9a14-b034-409b-b9fc-58bee00a9091"), 0, "", "Kilogram" },
-                    { new Guid("bbd2ee16-eaa1-4f68-9135-e9bec9423659"), 0, "", "Piece" },
-                    { new Guid("cae9c971-b51e-460a-a419-cd46b86349d7"), 0, "", "Liter" }
+                    { new Guid("3ccc6a19-75ea-4657-a686-6c01c04ae155"), 0, "", "Piece" },
+                    { new Guid("93fc5d07-6779-4271-96e5-acd0c3b351e7"), 0, "", "Liter" },
+                    { new Guid("943c9da4-45ab-42a0-8f73-2ffae5e589e9"), 0, "", "Kilogram" }
                 });
 
             migrationBuilder.InsertData(
@@ -435,9 +435,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "Description", "Name", "WarrantyDuration" },
                 values: new object[,]
                 {
-                    { new Guid("0fd74be3-3f8e-4c5d-b17b-cbff3db2f05b"), "", "", "1 Year" },
-                    { new Guid("6cf378d4-bb9b-460e-9ef0-dc731eb6ae17"), "", "", "3 Years" },
-                    { new Guid("7a1bf2b4-de09-4613-96ff-e6eaafe4fea9"), "", "", "2 Years" }
+                    { new Guid("1daca30e-23cb-476f-9401-737bde36a98d"), "", "", "1 Year" },
+                    { new Guid("701d1505-4a0d-4e3b-ba7f-8d596a3f8978"), "", "", "3 Years" },
+                    { new Guid("e4c224f6-9515-4461-a0fd-4bb61d2cdfa6"), "", "", "2 Years" }
                 });
 
             migrationBuilder.CreateIndex(

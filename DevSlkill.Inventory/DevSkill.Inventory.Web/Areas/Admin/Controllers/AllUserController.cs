@@ -3,7 +3,6 @@ using DevSkill.Inventory.Infrastructure.InventoryIdentity;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using DevSkill.Inventory.Infrastructure;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
@@ -11,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
-    [Area("Admin"), Authorize(Policy = "CustomAdminAccess")]
+    [Area("Admin"), Authorize(Policy = "AdminOnly")]
     public class AllUserController : Controller
     {
         private readonly RoleManager<ApplicationRole> _roleManager;
@@ -34,14 +33,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This method return all users with pagination and with column sorting...
-        [Route("Admin/AllUser/AllUserList"), Authorize(Policy = "CustomAdminAccess")]
+        [Route("Admin/AllUser/AllUserList"), Authorize(Policy = "AdminOnly")]
         public IActionResult AllUserList()
         {
             return View();
         }
 
         //This method return all users with pagination and with column sorting...
-        [HttpPost, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, Authorize(Policy = "AdminOnly")]
         [Route("Admin/AllUser/GetAllUsers")]
         public async Task<IActionResult> GetAllUsers(int draw, int start, int length, string search, List<Order> order)
         {
@@ -132,7 +131,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 
 
         //This is delete user method...
-        [HttpPost, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
             try
@@ -191,7 +190,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 
 
         //This mehtod get a user by id for update...
-        [Authorize(Policy = "CustomAdminAccess")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> GetUserById(Guid id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
@@ -221,7 +220,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This is user update mehtod also user roles update code...
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> UpdateUser(UserUpdateModel model, List<string> Roles)
         {
             if (ModelState.IsValid)

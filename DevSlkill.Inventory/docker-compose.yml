@@ -8,7 +8,7 @@ services:
         env_file: 
             - web.env
         volumes:
-            - inventory-data:/app/Logs
+            - ./Logs/Web:/app/Logs
         ports:
             - "8080:80"
         environment:

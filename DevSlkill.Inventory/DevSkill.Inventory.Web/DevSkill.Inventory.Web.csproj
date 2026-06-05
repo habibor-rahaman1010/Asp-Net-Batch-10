@@ -38,6 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Data\" />
     <Folder Include="Logs\" />
     <Folder Include="wwwroot\product\images\" />
   </ItemGroup>

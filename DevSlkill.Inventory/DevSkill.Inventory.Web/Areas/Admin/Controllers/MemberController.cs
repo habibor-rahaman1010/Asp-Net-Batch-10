@@ -13,7 +13,7 @@ using System.Security.Claims;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
-    [Area("Admin"), Authorize(Policy = "CustomAdminAccess")]
+    [Area("Admin"), Authorize(Policy = "AdminOnly")]
     public class MemberController : Controller
     {
         private readonly RoleManager<ApplicationRole> _roleManager;
@@ -33,7 +33,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This is method return lsit of role...
-        [Authorize(Policy = "CustomAdminAccess")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> ListRoles()
         {
             var roles = await _roleManager.Roles.ToListAsync();
@@ -41,14 +41,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This is method for new role create...
-        [Authorize(Policy = "CustomAdminAccess")]
+        [Authorize(Policy = "AdminOnly")]
         public IActionResult CreateRole()
         {
             var model = new RoleCreateModel();
             return View(model);
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> CreateRole(RoleCreateModel model)
         {
             if (ModelState.IsValid)
@@ -85,7 +85,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This is method for role Update...
-        [Authorize(Policy = "CustomAdminAccess")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> UpdateRole(Guid id)
         {
             // Find the role by its ID
@@ -111,7 +111,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> UpdateRole(RoleUpdateModel model)
         {
             if (ModelState.IsValid)
@@ -170,7 +170,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This is method for role delete...
-        [Authorize(Policy = "CustomAdminAccess")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeleteRole(Guid id)
         {
             // Find the role by its ID
@@ -225,7 +225,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //User Role Change method...
-        [Authorize(Policy = "CustomAdminAccess")]
+        [Authorize(Policy = "AdminOnly")]
         public IActionResult ChangeRole()
         {
             var model = new RoleChangeModel();
@@ -233,7 +233,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> ChangeRole(RoleChangeModel model)
         {
             if (ModelState.IsValid)
@@ -269,7 +269,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 
 
         //This is code for get list of claim
-        [Authorize(Policy = "CustomAdminAccess")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> ListUserClaims()
         {
             var usersWithClaims = new List<UserClaimsViewModel>();
@@ -295,7 +295,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 
 
         //This code for claim create
-        [Authorize(Policy = "CustomAdminAccess")]
+        [Authorize(Policy = "AdminOnly")]
         public IActionResult AddClaim()
         {
             var model = new ClaimAddModel();
@@ -303,7 +303,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> AddClaim(ClaimAddModel model)
         {
             if (ModelState.IsValid)
@@ -373,7 +373,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This method for claim edit
-        [Authorize(Policy = "CustomAdminAccess")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> EditClaim(Guid userId, string claimType, string claimValue)
         {
             if (userId == null || claimType == null || claimValue == null)
@@ -401,7 +401,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         //This method for claim edit
-        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CustomAdminAccess")]
+        [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> EditClaim(ClaimEditModel model)
         {
             if (!ModelState.IsValid)
