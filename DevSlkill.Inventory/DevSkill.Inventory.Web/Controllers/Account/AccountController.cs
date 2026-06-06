@@ -1,5 +1,4 @@
-﻿using DevSkill.Inventory.Application.Services;
-using DevSkill.Inventory.Application.ServicesContract;
+﻿using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Domain;
 using DevSkill.Inventory.Infrastructure.InventoryIdentity;
 using DevSkill.Inventory.Web.Areas.Admin.Controllers;

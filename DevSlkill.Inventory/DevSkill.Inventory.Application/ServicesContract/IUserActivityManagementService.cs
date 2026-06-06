@@ -3,5 +3,6 @@
     public interface IUserActivityManagementService
     {
         public Task UpdateLogoutTimeAsync(Guid userId);
+        public Task<int> CalculateBounceRate();
     }
 }

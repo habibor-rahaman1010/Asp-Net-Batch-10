@@ -12,6 +12,18 @@ namespace DevSkill.Inventory.Application.Services
             _userActivityUnitOfWork = userActivityUnitOfWork;
         }
 
+        public async Task<int> CalculateBounceRate()
+        {
+            try
+            {
+                return await _userActivityUnitOfWork.UserActivityRepository.CalculateBounceRate();
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Application Occured: ", ex);
+            }
+        }
+
         public async Task UpdateLogoutTimeAsync(Guid userId)
         {
             try
