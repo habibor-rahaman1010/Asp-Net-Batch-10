@@ -24,6 +24,30 @@ namespace DevSkill.Inventory.Application.Services
             }
         }
 
+        public async Task<int> CalculateEngagementRateAsync()
+        {
+            try
+            {
+                return await _userActivityUnitOfWork.UserActivityRepository.CalculateEngagementRateAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Application Occured: ", ex); ;
+            }
+        }
+
+        public async Task<int> GetActiveUserCountAsync()
+        {
+            try
+            {
+                return await _userActivityUnitOfWork.UserActivityRepository.GetActiveUserCountAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Exception Occured: ", ex);
+            }
+        }
+
         public async Task UpdateLogoutTimeAsync(Guid userId)
         {
             try

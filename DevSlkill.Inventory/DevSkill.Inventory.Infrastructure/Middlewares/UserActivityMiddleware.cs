@@ -29,18 +29,20 @@ namespace DevSkill.Inventory.Infrastructure.Middlewares
 
                     var action = context.Request.RouteValues["action"]?.ToString();
 
-                    // MVC request না হলে skip
-                    if (!string.IsNullOrEmpty(controller))
+                    // MVC Request না হলে Skip
+                    if (!string.IsNullOrWhiteSpace(controller) && !string.IsNullOrWhiteSpace(action))
                     {
                         var today = DateTime.Today;
 
+                        var currentUrl = context.Request.Path.ToString();
+
                         var ip = context.Connection.RemoteIpAddress?.ToString();
 
-                        var browser =
-                            context.Request.Headers.UserAgent.ToString();
+                        var browser = context.Request.Headers.UserAgent.ToString();
 
-                        // Daily Summary
-                        var activity = await dbContext.UserActivities.FirstOrDefaultAsync(x => x.UserId == userId && x.VisitDate.Date == today);
+                        // Daily Activity Record
+                        var activity = await dbContext.UserActivities
+                            .FirstOrDefaultAsync(x => x.UserId == userId && x.VisitDate.Date == today);
 
                         if (activity == null)
                         {
@@ -48,44 +50,54 @@ namespace DevSkill.Inventory.Infrastructure.Middlewares
                             {
                                 Id = Guid.NewGuid(),
                                 UserId = userId,
-                                ControllerName = controller,
-                                ActionName = action,
                                 VisitDate = DateTime.Now,
                                 LoginTime = DateTime.Now,
                                 LastActivityTime = DateTime.Now,
-                                PageVisited = 1,
-                                ActionCount = 1,
+                                ControllerName = controller,
+                                ActionName = action,
+                                PageVisited = 0,
+                                ActionCount = 0,
                                 Browser = browser,
                                 IpAddress = ip
                             };
 
                             dbContext.UserActivities.Add(activity);
                         }
-                        else
+
+                        // Last Activity সবসময় Update হবে
+                        activity.LastActivityTime = DateTime.Now;
+                        activity.ControllerName = controller;
+                        activity.ActionName = action;
+                        activity.Browser = browser;
+                        activity.IpAddress = ip;
+
+                        // একই URL আজকে আগে Visit করেছে কি না
+                        var alreadyVisited = await dbContext.UserActivityLogs
+                                .AnyAsync(x =>
+                                    x.UserId == userId &&
+                                    x.Url == currentUrl &&
+                                    x.VisitTime.Date == today);
+
+                        // Unique Visit হলে Count বাড়বে
+                        if (!alreadyVisited)
                         {
-                            activity.ControllerName = controller;
-                            activity.ActionName = action;
                             activity.PageVisited++;
                             activity.ActionCount++;
-                            activity.LastActivityTime = DateTime.Now;
-                            activity.Browser = browser;
-                            activity.IpAddress = ip;
-                        }
 
-                        // Detailed Log
-                        dbContext.UserActivityLogs.Add(
-                            new UserActivityLog
-                            {
-                                Id = Guid.NewGuid(),
-                                UserId = userId,
-                                ControllerName = controller,
-                                ActionName = action,
-                                Url = context.Request.Path,
-                                HttpMethod = context.Request.Method,
-                                VisitTime = DateTime.Now,
-                                Browser = browser,
-                                IpAddress = ip
-                            });
+                            dbContext.UserActivityLogs.Add(
+                                new UserActivityLog
+                                {
+                                    Id = Guid.NewGuid(),
+                                    UserId = userId,
+                                    ControllerName = controller,
+                                    ActionName = action,
+                                    Url = currentUrl,
+                                    HttpMethod = context.Request.Method,
+                                    VisitTime = DateTime.Now,
+                                    Browser = browser,
+                                    IpAddress = ip
+                                });
+                        }
 
                         await dbContext.SaveChangesAsync();
                     }

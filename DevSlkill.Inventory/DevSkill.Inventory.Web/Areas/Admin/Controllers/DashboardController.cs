@@ -26,8 +26,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             {
                 TotalUsers = await _applicationUserManager.Users.CountAsync(),
                 BounceRate = await _userActivityManagementService.CalculateBounceRate(),
-                EngagementRate = 20,
-                ActiveUsers = 5
+                EngagementRate = await _userActivityManagementService.CalculateEngagementRateAsync(),
+                ActiveUsers = await _userActivityManagementService.GetActiveUserCountAsync()
             };
 
             return View(model);
