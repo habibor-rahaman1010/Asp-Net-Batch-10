@@ -9,6 +9,7 @@ using Serilog.Sinks.MSSqlServer;
 using System.Reflection;
 using DevSkill.Inventory.Domain;
 using DevSkill.Inventory.Infrastructure.Extensions;
+using DevSkill.Inventory.Web.SignalRHub;
 
 
 namespace DevSkill.Inventory.Web
@@ -65,6 +66,7 @@ namespace DevSkill.Inventory.Web
                 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
                 //This is my extension method here have all identity related configuration...
+                builder.Services.AddSignalR();
                 builder.Services.AddIdentity();            
 
                 //This is Autofac service...
@@ -95,7 +97,7 @@ namespace DevSkill.Inventory.Web
                     app.UseExceptionHandler("/Home/Error");
                     app.UseHsts();
                 }
-
+                app.MapHub<PresenceUserHub>("/presenceUserHub");
                 app.UseHttpsRedirection();
                 app.UseStaticFiles();
 

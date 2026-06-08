@@ -90,6 +90,21 @@
             <!-- ./col -->
             <div class="col-lg-3 col-6">
                 <!-- small box -->
+                <div class="small-box bg-secondary">
+                    <div class="inner">
+                        <h3 id="activeUsers">0</h3>
+                        <p>Online Users</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-person-add"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
                 <div class="small-box bg-warning">
                     <div class="inner">
                         <h3>@Model.TotalUsers</h3>
@@ -302,3 +317,24 @@
     </div><!-- /.container-fluid -->
 </section>
 <!-- /.content -->
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+    
+    <script>
+
+        const connection =
+        new signalR.HubConnectionBuilder()
+            .withUrl("/presenceUserHub")
+            .build();
+
+        connection.on("UpdateOnlineUsers", function (count) {
+            document.getElementById("activeUsers").innerText = count;
+        });
+
+        connection.start()
+        .then(() => console.log("Connected"))
+        .catch(err => console.error(err));
+
+    </script>
+}

@@ -35,6 +35,10 @@ namespace DevSkill.Inventory.Web.WebModules
                .WithParameter("migrationAssembly", _migrationAssembly)
                .InstancePerLifetimeScope();
 
+            builder.RegisterType<OnlineUserTrackerService>()
+               .As<IOnlineUserTrackerService>()
+               .SingleInstance();
+
             builder.RegisterType<InventoryUnitOfWork>()
                 .As<IInventoryUnitOfWork>()
                 .InstancePerLifetimeScope();
