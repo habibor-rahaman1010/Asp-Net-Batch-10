@@ -7,5 +7,6 @@ namespace DevSkill.Inventory.Domain.RepositoryContracts
         public Task<int> CalculateBounceRate();
         public Task<int> CalculateEngagementRateAsync();
         public Task<int> GetActiveUserCountAsync();
+        public Task<int> GetUniqueVisitors();
     }
 }

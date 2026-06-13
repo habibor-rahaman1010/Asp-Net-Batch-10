@@ -48,6 +48,18 @@ namespace DevSkill.Inventory.Application.Services
             }
         }
 
+        public async Task<int> GetUniqueVisitors()
+        {
+            try
+            {
+                return await _userActivityUnitOfWork.UserActivityRepository.GetUniqueVisitors();
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Exception Occured: ", ex);
+            }
+        }
+
         public async Task UpdateLogoutTimeAsync(Guid userId)
         {
             try

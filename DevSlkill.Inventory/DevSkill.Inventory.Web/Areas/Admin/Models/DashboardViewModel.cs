@@ -6,5 +6,6 @@
         public int BounceRate { get; set; }
         public int EngagementRate { get; set; }
         public int ActiveUsers { get; set; }
+        public int UniqueVisitors { get; set; }
     }
 }

@@ -85,5 +85,26 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
                 throw new ApplicationException("Exception Occured: ", ex);
             }
         }
+
+        public async Task<int> GetUniqueVisitors()
+        {
+            try
+            {
+                var today = DateTime.Today;
+                var tomorrow = today.AddDays(1);
+
+                var uniqueVisitors = await _dbContext.UserActivityLogs
+                    .Where(x => x.VisitTime >= today && x.VisitTime < tomorrow)
+                    .Select(x => x.UserId)
+                    .Distinct()
+                    .CountAsync();
+
+                return uniqueVisitors;
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("Exception Occured: ", ex);
+            }
+        }
     }
 }
