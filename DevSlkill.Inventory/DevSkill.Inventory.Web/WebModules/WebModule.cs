@@ -9,6 +9,8 @@ using DevSkill.Inventory.Infrastructure.UnitOfWork;
 
 using DevSkill.Inventory.Infrastructure;
 using DevSkill.Inventory.Domain;
+using DevSkill.Inventory.Infrastructure.MetricsServiceImplement;
+using DevSkill.Inventory.Application.MetricsServiceInterface;
 
 namespace DevSkill.Inventory.Web.WebModules
 {
@@ -162,6 +164,10 @@ namespace DevSkill.Inventory.Web.WebModules
             builder.RegisterType<ApplicationTime>()
                 .As<IApplicationTime>()
                 .InstancePerLifetimeScope();
+
+            builder.RegisterType<MetricsService>()
+                .As<IMetricsService>()
+                .SingleInstance();
 
         }
     }

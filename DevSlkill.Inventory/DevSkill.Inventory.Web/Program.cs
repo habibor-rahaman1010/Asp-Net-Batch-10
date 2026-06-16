@@ -1,15 +1,18 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using DevSkill.Inventory.Domain;
 using DevSkill.Inventory.Infrastructure.Data;
+using DevSkill.Inventory.Infrastructure.Extensions;
+using DevSkill.Inventory.Infrastructure.MetricsServiceImplement;
+using DevSkill.Inventory.Web.Middleware;
+using DevSkill.Inventory.Web.SignalRHub;
 using DevSkill.Inventory.Web.WebModules;
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Metrics;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
 using System.Reflection;
-using DevSkill.Inventory.Domain;
-using DevSkill.Inventory.Infrastructure.Extensions;
-using DevSkill.Inventory.Web.SignalRHub;
 
 
 namespace DevSkill.Inventory.Web
@@ -85,6 +88,15 @@ namespace DevSkill.Inventory.Web
                 builder.Services.AddControllersWithViews();
 
 
+                builder.Services.AddOpenTelemetry()
+                .WithMetrics(m => m
+                    .AddMeter(MetricsService.MeterName)        // custom: requests, response time, errors
+                    .AddAspNetCoreInstrumentation()            // built-in HTTP server metrics
+                    .AddRuntimeInstrumentation()               // GC / memory (process_runtime_dotnet_*)
+                    .AddProcessInstrumentation()               // CPU & working-set memory (process_*)
+                    .AddPrometheusExporter());
+
+
                 var app = builder.Build();
 
                 // Configure the HTTP request pipeline.
@@ -100,10 +112,9 @@ namespace DevSkill.Inventory.Web
                 app.MapHub<PresenceUserHub>("/presenceUserHub");
                 app.UseHttpsRedirection();
                 app.UseStaticFiles();
-
                 app.UseRouting();
-
                 app.UseAuthentication();
+                app.UseMiddleware<MetricsMiddleware>();
                 app.UseAuthorization();
                 app.UseUserActivityTracking();
 
@@ -115,6 +126,7 @@ namespace DevSkill.Inventory.Web
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+                app.MapPrometheusScrapingEndpoint();
 
                 // Seed polyciry roles and admin user on startup
                 using (var scope = app.Services.CreateScope())
