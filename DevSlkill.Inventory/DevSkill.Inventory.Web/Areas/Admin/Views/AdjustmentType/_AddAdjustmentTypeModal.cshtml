@@ -4,7 +4,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addAdjustmentTypeModalLabel">Add New Warranty</h5>
+                <h5 class="modal-title" id="addAdjustmentTypeModalLabel">Add New Adjustment Type</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -16,15 +16,21 @@
                         <input asp-for="AdjustmentTypeName" type="text" class="form-control" id="WarrantyName" name="AdjustmentTypeName" required>
                         <span asp-validation-for="AdjustmentTypeName" class="text-danger"></span>
                     </div>
+
                     <div class="form-group">
                         <label asp-for="Description">Description</label>
                         <input asp-for="Description" type="text" class="form-control" id="description" name="Description" required>
                         <span asp-validation-for="Description" class="text-danger"></span>
-                    </div>               
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Sign">Calculation Sign</label>
+                        <input asp-for="Sign" type="number" class="form-control" id="sign" name="Sign" required>
+                        <span asp-validation-for="Sign" class="text-danger"></span>
+                    </div>
                     <button type="submit" class="btn btn-primary">Save</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
-

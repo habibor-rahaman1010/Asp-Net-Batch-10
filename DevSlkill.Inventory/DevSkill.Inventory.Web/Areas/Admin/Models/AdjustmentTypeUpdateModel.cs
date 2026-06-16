@@ -5,5 +5,6 @@
         public Guid Id { get; set; }
         public string AdjustmentTypeName { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public int Sign {  get; set; }
     }
 }

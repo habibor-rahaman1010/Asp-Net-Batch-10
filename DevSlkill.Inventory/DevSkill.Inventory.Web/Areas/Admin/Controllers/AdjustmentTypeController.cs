@@ -45,6 +45,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                         {
                             HttpUtility.HtmlEncode(record.AdjustmentTypeName),
                             HttpUtility.HtmlEncode(record.Description),
+                            HttpUtility.HtmlEncode(record.Sign),
                             HttpUtility.HtmlEncode(record.Id.ToString())
                         }
                     ).ToArray()
