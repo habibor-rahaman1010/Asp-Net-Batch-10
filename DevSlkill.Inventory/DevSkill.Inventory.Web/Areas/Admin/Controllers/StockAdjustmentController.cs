@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
-using DevSkill.Inventory.Application.Services;
 using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Domain;
 using DevSkill.Inventory.Infrastructure;
-using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
 using Microsoft.AspNetCore.Authorization;
