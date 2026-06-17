@@ -95,7 +95,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 stockAdjustment.AdjustmentType = await _adjustmentTypeManagementService.GetAdjustmentTypeByIdAsync(model.AdjustmentTypeId);
                 stockAdjustment.AdjustmentDate = _applicationTime.GetCurrentDateTime();
 
-                product.CurrentStock += (int) model.AdjustmentQuantity;
+                var adjustmentType = stockAdjustment.AdjustmentType;
+                product.CurrentStock += (int)model.AdjustmentQuantity * adjustmentType.Sign;
                 await _productManagementService.UpdateProductAsync(product);
 
                 try

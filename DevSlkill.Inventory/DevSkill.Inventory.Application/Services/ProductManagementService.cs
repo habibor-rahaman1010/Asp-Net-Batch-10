@@ -63,7 +63,8 @@ namespace DevSkill.Inventory.Application.Services
 
         public async Task UpdateProductAsync(Product product)
         {
-            if (!await _productUnitOfWork.ProductRepository.IsTitleDuplicateAsync(product.ProductName, product.Id)) {
+            if (!await _productUnitOfWork.ProductRepository.IsTitleDuplicateAsync(product.ProductName, product.Id)) 
+            {
                 await _productUnitOfWork.ProductRepository.EditAsync(product);
                 await _productUnitOfWork.SaveAsync();
             }
