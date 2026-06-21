@@ -1,5 +1,6 @@
 ﻿using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites;
+using DevSkill.Inventory.Domain.Entities.StockTransferEntities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DevSkill.Inventory.Infrastructure.Data
@@ -210,5 +211,7 @@ namespace DevSkill.Inventory.Infrastructure.Data
         public DbSet<ApplicationLog> ApplicationLogs => Set<ApplicationLog>();
         public DbSet<UserActivity> UserActivities => Set<UserActivity>();
         public DbSet<UserActivityLog> UserActivityLogs => Set<UserActivityLog>();
+        public DbSet<StockTransfer> StockTransfers => Set<StockTransfer>();
+        public DbSet<StockTransferItem> StockTransferItems { get; set; }
     }
 }

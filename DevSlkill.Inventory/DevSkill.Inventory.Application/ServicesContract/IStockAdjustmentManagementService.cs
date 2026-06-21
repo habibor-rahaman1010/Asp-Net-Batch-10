@@ -1,10 +1,4 @@
-﻿using DevSkill.Inventory.Domain.Entities;
-using DevSkill.Inventory.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DevSkill.Inventory.Domain;
 using DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites;
 
 namespace DevSkill.Inventory.Application.ServicesContract

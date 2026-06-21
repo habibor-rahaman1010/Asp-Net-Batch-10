@@ -157,6 +157,14 @@ namespace DevSkill.Inventory.Web.WebModules
               .As<IUserActivityManagementService>()
               .InstancePerLifetimeScope();
 
+            builder.RegisterType<StockTransferRepository>()
+               .As<IStockTransferRepository>()
+               .InstancePerLifetimeScope();
+
+            builder.RegisterType<StockTransferManagementService>()
+                .As<IStockTransferManagementService>()
+                .InstancePerLifetimeScope();
+
             builder.RegisterType<EmailUtility>()
                 .As<IEmailUtility>()
                 .InstancePerLifetimeScope();

@@ -25,6 +25,7 @@ namespace DevSkill.Inventory.Domain.UnitOfWorkContracts
         IAdjustmentTypeRepository AdjustmentTypeRepository { get; }
         IStockAdjustmentRepository StockAdjustmentRepository { get; }
         IUserActivityRepository UserActivityRepository { get; }
+        IStockTransferRepository StockTransferRepository { get;}
         Task<(IList<ProductDto> data, int total, int totalDisplay)> GetPagedProductUsingSPAsync(int pageIndex,
             int pageSize, ProductSearchDto search, string? order);
     }
