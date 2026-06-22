@@ -1,273 +1,249 @@
-﻿
+﻿@model StockTransferCreateModel;
+
 @{
     ViewData["Title"] = "Create Stock Transfer";
 }
 
-<form asp-action="Create" method="post">
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-action="Create" method="post">
 
-    <!-- Header -->
-    <div class="card card-primary">
+            <!-- Header -->
+            <div class="card card-primary">
 
-        <div class="card-header">
-            <h3 class="card-title">
-                Stock Transfer
-            </h3>
-        </div>
-
-        <div class="card-body">
-
-            <div class="row">
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Transfer No</label>
-                        <input class="form-control"
-                               value="TR0001"
-                               readonly />
-                    </div>
+                <div class="card-header">
+                    <h3 class="card-title">
+                        Stock Transfer
+                    </h3>
                 </div>
 
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Transfer Date</label>
-                        <input type="date"
-                               class="form-control" />
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Transfer No</label>
+                                <input class="form-control"
+                                       value="TR0001"
+                                       readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="TransferDate">Transfer Date*</label>
+                                <input type="datetime-local" asp-for="TransferDate" class="form-control" value="" />
+                                <span asp-validation-for="TransferDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
                     </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="FromWarehouseId">From Warehouse*</label>
+                                <select asp-for="FromWarehouseId" asp-items="Model.FromWarehouses" class="form-control"></select>
+                                <span asp-validation-for="FromWarehouseId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="ToWarehouseId">To Warehouse*</label>
+                                <select asp-for="ToWarehouseId" asp-items="Model.ToWarehouses" class="form-control"></select>
+                                <span asp-validation-for="ToWarehouseId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-4 mb-3 px-3">
+                            <div class="form-group">
+                                <label asp-for="StockTransferStatus">Product Status*</label>
+                                <select asp-for="StockTransferStatus" asp-items="Model.StockTransferStatuses" class="form-control"></select>
+                                <span asp-validation-for="StockTransferStatus" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+
+                                <label>Remarks</label>
+
+                                <textarea class="form-control" rows="3"></textarea>
+
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
 
-            <div class="row">
 
-                <div class="col-md-6">
+            <!-- Products -->
+            <div class="card">
 
-                    <div class="form-group">
+                <div class="card-header">
 
-                        <label>From Warehouse</label>
+                    <div class="d-flex justify-content-between">
 
-                        <select class="form-control">
+                        <h3 class="card-title">
+                            Products
+                        </h3>
 
-                            <option>Main Warehouse</option>
-                            <option>Warehouse A</option>
-                            <option>Warehouse B</option>
+                        <button type="button"
+                                class="btn btn-primary btn-sm">
 
-                        </select>
+                            <i class="fas fa-plus"></i>
+                            Add Product
+
+                        </button>
 
                     </div>
 
                 </div>
 
-                <div class="col-md-6">
+                <div class="card-body">
 
-                    <div class="form-group">
+                    <table class="table table-bordered table-striped">
 
-                        <label>To Warehouse</label>
+                        <thead>
 
-                        <select class="form-control">
+                            <tr>
 
-                            <option>Branch Warehouse</option>
-                            <option>Warehouse C</option>
-                            <option>Warehouse D</option>
+                                <th width="35%">
+                                    Product
+                                </th>
 
-                        </select>
+                                <th width="20%">
+                                    Available Qty
+                                </th>
 
-                    </div>
+                                <th width="20%">
+                                    Transfer Qty
+                                </th>
+
+                                <th width="15%">
+                                    Unit
+                                </th>
+
+                                <th width="10%">
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+
+                                <td>
+
+                                    <select class="form-control">
+
+                                        <option>
+                                            Laptop - Stock : 100
+                                        </option>
+
+                                        <option>
+                                            Mouse - Stock : 200
+                                        </option>
+
+                                        <option>
+                                            Monitor - Stock : 50
+                                        </option>
+
+                                    </select>
+
+                                </td>
+
+                                <td>
+
+                                    <input class="form-control"
+                                           value="100"
+                                           readonly />
+
+                                </td>
+
+                                <td>
+
+                                    <input class="form-control"
+                                           value="10" />
+
+                                </td>
+
+                                <td>
+
+                                    Pcs
+
+                                </td>
+
+                                <td>
+
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm">
+
+                                        <i class="fas fa-trash"></i>
+
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
 
                 </div>
 
             </div>
 
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
 
-                        <label>Status</label>
+            <!-- Footer Buttons -->
+            <div class="card">
 
-                        <select class="form-control">
+                <div class="card-body text-center">
 
-                            <option>Pending</option>
-                            <option>Approved</option>
-                            <option>Completed</option>
-                            <option>Cancelled</option>
+                    <button type="submit"
+                            class="btn btn-success">
 
-                        </select>
+                        Save Draft
 
-                    </div>
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-info">
+
+                        Approve
+
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-primary">
+
+                        Complete Transfer
+
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-danger">
+
+                        Cancel
+
+                    </button>
+
                 </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-
-                        <label>Remarks</label>
-
-                        <textarea class="form-control" rows="3"></textarea>
-
-                    </div>
-                </div>
-            </div>      
-
-        </div>
-
-    </div>
-
-
-    <!-- Products -->
-    <div class="card">
-
-        <div class="card-header">
-
-            <div class="d-flex justify-content-between">
-
-                <h3 class="card-title">
-                    Products
-                </h3>
-
-                <button type="button"
-                        class="btn btn-primary btn-sm">
-
-                    <i class="fas fa-plus"></i>
-                    Add Product
-
-                </button>
 
             </div>
 
-        </div>
-
-        <div class="card-body">
-
-            <table class="table table-bordered table-striped">
-
-                <thead>
-
-                    <tr>
-
-                        <th width="35%">
-                            Product
-                        </th>
-
-                        <th width="20%">
-                            Available Qty
-                        </th>
-
-                        <th width="20%">
-                            Transfer Qty
-                        </th>
-
-                        <th width="15%">
-                            Unit
-                        </th>
-
-                        <th width="10%">
-                            Action
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    <tr>
-
-                        <td>
-
-                            <select class="form-control">
-
-                                <option>
-                                    Laptop - Stock : 100
-                                </option>
-
-                                <option>
-                                    Mouse - Stock : 200
-                                </option>
-
-                                <option>
-                                    Monitor - Stock : 50
-                                </option>
-
-                            </select>
-
-                        </td>
-
-                        <td>
-
-                            <input class="form-control"
-                                   value="100"
-                                   readonly />
-
-                        </td>
-
-                        <td>
-
-                            <input class="form-control"
-                                   value="10" />
-
-                        </td>
-
-                        <td>
-
-                            Pcs
-
-                        </td>
-
-                        <td>
-
-                            <button type="button"
-                                    class="btn btn-danger btn-sm">
-
-                                <i class="fas fa-trash"></i>
-
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
+        </form>
     </div>
-
-
-    <!-- Footer Buttons -->
-    <div class="card">
-
-        <div class="card-body text-center">
-
-            <button type="submit"
-                    class="btn btn-success">
-
-                Save Draft
-
-            </button>
-
-            <button type="button"
-                    class="btn btn-info">
-
-                Approve
-
-            </button>
-
-            <button type="button"
-                    class="btn btn-primary">
-
-                Complete Transfer
-
-            </button>
-
-            <button type="button"
-                    class="btn btn-danger">
-
-                Cancel
-
-            </button>
-
-        </div>
-
-    </div>
-
-</form>
+</section>
