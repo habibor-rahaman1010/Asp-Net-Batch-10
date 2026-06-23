@@ -128,6 +128,17 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
             return Items;
         }
 
+        public static IList<SelectListItem> ConvertSelectItemToProduct(IList<Product> products)
+        {
+            var Items = (from c in products
+                         select new SelectListItem(c.ProductName, c.Id.ToString()))
+                         .ToList();
+
+            Items.Insert(0, new SelectListItem("Select", string.Empty));
+
+            return Items;
+        }
+
         public static IList<SelectListItem> ConvertEnumToSelectList<TEnum>() where TEnum : Enum
         {
             var items = Enum.GetValues(typeof(TEnum))

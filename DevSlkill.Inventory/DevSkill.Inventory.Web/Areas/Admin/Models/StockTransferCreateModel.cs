@@ -24,7 +24,10 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
         {
             FromWarehouses = new List<SelectListItem>();
             ToWarehouses = new List<SelectListItem>();
-            StockTransferItems = new List<StockTransferItemModel>();
+            StockTransferItems = new List<StockTransferItemModel>
+            {
+                new StockTransferItemModel()
+            };
             StockTransferStatuses = Utility.ConvertEnumToSelectList<StockTransferStatus>();
         }
 

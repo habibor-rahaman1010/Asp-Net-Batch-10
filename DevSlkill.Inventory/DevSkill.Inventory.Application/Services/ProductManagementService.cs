@@ -34,6 +34,19 @@ namespace DevSkill.Inventory.Application.Services
             await _productUnitOfWork.SaveAsync();
         }
 
+        public async Task<IEnumerable<Product>> GetAllProductAsync()
+        {
+            try
+            {
+                return await _productUnitOfWork.ProductRepository.GetAllAsync()
+                    ?? Enumerable.Empty<Product>();
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("Exception Occured: ", ex);
+            }
+        }
+
         public async Task<Product> GetProductByIdAsync(Guid id)
         {
             return await _productUnitOfWork.ProductRepository.GetProductByIdAsync(id);

@@ -23,10 +23,8 @@
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Transfer No</label>
-                                <input class="form-control"
-                                       value="TR0001"
-                                       readonly />
+                                <label asp-for="TransferNo"></label>
+                                <input asp-for="TransferNo" class="form-control" readonly />
                             </div>
                         </div>
 
@@ -96,12 +94,9 @@
                             Products
                         </h3>
 
-                        <button type="button"
-                                class="btn btn-primary btn-sm">
-
+                        <button id="btnAddProduct" type="button" class="btn btn-primary btn-sm">
                             <i class="fas fa-plus"></i>
                             Add Product
-
                         </button>
 
                     </div>
@@ -140,62 +135,40 @@
 
                         </thead>
 
-                        <tbody>
+                        <tbody id="productTableBody">
 
                             <tr>
-
                                 <td>
-
-                                    <select class="form-control">
-
-                                        <option>
-                                            Laptop - Stock : 100
-                                        </option>
-
-                                        <option>
-                                            Mouse - Stock : 200
-                                        </option>
-
-                                        <option>
-                                            Monitor - Stock : 50
-                                        </option>
-
-                                    </select>
-
+                                    <div class="form-group">
+                                        <select asp-for="StockTransferItems[0].ProductId" asp-items="Model.StockTransferItems[0].Products" class="form-control"></select>
+                                        <span asp-validation-for="StockTransferItems[0].ProductId" class="text-danger"></span>
+                                    </div>
                                 </td>
 
                                 <td>
-
                                     <input class="form-control"
                                            value="100"
                                            readonly />
-
                                 </td>
 
                                 <td>
-
                                     <input class="form-control"
                                            value="10" />
-
                                 </td>
 
                                 <td>
-
-                                    Pcs
-
+                                    <div class="form-group">
+                                        <select asp-for="StockTransferItems[0].UnitId" asp-items="Model.StockTransferItems[0].Units" class="form-control"></select>
+                                        <span asp-validation-for="StockTransferItems[0].UnitId" class="text-danger"></span>
+                                    </div>
                                 </td>
 
                                 <td>
-
                                     <button type="button"
-                                            class="btn btn-danger btn-sm">
-
+                                            class="btn btn-danger btn-sm btnRemoveRow">
                                         <i class="fas fa-trash"></i>
-
                                     </button>
-
                                 </td>
-
                             </tr>
 
                         </tbody>
@@ -209,22 +182,7 @@
 
             <!-- Footer Buttons -->
             <div class="card">
-
                 <div class="card-body text-center">
-
-                    <button type="submit"
-                            class="btn btn-success">
-
-                        Save Draft
-
-                    </button>
-
-                    <button type="button"
-                            class="btn btn-info">
-
-                        Approve
-
-                    </button>
 
                     <button type="button"
                             class="btn btn-primary">
@@ -247,3 +205,91 @@
         </form>
     </div>
 </section>
+
+
+@section Scripts {
+    <script>
+
+        function updateDeleteButtons() {
+            if ($("#productTableBody tr").length == 1) {
+                $(".btnRemoveRow").prop("disabled", true);
+            } else {
+                $(".btnRemoveRow").prop("disabled", false);
+            }
+        }
+
+        $(document).ready(function () {
+
+            updateDeleteButtons();
+
+            $("#btnAddProduct").click(function () {
+
+                var row = `
+                    <tr>
+
+                        <td>
+                            @for (int i = 0; i < Model.StockTransferItems.Count; i++)
+                            {
+                                        <div class="form-group">
+                                            <select asp-for="StockTransferItems[i].ProductId"
+                                                  asp-items="Model.StockTransferItems[i].Products"
+                                                  class="form-control">
+                                            </select>
+                                                <span asp-validation-for="StockTransferItems[i].ProductId"
+                                                class="text-danger"></span>
+                                        </div>
+                            }
+                        </td>
+
+                        <td>
+                            <input class="form-control"
+                                   value="100"
+                                   readonly />
+                        </td>
+
+                        <td>
+                            <input class="form-control"
+                                   value="0" />
+                        </td>
+
+                        <td>
+                            @for (int i = 0; i < Model.StockTransferItems.Count; i++)
+                            {
+                                    <div class="form-group">
+                                        <select asp-for="StockTransferItems[i].UnitId"
+                                                asp-items="Model.StockTransferItems[i].Units"
+                                                class="form-control">
+                                        </select>
+                                        <span asp-validation-for="StockTransferItems[i].UnitId"
+                                                class="text-danger"></span>
+                                    </div>
+                            }
+                        </td>
+
+                        <td>
+                            <button type="button"
+                                    class="btn btn-danger btn-sm btnRemoveRow">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+
+                    </tr>`;
+
+                $("#productTableBody").append(row);
+
+                updateDeleteButtons();
+            });
+
+            $(document).on("click", ".btnRemoveRow", function () {
+
+                if ($("#productTableBody tr").length > 1) {
+                    $(this).closest("tr").remove();
+                    updateDeleteButtons();
+                }
+
+            });
+
+        });
+
+    </script>
+}
