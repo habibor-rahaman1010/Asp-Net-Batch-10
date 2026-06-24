@@ -6,7 +6,7 @@
 
 <section class="content mt-2">
     <div class="container-fluid">
-        <form asp-action="Create" method="post">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="StockTransfer" asp-action="CreateStockTransfer" method="post" enctype="multipart/form-data">
 
             <!-- Header -->
             <div class="card card-primary">
@@ -70,9 +70,14 @@
                         <div class="col-md-6">
                             <div class="form-group">
 
-                                <label>Remarks</label>
+                                <label asp-for="Remarks"></label>
 
-                                <textarea class="form-control" rows="3"></textarea>
+                                <textarea asp-for="Remarks"
+                                          class="form-control"
+                                          rows="3"></textarea>
+
+                                <span asp-validation-for="Remarks"
+                                      class="text-danger"></span>
 
                             </div>
                         </div>
@@ -140,25 +145,25 @@
                             <tr>
                                 <td>
                                     <div class="form-group">
-                                        <select asp-for="StockTransferItems[0].ProductId" asp-items="Model.StockTransferItems[0].Products" class="form-control"></select>
+                                        <select asp-for="StockTransferItems[0].ProductId" asp-items="Model.StockTransferItems[0].Products" class="form-control product-select"></select>
                                         <span asp-validation-for="StockTransferItems[0].ProductId" class="text-danger"></span>
                                     </div>
                                 </td>
 
                                 <td>
-                                    <input class="form-control"
-                                           value="100"
+                                    <input class="form-control available-qty"
+                                           value="0"
                                            readonly />
                                 </td>
 
                                 <td>
-                                    <input class="form-control"
-                                           value="10" />
+                                    <input asp-for="StockTransferItems[0].Quantity"
+                                           class="form-control transfer-qty" />
                                 </td>
 
                                 <td>
                                     <div class="form-group">
-                                        <select asp-for="StockTransferItems[0].UnitId" asp-items="Model.StockTransferItems[0].Units" class="form-control"></select>
+                                        <select asp-for="StockTransferItems[0].UnitId" asp-items="Model.StockTransferItems[0].Units" class="form-control unit-select"></select>
                                         <span asp-validation-for="StockTransferItems[0].UnitId" class="text-danger"></span>
                                     </div>
                                 </td>
@@ -184,18 +189,12 @@
             <div class="card">
                 <div class="card-body text-center">
 
-                    <button type="button"
-                            class="btn btn-primary">
-
+                    <button type="submit" class="btn btn-primary">
                         Complete Transfer
-
                     </button>
 
-                    <button type="button"
-                            class="btn btn-danger">
-
+                    <button type="button" class="btn btn-danger">
                         Cancel
-
                     </button>
 
                 </div>
@@ -233,23 +232,23 @@
                                         <div class="form-group">
                                             <select asp-for="StockTransferItems[i].ProductId"
                                                   asp-items="Model.StockTransferItems[i].Products"
-                                                  class="form-control">
+                                                      class="form-control product-select">
                                             </select>
                                                 <span asp-validation-for="StockTransferItems[i].ProductId"
-                                                class="text-danger"></span>
+                                                    class="text-danger"></span>
                                         </div>
                             }
                         </td>
 
                         <td>
-                            <input class="form-control"
-                                   value="100"
+                            <input class="form-control available-qty"
+                                   value="0"
                                    readonly />
                         </td>
 
                         <td>
-                            <input class="form-control"
-                                   value="0" />
+                            <input asp-for="StockTransferItems[0].Quantity"
+                                           class="form-control transfer-qty" />
                         </td>
 
                         <td>
@@ -258,10 +257,10 @@
                                     <div class="form-group">
                                         <select asp-for="StockTransferItems[i].UnitId"
                                                 asp-items="Model.StockTransferItems[i].Units"
-                                                class="form-control">
+                                                    class="form-control unit-select">
                                         </select>
                                         <span asp-validation-for="StockTransferItems[i].UnitId"
-                                                class="text-danger"></span>
+                                                    class="text-danger"></span>
                                     </div>
                             }
                         </td>
@@ -289,6 +288,41 @@
 
             });
 
+        });
+
+        $(document).on('change', '.product-select', function () {
+        var productId = $(this).val();
+        var row = $(this).closest('tr');
+
+        $.get('/Admin/Product/GetProductInfo',
+            { productId: productId },
+            function (response) {
+
+                row.find('.available-qty')
+                    .val(response.availableQuantity);
+
+                row.find('.unit-select')
+                    .val(response.unitId)
+                    .trigger('change');
+            });
+        });
+
+        $(document).on('input', '.transfer-qty', function () {
+            var row = $(this).closest('tr');
+
+            var availableQty = parseFloat(row.find('.available-qty').val()) || 0;
+            var transferQty = parseFloat($(this).val()) || 0;
+
+            if (transferQty < 0) {
+                alert('Transfer Qty cannot be negative.');
+                $(this).val('');
+                return;
+            }
+
+            if (transferQty > availableQty) {
+                alert('Transfer Qty should be equal to or less than Available Qty.');
+                $(this).val(availableQty);
+            }
         });
 
     </script>

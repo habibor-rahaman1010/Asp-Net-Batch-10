@@ -434,5 +434,17 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             }
         }
 
+        [Route("/Admin/Product/GetProductInfo")]
+        [HttpGet]
+        public async Task<JsonResult> GetProductInfo(Guid productId)
+        {
+            var product = await _productManagementService.GetProductByIdAsync(productId);
+
+            return Json(new
+            {
+                availableQuantity = product.CurrentStock,
+                unitId = product.UnitId
+            });
+        }
     }
 }
