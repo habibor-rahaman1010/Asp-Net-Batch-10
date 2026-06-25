@@ -39,7 +39,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         public IActionResult CreateStockTransfer(StockTransferCreateModel model)
         {
-            return View();
+            return View(model);
         }
 
         private string GenerateTransferNo()

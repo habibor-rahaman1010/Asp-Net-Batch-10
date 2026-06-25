@@ -4,6 +4,16 @@
     ViewData["Title"] = "Create Stock Transfer";
 }
 
+@{
+    var productOptions = string.Join("",
+        Model.StockTransferItems[0].Products.Select(x =>
+            $"<option value='{x.Value}'>{x.Text}</option>"));
+
+    var unitOptions = string.Join("",
+        Model.StockTransferItems[0].Units.Select(x =>
+            $"<option value='{x.Value}'>{x.Text}</option>"));
+}
+
 <section class="content mt-2">
     <div class="container-fluid">
         <form asp-antiforgery="true" asp-area="Admin" asp-controller="StockTransfer" asp-action="CreateStockTransfer" method="post" enctype="multipart/form-data">
@@ -209,6 +219,8 @@
 @section Scripts {
     <script>
 
+        var rowIndex = 1;
+
         function updateDeleteButtons() {
             if ($("#productTableBody tr").length == 1) {
                 $(".btnRemoveRow").prop("disabled", true);
@@ -224,57 +236,45 @@
             $("#btnAddProduct").click(function () {
 
                 var row = `
-                    <tr>
+                <tr>
 
-                        <td>
-                            @for (int i = 0; i < Model.StockTransferItems.Count; i++)
-                            {
-                                        <div class="form-group">
-                                            <select asp-for="StockTransferItems[i].ProductId"
-                                                  asp-items="Model.StockTransferItems[i].Products"
-                                                      class="form-control product-select">
-                                            </select>
-                                                <span asp-validation-for="StockTransferItems[i].ProductId"
-                                                    class="text-danger"></span>
-                                        </div>
-                            }
-                        </td>
+                    <td>
+                        <select name="StockTransferItems[${rowIndex}].ProductId"
+                                class="form-control product-select">
+                            @Html.Raw(productOptions)
+                        </select>
+                    </td>
 
-                        <td>
-                            <input class="form-control available-qty"
-                                   value="0"
-                                   readonly />
-                        </td>
+                    <td>
+                        <input class="form-control available-qty"
+                               value="0"
+                               readonly />
+                    </td>
 
-                        <td>
-                            <input asp-for="StockTransferItems[0].Quantity"
-                                           class="form-control transfer-qty" />
-                        </td>
+                    <td>
+                        <input name="StockTransferItems[${rowIndex}].Quantity"
+                               class="form-control transfer-qty" />
+                    </td>
 
-                        <td>
-                            @for (int i = 0; i < Model.StockTransferItems.Count; i++)
-                            {
-                                    <div class="form-group">
-                                        <select asp-for="StockTransferItems[i].UnitId"
-                                                asp-items="Model.StockTransferItems[i].Units"
-                                                    class="form-control unit-select">
-                                        </select>
-                                        <span asp-validation-for="StockTransferItems[i].UnitId"
-                                                    class="text-danger"></span>
-                                    </div>
-                            }
-                        </td>
+                    <td>
+                        <select name="StockTransferItems[${rowIndex}].UnitId"
+                                class="form-control unit-select">
+                            @Html.Raw(unitOptions)
+                        </select>
+                    </td>
 
-                        <td>
-                            <button type="button"
-                                    class="btn btn-danger btn-sm btnRemoveRow">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
+                    <td>
+                        <button type="button"
+                                class="btn btn-danger btn-sm btnRemoveRow">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
 
-                    </tr>`;
+                </tr>`;
 
                 $("#productTableBody").append(row);
+
+                rowIndex++;
 
                 updateDeleteButtons();
             });
@@ -291,23 +291,24 @@
         });
 
         $(document).on('change', '.product-select', function () {
-        var productId = $(this).val();
-        var row = $(this).closest('tr');
 
-        $.get('/Admin/Product/GetProductInfo',
-            { productId: productId },
-            function (response) {
+            var productId = $(this).val();
+            var row = $(this).closest('tr');
 
-                row.find('.available-qty')
-                    .val(response.availableQuantity);
+            $.get('/Admin/Product/GetProductInfo',
+                { productId: productId },
+                function (response) {
 
-                row.find('.unit-select')
-                    .val(response.unitId)
-                    .trigger('change');
-            });
+                    row.find('.available-qty')
+                        .val(response.availableQuantity);
+
+                    row.find('.unit-select')
+                        .val(response.unitId);
+                });
         });
 
         $(document).on('input', '.transfer-qty', function () {
+
             var row = $(this).closest('tr');
 
             var availableQty = parseFloat(row.find('.available-qty').val()) || 0;
@@ -323,6 +324,7 @@
                 alert('Transfer Qty should be equal to or less than Available Qty.');
                 $(this).val(availableQty);
             }
+
         });
 
     </script>
