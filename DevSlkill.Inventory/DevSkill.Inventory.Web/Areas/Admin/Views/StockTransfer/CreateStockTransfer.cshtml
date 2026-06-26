@@ -229,6 +229,25 @@
             }
         }
 
+        function reIndexRows() {
+
+            $("#productTableBody tr").each(function (index) {
+
+                $(this).find("[name]").each(function () {
+
+                    var name = $(this).attr("name");
+
+                    name = name.replace(/StockTransferItems\[\d+\]/,
+                                        "StockTransferItems[" + index + "]");
+
+                    $(this).attr("name", name);
+                });
+
+            });
+
+            rowIndex = $("#productTableBody tr").length;
+        }
+
         $(document).ready(function () {
 
             updateDeleteButtons();
@@ -283,6 +302,7 @@
 
                 if ($("#productTableBody tr").length > 1) {
                     $(this).closest("tr").remove();
+                    reIndexRows();
                     updateDeleteButtons();
                 }
 

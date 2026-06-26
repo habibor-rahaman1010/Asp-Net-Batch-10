@@ -5,7 +5,6 @@ using DevSkill.Inventory.Domain.Enums;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
@@ -70,7 +69,9 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     Remarks = model.Remarks,
                     Status = StockTransferStatus.Pending,
 
-                    StockTransferItems = model.StockTransferItems.Select(x =>
+                    StockTransferItems = model.StockTransferItems
+                    .Where(x => x.ProductId != Guid.Empty && x.Quantity > 0)
+                    .Select(x =>
                         new StockTransferItem
                         {
                             Id = Guid.NewGuid(),

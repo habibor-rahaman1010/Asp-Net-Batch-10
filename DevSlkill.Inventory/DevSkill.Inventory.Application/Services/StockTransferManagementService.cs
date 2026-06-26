@@ -21,10 +21,5 @@ namespace DevSkill.Inventory.Application.Services
 
             return true;
         }
-
-        private string GenerateTransferNo()
-        {
-            return "TR" + DateTime.Now.ToString("yyyyMMddHHmmss");
-        }
     }
 }

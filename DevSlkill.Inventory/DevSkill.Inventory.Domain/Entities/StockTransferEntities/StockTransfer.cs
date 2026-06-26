@@ -11,12 +11,6 @@ namespace DevSkill.Inventory.Domain.Entities.StockTransferEntities
         public Guid ToWarehouseId { get; set; }
         public StockTransferStatus Status { get; set; }
         public string? Remarks { get; set; }
-
-        public virtual ICollection<StockTransferItem> StockTransferItems { get; set; }
-
-        public StockTransfer()
-        {
-            StockTransferItems = new List<StockTransferItem>();
-        }
+        public virtual ICollection<StockTransferItem>? StockTransferItems { get; set; }
     }
 }

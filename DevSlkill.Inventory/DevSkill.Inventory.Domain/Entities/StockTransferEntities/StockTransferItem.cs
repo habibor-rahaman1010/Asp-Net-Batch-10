@@ -6,13 +6,7 @@
         public Guid StockTransferId { get; set; }
         public Guid ProductId { get; set; }
         public decimal Quantity { get; set; }
-        public virtual StockTransfer StockTransfer { get; set; }
-        public virtual Product Product { get; set; }
-
-        public StockTransferItem()
-        {
-            StockTransfer = new StockTransfer();
-            Product = new Product();
-        }
+        public virtual StockTransfer? StockTransfer { get; set; }
+        public virtual Product? Product { get; set; }
     }
 }

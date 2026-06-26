@@ -14,21 +14,14 @@
 
         // Foreign Key for BusinessLocation
         public Guid BusinessLocationId { get; set; }
-        public BusinessLocation BusinessLocation { get; set; }
+        public BusinessLocation? BusinessLocation { get; set; }
 
         // Foreign Key for AdjustmentType
         public Guid AdjustmentTypeId { get; set; }
-        public AdjustmentType AdjustmentType { get; set; }
+        public AdjustmentType? AdjustmentType { get; set; }
 
         // Foreign Key for Product
         public Guid ProductId { get; set; }
-        public Product Product { get; set; }
-
-        public StockAdjustment()
-        {
-            BusinessLocation = new BusinessLocation();
-            AdjustmentType = new AdjustmentType();
-            Product = new Product();
-        }
+        public Product? Product { get; set; }
     }
 }
