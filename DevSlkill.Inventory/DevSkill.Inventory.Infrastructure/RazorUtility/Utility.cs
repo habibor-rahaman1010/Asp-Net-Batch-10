@@ -12,7 +12,7 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
                          select new SelectListItem(c.CategoryName, c.Id.ToString()))
                           .ToList();
 
-            Items.Insert(0, new SelectListItem("Select", string.Empty));
+            Items.Insert(0, new SelectListItem("-- Select --", string.Empty));
 
             return Items;
         }
@@ -23,7 +23,7 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
                          select new SelectListItem(c.ProductTypeName, c.Id.ToString()))
                          .ToList();
 
-            Items.Insert(0, new SelectListItem("Select", string.Empty));
+            Items.Insert(0, new SelectListItem("-- Select --", string.Empty));
 
             return Items;
         }
@@ -34,7 +34,7 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
                          select new SelectListItem(c.SubCategoryName, c.Id.ToString()))
                          .ToList();
 
-            Items.Insert(0, new SelectListItem("Select", string.Empty));
+            Items.Insert(0, new SelectListItem("-- Select --", string.Empty));
 
             return Items;
         }
@@ -45,7 +45,7 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
                          select new SelectListItem(c.BarcodeTypeName, c.Id.ToString()))
                          .ToList();
 
-            Items.Insert(0, new SelectListItem("Select", string.Empty));
+            Items.Insert(0, new SelectListItem("-- Select --", string.Empty));
 
             return Items;
         }
@@ -56,7 +56,7 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
                          select new SelectListItem(c.UnitName, c.Id.ToString()))
                          .ToList();
 
-            Items.Insert(0, new SelectListItem("Select", string.Empty));
+            Items.Insert(0, new SelectListItem("--Select--", string.Empty));
 
             return Items;
         }
@@ -67,7 +67,7 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
                          select new SelectListItem(c.BrandName, c.Id.ToString()))
                          .ToList();
 
-            Items.Insert(0, new SelectListItem("Select", string.Empty));
+            Items.Insert(0, new SelectListItem("-- Select --", string.Empty));
 
             return Items;
         }
@@ -79,8 +79,8 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
                          select new SelectListItem(c.AdjustmentTypeName, c.Id.ToString()))
                          .ToList();
 
-            Items.Insert(0, new SelectListItem("Select", string.Empty));
-
+            Items.Insert(0, new SelectListItem("-- Select --", string.Empty));
+                
             return Items;
         }
 
@@ -90,7 +90,7 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
                          select new SelectListItem(c.WarrantyDuration, c.Id.ToString()))
                          .ToList();
 
-            Items.Insert(0, new SelectListItem("Select", string.Empty));
+            Items.Insert(0, new SelectListItem("-- Select --", string.Empty));
 
             return Items;
         }
@@ -101,7 +101,7 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
                          select new SelectListItem(c.ApplicableTaxName, c.Id.ToString()))
                          .ToList();
 
-            Items.Insert(0, new SelectListItem("Select", string.Empty));
+            Items.Insert(0, new SelectListItem("-- Select --", string.Empty));
 
             return Items;
         }
@@ -112,7 +112,7 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
                          select new SelectListItem(c.SellingPriceTaxName, c.Id.ToString()))
                          .ToList();
 
-            Items.Insert(0, new SelectListItem("Select", string.Empty));
+            Items.Insert(0, new SelectListItem("-- Select --", string.Empty));
 
             return Items;
         }
@@ -123,7 +123,7 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
                          select new SelectListItem(c.LocationName, c.Id.ToString()))
                          .ToList();
 
-            Items.Insert(0, new SelectListItem("Select", string.Empty));
+            Items.Insert(0, new SelectListItem("-- Select --", string.Empty));
 
             return Items;
         }
@@ -134,7 +134,7 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
                          select new SelectListItem(c.ProductName, c.Id.ToString()))
                          .ToList();
 
-            Items.Insert(0, new SelectListItem("Select", string.Empty));
+            Items.Insert(0, new SelectListItem("-- Select --", string.Empty));
 
             return Items;
         }

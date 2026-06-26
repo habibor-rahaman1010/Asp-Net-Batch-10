@@ -41,8 +41,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 
                 foreach (var item in model.StockTransferItems)
                 {
-                    item.SetUnitValues(await _unitManagementService.GetAllUnitAsync());
-                    item.SetProductValues((await _productManagementService.GetAllProductAsync()).ToList());
+                    item.SetUnitValues(await _unitManagementService.GetAllUnitAsync());                   
                 }
                 return View(model);
             }

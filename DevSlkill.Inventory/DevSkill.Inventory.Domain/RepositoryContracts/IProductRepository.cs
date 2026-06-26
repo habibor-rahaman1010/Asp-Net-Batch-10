@@ -8,5 +8,6 @@ namespace DevSkill.Inventory.Domain.RepositoryContracts
         Task<(IList<Product> data, int total, int totalDisplay)> GetPagedProductsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order);
         Task<bool> IsTitleDuplicateAsync(string productName, Guid? id = null);
         Task<IList<Product>> SearchProductsByNameAsync(string searchTerm);
+        public Task<IEnumerable<Product>> GetAllProductByWarehouseAsync(Guid warehouseId);
     }
 }

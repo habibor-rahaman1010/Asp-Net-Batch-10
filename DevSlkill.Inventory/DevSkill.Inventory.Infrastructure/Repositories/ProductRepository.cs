@@ -1,15 +1,8 @@
 ﻿using DevSkill.Inventory.Domain;
-using DevSkill.Inventory.Domain.Dtos;
 using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Domain.RepositoryContracts;
 using DevSkill.Inventory.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DevSkill.Inventory.Infrastructure.Repositories
 {
@@ -32,21 +25,21 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
                 .Include(z => z.Warranty)
                 .Include(z => z.ProductType)
                 .Include(z => z.ApplicableTax)
-                .Include(z => z.SellingPriceTax)
+                .Include(z => z.SellingPriceTax!)
             );
 
-            return product.FirstOrDefault();
+            return product.FirstOrDefault()!;
         }
 
         public async Task<(IList<Product> data, int total, int totalDisplay)> GetPagedProductsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
         {
             if (string.IsNullOrWhiteSpace(search.Value))
             {
-                return await GetDynamicAsync(null, order, y => y.Include(z => z.Category).Include(n => n.Brand), pageIndex, pageSize, true);
+                return await GetDynamicAsync(null, order, y => y.Include(z => z.Category).Include(n => n.Brand)!, pageIndex, pageSize, true);
             }
             else
             {
-                return await GetDynamicAsync(x => x.ProductName.Contains(search.Value) || x.Description.Contains(search.Value), order, y => y.Include(z => z.Category).Include(n => n.Brand), pageIndex, pageSize, true);
+                return await GetDynamicAsync(x => x.ProductName.Contains(search.Value) || x.Description.Contains(search.Value), order, y => y.Include(z => z.Category).Include(n => n.Brand)!, pageIndex, pageSize, true);
             }
         }
 
@@ -66,6 +59,18 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
         {
             return await GetAsync(p => p.ProductName.Contains(searchTerm), null);
         }
+
+        public async Task<IEnumerable<Product>> GetAllProductByWarehouseAsync(Guid warehouseId)
+        {
+            try
+            {
+                var products = await GetAsync(x => x.BusinessLocationId == warehouseId, null);
+                return products ?? Enumerable.Empty<Product>();
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("Exception Occured: ", ex);
+            }
+        }
     }
 }
- 

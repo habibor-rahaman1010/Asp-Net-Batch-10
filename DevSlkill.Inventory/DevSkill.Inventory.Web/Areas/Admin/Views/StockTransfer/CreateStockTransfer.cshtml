@@ -292,7 +292,7 @@
                 </tr>`;
 
                 $("#productTableBody").append(row);
-
+                loadProducts($("#productTableBody tr:last").find(".product-select"));
                 rowIndex++;
 
                 updateDeleteButtons();
@@ -309,6 +309,49 @@
             });
 
         });
+
+        let warehouseProducts = [];
+        $(document).on("change", "#FromWarehouseId", function () {
+
+            let warehouseId = $(this).val();
+
+            if (!warehouseId) {
+                return;
+            }
+
+            $.ajax({
+                url: "/Admin/StockTransfer/GetProductsByWarehouse",
+                type: "GET",
+                data: { warehouseId: warehouseId },
+                success: function (response) {
+
+                    warehouseProducts = response;
+
+                    $(".product-select").each(function () {
+                        loadProducts($(this));
+                    });
+                },
+                error: function () {
+                    alert("Failed to load products.");
+                }
+            });
+        });
+
+        function loadProducts(dropdown) {
+
+            dropdown.empty();
+
+            dropdown.append('<option value="">-- Select Product --</option>');
+
+            $.each(warehouseProducts, function (i, product) {
+
+                dropdown.append(
+                    $("<option></option>")
+                        .val(product.id)
+                        .text(product.text)
+                );
+            });
+        }
 
         $(document).on('change', '.product-select', function () {
 

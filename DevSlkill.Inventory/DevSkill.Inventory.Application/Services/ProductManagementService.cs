@@ -34,11 +34,11 @@ namespace DevSkill.Inventory.Application.Services
             await _productUnitOfWork.SaveAsync();
         }
 
-        public async Task<IEnumerable<Product>> GetAllProductAsync()
+        public async Task<IEnumerable<Product>> GetAllProductByWarehouseAsync(Guid warehouseId)
         {
             try
             {
-                return await _productUnitOfWork.ProductRepository.GetAllAsync()
+                return await _productUnitOfWork.ProductRepository.GetAllProductByWarehouseAsync(warehouseId)
                     ?? Enumerable.Empty<Product>();
             }
             catch(Exception ex)

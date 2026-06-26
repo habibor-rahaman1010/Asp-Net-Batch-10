@@ -446,5 +446,19 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 unitId = product.UnitId
             });
         }
+
+        [Route("/Admin/StockTransfer/GetProductsByWarehouse")]
+        [HttpGet]
+        public async Task<IActionResult> GetProductsByWarehouse(Guid warehouseId)
+        {
+            var products = await _productManagementService
+                .GetAllProductByWarehouseAsync(warehouseId);
+
+            return Json(products.Select(x => new
+            {
+                id = x.Id,
+                text = x.ProductName
+            }));
+        }
     }
 }
