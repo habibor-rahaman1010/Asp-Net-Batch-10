@@ -5,6 +5,6 @@ namespace DevSkill.Inventory.Application.ServicesContract
 {
     public interface IStockTransferManagementService
     {
-        public Task<bool> CreateAsync(StockTransfer model);
+        public Task<bool> CreateStockTransferAsync(StockTransfer model);
     }
 }

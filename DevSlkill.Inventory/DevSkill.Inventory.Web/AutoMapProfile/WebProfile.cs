@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites;
+using DevSkill.Inventory.Domain.Entities.StockTransferEntities;
 using DevSkill.Inventory.Infrastructure.InventoryIdentity;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
 
@@ -50,6 +51,7 @@ namespace DevSkill.Inventory.Web.AutoMapProfile
             CreateMap<SellingPriceTaxUpdateModel, SellingPriceTax>().ReverseMap();
 
             CreateMap<UserUpdateModel, ApplicationUser>().ReverseMap();
+
         }
     }
 }

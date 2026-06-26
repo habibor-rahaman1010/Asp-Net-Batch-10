@@ -212,6 +212,6 @@ namespace DevSkill.Inventory.Infrastructure.Data
         public DbSet<UserActivity> UserActivities => Set<UserActivity>();
         public DbSet<UserActivityLog> UserActivityLogs => Set<UserActivityLog>();
         public DbSet<StockTransfer> StockTransfers => Set<StockTransfer>();
-        public DbSet<StockTransferItem> StockTransferItems { get; set; }
+        public DbSet<StockTransferItem> StockTransferItems => Set<StockTransferItem>();
     }
 }
