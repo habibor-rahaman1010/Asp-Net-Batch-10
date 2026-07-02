@@ -97,10 +97,10 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         
-        public async Task<JsonResult> GetStockTransferJsonData([FromBody] StockAdjustmentListModel model)
+        public async Task<JsonResult> GetStockTransferJsonData([FromBody] StockTransferListModel model)
         {
             var result = await _stockTransferManagementService.GetStockTransferListAsync(model.PageIndex, model.PageSize, model.Search,
-                model.FormatSortExpression("Id", "CategoryName", "CategoryCode", "Description"));
+                model.FormatSortExpression("Id", "TransferNo", "Remarks"));
 
             var stockTransferJsonData = new
             {
@@ -109,9 +109,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 data = (from record in result.data
                         select new string[]
                         {
-                            HttpUtility.HtmlEncode(record.TransferNo),
-                            HttpUtility.HtmlEncode(record.BusinessLocation.LocationName),
-                            HttpUtility.HtmlEncode(record.Remarks),
+                            HttpUtility.HtmlEncode(record.StockTransfer.TransferNo),
+                            HttpUtility.HtmlEncode(record.Product.ProductName),
+                            HttpUtility.HtmlEncode(record.StockTransfer.FromWarehouse.LocationName),
+                            HttpUtility.HtmlEncode(record.StockTransfer.ToWarehouse.LocationName),
+                            HttpUtility.HtmlEncode(record.Quantity),
+                            HttpUtility.HtmlEncode(record.StockTransfer.TransferDate),
+                            HttpUtility.HtmlEncode(record.StockTransfer.Status),
+                            HttpUtility.HtmlEncode(record.StockTransfer.Remarks),
                             HttpUtility.HtmlEncode(record.Id.ToString())
                         }
                     ).ToArray()

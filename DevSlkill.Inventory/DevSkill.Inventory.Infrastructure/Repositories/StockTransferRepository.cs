@@ -20,7 +20,11 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
             {
                 if (string.IsNullOrWhiteSpace(search.Value))
                 {
-                    return await GetDynamicAsync(null, order, x => x.Include(n => n.BusinessLocation), pageIndex, pageSize, true);
+                    return await GetDynamicAsync(null, order, x => x
+                        .Include(n => n.FromWarehouse)
+                        .Include(n => n.ToWarehouse)
+                        .Include(x => x.StockTransferItems)
+                        .ThenInclude(x => x.Product), pageIndex, pageSize, true);
                 }
                 else
                 {

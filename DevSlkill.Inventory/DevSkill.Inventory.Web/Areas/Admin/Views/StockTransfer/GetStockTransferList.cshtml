@@ -143,7 +143,6 @@
                     contentType: "application/json",
                     dataType: "json",
                     data: function (d) {
-                        console.log(d;
                         return JSON.stringify(d);
                     },
                 },
@@ -160,28 +159,10 @@
                             return data;
                         }
                     },
-
-                   {
-                        orderable: false,
-                        targets: 3,
-                        render: function (data, type, row) {
-                            console.log(row);
-                            return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/admin/Category/EditCategory/${data}'" value='${data}'>
-                                            <i class="fas fa-pencil-alt">
-                                            </i>
-                                            Edit
-                                        </button>
-                                        <button type="submit" class="btn btn-danger btn-sm show-bs-modal" data-id='${data}' value='${data}'>
-                                            <i class="fas fa-trash">
-                                            </i>
-                                            Delete
-                                        </button>`;
-                        }
-                    },
-
+         
                     {
                         orderable: false,
-                        targets: 3,
+                        targets: 8,
                         render: function (data, type, row) {
                             console.log(row);
                             return `<button type="button" class="btn btn-info btn-sm edit-category" data-id='${data}' data-toggle="modal" data-target="#editCategoryModal">
@@ -195,7 +176,6 @@
                                             </button>`;
                         }
                     },
-
 
                 ],
 

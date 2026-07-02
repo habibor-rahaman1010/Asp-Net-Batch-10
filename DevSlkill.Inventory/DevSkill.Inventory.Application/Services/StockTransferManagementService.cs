@@ -23,11 +23,11 @@ namespace DevSkill.Inventory.Application.Services
             return true;
         }
 
-        public Task<(IList<StockTransfer> data, int total, int totalDisplay)> GetStockTransferListAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
+        public async Task<(IList<StockTransferItem> data, int total, int totalDisplay)> GetStockTransferListAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
         {
             try
             {
-                return _stockTransferUnitOfWork.StockTransferRepository.GetStockTransferListAsync(pageIndex, pageSize, search, order);
+                return await _stockTransferUnitOfWork.StockTransferItemRepository.GetStockTransferListAsync(pageIndex, pageSize, search, order);
             }
             catch (Exception ex)
             {

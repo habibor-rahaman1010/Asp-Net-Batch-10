@@ -2,6 +2,7 @@
 using DevSkill.Inventory.Domain.RepositoryContracts;
 using DevSkill.Inventory.Domain.UnitOfWorkContracts;
 using DevSkill.Inventory.Infrastructure.Data;
+using DevSkill.Inventory.Infrastructure.Repositories;
 
 namespace DevSkill.Inventory.Infrastructure.UnitOfWork
 {
@@ -24,6 +25,8 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
 
         public IStockTransferRepository StockTransferRepository { get; private set; }
 
+        public IStockTransferItemRepository StockTransferItemRepository { get; private set; }
+
         public InventoryUnitOfWork(InventoryDbContext productDbContext,
             IProductRepository productRepository,
             ICategoryRepository categoryRepository,
@@ -39,6 +42,7 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
             IAdjustmentTypeRepository adjustmentTypeRepository,
             IStockAdjustmentRepository stockAdjustmentRepository,
             IStockTransferRepository stockTransferRepository,
+            IStockTransferItemRepository stockTransferItemRepository,
             IUserActivityRepository userActivityRepository)
             : base(productDbContext)
         {
@@ -57,6 +61,7 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
             StockAdjustmentRepository = stockAdjustmentRepository;
             UserActivityRepository = userActivityRepository;
             StockTransferRepository = stockTransferRepository;
+            StockTransferItemRepository = stockTransferItemRepository;
         }
 
         public async Task<(IList<ProductDto> data, int total, int totalDisplay)> GetPagedProductUsingSPAsync(int pageIndex, int pageSize, ProductSearchDto search, string? order)

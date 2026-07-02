@@ -1,11 +1,6 @@
 ﻿using DevSkill.Inventory.Domain.Dtos;
-using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Domain.RepositoryContracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DevSkill.Inventory.Infrastructure.Repositories;
 
 namespace DevSkill.Inventory.Domain.UnitOfWorkContracts
 {
@@ -26,6 +21,7 @@ namespace DevSkill.Inventory.Domain.UnitOfWorkContracts
         IStockAdjustmentRepository StockAdjustmentRepository { get; }
         IUserActivityRepository UserActivityRepository { get; }
         IStockTransferRepository StockTransferRepository { get;}
+        IStockTransferItemRepository StockTransferItemRepository { get; }
         Task<(IList<ProductDto> data, int total, int totalDisplay)> GetPagedProductUsingSPAsync(int pageIndex,
             int pageSize, ProductSearchDto search, string? order);
     }

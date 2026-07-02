@@ -191,6 +191,25 @@ namespace DevSkill.Inventory.Infrastructure.Data
                 .HasForeignKey(sa => sa.AdjustmentTypeId)
                 .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
 
+            // StockTransfer and warehouse relationship
+            modelBuilder.Entity<StockTransfer>()
+                .HasOne(x => x.FromWarehouse)
+                .WithMany()
+                .HasForeignKey(x => x.FromWarehouseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // StockTransfer and warehouse relationship
+            modelBuilder.Entity<StockTransfer>()
+                .HasOne(x => x.ToWarehouse)
+                .WithMany()
+                .HasForeignKey(x => x.ToWarehouseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<StockTransfer>()
+                .HasMany(x => x.StockTransferItems)
+                .WithOne(x => x.StockTransfer)
+                .HasForeignKey(x => x.StockTransferId);
+
             base.OnModelCreating(modelBuilder);
         }
 

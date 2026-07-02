@@ -157,9 +157,13 @@ namespace DevSkill.Inventory.Web.WebModules
               .As<IUserActivityManagementService>()
               .InstancePerLifetimeScope();
 
-            builder.RegisterType<StockTransferRepository>()
-               .As<IStockTransferRepository>()
+            builder.RegisterType<StockTransferItemRepository>()
+               .As<IStockTransferItemRepository>()
                .InstancePerLifetimeScope();
+
+            builder.RegisterType<StockTransferRepository>()
+              .As<IStockTransferRepository>()
+              .InstancePerLifetimeScope();
 
             builder.RegisterType<StockTransferManagementService>()
                 .As<IStockTransferManagementService>()
