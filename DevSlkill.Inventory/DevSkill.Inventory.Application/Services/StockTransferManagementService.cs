@@ -1,4 +1,5 @@
 ﻿using DevSkill.Inventory.Application.ServicesContract;
+using DevSkill.Inventory.Domain;
 using DevSkill.Inventory.Domain.Entities.StockTransferEntities;
 using DevSkill.Inventory.Domain.Enums;
 using DevSkill.Inventory.Domain.UnitOfWorkContracts;
@@ -20,6 +21,18 @@ namespace DevSkill.Inventory.Application.Services
             await _stockTransferUnitOfWork.SaveAsync();
 
             return true;
+        }
+
+        public Task<(IList<StockTransfer> data, int total, int totalDisplay)> GetStockTransferListAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
+        {
+            try
+            {
+                return _stockTransferUnitOfWork.StockTransferRepository.GetStockTransferListAsync(pageIndex, pageSize, search, order);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Exception Occured: ", ex);
+            }
         }
     }
 }

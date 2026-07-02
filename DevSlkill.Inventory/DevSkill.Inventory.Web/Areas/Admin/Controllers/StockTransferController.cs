@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using DevSkill.Inventory.Application.Services;
 using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Domain.Entities.StockTransferEntities;
 using DevSkill.Inventory.Domain.Enums;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Web;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
@@ -88,6 +90,36 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 throw new ApplicationException("Exception Occured: ", ex);
             }
         }
+
+        public IActionResult GetStockTransferList()
+        {
+            return View();
+        }
+
+        
+        public async Task<JsonResult> GetStockTransferJsonData([FromBody] StockAdjustmentListModel model)
+        {
+            var result = await _stockTransferManagementService.GetStockTransferListAsync(model.PageIndex, model.PageSize, model.Search,
+                model.FormatSortExpression("Id", "CategoryName", "CategoryCode", "Description"));
+
+            var stockTransferJsonData = new
+            {
+                recordsTotal = result.total,
+                recordsFiltered = result.totalDisplay,
+                data = (from record in result.data
+                        select new string[]
+                        {
+                            HttpUtility.HtmlEncode(record.TransferNo),
+                            HttpUtility.HtmlEncode(record.BusinessLocation.LocationName),
+                            HttpUtility.HtmlEncode(record.Remarks),
+                            HttpUtility.HtmlEncode(record.Id.ToString())
+                        }
+                    ).ToArray()
+            };
+
+            return Json(stockTransferJsonData);
+        }
+
 
         private string GenerateTransferNo()
         {
