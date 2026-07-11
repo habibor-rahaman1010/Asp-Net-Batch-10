@@ -14,9 +14,13 @@ namespace DevSkill.Inventory.Domain
             get
             {
                 if (Length > 0)
+                {
                     return (Start / Length) + 1;
+                }
                 else
+                {
                     return 1;
+                }
             }
         }
 
@@ -25,9 +29,13 @@ namespace DevSkill.Inventory.Domain
             get
             {
                 if (Length == 0)
+                {
                     return 10;
+                }
                 else
+                {
                     return Length;
+                }
             }
         }
 
@@ -55,7 +63,9 @@ namespace DevSkill.Inventory.Domain
                 .Append(Order[i].Dir);
 
                 if (i < Order.Length - 1)
+                {
                     columnBuilder.Append(", ");
+                }
             }
             var orderString = columnBuilder.ToString();
             return orderString == string.Empty ? null : orderString;

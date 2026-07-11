@@ -100,7 +100,16 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         public async Task<JsonResult> GetStockTransferJsonData([FromBody] StockTransferListModel model)
         {
             var result = await _stockTransferManagementService.GetStockTransferListAsync(model.PageIndex, model.PageSize, model.Search,
-                model.FormatSortExpression("Id", "TransferNo", "Remarks"));
+                model.FormatSortExpression(
+                "StockTransfer.TransferNo",
+                "Product.ProductName",
+                "StockTransfer.FromWarehouse.LocationName",
+                "StockTransfer.ToWarehouse.LocationName",
+                "Quantity",
+                "StockTransfer.TransferDate",
+                "StockTransfer.Status",
+                "StockTransfer.Remarks",
+                "Id"));
 
             var stockTransferJsonData = new
             {

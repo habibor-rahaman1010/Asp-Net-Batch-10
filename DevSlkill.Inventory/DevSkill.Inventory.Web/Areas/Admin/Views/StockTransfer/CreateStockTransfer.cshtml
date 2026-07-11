@@ -310,8 +310,34 @@
 
         });
 
+        function validateWarehouse() {
+
+            var fromWarehouse = $("#FromWarehouseId").val();
+            var toWarehouse = $("#ToWarehouseId").val();
+
+            if (fromWarehouse && toWarehouse && fromWarehouse === toWarehouse) {
+
+                Swal.fire({
+                    icon: "warning",
+                    title: "Invalid Warehouse",
+                    text: "From Warehouse and To Warehouse cannot be the same.",
+                    confirmButtonText: "OK"
+                });
+
+                $("#ToWarehouseId").val("");
+
+                return false;
+            }
+
+            return true;
+        }
+
         let warehouseProducts = [];
-        $(document).on("change", "#FromWarehouseId", function () {
+                $(document).on("change", "#FromWarehouseId", function () {
+
+            if (!validateWarehouse()) {
+                return;
+            }
 
             let warehouseId = $(this).val();
 
@@ -332,9 +358,17 @@
                     });
                 },
                 error: function () {
-                    alert("Failed to load products.");
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Failed to load products."
+                    });
                 }
             });
+        });
+
+        $(document).on("change", "#ToWarehouseId", function () {
+            validateWarehouse();
         });
 
         function loadProducts(dropdown) {
