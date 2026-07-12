@@ -1,0 +1,398 @@
+﻿@model StockAdjustmentUpdateModel;
+
+@{
+    ViewData["Title"] = "Create Stock Adjustment";
+}
+
+<style>
+    #container {
+        width: 1000px;
+        margin: 20px auto;
+    }
+
+    .ck-editor__editable[role="textbox"] {
+        min-height: 300px;
+    }
+
+    .ck-content .image {
+        max-width: 80%;
+        margin: 20px auto;
+    }
+
+    #productImage {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    #imageError {
+        color: teal;
+    }
+
+    .ui-autocomplete {
+        border: 1px solid #007bff;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        max-height: 200px;
+        overflow-y: auto;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        width: 50% !important;
+    }
+
+    .ui-menu {
+        list-style-type: none;
+        padding: 2px;
+        margin: 2px;
+    }
+
+    .ui-menu-item {
+        padding: 8px 12px;
+        font-size: 14px;
+        cursor: pointer;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+        .ui-menu-item:hover {
+            background-color: #007bff;
+            color: white;
+        }
+</style>
+
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="ml-2">Add Stock Adjustment</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Stock</a></li>
+                    <li class="breadcrumb-item active">Create New</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div>
+            <form asp-antiforgery="true" asp-area="Admin" asp-controller="StockAdjustment" asp-action="CreateStockAdjustment" method="post" enctype="multipart/form-data">
+                <!--Form-1 -->
+                <div class="col-sm-12">
+                    <!-- general form elements -->
+                    <div class="card card-primary" style="border-top: 4px solid #3c8dbc;">
+                        <!-- /.card-header -->
+                        <!-- form start -->
+                        <div class="card-body">
+                            <partial name="_ResponsePartial" />
+
+                            <div class="row">
+                                <!-- First row of form inputs -->
+                                <div class="col-sm-3 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="BusinessLocationId">Business Location*</label>
+                                        <select asp-for="BusinessLocationId" asp-items="Model.BusinessLocations" class="form-control"></select>
+                                        <span asp-validation-for="BusinessLocationId" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-3 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="ReferenceNo">Reference No*</label>
+                                        <input type="text" asp-for="ReferenceNo" class="form-control" placeholder="Reference No" />
+                                        <span asp-validation-for="ReferenceNo" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="AdjustmentDate">Store Time*</label>
+                                        <input type="datetime-local"
+                                               class="form-control"
+                                               asp-for="AdjustmentDate"
+                                               value="@Model.AdjustmentDate.ToString("yyyy-MM-ddTHH:mm")" />
+                                        <span asp-validation-for="AdjustmentDate" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-3 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="AdjustmentTypeId">Adjustment Types*</label>
+                                        <select asp-for="AdjustmentTypeId" asp-items="Model.AdjustmentTypes" class="form-control"></select>
+                                        <span asp-validation-for="AdjustmentTypeId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+
+                <!--Form-2 -->
+                <div class="col-sm-12">
+                    <!-- general form elements -->
+                    <div class="card card-primary" style="border-top: 4px solid #3c8dbc;">
+                        <div class="card-body">
+                            <div class="card-header">
+                                <h3 class="card-title">Search your product</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Search Input for Stock Adjustment -->
+                                    <div class="col-md-8 offset-md-2">
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fa fa-search"></i>
+                                                    </span>
+                                                </div>
+                                                <input type="text"
+                                                       class="form-control ui-autocomplete-input ui-autocomplete-loading"
+                                                       id="search_product_for_stock_adjustment"
+                                                       placeholder="Search products for stock adjustment"
+                                                       name="search_product"
+                                                       autocomplete="off">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <!-- Stock Adjustment Table -->
+                                    <div class="col-md-10 offset-md-1">
+                                        <input asp-for="ProductId" type="hidden" id="productId" name="ProductId" />
+                                        <input asp-for="TotalAmount" type="hidden" id="total_amount" name="TotalAmount" />
+                                        <input asp-for="AdjustmentQuantity" type="hidden" id="adjustment_quantity" name="AdjustmentQuantity" />
+                                        <input asp-for="UnitPrice" type="hidden" id="unitPrice" name="UnitPrice" />
+
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-striped table-hover" id="stock_adjustment_product_table">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th class="text-center">Product</th>
+                                                        <th class="text-center">Quantity</th>
+                                                        <th class="text-center show_price_with_permission">Unit Price</th>
+                                                        <th class="text-center show_price_with_permission">Subtotal</th>
+                                                        <th class="text-center">
+                                                            <i class="fa fa-trash" aria-hidden="true"></i>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- Dynamically populated rows -->
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr class="text-center show_price_with_permission">
+                                                        <td colspan="3"></td>
+                                                        <td>
+                                                            <div class="float-right">
+                                                                <b>Total Amount:</b>
+                                                                <span id="total_adjustment">0</span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card -->
+                </div>
+
+                <!--Form-3 -->
+                <div class="col-sm-12">
+                    <!-- general form elements -->
+                    <div class="card card-primary" style="border-top: 4px solid #3c8dbc;">
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- First row of form inputs -->
+                                <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="TotalAmountRecover">Total Amount Recover*</label>
+                                        <input type="number" asp-for="TotalAmountRecover" class="form-control" placeholder="Total Amount Recover" />
+                                        <span asp-validation-for="TotalAmountRecover" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="Reason">Reason*</label>
+                                        <textarea asp-for="Reason" class="form-control" placeholder="Enter reason" style="width: 100%; height: 80px;"></textarea>
+                                        <span asp-validation-for="Reason" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 mb-3 px-3">
+                                    <div class="form-group">
+                                        <label asp-for="AddedBy">Added By*</label>
+                                        <input type="text" asp-for="AddedBy" class="form-control" placeholder="Added By" />
+                                        <span asp-validation-for="AddedBy" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card -->
+                </div>
+
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+<!-- Bootstrap Modal for "No Product Found" -->
+<div class="modal fade" id="noProductFoundModal" tabindex="-1" role="dialog" aria-labelledby="noProductFoundLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="noProductFoundLabel">No Product Found</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Sorry, no products were found matching your search.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- This is jquery portion  -->
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#search_product_for_stock_adjustment').autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Admin/Product/SearchProductsByName',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: {
+                            searchTerm: request.term
+                        },
+                        success: function (data) {
+                            if (data.success === false || data.length === 0) {
+                                $('#noProductFoundModal').modal('show');
+                            }
+                            else {
+                                response($.map(data, function (item) {
+                                    return {
+                                        label: item.productName + ' - ' + item.sku,
+                                        value: item.productName,
+                                        id: item.id,
+                                        price: item.price
+                                    };
+                                }));
+                            }
+                        },
+
+                        error: function (xhr, status, error) {
+                            console.log("Error: " + error);
+                        }
+                    });
+                },
+                minLength: 1,
+                select: function (event, ui) {
+                    console.log(ui);
+                    addProductToTable(ui.item);
+                }
+
+            });
+
+            var productId = '@Model.ProductId';
+            if (productId && productId !== '00000000-0000-0000-0000-000000000000') {
+
+                addProductToTable({
+                    id: '@Model.ProductId',
+                    label: '@Model.Product.ProductName',
+                    price: @Model.UnitPrice,
+                    quantity: @Model.AdjustmentQuantity
+                });
+
+                $('#quantity_' + productId).val(@Model.AdjustmentQuantity);
+
+                calculateTotalAmount();
+            }
+
+            function addProductToTable(product) {
+                var existingRow = $('#row_' + product.id);
+                $('#productId').val(product.id);
+
+                if (existingRow.length > 0) {
+                    var quantityInput = existingRow.find('input[name="quantity_' + product.id + '"]');
+                    var currentQuantity = parseFloat(quantityInput.val()) || 0;
+                    quantityInput.val(currentQuantity + 1);
+                }
+                else {
+                    var newRow = `
+                        <tr id="row_${product.id}">
+                            <td class="text-center">${product.label}</td>
+                            <td class="text-center">
+                                <input type="number" class="form-control text-center" name="quantity_${product.id}" id="quantity_${product.id}" value="1" min="1">
+                            </td>
+                            <td class="text-center show_price_with_permission">${product.price}</td>
+                            <td class="text-center show_price_with_permission" id="subtotal_${product.id}">${product.price}</td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-danger btn-sm remove-product" data-row="${product.id}">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+
+                    $('#stock_adjustment_product_table tbody').append(newRow);
+                }
+
+                calculateTotalAmount();
+            }
+
+            function calculateTotalAmount() {
+                var totalAmount = 0;
+
+                $('#stock_adjustment_product_table tbody tr').each(function () {
+                    var rowIndex = $(this).attr('id').split('_')[1];
+                    var quantity = parseFloat($('#quantity_' + rowIndex).val()) || 0;
+                    var price = parseFloat($(this).find('td.show_price_with_permission').eq(0).text()) || 0;
+                    var subtotal = quantity * price;
+                    $('#subtotal_' + rowIndex).text(subtotal.toFixed(2));
+                    totalAmount += subtotal;
+                    $('#adjustment_quantity').val(quantity);
+                    $('#unitPrice').val(price);
+                });
+
+                $('#total_adjustment').text(totalAmount.toFixed(2));
+                $('#total_amount').val(totalAmount.toFixed(2));
+            }
+
+            $(document).on('change', 'input[name^="quantity_"]', function () {
+                calculateTotalAmount();
+            });
+
+            $(document).on('click', '.remove-product', function () {
+                var rowIndex = $(this).data('row');
+                $('#row_' + rowIndex).remove();
+                calculateTotalAmount();
+            });
+        });
+
+    </script>
+}

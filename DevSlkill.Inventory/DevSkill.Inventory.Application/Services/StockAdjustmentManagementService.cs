@@ -30,7 +30,7 @@ namespace DevSkill.Inventory.Application.Services
             return await _stockAdjustmentUnitOfWork.StockAdjustmentRepository.GetPagedStockAdjustmentsAsync(pageIndex, pageSize, search, order);
         }
 
-        public async Task<StockAdjustment> GetStockAdjustmentyByIdAsync(Guid id)
+        public async Task<StockAdjustment> GetStockAdjustmentByIdAsync(Guid id)
         {
             return await _stockAdjustmentUnitOfWork.StockAdjustmentRepository.GetStockAdjustmentyByIdAsync(id);
         }

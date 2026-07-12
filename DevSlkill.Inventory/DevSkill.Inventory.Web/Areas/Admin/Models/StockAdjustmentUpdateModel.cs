@@ -15,6 +15,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
         public string Reason { get; set; } = string.Empty;
         public string AddedBy { get; set; } = string.Empty;
         public decimal AdjustmentQuantity { get; set; }
+        public decimal UnitPrice { get; set; }
         public Guid BusinessLocationId { get; set; }
         public IList<SelectListItem> BusinessLocations { get; set; }
 

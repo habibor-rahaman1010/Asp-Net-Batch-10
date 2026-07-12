@@ -134,7 +134,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             try
             {
                 // When we delete stock the current stock Adjustment Quantity delete the product's current stock.
-                var stock = await _stockAdjustmentManagementService.GetStockAdjustmentyByIdAsync(id);
+                var stock = await _stockAdjustmentManagementService.GetStockAdjustmentByIdAsync(id);
                 var productId = stock.ProductId;
                 var product = await _productManagementService.GetProductByIdAsync(productId);
                 product.CurrentStock -= stock.AdjustmentQuantity;
@@ -162,12 +162,30 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         [HttpGet, Authorize(Policy = "ReadPermission")]
         public async Task<IActionResult> GetStockAdjustmentyById(Guid id)
         {
-            var stockAdjustment = await _stockAdjustmentManagementService.GetStockAdjustmentyByIdAsync(id);
+            var stockAdjustment = await _stockAdjustmentManagementService.GetStockAdjustmentByIdAsync(id);
             if (stockAdjustment == null)
             {
                 return NotFound();
             }
             return Json(stockAdjustment);
+        }
+
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> UpdateStockAdjustment(Guid id)
+        {
+            var stockAdjustment = await _stockAdjustmentManagementService.GetStockAdjustmentByIdAsync(id);
+
+            if (stockAdjustment == null)
+            {
+                return NotFound();
+            }
+
+            var model = _mapper.Map<StockAdjustmentUpdateModel>(stockAdjustment);
+            model.Product = stockAdjustment.Product!;
+            model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
+            model.SetAdjustmentTypeValues(await _adjustmentTypeManagementService.GetAllAdjustmentTypeAsync());
+
+            return View(model);
         }
     }
 }

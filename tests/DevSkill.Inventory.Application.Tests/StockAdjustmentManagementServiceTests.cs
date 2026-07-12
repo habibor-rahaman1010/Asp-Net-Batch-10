@@ -153,7 +153,7 @@ namespace DevSkill.Inventory.Application.Tests
                 .ReturnsAsync(expectedStockAdjustment).Verifiable();
 
             // Act
-            var result = await _stockAdjustmentManagementService.GetStockAdjustmentyByIdAsync(stockAdjustmentId);
+            var result = await _stockAdjustmentManagementService.GetStockAdjustmentByIdAsync(stockAdjustmentId);
 
             // Assert
             _stockAdjustmentRepositoryMock.VerifyAll();
@@ -171,7 +171,7 @@ namespace DevSkill.Inventory.Application.Tests
                 .ReturnsAsync((StockAdjustment)null).Verifiable();
 
             // Act
-            var result = await _stockAdjustmentManagementService.GetStockAdjustmentyByIdAsync(stockAdjustmentId);
+            var result = await _stockAdjustmentManagementService.GetStockAdjustmentByIdAsync(stockAdjustmentId);
 
             // Assert
             _stockAdjustmentRepositoryMock.VerifyAll();
