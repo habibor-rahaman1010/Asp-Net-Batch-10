@@ -186,6 +186,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             model.SetAdjustmentTypeValues(await _adjustmentTypeManagementService.GetAllAdjustmentTypeAsync());
 
             return View(model);
+
         }
     }
 }
