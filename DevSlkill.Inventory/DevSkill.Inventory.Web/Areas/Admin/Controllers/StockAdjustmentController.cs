@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
+using DevSkill.Inventory.Application.Services;
 using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Domain;
-using DevSkill.Inventory.Infrastructure;
 using DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites;
+using DevSkill.Inventory.Infrastructure;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
-using Microsoft.AspNetCore.Authorization;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 {
@@ -17,6 +18,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         private readonly IBusinessLocationManagementService _businessLocationManagementService;
         private readonly IAdjustmentTypeManagementService _adjustmentTypeManagementService;
         private readonly IProductManagementService _productManagementService;
+        private readonly IUnitManagementService _unitManagementService;
         private readonly IApplicationTime _applicationTime;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
@@ -25,6 +27,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             IBusinessLocationManagementService businessLocationManagementService,
             IAdjustmentTypeManagementService adjustmentTypeManagementService,
             IProductManagementService productManagementService,
+            IUnitManagementService unitManagementService,
             IApplicationTime applicationTime,
             IMapper mapper,
             ILogger<StockAdjustmentController> logger)
@@ -33,6 +36,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _businessLocationManagementService = businessLocationManagementService;
             _adjustmentTypeManagementService = adjustmentTypeManagementService;
             _productManagementService = productManagementService;
+            _unitManagementService = unitManagementService;
             _applicationTime = applicationTime;
             _mapper = mapper;
             _logger = logger;
@@ -80,6 +84,11 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             var model = new StockAdjustmentCreateModel();
             model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
             model.SetAdjustmentTypeValues(await _adjustmentTypeManagementService.GetAllAdjustmentTypeAsync());
+            
+            foreach (var item in model.StockAdjustmentItems)
+            {
+                item.SetUnitValues(await _unitManagementService.GetAllUnitAsync());
+            }
             return View(model);
         }
 
@@ -88,41 +97,61 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                var stockAdjustment = _mapper.Map<StockAdjustment>(model);
-                var product = await _productManagementService.GetProductByIdAsync(model.ProductId);
-                stockAdjustment.Product = product;
-                stockAdjustment.BusinessLocation = await _businessLocationManagementService.GetBusinessLocationByIdAsync(model.BusinessLocationId);
-                stockAdjustment.AdjustmentType = await _adjustmentTypeManagementService.GetAdjustmentTypeByIdAsync(model.AdjustmentTypeId);
-                stockAdjustment.AdjustmentDate = _applicationTime.GetCurrentDateTime();
-
-                var adjustmentType = stockAdjustment.AdjustmentType;
-                product.CurrentStock += (int)model.AdjustmentQuantity * adjustmentType.Sign;
-                await _productManagementService.UpdateProductAsync(product);
-
                 try
                 {
-                    await _stockAdjustmentManagementService.AddStockAdjustmentAsync(stockAdjustment);
+                    var businessLocation = await _businessLocationManagementService.GetBusinessLocationByIdAsync(model.BusinessLocationId);
+
+                    var adjustmentType = await _adjustmentTypeManagementService.GetAdjustmentTypeByIdAsync(model.AdjustmentTypeId);
+
+                    foreach (var item in model.StockAdjustmentItems)
+                    {
+                        var product = await _productManagementService.GetProductByIdAsync(item.ProductId);
+
+                        var stockAdjustment = new StockAdjustment
+                        {
+                            ReferenceNo = model.ReferenceNo,
+                            AdjustmentDate = _applicationTime.GetCurrentDateTime(),
+                            TotalAmount = model.TotalAmount,
+                            TotalAmountRecover = model.TotalAmountRecover,
+                            Reason = model.Reason,
+                            AddedBy = model.AddedBy,
+
+                            AdjustmentQuantity = (int) item.AdjustmentQuantity,
+                            UnitPrice = item.UnitPrice,
+
+                            Product = product,
+                            BusinessLocation = businessLocation,
+                            AdjustmentType = adjustmentType
+                        };
+
+                        product.CurrentStock += (int)item.AdjustmentQuantity * adjustmentType.Sign;
+
+                        await _productManagementService.UpdateProductAsync(product);
+                        await _stockAdjustmentManagementService.AddStockAdjustmentAsync(stockAdjustment);
+                    }
 
                     TempData.Put("ResponseMessage", new ResponseModel
                     {
-                        Message = "The Stock AdjustmentList has been created successfully!",
+                        Message = "The Stock Adjustment has been created successfully!",
                         Type = ResponseTypes.Success
                     });
 
-                    return RedirectToAction("StockAdjustmentList");
+                    return RedirectToAction(nameof(StockAdjustmentList));
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogError(ex, "Stock Adjustment creation failed.");
+
                     TempData.Put("ResponseMessage", new ResponseModel
                     {
-                        Message = "The Stock AdjustmentList creation has failed!",
+                        Message = "The Stock Adjustment creation has failed!",
                         Type = ResponseTypes.Danger
                     });
-                    _logger.LogError(ex, "Ultimately, the stock adjustment creation failed!");
                 }
             }
 
             model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
+
             model.SetAdjustmentTypeValues(await _adjustmentTypeManagementService.GetAllAdjustmentTypeAsync());
 
             return View(model);

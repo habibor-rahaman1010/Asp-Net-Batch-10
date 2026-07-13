@@ -22,14 +22,16 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
         public Guid AdjustmentTypeId { get; set; }
         public IList<SelectListItem> AdjustmentTypes { get; set; }
 
-        public Guid ProductId { get; set; }
-        public Product Product { get; set; }
+        public List<StockAdjustmentItemModel> StockAdjustmentItems { get; set; }
 
         public StockAdjustmentCreateModel()
         {
             BusinessLocations = new List<SelectListItem>();
             AdjustmentTypes = new List<SelectListItem>();
-            Product = new Product();
+            StockAdjustmentItems = new List<StockAdjustmentItemModel>
+            {
+                new StockAdjustmentItemModel()
+            };
         }
 
         public void SetBusinessLocationValues(IList<BusinessLocation> businessLocations)

@@ -443,7 +443,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             return Json(new
             {
                 availableQuantity = product.CurrentStock,
-                unitId = product.UnitId
+                unitId = product.UnitId,
+                unitPrice = product.Price
             });
         }
 
