@@ -168,7 +168,7 @@
                                             <th width="20%">Available Qty</th>
                                             <th width="15%">Adjustment Qty</th>
                                             <th width="15%">Unit Price</th>
-                                            <th width="15%">Subtotal</th>
+                                            <th width="15%">Item Unit</th>
                                             <th width="10%">Action</th>
                                         </tr>
                                     </thead>
@@ -235,7 +235,7 @@
                                 <div class="col-sm-4 mb-3 px-3">
                                     <div class="form-group">
                                         <label asp-for="TotalAmountRecover">Total Amount Recover*</label>
-                                        <input type="number" asp-for="TotalAmountRecover" class="form-control" placeholder="Total Amount Recover" value="" />
+                                        <input type="number" asp-for="TotalAmountRecover" class="form-control" placeholder="Total Amount Recover" readonly />
                                         <span asp-validation-for="TotalAmountRecover" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -274,241 +274,241 @@
 @section Scripts {
     <script>
         var rowIndex = 1;
-let warehouseProducts = [];
+        let warehouseProducts = [];
 
-$(document).ready(function () {
-
-    updateDeleteButtons();
-
-    // Load products by Business Location
-    $("#BusinessLocationId").change(function () {
-
-        let warehouseId = $(this).val();
-
-        if (!warehouseId)
-            return;
-
-        $.ajax({
-            url: "/Admin/StockTransfer/GetProductsByWarehouse",
-            type: "GET",
-            data: { warehouseId: warehouseId },
-            success: function (response) {
-
-                warehouseProducts = response;
-
-                $(".product-select").each(function () {
-                    loadProducts($(this));
-                });
-
-            },
-            error: function () {
-                alert("Failed to load products.");
-            }
-        });
-
-    });
-
-    // Add Row
-    $("#btnAddRow").click(function () {
-
-        var row = `
-        <tr>
-
-            <td>
-                <select name="StockTransferItems[${rowIndex}].ProductId"
-                        class="form-control product-select">
-                    @Html.Raw(productOptions)
-                </select>
-            </td>
-
-            <td>
-                <input type="text"
-                       class="form-control available-qty"
-                       readonly />
-            </td>
-
-            <td>
-                <input type="number"
-                       name="StockAdjustmentItems[${rowIndex}].AdjustmentQuantity"
-                       class="form-control adjustment-qty"
-                       value="1"
-                       min="1" />
-            </td>
-
-            <td>
-                <input type="number"
-                       name="StockAdjustmentItems[${rowIndex}].UnitPrice"
-                       class="form-control unit-price"
-                       readonly />
-            </td>
-
-            <td>
-                <select name="StockTransferItems[${rowIndex}].UnitId"
-                        class="form-control unit-select">
-                    @Html.Raw(unitOptions)
-                </select>
-            </td>
-
-            <td>
-                <button type="button"
-                        class="btn btn-danger btn-sm btnRemoveRow">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </td>
-
-        </tr>`;
-
-        $("#productTableBody").append(row);
-
-        loadProducts($("#productTableBody tr:last").find(".product-select"));
-
-        rowIndex++;
-
-        updateDeleteButtons();
-
-    });
-
-    // Remove Row
-    $(document).on("click", ".btnRemoveRow", function () {
-
-        if ($("#productTableBody tr").length > 1) {
-
-            $(this).closest("tr").remove();
-
-            reIndexRows();
-
-            calculateTotal();
+        $(document).ready(function () {
 
             updateDeleteButtons();
-        }
 
-    });
+            // Load products by Business Location
+            $("#BusinessLocationId").change(function () {
 
-    // Product Change
-    $(document).on("change", ".product-select", function () {
+                let warehouseId = $(this).val();
 
-        let selected = $(this).val();
+                if (!warehouseId)
+                    return;
 
-        // Duplicate Product Check
-        let count = $(".product-select").filter(function () {
-            return $(this).val() === selected;
-        }).length;
+                $.ajax({
+                    url: "/Admin/StockTransfer/GetProductsByWarehouse",
+                    type: "GET",
+                    data: { warehouseId: warehouseId },
+                    success: function (response) {
 
-        if (count > 1) {
-            alert("Product already selected.");
-            $(this).val("");
-            return;
-        }
+                        warehouseProducts = response;
 
-        let row = $(this).closest("tr");
+                        $(".product-select").each(function () {
+                            loadProducts($(this));
+                        });
 
-        $.get("/Admin/Product/GetProductInfo",
-            { productId: selected },
-            function (response) {
-                console.log(response)
-                row.find(".available-qty").val(response.availableQuantity);
-                row.find(".unit-select").val(response.unitId);
-                row.find(".unit-price").val(response.unitPrice);
-
-                calculateRow(row);
+                    },
+                    error: function () {
+                        alert("Failed to load products.");
+                    }
+                });
 
             });
 
-    });
+            // Add Row
+            $("#btnAddRow").click(function () {
 
-    // Qty Change
-    $(document).on("keyup change", ".adjustment-qty", function () {
+                var row = `
+                <tr>
 
-        calculateRow($(this).closest("tr"));
+                    <td>
+                        <select name="StockAdjustmentItems[${rowIndex}].ProductId"
+                                class="form-control product-select">
+                            @Html.Raw(productOptions)
+                        </select>
+                    </td>
 
-    });
+                    <td>
+                        <input type="text"
+                               class="form-control available-qty"
+                               readonly />
+                    </td>
 
-});
+                    <td>
+                        <input type="number"
+                               name="StockAdjustmentItems[${rowIndex}].AdjustmentQuantity"
+                               class="form-control adjustment-qty"
+                               value="1"
+                               min="1" />
+                    </td>
 
-// Load Products
-function loadProducts(dropdown) {
+                    <td>
+                        <input type="number"
+                               name="StockAdjustmentItems[${rowIndex}].UnitPrice"
+                               class="form-control unit-price"
+                               readonly />
+                    </td>
 
-    dropdown.empty();
+                    <td>
+                        <select name="StockAdjustmentItems[${rowIndex}].UnitId"
+                                class="form-control unit-select">
+                            @Html.Raw(unitOptions)
+                        </select>
+                    </td>
 
-    dropdown.append('<option value="">-- Select Product --</option>');
+                    <td>
+                        <button type="button"
+                                class="btn btn-danger btn-sm btnRemoveRow">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
 
-    $.each(warehouseProducts, function (i, product) {
+                </tr>`;
 
-        dropdown.append(
-            $("<option>")
-                .val(product.id)
-                .text(product.text)
-        );
+                $("#productTableBody").append(row);
 
-    });
+                loadProducts($("#productTableBody tr:last").find(".product-select"));
 
-}
+                rowIndex++;
 
-// Calculate Row
-function calculateRow(row) {
+                updateDeleteButtons();
 
-    let qty = parseFloat(row.find(".adjustment-qty").val()) || 0;
-    let stock = parseFloat(row.find(".available-qty").val()) || 0;
+            });
 
-    if (qty > stock) {
-        alert("Adjustment Qty cannot be greater than Current Stock.");
-        qty = stock;
-        row.find(".adjustment-qty").val(stock);
-    }
+            // Remove Row
+            $(document).on("click", ".btnRemoveRow", function () {
 
-    let price = parseFloat(row.find(".unit-price").val()) || 0;
+                if ($("#productTableBody tr").length > 1) {
 
-    let subtotal = qty * price;
+                    $(this).closest("tr").remove();
 
-    row.find(".subtotal").val(subtotal.toFixed(2));
+                    reIndexRows();
 
-    calculateTotal();
+                    calculateTotal();
 
-}
+                    updateDeleteButtons();
+                }
 
-// Calculate Total
-function calculateTotal() {
+            });
 
-    let total = 0;
+            // Product Change
+            $(document).on("change", ".product-select", function () {
 
-    $(".subtotal").each(function () {
+                let selected = $(this).val();
 
-        total += parseFloat($(this).val()) || 0;
+                // Duplicate Product Check
+                let count = $(".product-select").filter(function () {
+                    return $(this).val() === selected;
+                }).length;
 
-    });
+                if (count > 1) {
+                    alert("Product already selected.");
+                    $(this).val("");
+                    return;
+                }
 
-    $("#total_adjustment").text(total.toFixed(2));
-    $("#total_amount").val(total.toFixed(2));
+                let row = $(this).closest("tr");
 
-}
+                $.get("/Admin/Product/GetProductInfo",
+                    { productId: selected },
+                    function (response) {
+                        console.log(response)
+                        row.find(".available-qty").val(response.availableQuantity);
+                        row.find(".unit-select").val(response.unitId);
+                        row.find(".unit-price").val(response.unitPrice);
 
-// Reindex
-function reIndexRows() {
+                        calculateRow(row);
 
-    $("#productTableBody tr").each(function (index) {
+                    });
 
-        $(this).find("[name]").each(function () {
+            });
 
-            $(this).attr("name",
-                $(this).attr("name").replace(/StockAdjustmentItems\[\d+\]/,
-                    "StockAdjustmentItems[" + index + "]"));
+            // Qty Change
+            $(document).on("keyup change", ".adjustment-qty", function () {
+
+                calculateRow($(this).closest("tr"));
+
+            });
 
         });
 
-    });
+        // Load Products
+        function loadProducts(dropdown) {
 
-    rowIndex = $("#productTableBody tr").length;
+            dropdown.empty();
 
-}
+            dropdown.append('<option value="">-- Select Product --</option>');
 
-// Delete Button
-function updateDeleteButtons() {
+            $.each(warehouseProducts, function (i, product) {
 
-    $(".btnRemoveRow").prop(
-        "disabled",
-        $("#productTableBody tr").length === 1
-    );
+                dropdown.append(
+                    $("<option>")
+                        .val(product.id)
+                        .text(product.text)
+                );
 
-}
+            });
+
+        }
+
+        // Calculate Row
+        function calculateRow(row) {
+
+            let qty = parseFloat(row.find(".adjustment-qty").val()) || 0;
+            let stock = parseFloat(row.find(".available-qty").val()) || 0;
+
+            if (qty > stock) {
+                alert("Adjustment Qty cannot be greater than Current Stock.");
+                qty = stock;
+                row.find(".adjustment-qty").val(stock);
+            }
+
+            let price = parseFloat(row.find(".unit-price").val()) || 0;
+
+            let subtotal = qty * price;
+
+            row.find(".subtotal").val(subtotal.toFixed(2));
+
+            calculateTotal();
+
+        }
+
+        // Calculate Total
+         function calculateTotal() {
+
+            let total = 0;
+
+            $("#productTableBody tr").each(function () {
+
+                let qty = parseFloat($(this).find(".adjustment-qty").val()) || 0;
+                let price = parseFloat($(this).find(".unit-price").val()) || 0;
+
+                total += qty * price;
+            });
+
+            // asp-for="TotalAmountRecover" এর id
+            $("#TotalAmountRecover").val(total.toFixed(2));
+        }
+
+        // Reindex
+        function reIndexRows() {
+
+            $("#productTableBody tr").each(function (index) {
+
+                $(this).find("[name]").each(function () {
+
+                    $(this).attr("name",
+                        $(this).attr("name").replace(/StockAdjustmentItems\[\d+\]/,
+                            "StockAdjustmentItems[" + index + "]"));
+
+                });
+            });
+
+            rowIndex = $("#productTableBody tr").length;
+        }
+
+        // Delete Button
+        function updateDeleteButtons() {
+
+            $(".btnRemoveRow").prop(
+                "disabled",
+                $("#productTableBody tr").length === 1
+            );
+
+        }
+
     </script>
 }

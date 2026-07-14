@@ -111,14 +111,12 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                         {
                             ReferenceNo = model.ReferenceNo,
                             AdjustmentDate = _applicationTime.GetCurrentDateTime(),
-                            TotalAmount = model.TotalAmount,
+                            TotalAmount = item.AdjustmentQuantity * item.UnitPrice,
                             TotalAmountRecover = model.TotalAmountRecover,
                             Reason = model.Reason,
                             AddedBy = model.AddedBy,
-
                             AdjustmentQuantity = (int) item.AdjustmentQuantity,
                             UnitPrice = item.UnitPrice,
-
                             Product = product,
                             BusinessLocation = businessLocation,
                             AdjustmentType = adjustmentType
