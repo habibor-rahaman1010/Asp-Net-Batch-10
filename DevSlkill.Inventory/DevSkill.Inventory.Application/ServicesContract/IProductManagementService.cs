@@ -14,6 +14,6 @@ namespace DevSkill.Inventory.Application.ServicesContract
         Task UpdateProductAsync(Product product);
         Task<IList<Product>> SearchProductsByNameAsync(string searchTerm);
         public Task<IEnumerable<Product>> GetAllProductByWarehouseAsync(Guid warehouseId);
-        Task<bool> HasStockAdjustmentsAsync(Guid productId);
+        //Task<bool> HasStockAdjustmentsAsync(Guid productId);
     }
 }

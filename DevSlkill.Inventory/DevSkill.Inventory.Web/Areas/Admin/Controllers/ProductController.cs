@@ -367,19 +367,19 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             try
             {
                 // Check if any StockAdjustment records exist for this product
-                var hasStockAdjustments = await _productManagementService.HasStockAdjustmentsAsync(id);
+                //var hasStockAdjustments = await _productManagementService.HasStockAdjustmentsAsync(id);
 
-                if (hasStockAdjustments)
-                {
-                    // If there are associated StockAdjustment records, notify the user
-                    TempData.Put("ResponseMessage", new ResponseModel
-                    {
-                        Message = "Cannot delete the product because it has associated with stock adjustments. \n" +
-                        "If you want to delete the product before you delete the ",
-                        Type = ResponseTypes.Warning
-                    });
-                    return RedirectToAction("ProductList");
-                }
+                //if (hasStockAdjustments)
+                //{
+                //    // If there are associated StockAdjustment records, notify the user
+                //    TempData.Put("ResponseMessage", new ResponseModel
+                //    {
+                //        Message = "Cannot delete the product because it has associated with stock adjustments. \n" +
+                //        "If you want to delete the product before you delete the ",
+                //        Type = ResponseTypes.Warning
+                //    });
+                //    return RedirectToAction("ProductList");
+                //}
 
                 // Proceed with deletion if there are no associated records
                 await _productManagementService.DeleteProductAsync(id);

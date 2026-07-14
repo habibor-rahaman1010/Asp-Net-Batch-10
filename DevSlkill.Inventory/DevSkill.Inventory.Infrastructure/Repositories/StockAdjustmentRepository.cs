@@ -3,11 +3,6 @@ using DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites;
 using DevSkill.Inventory.Domain.RepositoryContracts;
 using DevSkill.Inventory.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DevSkill.Inventory.Infrastructure.Repositories
 {
@@ -24,7 +19,7 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
             if (string.IsNullOrWhiteSpace(search.Value))
             {
                 return await GetDynamicAsync(null, order, 
-                    x => x.Include(l => l.BusinessLocation).Include(y => y.AdjustmentType).Include(p => p.Product), 
+                    x => x.Include(l => l.BusinessLocation).Include(y => y.AdjustmentType), 
                     pageIndex, pageSize, true);
             }
             else
@@ -40,14 +35,13 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
             var stockAdjustment = await GetAsync(x => x.Id == id, y => y
                 .Include(b => b.BusinessLocation)
                 .Include(a => a.AdjustmentType)
-                .Include(p => p.Product)
             );
             return stockAdjustment.FirstOrDefault();
         }
 
-        public async Task<bool> HasStockAdjustmentsAsync(Guid productId)
-        {
-            return await _inventoryDbContext.StockAdjustments.AnyAsync(sa => sa.ProductId == productId);
-        }
+        //public async Task<bool> HasStockAdjustmentsAsync(Guid productId)
+        //{
+        //    return await _inventoryDbContext.StockAdjustments.AnyAsync(sa => sa.ProductId == productId);
+        //}
     }
 }

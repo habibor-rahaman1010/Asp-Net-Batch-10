@@ -168,15 +168,6 @@ namespace DevSkill.Inventory.Infrastructure.Data
                 .Property(sa => sa.TotalAmount)
                 .HasColumnType("decimal(18, 2)");
 
-
-
-            // StockAdjustment and Product relationship
-            modelBuilder.Entity<StockAdjustment>()
-                .HasOne(sa => sa.Product)
-                .WithMany()
-                .HasForeignKey(sa => sa.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             // StockAdjustment and BusinessLocation relationship
             modelBuilder.Entity<StockAdjustment>()
                 .HasOne(sa => sa.BusinessLocation)
@@ -227,6 +218,7 @@ namespace DevSkill.Inventory.Infrastructure.Data
         public DbSet<ApplicableTax> ApplicableTaxs => Set<ApplicableTax>();
         public DbSet<AdjustmentType> AdjustmentTypes => Set<AdjustmentType>();
         public DbSet<StockAdjustment> StockAdjustments => Set<StockAdjustment>();
+        public DbSet<StockAdjustmentItem> stockAdjustmentItems => Set<StockAdjustmentItem>();
         public DbSet<ApplicationLog> ApplicationLogs => Set<ApplicationLog>();
         public DbSet<UserActivity> UserActivities => Set<UserActivity>();
         public DbSet<UserActivityLog> UserActivityLogs => Set<UserActivityLog>();
