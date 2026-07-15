@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DevSkill.Inventory.Web.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AllIdentityTables : Migration
+    public partial class InitialIdentity : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

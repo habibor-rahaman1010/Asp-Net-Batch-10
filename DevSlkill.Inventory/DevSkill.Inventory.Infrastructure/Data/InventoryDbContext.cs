@@ -218,7 +218,7 @@ namespace DevSkill.Inventory.Infrastructure.Data
         public DbSet<ApplicableTax> ApplicableTaxs => Set<ApplicableTax>();
         public DbSet<AdjustmentType> AdjustmentTypes => Set<AdjustmentType>();
         public DbSet<StockAdjustment> StockAdjustments => Set<StockAdjustment>();
-        public DbSet<StockAdjustmentItem> stockAdjustmentItems => Set<StockAdjustmentItem>();
+        public DbSet<StockAdjustmentItem> StockAdjustmentItems => Set<StockAdjustmentItem>();
         public DbSet<ApplicationLog> ApplicationLogs => Set<ApplicationLog>();
         public DbSet<UserActivity> UserActivities => Set<UserActivity>();
         public DbSet<UserActivityLog> UserActivityLogs => Set<UserActivityLog>();

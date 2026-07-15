@@ -32,7 +32,7 @@ namespace DevSkill.Inventory.Infrastructure.Data
 
 
 
-        /*Now that we have defined all the DbSets for Identity, we can create repositories for each DbSet, 
+        /* Now that we have defined all the DbSets for Identity, we can create repositories for each DbSet, 
         allowing us to fully work with the data through our controllers.
 
         This is my user identity related DbSet<T>*/

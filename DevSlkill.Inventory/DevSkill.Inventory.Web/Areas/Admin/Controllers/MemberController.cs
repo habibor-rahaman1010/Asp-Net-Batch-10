@@ -1,12 +1,10 @@
 ﻿using DevSkill.Inventory.Domain;
-using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Infrastructure.InventoryIdentity;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using DevSkill.Inventory.Infrastructure;
-using System.Collections;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
@@ -416,7 +414,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             }
 
             // Remove the original claim
-            var oldClaim = new System.Security.Claims.Claim(model.OriginalClaimType, model.OriginalClaimValue);
+            var oldClaim = new Claim(model.OriginalClaimType, model.OriginalClaimValue);
             var removeResult = await _userManager.RemoveClaimAsync(user, oldClaim);
             if (!removeResult.Succeeded)
             {
@@ -428,7 +426,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             }
 
             // Add the new claim with updated type and value
-            var newClaim = new System.Security.Claims.Claim(model.NewClaimType, model.NewClaimValue);
+            var newClaim = new Claim(model.NewClaimType, model.NewClaimValue);
             var addResult = await _userManager.AddClaimAsync(user, newClaim);
             if (!addResult.Succeeded)
             {

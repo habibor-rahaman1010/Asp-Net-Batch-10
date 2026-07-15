@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DevSkill.Inventory.Web.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AllInventoryTables : Migration
+    public partial class InitialApplicationMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,7 +19,8 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AdjustmentTypeName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Sign = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -174,6 +175,47 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserActivities",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VisitDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PageVisited = table.Column<int>(type: "int", nullable: false),
+                    ControllerName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ActionName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IpAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Browser = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastActivityTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LoginTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LogoutTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ActionCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserActivities", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserActivityLogs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ControllerName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ActionName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Url = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HttpMethod = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VisitTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IpAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Browser = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserActivityLogs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Warranties",
                 columns: table => new
                 {
@@ -185,6 +227,66 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Warranties", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StockAdjustments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AdjustmentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ReferenceNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalAmountRecover = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BusinessLocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AdjustmentTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StockAdjustments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StockAdjustments_AdjustmentTypes_AdjustmentTypeId",
+                        column: x => x.AdjustmentTypeId,
+                        principalTable: "AdjustmentTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_StockAdjustments_BusinessLocations_BusinessLocationId",
+                        column: x => x.BusinessLocationId,
+                        principalTable: "BusinessLocations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StockTransfers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TransferNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TransferDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FromWarehouseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ToWarehouseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StockTransfers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StockTransfers_BusinessLocations_FromWarehouseId",
+                        column: x => x.FromWarehouseId,
+                        principalTable: "BusinessLocations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_StockTransfers_BusinessLocations_ToWarehouseId",
+                        column: x => x.ToWarehouseId,
+                        principalTable: "BusinessLocations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -290,52 +392,66 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StockAdjustments",
+                name: "StockAdjustmentItems",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AdjustmentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ReferenceNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StockAdjustmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AdjustmentQuantity = table.Column<int>(type: "int", nullable: false),
                     UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TotalAmountRecover = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BusinessLocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AdjustmentTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StockAdjustments", x => x.Id);
+                    table.PrimaryKey("PK_StockAdjustmentItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_StockAdjustments_AdjustmentTypes_AdjustmentTypeId",
-                        column: x => x.AdjustmentTypeId,
-                        principalTable: "AdjustmentTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_StockAdjustments_BusinessLocations_BusinessLocationId",
-                        column: x => x.BusinessLocationId,
-                        principalTable: "BusinessLocations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_StockAdjustments_Products_ProductId",
+                        name: "FK_StockAdjustmentItems_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_StockAdjustmentItems_StockAdjustments_StockAdjustmentId",
+                        column: x => x.StockAdjustmentId,
+                        principalTable: "StockAdjustments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StockTransferItems",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StockTransferId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StockTransferItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StockTransferItems_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_StockTransferItems_StockTransfers_StockTransferId",
+                        column: x => x.StockTransferId,
+                        principalTable: "StockTransfers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
                 table: "AdjustmentTypes",
-                columns: new[] { "Id", "AdjustmentTypeName", "Description" },
+                columns: new[] { "Id", "AdjustmentTypeName", "Description", "Sign" },
                 values: new object[,]
                 {
-                    { new Guid("0a6a6159-9974-4927-a43c-3ea8341d3daa"), "Normal", "" },
-                    { new Guid("6f38e288-0b02-4e68-911a-ae934694cf2b"), "Abnormal", "" }
+                    { new Guid("0a9fdb59-8976-4470-b399-91ff3aab9ba5"), "Abnormal", "", 0 },
+                    { new Guid("f02d91a8-a485-4d72-9ab5-603dc6d8a15a"), "Normal", "", 0 }
                 });
 
             migrationBuilder.InsertData(
@@ -343,9 +459,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "ApplicableTaxName", "Description", "TaxRate" },
                 values: new object[,]
                 {
-                    { new Guid("2cf6f6e2-6c9f-475e-aad7-52442b8c3ec3"), "Sales Tax", "", 0m },
-                    { new Guid("659f2999-0db7-4bd0-ae82-6b38f92b071c"), "Fruits", "", 0m },
-                    { new Guid("a434cafb-f465-4b0c-96e1-81d44603ecf3"), "Food", "", 0m }
+                    { new Guid("25f90c9e-8075-40a4-a7c6-1ef73d6f3db3"), "Fruits", "", 0m },
+                    { new Guid("85870ef8-4a5d-4800-afcc-0f5696781315"), "Food", "", 0m },
+                    { new Guid("c6cb321b-984a-4ddc-a56a-1eb51e819cf8"), "Sales Tax", "", 0m }
                 });
 
             migrationBuilder.InsertData(
@@ -353,9 +469,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "BarcodeDescription", "BarcodeTypeCode", "BarcodeTypeName" },
                 values: new object[,]
                 {
-                    { new Guid("5a8b5cef-b19e-450d-83bc-c46a1596f6d8"), "", "", "QR Code" },
-                    { new Guid("6999843f-0da9-47c0-9d16-7b5a6fa88f5f"), "", "", "NFC" },
-                    { new Guid("8c2534fb-bc9a-4f09-9022-077cfa2ddad3"), "", "", "UPC" }
+                    { new Guid("02191cb6-76a8-453c-9448-dde3b7d8f3db"), "", "", "NFC" },
+                    { new Guid("3d7e6611-66d3-4eb1-95f7-b6476cf8105e"), "", "", "UPC" },
+                    { new Guid("bac35c3f-e99f-41a4-89f2-3bc96bdcc0ff"), "", "", "QR Code" }
                 });
 
             migrationBuilder.InsertData(
@@ -363,9 +479,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "BandOrigin", "BrandName", "Description" },
                 values: new object[,]
                 {
-                    { new Guid("743856b5-f162-4ede-8bd4-73e8abe5cd9c"), "", "Sony", "" },
-                    { new Guid("98ff8513-e1e0-4653-af6c-3d9eb8c30855"), "", "Apple", "" },
-                    { new Guid("e6a7e925-3c1b-4393-8df6-ee4c711f573c"), "", "Samsung", "" }
+                    { new Guid("26ae02a8-c057-4d00-b39f-5061625390e1"), "", "Samsung", "" },
+                    { new Guid("26bbc91d-b814-48a1-84d0-86ff56fa8dc1"), "", "Sony", "" },
+                    { new Guid("9ac5c6a6-25ec-4125-b4c1-169a6f1a1eb2"), "", "Apple", "" }
                 });
 
             migrationBuilder.InsertData(
@@ -373,9 +489,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "Address", "City", "Country", "LocationName", "State", "ZipCode" },
                 values: new object[,]
                 {
-                    { new Guid("61a54343-50a1-447f-84ef-5317c3495969"), "", "", "", "Warehouse B", "", "" },
-                    { new Guid("7425d474-1a1d-4067-bcd3-feb3ebe78791"), "", "", "", "Warehouse A", "", "" },
-                    { new Guid("b3465ffa-44a3-4f4e-bffc-0ef66338be7f"), "", "", "", "Downtown Store", "", "" }
+                    { new Guid("862f754a-3cdf-49cd-8e49-ed8cb536b18f"), "", "", "", "Downtown Store", "", "" },
+                    { new Guid("94283cb7-e503-4abe-9dba-c43fffdd05f4"), "", "", "", "Warehouse B", "", "" },
+                    { new Guid("979ecd93-3339-48ba-9e1f-9c97e212cfa1"), "", "", "", "Warehouse A", "", "" }
                 });
 
             migrationBuilder.InsertData(
@@ -383,9 +499,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "CategoryCode", "CategoryName", "Description" },
                 values: new object[,]
                 {
-                    { new Guid("10739c00-8267-4753-9c45-8542c1f12094"), "", "Electronics", "" },
-                    { new Guid("53c0a7e9-16fb-4803-8dfb-3fa5dfa00394"), "", "Clothing", "" },
-                    { new Guid("5c2f5f16-933b-4109-ad6c-bd11176a5e2e"), "", "Home Appliances", "" }
+                    { new Guid("4418f3b9-65c5-4d90-a19e-40cf6372ac87"), "", "Clothing", "" },
+                    { new Guid("46c7c5f7-1a44-4933-b91c-f7e52ef3cf1a"), "", "Home Appliances", "" },
+                    { new Guid("94264134-ff76-4e54-bbec-badea5e57ee9"), "", "Electronics", "" }
                 });
 
             migrationBuilder.InsertData(
@@ -393,11 +509,11 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "Description", "ProductTypeCode", "ProductTypeName" },
                 values: new object[,]
                 {
-                    { new Guid("3aa524ee-6c80-4ea3-99d8-54cbff9bc665"), "", "", "Food" },
-                    { new Guid("3fe17aed-4000-46d7-ac18-56061d237ac6"), "", "", "Furniture" },
-                    { new Guid("949a58eb-96f0-41b1-9811-5d4d852cf247"), "", "", "Toys" },
-                    { new Guid("9c96094b-972d-4b60-a2da-2bb82d2bf35f"), "", "", "Clothing" },
-                    { new Guid("a9d3905f-def2-4ba6-8330-f10fe8b52f19"), "", "", "Electronics" }
+                    { new Guid("11f24b0e-ede4-42e6-9648-67541abb379b"), "", "", "Clothing" },
+                    { new Guid("512915f3-b4c7-4c5f-b42c-84464d54350a"), "", "", "Food" },
+                    { new Guid("8a06e575-67ad-4f03-8818-b8773e72d17c"), "", "", "Electronics" },
+                    { new Guid("c14ab857-d4ed-479d-97b9-af19ddbf243c"), "", "", "Toys" },
+                    { new Guid("fffa76c6-b427-42f3-885b-dd980eff388b"), "", "", "Furniture" }
                 });
 
             migrationBuilder.InsertData(
@@ -405,9 +521,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "Description", "SellingPriceTaxName", "TaxRate" },
                 values: new object[,]
                 {
-                    { new Guid("16d707b2-94c4-48eb-a864-60e3fd79cf74"), "", "Exclusive", 0m },
-                    { new Guid("37488668-ba0a-4550-8c51-ea806660a4a5"), "", "Inclusive", 0m },
-                    { new Guid("dad90976-363f-4758-a9d9-39643f690984"), "", "Zero Rate", 0m }
+                    { new Guid("24f92514-0455-408e-9eab-c075e703c6bf"), "", "Inclusive", 0m },
+                    { new Guid("8141d6e4-e8b9-4c87-b83c-3981d5c1361c"), "", "Zero Rate", 0m },
+                    { new Guid("d495f52a-218a-4cc8-bd9a-c92dc8d3afef"), "", "Exclusive", 0m }
                 });
 
             migrationBuilder.InsertData(
@@ -415,9 +531,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "CategoryCode", "Description", "SubCategoryName" },
                 values: new object[,]
                 {
-                    { new Guid("18fc1147-ba46-4333-a0ab-65fa2f32ea46"), "", "", "Laptops" },
-                    { new Guid("98372d66-f2b5-4d88-8f82-9a5ec7d26814"), "", "", "Smartphones" },
-                    { new Guid("e946c61f-c4ff-4ddb-81b6-021f223d25e8"), "", "", "Televisions" }
+                    { new Guid("1523ebf1-88d1-4b04-ac5e-3ca4896b1ae7"), "", "", "Televisions" },
+                    { new Guid("3039edb8-8408-4b32-a950-84244eeaf676"), "", "", "Smartphones" },
+                    { new Guid("faf047e0-767a-45eb-b695-d18b958dca84"), "", "", "Laptops" }
                 });
 
             migrationBuilder.InsertData(
@@ -425,9 +541,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "AllowDecimal", "ShortName", "UnitName" },
                 values: new object[,]
                 {
-                    { new Guid("3ccc6a19-75ea-4657-a686-6c01c04ae155"), 0, "", "Piece" },
-                    { new Guid("93fc5d07-6779-4271-96e5-acd0c3b351e7"), 0, "", "Liter" },
-                    { new Guid("943c9da4-45ab-42a0-8f73-2ffae5e589e9"), 0, "", "Kilogram" }
+                    { new Guid("8e3c2296-3858-4179-9010-6164fc9d9cf3"), 0, "", "Liter" },
+                    { new Guid("cf2f5f62-eeb8-4a87-b52d-d479d8a16f89"), 0, "", "Piece" },
+                    { new Guid("f8ece393-6c36-41b5-bc16-8367725cbf6a"), 0, "", "Kilogram" }
                 });
 
             migrationBuilder.InsertData(
@@ -435,9 +551,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 columns: new[] { "Id", "Description", "Name", "WarrantyDuration" },
                 values: new object[,]
                 {
-                    { new Guid("1daca30e-23cb-476f-9401-737bde36a98d"), "", "", "1 Year" },
-                    { new Guid("701d1505-4a0d-4e3b-ba7f-8d596a3f8978"), "", "", "3 Years" },
-                    { new Guid("e4c224f6-9515-4461-a0fd-4bb61d2cdfa6"), "", "", "2 Years" }
+                    { new Guid("1eea7a84-56a1-4d62-bdc3-6ed3b5ed3988"), "", "", "1 Year" },
+                    { new Guid("929ec7f2-df60-41b4-addb-adcff62e6034"), "", "", "2 Years" },
+                    { new Guid("ce02a806-878d-4bc0-820c-b673b3a0a677"), "", "", "3 Years" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -491,6 +607,16 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 column: "WarrantyId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_StockAdjustmentItems_ProductId",
+                table: "StockAdjustmentItems",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StockAdjustmentItems_StockAdjustmentId",
+                table: "StockAdjustmentItems",
+                column: "StockAdjustmentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_StockAdjustments_AdjustmentTypeId",
                 table: "StockAdjustments",
                 column: "AdjustmentTypeId");
@@ -501,9 +627,24 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 column: "BusinessLocationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StockAdjustments_ProductId",
-                table: "StockAdjustments",
+                name: "IX_StockTransferItems_ProductId",
+                table: "StockTransferItems",
                 column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StockTransferItems_StockTransferId",
+                table: "StockTransferItems",
+                column: "StockTransferId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StockTransfers_FromWarehouseId",
+                table: "StockTransfers",
+                column: "FromWarehouseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StockTransfers_ToWarehouseId",
+                table: "StockTransfers",
+                column: "ToWarehouseId");
         }
 
         /// <inheritdoc />
@@ -513,13 +654,28 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                 name: "ApplicationLogs");
 
             migrationBuilder.DropTable(
+                name: "StockAdjustmentItems");
+
+            migrationBuilder.DropTable(
+                name: "StockTransferItems");
+
+            migrationBuilder.DropTable(
+                name: "UserActivities");
+
+            migrationBuilder.DropTable(
+                name: "UserActivityLogs");
+
+            migrationBuilder.DropTable(
                 name: "StockAdjustments");
 
             migrationBuilder.DropTable(
-                name: "AdjustmentTypes");
+                name: "Products");
 
             migrationBuilder.DropTable(
-                name: "Products");
+                name: "StockTransfers");
+
+            migrationBuilder.DropTable(
+                name: "AdjustmentTypes");
 
             migrationBuilder.DropTable(
                 name: "ApplicableTaxs");
@@ -529,9 +685,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Brands");
-
-            migrationBuilder.DropTable(
-                name: "BusinessLocations");
 
             migrationBuilder.DropTable(
                 name: "Categories");
@@ -550,6 +703,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Warranties");
+
+            migrationBuilder.DropTable(
+                name: "BusinessLocations");
         }
     }
 }
