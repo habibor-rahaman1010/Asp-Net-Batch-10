@@ -1,6 +1,6 @@
 ﻿namespace DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites
 {
-    public class StockAdjustmentItem
+    public class StockAdjustmentItem : IEntity<Guid>
     {
         public Guid Id { get; set; }
 
