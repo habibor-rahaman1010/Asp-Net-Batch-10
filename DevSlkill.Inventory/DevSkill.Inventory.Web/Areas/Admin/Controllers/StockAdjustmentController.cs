@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Domain;
+using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites;
 using DevSkill.Inventory.Infrastructure;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
@@ -51,7 +52,16 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         public async Task<JsonResult> GetStockAdjustmentJsonData([FromBody] StockAdjustmentListModel model)
         {
             var result = await _stockAdjustmentManagementService.GetAllStockAdjustmentAsync(model.PageIndex, model.PageSize, model.Search,
-               model.FormatSortExpression("Id", "BusinessLocation", "AdjustmentType", "Product", "ReferenceNo", "TotalAmount", "TotalAmountRecover", "Reason", "AdjustmentDate", "AddedBy"));
+               model.FormatSortExpression(
+                   "Product.ProductName",
+                   "AdjustmentQuantity",
+                   "UnitPrice",
+                   "StockAdjustment.TotalAmountRecover",
+                   "StockAdjustment.Reason",
+                   "StockAdjustment.BusinessLocation.LocationName",
+                   "StockAdjustment.AdjustmentType",
+                   "StockAdjustment.AddedBy",
+                   "Id"));
 
             var stockAdjustmentJsonData = new
             {
@@ -60,15 +70,16 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 data = (from record in result.data
                         select new string[]
                         {
-                            HttpUtility.HtmlEncode(record.BusinessLocation.LocationName),
-                            HttpUtility.HtmlEncode(record.AdjustmentType.AdjustmentTypeName),
-                            //HttpUtility.HtmlEncode(record.Product.ProductName),
-                            HttpUtility.HtmlEncode(record.ReferenceNo),
+                            HttpUtility.HtmlEncode(record.StockAdjustment.ReferenceNo),
+                            HttpUtility.HtmlEncode(record.Product.ProductName),
+                            HttpUtility.HtmlEncode(record.StockAdjustment.BusinessLocation.LocationName),
+                            HttpUtility.HtmlEncode(record.StockAdjustment.AdjustmentType),
+                            HttpUtility.HtmlEncode(record.StockAdjustment.Reason),
+                            HttpUtility.HtmlEncode(record.AdjustmentQuantity),
                             HttpUtility.HtmlEncode(record.TotalAmount),
-                            HttpUtility.HtmlEncode(record.TotalAmountRecover),
-                            HttpUtility.HtmlEncode(record.Reason),
-                            HttpUtility.HtmlEncode(record.AdjustmentDate),
-                            HttpUtility.HtmlEncode(record.AddedBy),
+                            HttpUtility.HtmlEncode(record.StockAdjustment.TotalAmountRecover),
+                            HttpUtility.HtmlEncode(record.StockAdjustment.AdjustmentDate),
+                            HttpUtility.HtmlEncode(record.StockAdjustment.AddedBy),
                             HttpUtility.HtmlEncode(record.Id.ToString())
                         }
                     ).ToArray()
@@ -78,82 +89,73 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
 
-        //[Authorize(Policy = "AdminOnly")]
-        //public async Task<IActionResult> CreateStockAdjustment()
-        //{
-        //    var model = new StockAdjustmentCreateModel();
-        //    model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
-        //    model.SetAdjustmentTypeValues(await _adjustmentTypeManagementService.GetAllAdjustmentTypeAsync());
-            
-        //    foreach (var item in model.StockAdjustmentItems)
-        //    {
-        //        item.SetUnitValues(await _unitManagementService.GetAllUnitAsync());
-        //    }
-        //    return View(model);
-        //}
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> CreateStockAdjustment()
+        {
+            try
+            {
+                var model = new StockAdjustmentCreateModel();
 
-        //[HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
-        //public async Task<IActionResult> CreateStockAdjustment(StockAdjustmentCreateModel model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            var businessLocation = await _businessLocationManagementService.GetBusinessLocationByIdAsync(model.BusinessLocationId);
+                model.ReferenceNo = GenerateReferenceNo();
 
-        //            var adjustmentType = await _adjustmentTypeManagementService.GetAdjustmentTypeByIdAsync(model.AdjustmentTypeId);
+                model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
+                model.SetAdjustmentTypeValues(await _adjustmentTypeManagementService.GetAllAdjustmentTypeAsync());
 
-        //            foreach (var item in model.StockAdjustmentItems)
-        //            {
-        //                var product = await _productManagementService.GetProductByIdAsync(item.ProductId);
+                foreach (var item in model.StockAdjustmentItems)
+                {
+                    item.SetUnitValues(await _unitManagementService.GetAllUnitAsync());
+                }
 
-        //                var stockAdjustment = new StockAdjustment
-        //                {
-        //                    ReferenceNo = model.ReferenceNo,
-        //                    AdjustmentDate = _applicationTime.GetCurrentDateTime(),
-        //                    TotalAmount = item.AdjustmentQuantity * item.UnitPrice,
-        //                    TotalAmountRecover = model.TotalAmountRecover,
-        //                    Reason = model.Reason,
-        //                    AddedBy = model.AddedBy,
-        //                    AdjustmentQuantity = (int) item.AdjustmentQuantity,
-        //                    UnitPrice = item.UnitPrice,
-        //                    Product = product,
-        //                    BusinessLocation = businessLocation,
-        //                    AdjustmentType = adjustmentType
-        //                };
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Exception Occured: ", ex);
+            }
+        }
 
-        //                product.CurrentStock += (int)item.AdjustmentQuantity * adjustmentType.Sign;
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> CreateStockAdjustment(StockAdjustmentCreateModel model)
+        {
+            try
+            {
+                Guid stockAdjustmentId = Guid.NewGuid();
 
-        //                await _productManagementService.UpdateProductAsync(product);
-        //                await _stockAdjustmentManagementService.AddStockAdjustmentAsync(stockAdjustment);
-        //            }
+                var stockAdjustment = new StockAdjustment
+                {
+                    Id = stockAdjustmentId,
+                    ReferenceNo = GenerateReferenceNo(),
+                    AdjustmentDate = _applicationTime.GetCurrentDateTime(),
+                    BusinessLocationId = model.BusinessLocationId,
+                    AdjustmentTypeId = model.AdjustmentTypeId,
+                    TotalAmountRecover = model.TotalAmountRecover,
+                    Reason = model.Reason,
+                    AddedBy = model.AddedBy,
 
-        //            TempData.Put("ResponseMessage", new ResponseModel
-        //            {
-        //                Message = "The Stock Adjustment has been created successfully!",
-        //                Type = ResponseTypes.Success
-        //            });
+                    StockAdjustmentItems = model.StockAdjustmentItems
+                        .Where(x => x.ProductId != Guid.Empty && x.AdjustmentQuantity > 0)
+                        .Select(x => new StockAdjustmentItem
+                        {
+                            Id = Guid.NewGuid(),
+                            StockAdjustmentId = stockAdjustmentId,
+                            ProductId = x.ProductId,
+                            AdjustmentQuantity = (int)x.AdjustmentQuantity,
+                            UnitPrice = x.UnitPrice,
+                            TotalAmount = x.AdjustmentQuantity * x.UnitPrice
+                        })
+                        .ToList()
+                };
 
-        //            return RedirectToAction(nameof(StockAdjustmentList));
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            _logger.LogError(ex, "Stock Adjustment creation failed.");
+                await _stockAdjustmentManagementService.AddStockAdjustmentAsync(stockAdjustment);
 
-        //            TempData.Put("ResponseMessage", new ResponseModel
-        //            {
-        //                Message = "The Stock Adjustment creation has failed!",
-        //                Type = ResponseTypes.Danger
-        //            });
-        //        }
-        //    }
-
-        //    model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
-
-        //    model.SetAdjustmentTypeValues(await _adjustmentTypeManagementService.GetAllAdjustmentTypeAsync());
-
-        //    return View(model);
-        //}
+                return RedirectToAction(nameof(StockAdjustmentList));
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Exception Occured: ", ex);
+            }
+        }
 
         //[HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
         //public async Task<JsonResult> DeleteStockAdjustment(Guid id)
@@ -214,7 +216,17 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 
         //    return View(model);
         //}
-    
-    
+
+        private string GenerateReferenceNo()
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            var random = new Random();
+
+            string letters = new string(Enumerable.Repeat(chars, 6)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+
+            return $"TR-{letters}-{DateTime.Now:dd-MM-yyyy}";
+        }
     }
+
 }

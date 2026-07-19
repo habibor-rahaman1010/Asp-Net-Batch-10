@@ -25,9 +25,9 @@ namespace DevSkill.Inventory.Application.Services
             await _stockAdjustmentUnitOfWork.SaveAsync();
         }
 
-        public async Task<(IList<StockAdjustment> data, int total, int totalDisplay)> GetAllStockAdjustmentAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
+        public async Task<(IList<StockAdjustmentItem> data, int total, int totalDisplay)> GetAllStockAdjustmentAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
         {
-            return await _stockAdjustmentUnitOfWork.StockAdjustmentRepository.GetPagedStockAdjustmentsAsync(pageIndex, pageSize, search, order);
+            return await _stockAdjustmentUnitOfWork.StockAdjustmentItemRepository.GetStockAdjustmentListAsync(pageIndex, pageSize, search, order);
         }
 
         public async Task<StockAdjustment> GetStockAdjustmentByIdAsync(Guid id)

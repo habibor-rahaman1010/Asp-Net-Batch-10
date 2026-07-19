@@ -23,13 +23,29 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
                     return await GetDynamicAsync(null, order, x => x
                         .Include(i => i.Product)
                         .Include(i => i.StockTransfer)
-                        .ThenInclude(t => t.FromWarehouse)
+                            .ThenInclude(t => t.FromWarehouse)
                         .Include(i => i.StockTransfer)
-                        .ThenInclude(t => t.ToWarehouse), pageIndex, pageSize, true);
+                            .ThenInclude(t => t.ToWarehouse), pageIndex, pageSize, true);
                 }
                 else
                 {
-                    return await GetDynamicAsync(x => x.Product.ProductName.Contains(search.Value), order, null, pageIndex, pageSize, true);
+
+                    return await GetDynamicAsync(
+                    x =>
+                    x.Product!.ProductName.Contains(search.Value) ||
+                    x.StockTransfer!.TransferNo!.Contains(search.Value) ||
+                    x.StockTransfer.FromWarehouse!.LocationName.Contains(search.Value) ||
+                    x.StockTransfer.ToWarehouse!.LocationName.Contains(search.Value),
+                order,
+                q => q
+                    .Include(i => i.Product)
+                    .Include(i => i.StockTransfer)
+                        .ThenInclude(t => t!.FromWarehouse)
+                    .Include(i => i.StockTransfer)
+                        .ThenInclude(t => t!.ToWarehouse),
+                pageIndex,
+                pageSize,
+                true);
                 }
             }
             catch(Exception ex)

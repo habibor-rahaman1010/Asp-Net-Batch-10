@@ -73,13 +73,14 @@
                         <table id="adjustmentTypes" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
+                                    <th>Reference No</th>
+                                    <th>Product Name</th>
                                     <th>Location Name</th>
                                     <th>Adjustment Type</th>
-                                    <th>Product Name</th>
-                                    <th>Reference No</th>
+                                    <th>Reason</th>
+                                    <th>AdjustmentQuantity</th>
                                     <th>TotalAmount</th>
                                     <th>TotalAmountRecover</th>
-                                    <th>Reason</th>
                                     <th>AdjustmentDate</th>
                                     <th>AddedBy</th>
                                     <th>Actions</th>
@@ -88,13 +89,14 @@
 
                             <tfoot>
                                 <tr>
+                                    <th>Reference No</th>
+                                    <th>Product Name</th>
                                     <th>Location Name</th>
                                     <th>Adjustment Type</th>
-                                    <th>Product Name</th>
-                                    <th>Reference No</th>
+                                    <th>Reason</th>
+                                    <th>AdjustmentQuantity</th>
                                     <th>TotalAmount</th>
                                     <th>TotalAmountRecover</th>
-                                    <th>Reason</th>
                                     <th>AdjustmentDate</th>
                                     <th>AddedBy</th>
                                     <th>Actions</th>
@@ -186,7 +188,7 @@
 
                     {
                         orderable: false,
-                        targets: 9,
+                        targets: 10,
                         render: function (data, type, row) {
                             return `
                              <a href="/Admin/StockAdjustment/UpdateStockAdjustment/${data}"
@@ -201,7 +203,7 @@
                             </button>`;
                         }
                     },
-                    ...[0, 1, 2, 3, 4, 5, 6, 7, 8].map(function (target) {
+                    ...[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(function (target) {
                         return {
                             targets: target,
                             createdCell: function (td, type, data) {

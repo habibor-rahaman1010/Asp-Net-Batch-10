@@ -1,5 +1,4 @@
-﻿
-using DevSkill.Inventory.Domain;
+﻿using DevSkill.Inventory.Domain;
 using DevSkill.Inventory.Domain.Entities.StockTransferEntities;
 
 namespace DevSkill.Inventory.Infrastructure.Repositories

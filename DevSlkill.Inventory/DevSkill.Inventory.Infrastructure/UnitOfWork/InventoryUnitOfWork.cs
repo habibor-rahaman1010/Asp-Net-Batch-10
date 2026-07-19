@@ -21,6 +21,7 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
         public ISellingPriceTaxRepository SellingPriceTaxRepository { get; private set; }
         public IAdjustmentTypeRepository AdjustmentTypeRepository { get; private set; }
         public IStockAdjustmentRepository StockAdjustmentRepository { get; private set; }
+        public IStockAdjustmentItemRepository StockAdjustmentItemRepository { get; private set; }
         public IUserActivityRepository UserActivityRepository { get; private set; }
 
         public IStockTransferRepository StockTransferRepository { get; private set; }
@@ -41,6 +42,7 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
             ISellingPriceTaxRepository sellingPriceTaxRepository,
             IAdjustmentTypeRepository adjustmentTypeRepository,
             IStockAdjustmentRepository stockAdjustmentRepository,
+            IStockAdjustmentItemRepository stockAdjustmentItemRepository,
             IStockTransferRepository stockTransferRepository,
             IStockTransferItemRepository stockTransferItemRepository,
             IUserActivityRepository userActivityRepository)
@@ -59,6 +61,7 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
             SellingPriceTaxRepository = sellingPriceTaxRepository;
             AdjustmentTypeRepository = adjustmentTypeRepository;
             StockAdjustmentRepository = stockAdjustmentRepository;
+            StockAdjustmentItemRepository = stockAdjustmentItemRepository;
             UserActivityRepository = userActivityRepository;
             StockTransferRepository = stockTransferRepository;
             StockTransferItemRepository = stockTransferItemRepository;

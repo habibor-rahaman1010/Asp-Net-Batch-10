@@ -3,6 +3,7 @@ using DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites;
 using DevSkill.Inventory.Domain.Entities.StockTransferEntities;
 using DevSkill.Inventory.Domain.RepositoryContracts;
 using DevSkill.Inventory.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace DevSkill.Inventory.Infrastructure.Repositories
 {
@@ -14,15 +15,44 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
             _inventoryDbContext = inventoryDbContext;
         }
 
-        public Task<(IList<StockTransferItem> data, int total, int totalDisplay)> GetStockAdjustmentListAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
+        public async Task<(IList<StockAdjustmentItem> data, int total, int totalDisplay)> GetStockAdjustmentListAsync( int pageIndex, int pageSize, DataTablesSearch search, string? order)
         {
             try
             {
-
+                if (string.IsNullOrWhiteSpace(search.Value))
+                {
+                    return await GetDynamicAsync(
+                        null,
+                        order,
+                        x => x
+                            .Include(i => i.Product)
+                                .ThenInclude(p => p.BusinessLocation)
+                            .Include(i => i.StockAdjustment)
+                                .ThenInclude(sa => sa.BusinessLocation),
+                        pageIndex,
+                        pageSize,
+                        true);
+                }
+                else
+                {
+                    return await GetDynamicAsync(
+                        x =>
+                            x.StockAdjustment!.ReferenceNo.Contains(search.Value) ||
+                            x.Product!.ProductName.Contains(search.Value),
+                        order,
+                        x => x
+                            .Include(i => i.Product)
+                                .ThenInclude(p => p.BusinessLocation)
+                            .Include(i => i.StockAdjustment)
+                                .ThenInclude(sa => sa.BusinessLocation),
+                        pageIndex,
+                        pageSize,
+                        true);
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                throw new ApplicationException("Exception Occured: ", ex);
+                throw new ApplicationException("Exception Occured.", ex);
             }
         }
     }

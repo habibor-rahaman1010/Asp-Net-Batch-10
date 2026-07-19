@@ -19,6 +19,7 @@ namespace DevSkill.Inventory.Domain.UnitOfWorkContracts
         ISellingPriceTaxRepository SellingPriceTaxRepository { get; }
         IAdjustmentTypeRepository AdjustmentTypeRepository { get; }
         IStockAdjustmentRepository StockAdjustmentRepository { get; }
+        IStockAdjustmentItemRepository StockAdjustmentItemRepository { get; }
         IUserActivityRepository UserActivityRepository { get; }
         IStockTransferRepository StockTransferRepository { get;}
         IStockTransferItemRepository StockTransferItemRepository { get; }
