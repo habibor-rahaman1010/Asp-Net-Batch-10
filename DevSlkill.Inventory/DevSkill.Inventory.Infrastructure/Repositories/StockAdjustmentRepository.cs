@@ -35,7 +35,10 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
             var stockAdjustment = await GetAsync(x => x.Id == id, y => y
                 .Include(b => b.BusinessLocation)
                 .Include(a => a.AdjustmentType)
+                .Include(c => c.StockAdjustmentItems)
+                .ThenInclude(p => p.Product)
             );
+
             return stockAdjustment.FirstOrDefault();
         }
 

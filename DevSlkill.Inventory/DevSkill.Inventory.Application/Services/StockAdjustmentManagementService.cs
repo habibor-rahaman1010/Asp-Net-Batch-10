@@ -13,10 +13,11 @@ namespace DevSkill.Inventory.Application.Services
             _stockAdjustmentUnitOfWork = stockAdjustmentUnitOfWork;
         }
 
-        public async Task AddStockAdjustmentAsync(StockAdjustment stockAdjustment)
+        public async Task<bool> AddStockAdjustmentAsync(StockAdjustment stockAdjustment)
         {
             await _stockAdjustmentUnitOfWork.StockAdjustmentRepository.AddAsync(stockAdjustment);
             await _stockAdjustmentUnitOfWork.SaveAsync();
+            return true;
         }
 
         public async Task DeleteStockAdjustmentAsync(Guid id)

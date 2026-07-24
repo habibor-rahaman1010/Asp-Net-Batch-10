@@ -6,6 +6,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
 {
     public class StockAdjustmentItemModel
     {
+        public Guid Id { get; set; }
         public Guid ProductId { get; set; }
 
         public decimal AdjustmentQuantity { get; set; }

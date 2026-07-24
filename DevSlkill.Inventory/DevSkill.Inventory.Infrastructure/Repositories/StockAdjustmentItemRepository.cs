@@ -1,6 +1,5 @@
 ﻿using DevSkill.Inventory.Domain;
 using DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites;
-using DevSkill.Inventory.Domain.Entities.StockTransferEntities;
 using DevSkill.Inventory.Domain.RepositoryContracts;
 using DevSkill.Inventory.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +27,9 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
                             .Include(i => i.Product)
                                 .ThenInclude(p => p.BusinessLocation)
                             .Include(i => i.StockAdjustment)
-                                .ThenInclude(sa => sa.BusinessLocation),
+                                .ThenInclude(sa => sa.BusinessLocation)
+                            .Include(ad => ad.StockAdjustment)
+                                .ThenInclude(n => n.AdjustmentType),
                         pageIndex,
                         pageSize,
                         true);
@@ -44,7 +45,9 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
                             .Include(i => i.Product)
                                 .ThenInclude(p => p.BusinessLocation)
                             .Include(i => i.StockAdjustment)
-                                .ThenInclude(sa => sa.BusinessLocation),
+                                .ThenInclude(sa => sa.BusinessLocation)
+                            .Include(ad => ad.StockAdjustment)
+                                .ThenInclude(n => n.AdjustmentType),
                         pageIndex,
                         pageSize,
                         true);

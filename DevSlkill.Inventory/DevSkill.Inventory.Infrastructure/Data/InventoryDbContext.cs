@@ -199,7 +199,14 @@ namespace DevSkill.Inventory.Infrastructure.Data
             modelBuilder.Entity<StockTransfer>()
                 .HasMany(x => x.StockTransferItems)
                 .WithOne(x => x.StockTransfer)
-                .HasForeignKey(x => x.StockTransferId);
+                .HasForeignKey(x => x.StockTransferId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<StockAdjustment>()
+                .HasMany(x => x.StockAdjustmentItems)
+                .WithOne(x => x.StockAdjustment)
+                .HasForeignKey(x => x.StockAdjustmentId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
         }
