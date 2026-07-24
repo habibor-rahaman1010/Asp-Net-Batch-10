@@ -14,6 +14,16 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
             _inventoryDbContext = context;
         }
 
+        public async Task<StockAdjustment?> GetStockAdjustmentByIdAsync(Guid id)
+        {
+            return await _inventoryDbContext.StockAdjustments
+                .Include(x => x.BusinessLocation)
+                .Include(x => x.AdjustmentType)
+                .Include(x => x.StockAdjustmentItems)
+                    .ThenInclude(x => x.Product)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public async Task<(IList<StockAdjustment> data, int total, int totalDisplay)> GetPagedStockAdjustmentsAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
         {
             if (string.IsNullOrWhiteSpace(search.Value))
@@ -28,18 +38,6 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
                 || x.AdjustmentType.AdjustmentTypeName.Contains(search.Value), 
                 order, x => x.Include(l => l.BusinessLocation).Include(y => y.AdjustmentType), pageIndex, pageSize, true);
             }
-        }
-
-        public async Task<StockAdjustment> GetStockAdjustmentyByIdAsync(Guid id)
-        {
-            var stockAdjustment = await GetAsync(x => x.Id == id, y => y
-                .Include(b => b.BusinessLocation)
-                .Include(a => a.AdjustmentType)
-                .Include(c => c.StockAdjustmentItems)
-                .ThenInclude(p => p.Product)
-            );
-
-            return stockAdjustment.FirstOrDefault();
         }
 
         //public async Task<bool> HasStockAdjustmentsAsync(Guid productId)

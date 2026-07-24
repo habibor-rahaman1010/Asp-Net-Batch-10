@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DevSkill.Inventory.Domain.UnitOfWorkContracts
+﻿namespace DevSkill.Inventory.Domain.UnitOfWorkContracts
 {
     public interface IUnitOfWork : IDisposable, IAsyncDisposable
     {
-        void Save();
-        Task SaveAsync();
+        public void Save();
+        public Task SaveAsync();
+
+        public Task BeginTransactionAsync();
+        public Task CommitTransactionAsync();
+        public Task RollbackTransactionAsync();
     }
 }

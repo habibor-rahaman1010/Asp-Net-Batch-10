@@ -155,49 +155,6 @@
                 }
             }
 
-            //[HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "AdminOnly")]
-            //public async Task<JsonResult> DeleteStockAdjustment(Guid id)
-            //{
-            //    try
-            //    {
-            //        // When we delete stock the current stock Adjustment Quantity delete the product's current stock.
-            //        var stock = await _stockAdjustmentManagementService.GetStockAdjustmentByIdAsync(id);
-            //        var productId = stock.ProductId;
-            //        var product = await _productManagementService.GetProductByIdAsync(productId);
-            //        product.CurrentStock -= stock.AdjustmentQuantity;
-            //        await _productManagementService.UpdateProductAsync(product);
-
-            //        await _stockAdjustmentManagementService.DeleteStockAdjustmentAsync(id);
-
-            //        return Json(new
-            //        {
-            //            success = true,
-            //            message = "The Stock Adjustment has deleted successfuly"
-            //        });
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        _logger.LogError(ex, "The Stock Adjustment deleted failed");
-            //        return Json(new
-            //        {
-            //            success = false,
-            //            message = "The Stock Adjustment deleted failed"
-            //        });
-            //    }
-            //}
-
-            //[HttpGet, Authorize(Policy = "ReadPermission")]
-            //public async Task<IActionResult> GetStockAdjustmentyById(Guid id)
-            //{
-            //    var stockAdjustment = await _stockAdjustmentManagementService.GetStockAdjustmentByIdAsync(id);
-            //    if (stockAdjustment == null)
-            //    {
-            //        return NotFound();
-            //    }
-            //    return Json(stockAdjustment);
-            //}
-
-
             [Authorize(Policy = "AdminOnly")]
             public async Task<IActionResult> UpdateStockAdjustment(Guid id)
             {
@@ -206,7 +163,9 @@
                     var stockAdjustment = await _stockAdjustmentManagementService.GetStockAdjustmentByIdAsync(id);
 
                     if (stockAdjustment == null)
+                    {
                         return NotFound();
+                    }
 
                     var model = new StockAdjustmentUpdateModel
                     {
@@ -226,6 +185,7 @@
                                 AdjustmentQuantity = x.AdjustmentQuantity,
                                 UnitPrice = x.UnitPrice,
                                 UnitId = x.Product.UnitId
+
                             }).ToList()
                     };
 
@@ -236,7 +196,7 @@
                     {
                         item.SetUnitValues(await _unitManagementService.GetAllUnitAsync());
                         item.SetProductValues((await _productManagementService.GetAllProductByWarehouseAsync(stockAdjustment.BusinessLocation.Id)).ToList());
-                }
+                    }
 
                     return View(model);
                 }
@@ -247,53 +207,100 @@
             }
 
 
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            [Authorize(Policy = "AdminOnly")]
-            public async Task<IActionResult> UpdateStockAdjustment(StockAdjustmentUpdateModel model)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> UpdateStockAdjustment(StockAdjustmentUpdateModel model)
+        {
+            try
             {
-                try
+                if (!ModelState.IsValid)
                 {
-                    var stockAdjustment = await _stockAdjustmentManagementService.GetStockAdjustmentByIdAsync(model.Id);
+                    model.SetBusinessLocationValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
+                    model.SetAdjustmentTypeValues(await _adjustmentTypeManagementService.GetAllAdjustmentTypeAsync());
 
-                    if (stockAdjustment == null)
+                    foreach (var item in model.StockAdjustmentItems)
                     {
-                        return NotFound();
+                        item.SetUnitValues(await _unitManagementService.GetAllUnitAsync());
+                        item.SetProductValues((await _productManagementService
+                            .GetAllProductByWarehouseAsync(model.BusinessLocationId)).ToList());
                     }
 
-                    stockAdjustment.BusinessLocationId = model.BusinessLocationId;
-                    stockAdjustment.AdjustmentTypeId = model.AdjustmentTypeId;
-                    stockAdjustment.TotalAmountRecover = model.TotalAmountRecover;
-                    stockAdjustment.Reason = model.Reason;
-                    stockAdjustment.AddedBy = model.AddedBy;
+                    return View(model);
+                }
 
-                    stockAdjustment.StockAdjustmentItems.Clear();
+                var stockAdjustment = new StockAdjustment
+                {
+                    Id = model.Id,
+                    BusinessLocationId = model.BusinessLocationId,
+                    AdjustmentTypeId = model.AdjustmentTypeId,
+                    TotalAmountRecover = model.TotalAmountRecover,
+                    Reason = model.Reason,
+                    AddedBy = model.AddedBy,
 
-                    // নতুন Detail Insert
-                    stockAdjustment.StockAdjustmentItems = model.StockAdjustmentItems
+                    StockAdjustmentItems = model.StockAdjustmentItems
                         .Where(x => x.ProductId != Guid.Empty && x.AdjustmentQuantity > 0)
                         .Select(x => new StockAdjustmentItem
                         {
-                            Id = Guid.NewGuid(),
-                            StockAdjustmentId = stockAdjustment.Id,
                             ProductId = x.ProductId,
                             AdjustmentQuantity = (int)x.AdjustmentQuantity,
                             UnitPrice = x.UnitPrice,
                             TotalAmount = x.AdjustmentQuantity * x.UnitPrice
+                        }).ToList()
+                };
 
-                        }).ToList();
+                await _stockAdjustmentManagementService.UpdateStockAdjustmentAsync(stockAdjustment);
 
-                    //await _stockAdjustmentManagementService.UpdateStockAdjustmentAsync(stockAdjustment);
-
-                    return RedirectToAction(nameof(StockAdjustmentList));
-                }
-                catch (Exception ex)
-                {
-                    throw new ApplicationException("Exception Occured:", ex);
-                }
+                return RedirectToAction(nameof(StockAdjustmentList));
             }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Exception Occured:", ex);
+            }
+        }
 
-            private string GenerateReferenceNo()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<JsonResult> DeleteStockAdjustment(Guid id)
+        {
+            try
+            {
+                await _stockAdjustmentManagementService.DeleteStockAdjustmentAsync(id);
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Stock Adjustment deleted successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Stock Adjustment delete failed.");
+
+                return Json(new
+                {
+                    success = false,
+                    message = "Stock Adjustment delete failed."
+                });
+            }
+        }
+
+        [HttpGet]
+        [Authorize(Policy = "ReadPermission")]
+        public async Task<IActionResult> GetStockAdjustmentDetails(Guid id)
+        {
+            var stockAdjustment =
+                await _stockAdjustmentManagementService
+                    .GetStockAdjustmentByIdAsync(id);
+
+            if (stockAdjustment == null)
+                return NotFound();
+
+            return Json(stockAdjustment);
+        }
+
+        private string GenerateReferenceNo()
             {
                 const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
                 var random = new Random();

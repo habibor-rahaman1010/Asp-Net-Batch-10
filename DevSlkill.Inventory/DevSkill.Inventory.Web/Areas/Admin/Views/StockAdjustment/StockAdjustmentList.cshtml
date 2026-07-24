@@ -219,62 +219,72 @@
 
             }).buttons().container().appendTo('#adjustmentTypes_wrapper .col-md-6:eq(0)');
 
-            
-            //This is code delete the adjustment type...
+
             $(document).ready(function () {
-                // Handle the click event on delete buttons in the list
-                $('#adjustmentTypes').on('click', '.show-bs-modal', function (e) {
-                    let id = $(this).data("id");  // Get the ID of the item to delete
-                    $("#delete-id").val(id);  // Set the hidden input value with the ID
-                    $("#delete-modal").modal('show');  // Show the delete confirmation modal
-                });
+                $('#adjustmentTypes').on('click', '.show-bs-modal', function () {
 
-                // Handle the delete confirmation button click
-                $("#warranty-delete").click(function () {
-                    let id = $("#delete-id").val();  // Get the ID from the hidden input
-                    // Send the delete request via AJAX
-                    $.ajax({
-                        url: '/Admin/StockAdjustment/DeleteStockAdjustment',
-                        type: 'POST',
-                        data: {
-                            id: id,
-                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()  // Include anti-forgery token
-                        },
-                        success: function (response) {
-                            if (response.success) {
-                                // Close the modal
-                                $('#delete-modal').modal('hide');
+                    let id = $(this).data("id");
 
-                                // Display toast notification
-                                $('#toastMessage').text(response.message);
-                                $('#adjustmentTypeToast').toast({
-                                    delay: 3000
-                                });
-                                $('#adjustmentTypeToast').toast('show');
-                                // Refresh the DataTable
-                                $('#adjustmentTypes').DataTable().ajax.reload();
-                            }
-                            else {
-                                $('#toastMessage').text(response.message);
-                                $('#adjustmentTypeToast').toast({
-                                    delay: 3000
-                                });
-                                $('#adjustmentTypeToast').toast('show');
-                            }
-                        },
-                        error: function (error) {
-                            if (error.status === 403) {
-                                // Redirect to Access Denied page if the status is 403
-                                window.location.href = '/Account/AccessDenied';
-                            }
-                            else 
-                            {
-                                $('#toastMessage').text('There was an error adding the brand.');
-                                $('#adjustmentTypeToast').toast({
-                                    delay: 3000
-                                });
-                                $('#adjustmentTypeToast').toast('show');
-                            }
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to recover this Stock Adjustment!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, Delete',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+
+                        if (result.isConfirmed) {
+
+                            $.ajax({
+                                url: '/Admin/StockAdjustment/DeleteStockAdjustment',
+                                type: 'POST',
+                                data: {
+                                    id: id,
+                                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                                },
+                                success: function (response) {
+
+                                    if (response.success) {
+
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Deleted!',
+                                            text: response.message,
+                                            timer: 2000,
+                                            showConfirmButton: false
+                                        });
+
+                                        $('#adjustmentTypes')
+                                            .DataTable()
+                                            .ajax.reload(null, false);
+                                    }
+                                    else {
+
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Failed!',
+                                            text: response.message
+                                        });
+                                    }
+                                },
+                                error: function (error) {
+
+                                    if (error.status === 403) {
+                                        window.location.href = '/Account/AccessDenied';
+                                    }
+                                    else {
+
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error!',
+                                            text: 'There was an error deleting the Stock Adjustment.'
+                                        });
+                                    }
+                                }
+                            });
                         }
                     });
                 });
@@ -286,7 +296,7 @@
                 console.log("clicked");
                 var productId = $(this).data().id;
                 $.ajax({
-                    url: `/Admin/StockAdjustment/GetStockAdjustmentyById/${productId}`,
+                    url: `/Admin/StockAdjustment/GetStockAdjustmentDetails/${productId}`,
                     method: 'GET',
                     success: function (data) {
                         console.log(data);

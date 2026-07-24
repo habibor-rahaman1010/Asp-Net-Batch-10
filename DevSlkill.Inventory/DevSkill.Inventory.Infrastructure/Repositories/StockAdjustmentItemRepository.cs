@@ -58,5 +58,18 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
                 throw new ApplicationException("Exception Occured.", ex);
             }
         }
+
+        public Task RemoveRangeAsync(IList<StockAdjustmentItem> stockAdjustmentItems)
+        {
+            try
+            {
+                _inventoryDbContext.StockAdjustmentItems.RemoveRange(stockAdjustmentItems);
+                return Task.CompletedTask;
+            }
+            catch(Exception ex)
+            {
+                throw new ApplicationException("Exception Occured: ", ex);
+            }
+        }
     }
 }
