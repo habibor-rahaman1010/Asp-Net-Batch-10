@@ -203,12 +203,12 @@
                             </button>`;
                         }
                     },
-                    ...[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(function (target) {
+                    ...[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(function (target) {
                         return {
                             targets: target,
                             createdCell: function (td, type, data) {
                                 $(td).addClass('table-row');
-                                $(td).attr('data-id', data[9]);
+                                $(td).attr('data-id', data[10]);
                             }
                         };
                     })
@@ -290,50 +290,110 @@
                 });
             });
 
-
-            // This code for product details
+            // This code for Stock Adjustment details
             $('#adjustmentTypes tbody').on('click', '.table-row', function () {
+
                 console.log("clicked");
-                var productId = $(this).data().id;
+
+                var id = $(this).data("id");
+
+                console.log(id);
+
                 $.ajax({
-                    url: `/Admin/StockAdjustment/GetStockAdjustmentDetails/${productId}`,
+
+                    url: `/Admin/StockAdjustment/GetStockAdjustmentDetails/${id}`,
                     method: 'GET',
+
                     success: function (data) {
                         console.log(data);
+                        // Master Details
 
-                        // Display data or 'N/A' if value is empty
-                        $('#id').text(data.id || 'N/A');
                         $('#ReferenceNo').text(data.referenceNo || 'N/A');
-                        $('#AdjustmentDate').text(data.adjustmentDate ? new Date(data.adjustmentDate).toLocaleString('en-US', { hour12: true }) : 'N/A');
-                        $('#TotalAmount').text(data.totalAmount || 'N/A');
-                        $('#TotalAmountRecover').text(data.totalAmountRecover || 'N/A');
-                        $('#Reason').text(data.reason || 'N/A');
-                        $('#AddedBy').text(data.addedBy || 'N/A');
-                        $('#BusinessLocationName').text(data.businessLocation?.locationName || 'N/A');
-                        $('#AdjustmentTypeName').text(data.adjustmentType?.adjustmentTypeName || 'N/A');
-                        $('#ProductId').text(data.product?.id || 'N/A');
-                        $('#ProductName').text(data.product?.productName || 'N/A');
-                        $('#ProductPrice').text(data.product?.price || 'N/A');
 
-                        $('#ProductTableName').text(data.product?.productName || 'N/A');
-                        $('#ProductQuantity').text(data.adjustmentQuantity || 'N/A');
-                        $('#ProductUnitPrice').text(data.unitPrice || 'N/A');
-                        $('#ProductSubtotal').text(data.totalAmount || 'N/A');
-                        // Show the modal
+                        $('#AdjustmentDate').text(
+                            data.adjustmentDate
+                            ? new Date(data.adjustmentDate).toLocaleString('en-US', { hour12: true })
+                            : 'N/A'
+                        );
+
+                        $('#TotalAmount').text(data.totalAmount ?? 'N/A');
+
+                        $('#TotalAmountRecover').text(data.totalAmountRecover ?? 'N/A');
+
+                        $('#Reason').text(data.reason || 'N/A');
+
+                        $('#AddedBy').text(data.addedBy || 'N/A');
+
+                        $('#BusinessLocationName').text(data.businessLocation?.locationName || 'N/A');
+
+                        $('#AdjustmentTypeName').text(data.adjustmentType?.adjustmentTypeName || 'N/A');
+
+
+                        // Detail Items
+                        let rows = '';
+
+                        data.stockAdjustmentItems.forEach(function(item, index){
+
+                            rows += `
+                                <tr>
+
+                                    <td class="text-center">
+                                        ${index + 1}
+                                    </td>
+
+                                    <td>
+                                        <span class="product-name">
+                                            ${item.productName ?? 'N/A'}
+                                        </span>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <span class="badge bg-primary quantity-badge">
+                                            ${item.adjustmentQuantity}
+                                        </span>
+                                    </td>
+
+                                    <td class="text-end price-text">
+                                        ${Number(item.unitPrice).toFixed(2)}
+                                    </td>
+
+                                    <td class="text-end price-text">
+                                        ${Number(item.totalAmount).toFixed(2)}
+                                    </td>
+
+                                </tr>
+                            `;
+                        });
+
+                        $("#stockAdjustmentItemsTable").html(rows);
+                        // Footer Total
+                        $("#modalTotalAmount").text(Number(data.totalAmount).toFixed(2));
+
+
+                        $('#stockAdjustmentItemsTable').html(rows);
+
+
+                        // Show Modal
+
                         $('#stockAdjustmentDetailModal').modal('show');
                     },
-                    error: function (xhr, status, error) {
-                        if (xhr.status === 403) {
-                            // Redirect to Access Denied page if the status is 403
+
+                    error: function (xhr) {
+
+                        if(xhr.status === 403)
+                        {
                             window.location.href = '/Account/AccessDenied';
                         }
-                        else 
+                        else
                         {
-                            console.error("Error fetching product data:", error);
-                            alert('Failed to load product details.');
+                            console.error(xhr.responseText);
+                            alert('Failed to load stock adjustment details.');
                         }
+
                     }
+
                 });
+
             });
 
 

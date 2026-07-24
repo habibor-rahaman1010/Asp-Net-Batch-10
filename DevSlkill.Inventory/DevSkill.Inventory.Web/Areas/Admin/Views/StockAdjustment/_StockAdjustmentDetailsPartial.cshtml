@@ -1,13 +1,47 @@
-﻿<!-- Stock Adjustment Details Modal -->
+﻿<style>
+
+    #stockAdjustmentDetailsTable {
+        font-size: 14px;
+    }
+
+    #stockAdjustmentDetailsTable thead th {
+        vertical-align: middle;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    #stockAdjustmentDetailsTable td {
+        padding: 12px;
+    }
+
+    .product-name {
+        font-weight: 600;
+    }
+
+    .quantity-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+    }
+
+    .price-text {
+        font-weight: 600;
+    }
+
+</style>
+
+<!-- Stock Adjustment Details Modal -->
 <div id="stockAdjustmentDetailModal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-custom modal-xl" role="document">
         <div class="modal-content">
+
             <div class="modal-header">
                 <h5 class="modal-title">Stock Adjustment Details (Reference No: <span id="ReferenceNo"></span>)</h5>
                 <button type="button" class="close" data-dismiss="modal">
                     &times;
                 </button>
             </div>
+
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-4">
@@ -20,6 +54,7 @@
                         <p><strong>Total Amount Recover:</strong> <span id="TotalAmountRecover"></span></p>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="col-md-4">
                         <p><strong>Reason:</strong> <span id="Reason"></span></p>
@@ -31,40 +66,46 @@
                         <p><strong>Business Location Name:</strong> <span id="BusinessLocationName"></span></p>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="col-md-4">
                         <p><strong>Adjustment Type:</strong> <span id="AdjustmentTypeName"></span></p>
                     </div>
-                    <div class="col-md-4">
-                        <p><strong>Product Id:</strong> <span id="ProductId"></span></p>
-                    </div>
-                    <div class="col-md-4">
-                        <p><strong>Product Name:</strong> <span id="ProductName"></span></p>
-                    </div>
-                    <div class="col-md-4">
-                        <p><strong>Price:</strong> <span id="ProductPrice"></span></p>
-                    </div>
                 </div>
 
-                <!-- Product Table -->
-                <div class="col-sm-12 col-xs-12">
+
+                <!-- Product Details Table -->
+                <div class="col-sm-12 mt-3">
                     <div class="table-responsive">
-                        <table class="table table-condensed bg-gray">
-                            <tbody>
-                                <tr class="bg-green">
-                                    <th>Product</th>
-                                    <th>Quantity</th>
-                                    <th>Unit Price</th>
-                                    <th>Subtotal</th>
-                                </tr>
+
+                        <table class="table table-bordered table-hover align-middle"
+                               id="stockAdjustmentDetailsTable">
+
+                            <thead class="table-dark">
                                 <tr>
-                                    <td id="ProductTableName"></td>
-                                    <td id="ProductQuantity"></td>
-                                    <td id="ProductUnitPrice"></td>
-                                    <td id="ProductSubtotal"></td>
+                                    <th style="width:5%">#</th>
+                                    <th style="width:40%">Product</th>
+                                    <th style="width:15%" class="text-center">Quantity</th>
+                                    <th style="width:20%" class="text-end">Unit Price</th>
+                                    <th style="width:20%" class="text-end">Subtotal</th>
                                 </tr>
+                            </thead>
+
+                            <tbody id="stockAdjustmentItemsTable">
                             </tbody>
+
+                            <tfoot>
+                                <tr class="fw-bold">
+                                    <td colspan="4" class="text-end">
+                                        Total Amount
+                                    </td>
+                                    <td class="text-end" id="modalTotalAmount">
+                                    </td>
+                                </tr>
+                            </tfoot>
+
                         </table>
+
                     </div>
                 </div>
 
