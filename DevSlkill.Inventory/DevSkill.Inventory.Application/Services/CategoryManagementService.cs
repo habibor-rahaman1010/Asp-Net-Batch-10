@@ -40,6 +40,18 @@ namespace DevSkill.Inventory.Application.Services
             return await _categoryUnitOfWork.CategoryRepository.GetByIdAsync(id);
         }
 
+        public async Task<int> GetTotalCategoryCount()
+        {
+            try
+            {
+                return await _categoryUnitOfWork.CategoryRepository.GetCountAsync();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public async Task UpdateCategoryAsync(Category category)
         {
             await _categoryUnitOfWork.CategoryRepository.EditAsync(category);

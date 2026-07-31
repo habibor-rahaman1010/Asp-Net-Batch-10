@@ -1,10 +1,5 @@
 ﻿using DevSkill.Inventory.Domain;
 using DevSkill.Inventory.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DevSkill.Inventory.Application.ServicesContract
 {
@@ -16,5 +11,6 @@ namespace DevSkill.Inventory.Application.ServicesContract
         Task AddCategoryAsync(Category category);
         Task DeleteCategoryAsync(Guid id);
         Task UpdateCategoryAsync(Category category);
+        public Task<int> GetTotalCategoryCount();
     }
 }

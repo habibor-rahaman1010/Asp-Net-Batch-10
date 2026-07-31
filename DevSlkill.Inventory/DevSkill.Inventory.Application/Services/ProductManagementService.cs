@@ -62,6 +62,18 @@ namespace DevSkill.Inventory.Application.Services
             return await _productUnitOfWork.GetPagedProductUsingSPAsync(pageIndex, pageSize, search, order);
         }
 
+        public async Task<int> GetTotalProductCount()
+        {
+            try
+            {
+                return await _productUnitOfWork.ProductRepository.GetCountAsync();
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
         //public async Task<bool> HasStockAdjustmentsAsync(Guid productId)
         //{
         //    return await _productUnitOfWork.StockAdjustmentRepository.HasStockAdjustmentsAsync(productId);

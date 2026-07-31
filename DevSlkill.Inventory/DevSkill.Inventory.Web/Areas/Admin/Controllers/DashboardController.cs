@@ -11,11 +11,23 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
     public class DashboardController : Controller
     {
         private readonly IUserActivityManagementService _userActivityManagementService;
+        private readonly IProductManagementService _productManagementService;
+        private readonly ICategoryManagementService _categoryManagementService;
         private readonly ApplicationUserManager _applicationUserManager;
+        private readonly IBrandManagementService _brandManagementService;
+        private readonly IBusinessLocationManagementService _businessLocationManagementService;
 
         public DashboardController(IUserActivityManagementService userActivityManagementService,
+            IBrandManagementService brandManagementService,
+            IBusinessLocationManagementService businessLocationManagementService,
+            IProductManagementService productManagementService,
+            ICategoryManagementService categoryManagementService,
             ApplicationUserManager applicationUserManager)
         {
+            _productManagementService = productManagementService;
+            _brandManagementService = brandManagementService;
+            _businessLocationManagementService = businessLocationManagementService;
+            _categoryManagementService = categoryManagementService;
             _userActivityManagementService = userActivityManagementService;
             _applicationUserManager = applicationUserManager;
         }
@@ -24,11 +36,15 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         {
             var model = new DashboardViewModel
             {
+                TotalProducts = await _productManagementService.GetTotalProductCount(),
+                TotalCategoris = await _categoryManagementService.GetTotalCategoryCount(),
                 TotalUsers = await _applicationUserManager.Users.CountAsync(),
                 BounceRate = await _userActivityManagementService.CalculateBounceRate(),
                 EngagementRate = await _userActivityManagementService.CalculateEngagementRateAsync(),
                 ActiveUsers = await _userActivityManagementService.GetActiveUserCountAsync(),
-                UniqueVisitors = await _userActivityManagementService.GetUniqueVisitors()
+                UniqueVisitors = await _userActivityManagementService.GetUniqueVisitors(),
+                TotalBrands = await _brandManagementService.GetTotalBrandCount(),
+                TotalWarehouse = await _businessLocationManagementService.GetTotalWarehouseCount(),
             };
 
             return View(model);

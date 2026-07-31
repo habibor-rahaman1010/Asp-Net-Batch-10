@@ -5,39 +5,69 @@
 }
 
 <!-- Content Header (Page header) -->
+
 <div class="content-header">
     <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
+        <div class="row align-items-center mb-2">
+
+            <!-- Left -->
+            <div class="col-md-4">
                 <h1 class="m-0">Dashboard</h1>
-            </div><!-- /.col -->
-            <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-right">
+            </div>
+
+            <!-- Center -->
+            <div class="col-md-4 text-center">
+                <h4 id="liveClock" class="mb-0 font-weight-bold text-primary"></h4>
+            </div>
+
+            <!-- Right -->
+            <div class="col-md-4">
+                <ol class="breadcrumb float-sm-right mb-0">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">Dashboard v1</li>
+                    <li class="breadcrumb-item active">Dashboard</li>
                 </ol>
-            </div><!-- /.col -->
-        </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
+            </div>
+
+        </div>
+    </div>
 </div>
+
+
 <!-- /.content-header -->
 <!-- Main content -->
 <section class="content">
     <div class="container-fluid">
         <!-- Small boxes (Stat box) -->
         <div class="row">
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-info">
-                    <div class="inner">
-                        <h3>150</h3>
+            
+            <!-- Total Products -->
+            <div class="col-lg-3 col-6"> <!-- small box --> 
+                <div class="small-box bg-info"> 
+                    <div class="inner"> 
+                        <h3>@Model.TotalProducts</h3> 
+                        <p>Available Products</p> 
+                    </div>
+                        <div class="icon">
+                        <i class="fas fa-boxes"></i>
+                    </div> 
+                    <a href="#" class="small-box-footer">More info 
+                        <i class="fas fa-arrow-circle-right"></i></a> 
+                   </div>
+            </div>
 
-                        <p>New Orders</p>
+            <!-- Total Categories -->
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-orange">
+                    <div class="inner">
+                        <h3 class="text-white">@Model.TotalCategoris</h3>
+                        <p>Categories</p>
                     </div>
                     <div class="icon">
-                        <i class="ion ion-bag"></i>
+                        <i class="fas fa-tags"></i>
                     </div>
-                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a href="#" class="small-box-footer">
+                        More info <i class="fas fa-arrow-circle-right"></i>
+                    </a>
                 </div>
             </div>
 
@@ -74,6 +104,21 @@
             <!-- ./col -->
             <div class="col-lg-3 col-6">
                 <!-- small box -->
+                <div class="small-box bg-teal">
+                    <div class="inner">
+                        <h3>@Model.TotalWarehouse</h3>
+                        <p>Warehouse</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-warehouse"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
                 <div class="small-box bg-secondary">
                     <div class="inner">
                         <h3>@Model.ActiveUsers</h3>
@@ -90,7 +135,7 @@
             <!-- ./col -->
             <div class="col-lg-3 col-6">
                 <!-- small box -->
-                <div class="small-box bg-secondary">
+                <div class="small-box bg-teal">
                     <div class="inner">
                         <h3 id="activeUsers">0</h3>
                         <p>Online Users</p>
@@ -107,7 +152,7 @@
                 <!-- small box -->
                 <div class="small-box bg-warning">
                     <div class="inner">
-                        <h3>@Model.TotalUsers</h3>
+                        <h3 class="text-white">@Model.TotalUsers</h3>
 
                         <p>User Registrations</p>
                     </div>
@@ -133,12 +178,28 @@
                     <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
+
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>@Model.TotalBrands</h3>
+
+                        <p>Brands</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
             <!-- ./col -->
         </div>
 
 
         <!-- Main row -->
-        <div class="row">
+        @* <div class="row">
             <!-- Left col -->
             <section class="col-lg-7 connectedSortable">
                 <!-- Custom tabs (Charts with tabs)-->
@@ -312,8 +373,9 @@
                 <!-- /.card -->
             </section>
             <!-- right col -->
-        </div>
+        </div> *@
         <!-- /.row (main row) -->
+
     </div><!-- /.container-fluid -->
 </section>
 <!-- /.content -->
@@ -335,6 +397,27 @@
         connection.start()
         .then(() => console.log("Connected"))
         .catch(err => console.error(err));
+
+        //This is my application watch
+        function updateClock() {
+            const now = new Date();
+
+            const options = {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            };
+
+            const date = now.toLocaleDateString('en-US', options);
+            const time = now.toLocaleTimeString('en-US');
+
+            document.getElementById("liveClock").innerHTML =
+                `<i class="far fa-clock"></i> ${date} | ${time}`;
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
 
     </script>
 }
