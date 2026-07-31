@@ -1,4 +1,5 @@
 ﻿using DevSkill.Inventory.Domain;
+using DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites;
 using DevSkill.Inventory.Domain.Entities.StockTransferEntities;
 using DevSkill.Inventory.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -51,6 +52,19 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
             catch(Exception ex)
             {
                 throw new ApplicationException("Exception Occured: ", ex);
+            }
+        }
+
+        public Task RemoveRangeAsync(IList<StockTransferItem> stockTransferItems)
+        {
+            try
+            {
+                _inventoryDbContext.StockTransferItems.RemoveRange(stockTransferItems);
+                return Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
     }

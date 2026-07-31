@@ -150,19 +150,19 @@
                         orderable: false,
                         targets: 8,
                         render: function (data, type, row) {
-                            console.log(row);
-                            return `<button type="button" class="btn btn-info btn-sm edit-category" data-id='${data}' data-toggle="modal" data-target="#editCategoryModal">
-                                                <i class="fas fa-pencil-alt"></i> Edit
-                                            </button>
+                            console.log(data);
+                            return `<a href="/Admin/StockTransfer/UpdateStockTransfer/${data}"
+                                       class="btn btn-info btn-sm mr-1">
+                                        <i class="fas fa-edit"></i> Edit
+                                     </a>
 
-                                            <button type="submit" class="btn btn-danger btn-sm show-bs-modal" data-id='${data}' value='${data}'>
-                                                <i class="fas fa-trash">
-                                                </i>
-                                                Delete
-                                            </button>`;
+                                    <button type="submit" class="btn btn-danger btn-sm show-bs-modal" data-id='${data}' value='${data}'>
+                                        <i class="fas fa-trash">
+                                        </i>
+                                        Delete
+                                    </button>`;
                         }
                     },
-
                 ],
 
                 dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',

@@ -2,6 +2,7 @@
 using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Domain.Entities.StockTransferEntities;
 using DevSkill.Inventory.Domain.Enums;
+using DevSkill.Inventory.Infrastructure.RazorUtility;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -125,12 +126,125 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                             HttpUtility.HtmlEncode(record.StockTransfer.TransferDate),
                             HttpUtility.HtmlEncode(record.StockTransfer.Status),
                             HttpUtility.HtmlEncode(record.StockTransfer.Remarks),
-                            HttpUtility.HtmlEncode(record.Id.ToString())
+                            HttpUtility.HtmlEncode(record.StockTransferId.ToString())
                         }
                     ).ToArray()
             };
 
             return Json(stockTransferJsonData);
+        }
+
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> UpdateStockTransfer(Guid id)
+        {
+            var stockTransfer = await _stockTransferManagementService.GetStockTransferByIdAsync(id);
+
+            if (stockTransfer == null)
+            {
+                return NotFound();
+            }
+
+            var model = new StockTransferUpdateModel
+            {
+                Id = stockTransfer.Id,
+                FromWarehouseId = stockTransfer.FromWarehouseId,
+                ToWarehouseId = stockTransfer.ToWarehouseId,
+                TransferNo = stockTransfer.TransferNo,
+                TransferDate = stockTransfer.TransferDate,
+                StockTransferStatus = stockTransfer.Status,
+                Remarks = stockTransfer.Remarks,
+                StockTransferItems = stockTransfer.StockTransferItems.Select(x => new StockTransferItemModel
+                {
+                    ProductId = x.ProductId,
+                    Quantity = x.Quantity,
+                    UnitId = x.Product.UnitId
+
+                }).ToList()
+            };
+
+            model.SetFromWarehouseValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
+
+            model.SetToWarehouseValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
+
+            model.StockTransferStatuses = Utility.ConvertEnumToSelectList<StockTransferStatus>();
+
+            foreach (var item in model.StockTransferItems)
+            {
+                item.SetUnitValues(await _unitManagementService.GetAllUnitAsync());
+
+                item.SetProductValues((await _productManagementService.GetAllProductByWarehouseAsync(model.FromWarehouseId)).ToList());
+            }
+
+            model.SetFromWarehouseValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
+
+            model.SetToWarehouseValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
+
+            model.StockTransferStatuses = Utility.ConvertEnumToSelectList<StockTransferStatus>();
+
+            foreach (var item in model.StockTransferItems)
+            {
+                item.SetUnitValues(await _unitManagementService.GetAllUnitAsync());
+                item.SetProductValues((await _productManagementService.GetAllProductByWarehouseAsync(stockTransfer.FromWarehouse.Id)).ToList());
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> UpdateStockTransfer(StockTransferUpdateModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    model.SetFromWarehouseValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
+                    model.SetToWarehouseValues(await _businessLocationManagementService.GetAllBusinessLocationAsync());
+                    model.StockTransferStatuses = Utility.ConvertEnumToSelectList<StockTransferStatus>();
+
+                    var products = (await _productManagementService.GetAllProductByWarehouseAsync(model.FromWarehouseId)).ToList();
+                    var units = (await _unitManagementService.GetAllUnitAsync()).ToList();
+
+                    foreach (var item in model.StockTransferItems)
+                    {
+                        item.SetUnitValues(units);
+                        item.SetProductValues(products);
+                    }
+
+                    return View(model);
+                }
+
+                var stockTransfer = new StockTransfer
+                {
+                    Id = model.Id,
+                    FromWarehouseId = model.FromWarehouseId,
+                    ToWarehouseId = model.ToWarehouseId,
+                    TransferNo = model.TransferNo,
+                    TransferDate = model.TransferDate,
+                    Status = model.StockTransferStatus,
+                    Remarks = model.Remarks,
+
+                    StockTransferItems = model.StockTransferItems
+                        .Where(x => x.ProductId != Guid.Empty && x.Quantity > 0)
+                        .Select(x => new StockTransferItem
+                        {
+                            Id = Guid.NewGuid(),
+                            StockTransferId = model.Id,
+                            ProductId = x.ProductId,
+                            Quantity = x.Quantity
+
+                        }).ToList()
+                };
+
+                await _stockTransferManagementService.UpdateStockTransferAsync(stockTransfer);
+
+                return RedirectToAction(nameof(GetStockTransferList));
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Exception Occurred: ", ex);
+            }
         }
 
 

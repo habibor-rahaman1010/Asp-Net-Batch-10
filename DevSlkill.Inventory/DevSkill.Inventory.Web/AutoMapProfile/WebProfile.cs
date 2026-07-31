@@ -51,7 +51,6 @@ namespace DevSkill.Inventory.Web.AutoMapProfile
             CreateMap<SellingPriceTaxUpdateModel, SellingPriceTax>().ReverseMap();
 
             CreateMap<UserUpdateModel, ApplicationUser>().ReverseMap();
-
         }
     }
 }

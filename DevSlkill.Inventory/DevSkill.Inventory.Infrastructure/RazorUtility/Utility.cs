@@ -56,7 +56,7 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
                          select new SelectListItem(c.UnitName, c.Id.ToString()))
                          .ToList();
 
-            Items.Insert(0, new SelectListItem("--Select--", string.Empty));
+            Items.Insert(0, new SelectListItem("-- Select --", string.Empty));
 
             return Items;
         }
@@ -134,7 +134,7 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
                          select new SelectListItem(c.ProductName, c.Id.ToString()))
                          .ToList();
 
-            Items.Insert(0, new SelectListItem("-- Select --", string.Empty));
+            Items.Insert(0, new SelectListItem("-- Product Select --", string.Empty));
 
             return Items;
         }

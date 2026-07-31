@@ -14,6 +14,23 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
             _inventoryDbContext = context;
         }
 
+        public async Task<StockTransfer> GetStockTransferByIdAsync(Guid id)
+        {
+            try
+            {
+                return await _inventoryDbContext.StockTransfers
+                .Include(x => x.FromWarehouse)
+                .Include(x => x.ToWarehouse)
+                .Include(x => x.StockTransferItems)
+                    .ThenInclude(x => x.Product)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public async Task<(IList<StockTransfer> data, int total, int totalDisplay)> GetStockTransferListAsync(int pageIndex, int pageSize, DataTablesSearch search, string? order)
         {
             try

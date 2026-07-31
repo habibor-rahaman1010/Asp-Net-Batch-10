@@ -1,0 +1,348 @@
+﻿@model StockTransferUpdateModel;
+
+@{
+    ViewData["Title"] = "Update Stock Transfer";
+}
+
+@{
+    var hasItems = Model.StockTransferItems != null && Model.StockTransferItems.Any();
+
+    var productOptions = hasItems
+        ? string.Join("", Model.StockTransferItems[0].Products.Select(x =>
+            $"<option value='{x.Value}'>{x.Text}</option>"))
+        : "";
+
+    var unitOptions = hasItems
+        ? string.Join("", Model.StockTransferItems[0].Units.Select(x =>
+            $"<option value='{x.Value}'>{x.Text}</option>"))
+        : "";
+
+    var fromWarehouseName = Model.FromWarehouses?.FirstOrDefault(x => x.Value == Model.FromWarehouseId.ToString())?.Text;
+    var toWarehouseName = Model.ToWarehouses?.FirstOrDefault(x => x.Value == Model.ToWarehouseId.ToString())?.Text;
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="StockTransfer" asp-action="UpdateStockTransfer" method="post" enctype="multipart/form-data">
+
+            <input type="hidden" asp-for="Id" />
+
+            <!-- Header -->
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Update Stock Transfer</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="TransferNo"></label>
+                                <input asp-for="TransferNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="TransferDate">Transfer Date*</label>
+                                <input type="datetime-local" asp-for="TransferDate" class="form-control" />
+                                <span asp-validation-for="TransferDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>From Warehouse*</label>
+                                <input type="text" class="form-control" value="@fromWarehouseName" readonly />
+                                <input type="hidden" asp-for="FromWarehouseId" id="FromWarehouseId" />
+                                <span asp-validation-for="FromWarehouseId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>To Warehouse*</label>
+                                <input type="text" class="form-control" value="@toWarehouseName" readonly />
+                                <input type="hidden" asp-for="ToWarehouseId" id="ToWarehouseId" />
+                                <span asp-validation-for="ToWarehouseId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-4 mb-3 px-3">
+                            <div class="form-group">
+                                <label asp-for="StockTransferStatus">Product Status*</label>
+                                <select asp-for="StockTransferStatus" asp-items="Model.StockTransferStatuses" class="form-control"></select>
+                                <span asp-validation-for="StockTransferStatus" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="Remarks"></label>
+                                <textarea asp-for="Remarks" class="form-control" rows="3"></textarea>
+                                <span asp-validation-for="Remarks" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Products -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
+                        <h3 class="card-title">Products</h3>
+                        <button id="btnAddProduct" type="button" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus"></i> Add Product
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th width="35%">Product</th>
+                                <th width="20%">Available Qty</th>
+                                <th width="20%">Transfer Qty</th>
+                                <th width="15%">Unit</th>
+                                <th width="10%">Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="productTableBody">
+                            @if (Model.StockTransferItems != null)
+                            {
+                                for (var i = 0; i < Model.StockTransferItems.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                            <select asp-for="StockTransferItems[i].ProductId"
+                                                    asp-items="Model.StockTransferItems[i].Products"
+                                                    class="form-control product-select">
+                                            </select>
+                                            <span asp-validation-for="StockTransferItems[i].ProductId" class="text-danger"></span>
+                                        </td>
+
+                                        <td>
+                                            <input type="text" class="form-control available-qty" value="0" readonly />
+                                        </td>
+
+                                        <td>
+                                            <input asp-for="StockTransferItems[i].Quantity" class="form-control transfer-qty" type="number" step="any" />
+                                            <span asp-validation-for="StockTransferItems[i].Quantity" class="text-danger"></span>
+                                        </td>
+
+                                        <td>
+                                            <div class="form-group">
+                                                <select asp-for="StockTransferItems[i].UnitId"
+                                                        asp-items="Model.StockTransferItems[i].Units"
+                                                        class="form-control unit-select">
+                                                </select>
+                                                <span asp-validation-for="StockTransferItems[i].UnitId" class="text-danger"></span>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <button type="button" class="btn btn-danger btn-sm btnRemoveRow">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Update Transfer</button>
+                    <a asp-action="Index" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        var rowIndex = @(Model.StockTransferItems?.Count ?? 0);
+
+        function updateDeleteButtons() {
+            if ($("#productTableBody tr").length <= 1) {
+                $(".btnRemoveRow").prop("disabled", true);
+            } else {
+                $(".btnRemoveRow").prop("disabled", false);
+            }
+        }
+
+        function reIndexRows() {
+            $("#productTableBody tr").each(function (index) {
+                $(this).find("[name]").each(function () {
+                    var name = $(this).attr("name");
+                    if (name) {
+                        name = name.replace(/StockTransferItems\[\d+\]/, "StockTransferItems[" + index + "]");
+                        $(this).attr("name", name);
+                    }
+                });
+
+                $(this).find("[data-valmsg-for]").each(function () {
+                    var valFor = $(this).attr("data-valmsg-for");
+                    if (valFor) {
+                        valFor = valFor.replace(/StockTransferItems\[\d+\]/, "StockTransferItems[" + index + "]");
+                        $(this).attr("data-valmsg-for", valFor);
+                    }
+                });
+            });
+
+            rowIndex = $("#productTableBody tr").length;
+        }
+
+        function fetchProductInfo(row, productId, warehouseId) {
+            if (!productId) return;
+
+            $.get('/Admin/Product/GetProductInfo', { productId: productId, warehouseId: warehouseId }, function (response) {
+                if (response) {
+                    row.find('.available-qty').val(response.availableQuantity || 0);
+                    if (response.unitId) {
+                        row.find('.unit-select').val(response.unitId);
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            updateDeleteButtons();
+
+            // Initial load for existing rows available quantity
+            var currentWarehouseId = $("#FromWarehouseId").val();
+            $("#productTableBody tr").each(function () {
+                var row = $(this);
+                var productId = row.find('.product-select').val();
+                if (productId) {
+                    fetchProductInfo(row, productId, currentWarehouseId);
+                }
+            });
+
+            // Add Product Row
+            $("#btnAddProduct").click(function () {
+                var row = `
+                <tr>
+                    <td>
+                        <select name="StockTransferItems[${rowIndex}].ProductId" class="form-control product-select">
+                            @Html.Raw(productOptions)
+                        </select>
+                    </td>
+
+                    <td>
+                        <input class="form-control available-qty" value="0" readonly />
+                    </td>
+
+                    <td>
+                        <input name="StockTransferItems[${rowIndex}].Quantity" type="number" step="any" class="form-control transfer-qty" value="0" />
+                    </td>
+
+                    <td>
+                        <div class="form-group mb-0">
+                            <select name="StockTransferItems[${rowIndex}].UnitId" class="form-control unit-select">
+                                @Html.Raw(unitOptions)
+                            </select>
+                        </div>
+                    </td>
+
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm btnRemoveRow">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>`;
+
+                $("#productTableBody").append(row);
+                rowIndex++;
+                updateDeleteButtons();
+            });
+
+            // Remove Product Row
+            $(document).on("click", ".btnRemoveRow", function () {
+                if ($("#productTableBody tr").length > 1) {
+                    $(this).closest("tr").remove();
+                    reIndexRows();
+                    updateDeleteButtons();
+                }
+            });
+
+            // Product Selection Change & Duplicate Check
+            $(document).on('change', '.product-select', function () {
+                var currentSelect = $(this);
+                var selectedProductId = currentSelect.val();
+                var row = currentSelect.closest('tr');
+                var warehouseId = $("#FromWarehouseId").val();
+
+                if (!selectedProductId) {
+                    row.find('.available-qty').val(0);
+                    return;
+                }
+
+                // Check for duplicate products
+                var isDuplicate = false;
+                $('.product-select').not(currentSelect).each(function () {
+                    if ($(this).val() === selectedProductId) {
+                        isDuplicate = true;
+                        return false; // loop break
+                    }
+                });
+
+                if (isDuplicate) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Duplicate Product',
+                        text: 'This product has already been selected in another row.'
+                    });
+
+                    // Reset selection and quantity
+                    currentSelect.val('');
+                    row.find('.available-qty').val(0);
+                    return;
+                }
+
+                fetchProductInfo(row, selectedProductId, warehouseId);
+            });
+
+            // Transfer Qty Input Validation
+            $(document).on('input', '.transfer-qty', function () {
+                var row = $(this).closest('tr');
+                var availableQty = parseFloat(row.find('.available-qty').val()) || 0;
+                var transferQty = parseFloat($(this).val()) || 0;
+
+                if (transferQty < 0) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Quantity',
+                        text: 'Transfer Qty cannot be negative.'
+                    });
+                    $(this).val(0);
+                    return;
+                }
+
+                if (transferQty > availableQty) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Stock Exceeded',
+                        text: 'Transfer Qty cannot be greater than Available Qty.'
+                    });
+                    $(this).val(availableQty);
+                }
+            });
+        });
+    </script>
+}
