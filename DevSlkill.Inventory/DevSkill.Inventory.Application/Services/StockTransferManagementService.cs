@@ -132,5 +132,41 @@ namespace DevSkill.Inventory.Application.Services
                 throw new ApplicationException("Exception Occured: ", ex);
             }
         }
+
+        public async Task<bool> DeleteStockTransferAsync(Guid id)
+        {
+            await _stockTransferUnitOfWork.BeginTransactionAsync();
+
+            try
+            {
+                var stockTransfer = await _stockTransferUnitOfWork
+                    .StockTransferRepository
+                    .GetStockTransferByIdAsync(id);
+
+                if (stockTransfer == null)
+                {
+                    throw new InvalidOperationException("Stock Adjustment not found.");
+                }
+         
+                // Delete Details
+                await _stockTransferUnitOfWork
+                    .StockTransferItemRepository
+                    .RemoveRangeAsync(stockTransfer.StockTransferItems.ToList());
+
+                // Delete Master
+                await _stockTransferUnitOfWork
+                    .StockTransferRepository
+                    .RemoveAsync(stockTransfer);
+
+                await _stockTransferUnitOfWork.CommitTransactionAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await _stockTransferUnitOfWork.RollbackTransactionAsync();
+                throw new ApplicationException("Exception Occured: ", ex);
+            }
+        }
     }
 }

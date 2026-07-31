@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DevSkill.Inventory.Application.Services;
 using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Domain.Entities.StockTransferEntities;
 using DevSkill.Inventory.Domain.Enums;
@@ -18,17 +19,20 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         private readonly IProductManagementService _productManagementService;
         private readonly IStockTransferManagementService _stockTransferManagementService;
         private readonly IMapper _mapper;
+        private readonly ILogger<StockTransferController> _logger;
 
         public StockTransferController(IBusinessLocationManagementService businessLocationManagementService,
             IProductManagementService productManagementService,
             IStockTransferManagementService stockAdjustmentManagementService,
             IMapper mapper,
+            ILogger<StockTransferController> logger,
             IUnitManagementService unitManagementService)
         {
             _unitManagementService = unitManagementService;
             _productManagementService = productManagementService;
             _stockTransferManagementService = stockAdjustmentManagementService;
             _mapper = mapper;
+            _logger = logger;
             _businessLocationManagementService = businessLocationManagementService;
         }
 
@@ -83,7 +87,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                         }).ToList()
                 };
                 await _stockTransferManagementService.CreateStockTransferAsync(stockTransfer);
-                return View(model);
+                return RedirectToAction(nameof(GetStockTransferList));
             }
             catch (Exception ex)
             {
@@ -244,6 +248,33 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             catch (Exception ex)
             {
                 throw new ApplicationException("Exception Occurred: ", ex);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<JsonResult> DeleteStockTransferAsync(Guid id)
+        {
+            try
+            {
+                await _stockTransferManagementService.DeleteStockTransferAsync(id);
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Stock Adjustment deleted successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Stock Adjustment delete failed.");
+
+                return Json(new
+                {
+                    success = false,
+                    message = "Stock Adjustment delete failed."
+                });
             }
         }
 
