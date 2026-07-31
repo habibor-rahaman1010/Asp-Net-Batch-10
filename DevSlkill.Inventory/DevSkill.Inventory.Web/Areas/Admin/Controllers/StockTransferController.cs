@@ -278,6 +278,56 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             }
         }
 
+        [HttpGet]
+        [Authorize(Policy = "ReadPermission")]
+        public async Task<IActionResult> GetStockTransferDetails(Guid id)
+        {
+            var stockTransfer = await _stockTransferManagementService
+                .GetStockTransferByIdAsync(id);
+
+            if (stockTransfer == null)
+            {
+                return NotFound();
+            }
+
+            var result = new
+            {
+                id = stockTransfer.Id,
+                transferNo = stockTransfer.TransferNo,
+                transferDate = stockTransfer.TransferDate,
+                remarks = stockTransfer.Remarks,
+                status = stockTransfer.Status.ToString(),
+
+                fromWarehouse = new
+                {
+                    id = stockTransfer.FromWarehouseId,
+                    locationName = stockTransfer.FromWarehouse?.LocationName
+                },
+
+                toWarehouse = new
+                {
+                    id = stockTransfer.ToWarehouseId,
+                    locationName = stockTransfer.ToWarehouse?.LocationName
+                },
+
+                totalQuantity = stockTransfer.StockTransferItems?.Sum(x => x.Quantity) ?? 0,
+                totalAmount = stockTransfer.StockTransferItems?.Sum(x => x.Quantity * (int)(x.Product?.Price ?? 0)) ?? 0,
+
+                stockTransferItems = stockTransfer.StockTransferItems?
+                    .Select(x => new
+                    {
+                        id = x.Id,
+                        productId = x.ProductId,
+                        productName = x.Product?.ProductName,
+                        quantity = x.Quantity,
+                        unitPrice = x.Product?.Price ?? 0,
+                        subtotal = x.Quantity * (int)(x.Product?.Price ?? 0)
+
+                    }).ToList()
+            };
+
+            return Json(result);
+        }
 
         private string GenerateTransferNo()
         {
