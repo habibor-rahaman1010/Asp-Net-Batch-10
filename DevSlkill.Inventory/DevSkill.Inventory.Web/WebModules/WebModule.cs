@@ -174,6 +174,67 @@ namespace DevSkill.Inventory.Web.WebModules
                 .As<IStockTransferManagementService>()
                 .InstancePerLifetimeScope();
 
+            //Sales Management module registration
+            builder.RegisterType<CustomerRepository>()
+                .As<ICustomerRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<CustomerManagementService>()
+                .As<ICustomerManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<PaymentTermRepository>()
+                .As<IPaymentTermRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<PaymentTermManagementService>()
+                .As<IPaymentTermManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<PriceListRepository>()
+                .As<IPriceListRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<PriceListItemRepository>()
+                .As<IPriceListItemRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<PriceListManagementService>()
+                .As<IPriceListManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<DiscountRuleRepository>()
+                .As<IDiscountRuleRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<DiscountRuleManagementService>()
+                .As<IDiscountRuleManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<ProformaInvoiceRepository>()
+                .As<IProformaInvoiceRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<ProformaInvoiceItemRepository>()
+                .As<IProformaInvoiceItemRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<ProformaInvoiceManagementService>()
+                .As<IProformaInvoiceManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<DeliveryRepository>()
+                .As<IDeliveryRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<DeliveryItemRepository>()
+                .As<IDeliveryItemRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<DeliveryManagementService>()
+                .As<IDeliveryManagementService>()
+                .InstancePerLifetimeScope();
+
             builder.RegisterType<EmailUtility>()
                 .As<IEmailUtility>()
                 .InstancePerLifetimeScope();

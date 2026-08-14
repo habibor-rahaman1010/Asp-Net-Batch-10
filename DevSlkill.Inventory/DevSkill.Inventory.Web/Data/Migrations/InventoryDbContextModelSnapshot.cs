@@ -46,21 +46,21 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("85870ef8-4a5d-4800-afcc-0f5696781315"),
+                            Id = new Guid("c131bf40-058a-4c00-a68b-bf13d8fbf907"),
                             ApplicableTaxName = "Food",
                             Description = "",
                             TaxRate = 0m
                         },
                         new
                         {
-                            Id = new Guid("c6cb321b-984a-4ddc-a56a-1eb51e819cf8"),
+                            Id = new Guid("203e2e10-8b9d-4109-870b-e8cb781ea1be"),
                             ApplicableTaxName = "Sales Tax",
                             Description = "",
                             TaxRate = 0m
                         },
                         new
                         {
-                            Id = new Guid("25f90c9e-8075-40a4-a7c6-1ef73d6f3db3"),
+                            Id = new Guid("c8498195-b188-43b3-add3-7f4c9e9b2d7a"),
                             ApplicableTaxName = "Fruits",
                             Description = "",
                             TaxRate = 0m
@@ -123,21 +123,21 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("bac35c3f-e99f-41a4-89f2-3bc96bdcc0ff"),
+                            Id = new Guid("4dcbdbe1-183d-4828-83c9-273871ce3d7d"),
                             BarcodeDescription = "",
                             BarcodeTypeCode = "",
                             BarcodeTypeName = "QR Code"
                         },
                         new
                         {
-                            Id = new Guid("3d7e6611-66d3-4eb1-95f7-b6476cf8105e"),
+                            Id = new Guid("6cdf39af-3d83-4ef3-8b02-ae6c64a6f523"),
                             BarcodeDescription = "",
                             BarcodeTypeCode = "",
                             BarcodeTypeName = "UPC"
                         },
                         new
                         {
-                            Id = new Guid("02191cb6-76a8-453c-9448-dde3b7d8f3db"),
+                            Id = new Guid("c65ed4ea-6ea2-4efb-b1c7-e67a7ab5d070"),
                             BarcodeDescription = "",
                             BarcodeTypeCode = "",
                             BarcodeTypeName = "NFC"
@@ -169,21 +169,21 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("9ac5c6a6-25ec-4125-b4c1-169a6f1a1eb2"),
+                            Id = new Guid("74b9a5ef-d2f3-4539-984c-100fd5091a8c"),
                             BandOrigin = "",
                             BrandName = "Apple",
                             Description = ""
                         },
                         new
                         {
-                            Id = new Guid("26ae02a8-c057-4d00-b39f-5061625390e1"),
+                            Id = new Guid("c752f202-3076-4931-927b-d1427d8a28d5"),
                             BandOrigin = "",
                             BrandName = "Samsung",
                             Description = ""
                         },
                         new
                         {
-                            Id = new Guid("26bbc91d-b814-48a1-84d0-86ff56fa8dc1"),
+                            Id = new Guid("02e880eb-2788-452f-9e8a-43e6060c5ab3"),
                             BandOrigin = "",
                             BrandName = "Sony",
                             Description = ""
@@ -208,6 +208,10 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
                     b.Property<string>("LocationName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -227,30 +231,33 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("979ecd93-3339-48ba-9e1f-9c97e212cfa1"),
+                            Id = new Guid("4e074ecc-ce90-49e4-98ae-d8bfaefe2169"),
                             Address = "",
                             City = "",
                             Country = "",
+                            IsActive = true,
                             LocationName = "Warehouse A",
                             State = "",
                             ZipCode = ""
                         },
                         new
                         {
-                            Id = new Guid("94283cb7-e503-4abe-9dba-c43fffdd05f4"),
+                            Id = new Guid("d5a51edf-3bf8-48ac-8c84-6bb11d678fe6"),
                             Address = "",
                             City = "",
                             Country = "",
+                            IsActive = true,
                             LocationName = "Warehouse B",
                             State = "",
                             ZipCode = ""
                         },
                         new
                         {
-                            Id = new Guid("862f754a-3cdf-49cd-8e49-ed8cb536b18f"),
+                            Id = new Guid("31949655-046e-420e-9da4-56885861fd98"),
                             Address = "",
                             City = "",
                             Country = "",
+                            IsActive = true,
                             LocationName = "Downtown Store",
                             State = "",
                             ZipCode = ""
@@ -282,21 +289,21 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("94264134-ff76-4e54-bbec-badea5e57ee9"),
+                            Id = new Guid("6c7ef205-b37f-44c8-9e52-89516cd4a679"),
                             CategoryCode = "",
                             CategoryName = "Electronics",
                             Description = ""
                         },
                         new
                         {
-                            Id = new Guid("46c7c5f7-1a44-4933-b91c-f7e52ef3cf1a"),
+                            Id = new Guid("0527ecad-9a84-4433-8b03-9b68f78d7791"),
                             CategoryCode = "",
                             CategoryName = "Home Appliances",
                             Description = ""
                         },
                         new
                         {
-                            Id = new Guid("4418f3b9-65c5-4d90-a19e-40cf6372ac87"),
+                            Id = new Guid("9c20e045-e9c7-4aee-b1db-b10f07ad0265"),
                             CategoryCode = "",
                             CategoryName = "Clothing",
                             Description = ""
@@ -374,6 +381,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
 
                     b.Property<double>("Ratings")
                         .HasColumnType("float");
+
+                    b.Property<int>("ReservedStock")
+                        .HasColumnType("int");
 
                     b.Property<string>("Row")
                         .IsRequired()
@@ -460,39 +470,534 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8a06e575-67ad-4f03-8818-b8773e72d17c"),
+                            Id = new Guid("d80ecc1c-9053-4f44-bdc6-85b09ea1a87e"),
                             Description = "",
                             ProductTypeCode = "",
                             ProductTypeName = "Electronics"
                         },
                         new
                         {
-                            Id = new Guid("11f24b0e-ede4-42e6-9648-67541abb379b"),
+                            Id = new Guid("2640a352-5cb5-4668-b84a-d46b38c2ab78"),
                             Description = "",
                             ProductTypeCode = "",
                             ProductTypeName = "Clothing"
                         },
                         new
                         {
-                            Id = new Guid("512915f3-b4c7-4c5f-b42c-84464d54350a"),
+                            Id = new Guid("e7e5f2f7-da8c-4f4f-8e39-48faac11281e"),
                             Description = "",
                             ProductTypeCode = "",
                             ProductTypeName = "Food"
                         },
                         new
                         {
-                            Id = new Guid("fffa76c6-b427-42f3-885b-dd980eff388b"),
+                            Id = new Guid("c555db2a-fbcd-45dc-a89a-c189092dbc44"),
                             Description = "",
                             ProductTypeCode = "",
                             ProductTypeName = "Furniture"
                         },
                         new
                         {
-                            Id = new Guid("c14ab857-d4ed-479d-97b9-af19ddbf243c"),
+                            Id = new Guid("88db5d0b-6c3f-4420-86d9-aef564ff18ac"),
                             Description = "",
                             ProductTypeCode = "",
                             ProductTypeName = "Toys"
                         });
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SalesEntities.Customer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("CreditLimit")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("CurrentOutstanding")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<string>("CustomerCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("CustomerType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<decimal>("OpeningBalance")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerCode")
+                        .IsUnique();
+
+                    b.HasIndex("CustomerName");
+
+                    b.ToTable("Customers");
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SalesEntities.Delivery", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BusinessLocationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("DeliveryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeliveryNo")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid>("ProformaInvoiceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ReceivedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BusinessLocationId");
+
+                    b.HasIndex("DeliveryNo")
+                        .IsUnique();
+
+                    b.HasIndex("ProformaInvoiceId");
+
+                    b.HasIndex("CustomerId", "DeliveryDate");
+
+                    b.ToTable("Deliveries");
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SalesEntities.DeliveryItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("DeliveredQuantity")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<Guid>("DeliveryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("OrderedQuantity")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("DeliveryId", "ProductId")
+                        .IsUnique();
+
+                    b.ToTable("DeliveryItems");
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SalesEntities.DiscountRule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("CustomerType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DiscountType")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("DiscountValue")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime>("EffectiveFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EffectiveTo")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("MaxDiscountAmount")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("MinOrderAmount")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("MinQuantity")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RuleName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("Scope")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("Scope", "IsActive", "EffectiveFrom");
+
+                    b.ToTable("DiscountRules");
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SalesEntities.PaymentTerm", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int>("DueDays")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("TermName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TermName")
+                        .IsUnique();
+
+                    b.ToTable("PaymentTerms");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("6a1f0b2c-0001-4a1e-9f01-2b7d5c9e1001"),
+                            Description = "Full payment is collected when the goods are handed over.",
+                            DueDays = 0,
+                            IsActive = true,
+                            TermName = "Cash on Delivery"
+                        },
+                        new
+                        {
+                            Id = new Guid("6a1f0b2c-0002-4a1e-9f01-2b7d5c9e1002"),
+                            Description = "Full payment is received before the goods are released.",
+                            DueDays = 0,
+                            IsActive = true,
+                            TermName = "Advance Payment"
+                        },
+                        new
+                        {
+                            Id = new Guid("6a1f0b2c-0003-4a1e-9f01-2b7d5c9e1003"),
+                            Description = "Half of the amount is paid up front and the rest on delivery.",
+                            DueDays = 0,
+                            IsActive = true,
+                            TermName = "50% Advance, 50% on Delivery"
+                        },
+                        new
+                        {
+                            Id = new Guid("6a1f0b2c-0004-4a1e-9f01-2b7d5c9e1004"),
+                            Description = "Payment is due within 7 days of the invoice date.",
+                            DueDays = 7,
+                            IsActive = true,
+                            TermName = "Net 7"
+                        },
+                        new
+                        {
+                            Id = new Guid("6a1f0b2c-0005-4a1e-9f01-2b7d5c9e1005"),
+                            Description = "Payment is due within 15 days of the invoice date.",
+                            DueDays = 15,
+                            IsActive = true,
+                            TermName = "Net 15"
+                        },
+                        new
+                        {
+                            Id = new Guid("6a1f0b2c-0006-4a1e-9f01-2b7d5c9e1006"),
+                            Description = "Payment is due within 30 days of the invoice date.",
+                            DueDays = 30,
+                            IsActive = true,
+                            TermName = "Net 30"
+                        },
+                        new
+                        {
+                            Id = new Guid("6a1f0b2c-0007-4a1e-9f01-2b7d5c9e1007"),
+                            Description = "Payment is due within 60 days of the invoice date.",
+                            DueDays = 60,
+                            IsActive = true,
+                            TermName = "Net 60"
+                        });
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SalesEntities.PriceList", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CustomerType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EffectiveFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EffectiveTo")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PriceListName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PriceListName")
+                        .IsUnique();
+
+                    b.HasIndex("CustomerType", "IsActive", "EffectiveFrom");
+
+                    b.ToTable("PriceLists");
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SalesEntities.PriceListItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("MinQuantity")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<Guid>("PriceListId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("PriceListId", "ProductId", "MinQuantity")
+                        .IsUnique();
+
+                    b.ToTable("PriceListItems");
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SalesEntities.ProformaInvoice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BusinessLocationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("GrandTotal")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("ItemDiscountTotal")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<decimal>("OrderDiscount")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<Guid?>("PaymentTermId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ProformaDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ProformaNo")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid?>("SalespersonId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SalespersonName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("SubTotal")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("TotalTax")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ValidUntil")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BusinessLocationId");
+
+                    b.HasIndex("PaymentTermId");
+
+                    b.HasIndex("ProformaNo")
+                        .IsUnique();
+
+                    b.HasIndex("CustomerId", "ProformaDate");
+
+                    b.ToTable("ProformaInvoices");
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SalesEntities.ProformaInvoiceItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("DiscountAmount")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("LineTotal")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProformaInvoiceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("TaxAmount")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("TaxRate")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ProformaInvoiceId");
+
+                    b.ToTable("ProformaInvoiceItems");
                 });
 
             modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SellingPriceTax", b =>
@@ -519,21 +1024,21 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d495f52a-218a-4cc8-bd9a-c92dc8d3afef"),
+                            Id = new Guid("b22d9b11-097d-44ea-8143-15adfefd8775"),
                             Description = "",
                             SellingPriceTaxName = "Exclusive",
                             TaxRate = 0m
                         },
                         new
                         {
-                            Id = new Guid("24f92514-0455-408e-9eab-c075e703c6bf"),
+                            Id = new Guid("7e2b4ca2-3531-4ba0-bbb7-e6a36c224be2"),
                             Description = "",
                             SellingPriceTaxName = "Inclusive",
                             TaxRate = 0m
                         },
                         new
                         {
-                            Id = new Guid("8141d6e4-e8b9-4c87-b83c-3981d5c1361c"),
+                            Id = new Guid("434581e0-22ab-42a4-81f3-cedf3854531a"),
                             Description = "",
                             SellingPriceTaxName = "Zero Rate",
                             TaxRate = 0m
@@ -564,14 +1069,14 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("f02d91a8-a485-4d72-9ab5-603dc6d8a15a"),
+                            Id = new Guid("cefc62d6-036b-4a82-91d5-56190b73fe90"),
                             AdjustmentTypeName = "Normal",
                             Description = "",
                             Sign = 0
                         },
                         new
                         {
-                            Id = new Guid("0a9fdb59-8976-4470-b399-91ff3aab9ba5"),
+                            Id = new Guid("81a4a276-5a50-45b4-a989-87c60e2355d5"),
                             AdjustmentTypeName = "Abnormal",
                             Description = "",
                             Sign = 0
@@ -732,21 +1237,21 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("3039edb8-8408-4b32-a950-84244eeaf676"),
+                            Id = new Guid("b1058bef-e8d3-4820-9cd9-277dc02459e7"),
                             CategoryCode = "",
                             Description = "",
                             SubCategoryName = "Smartphones"
                         },
                         new
                         {
-                            Id = new Guid("faf047e0-767a-45eb-b695-d18b958dca84"),
+                            Id = new Guid("97331e14-0134-47c4-b7dc-7db73ebd6dca"),
                             CategoryCode = "",
                             Description = "",
                             SubCategoryName = "Laptops"
                         },
                         new
                         {
-                            Id = new Guid("1523ebf1-88d1-4b04-ac5e-3ca4896b1ae7"),
+                            Id = new Guid("bdd1fdb9-8385-4bff-bf69-5c6eade7765b"),
                             CategoryCode = "",
                             Description = "",
                             SubCategoryName = "Televisions"
@@ -777,21 +1282,21 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("f8ece393-6c36-41b5-bc16-8367725cbf6a"),
+                            Id = new Guid("df3165eb-1d90-4ef0-8960-bb5e00b5ddae"),
                             AllowDecimal = 0,
                             ShortName = "",
                             UnitName = "Kilogram"
                         },
                         new
                         {
-                            Id = new Guid("8e3c2296-3858-4179-9010-6164fc9d9cf3"),
+                            Id = new Guid("16772479-531a-4fa7-b93e-7d3409620906"),
                             AllowDecimal = 0,
                             ShortName = "",
                             UnitName = "Liter"
                         },
                         new
                         {
-                            Id = new Guid("cf2f5f62-eeb8-4a87-b52d-d479d8a16f89"),
+                            Id = new Guid("81e63006-a7f1-4dd7-968e-5da6538ac01f"),
                             AllowDecimal = 0,
                             ShortName = "",
                             UnitName = "Piece"
@@ -902,21 +1407,21 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("1eea7a84-56a1-4d62-bdc3-6ed3b5ed3988"),
+                            Id = new Guid("6c22e21a-d313-40fb-8ce8-70b09b204e1a"),
                             Description = "",
                             Name = "",
                             WarrantyDuration = "1 Year"
                         },
                         new
                         {
-                            Id = new Guid("929ec7f2-df60-41b4-addb-adcff62e6034"),
+                            Id = new Guid("52d8f437-e62e-4cdf-bb04-b1e319fabb8c"),
                             Description = "",
                             Name = "",
                             WarrantyDuration = "2 Years"
                         },
                         new
                         {
-                            Id = new Guid("ce02a806-878d-4bc0-820c-b673b3a0a677"),
+                            Id = new Guid("d8137a0e-dfa8-4627-9c32-aa0203116f36"),
                             Description = "",
                             Name = "",
                             WarrantyDuration = "3 Years"
@@ -1003,6 +1508,133 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                     b.Navigation("Warranty");
                 });
 
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SalesEntities.Delivery", b =>
+                {
+                    b.HasOne("DevSkill.Inventory.Domain.Entities.BusinessLocation", "BusinessLocation")
+                        .WithMany()
+                        .HasForeignKey("BusinessLocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DevSkill.Inventory.Domain.Entities.SalesEntities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DevSkill.Inventory.Domain.Entities.SalesEntities.ProformaInvoice", "ProformaInvoice")
+                        .WithMany()
+                        .HasForeignKey("ProformaInvoiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BusinessLocation");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("ProformaInvoice");
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SalesEntities.DeliveryItem", b =>
+                {
+                    b.HasOne("DevSkill.Inventory.Domain.Entities.SalesEntities.Delivery", "Delivery")
+                        .WithMany("DeliveryItems")
+                        .HasForeignKey("DeliveryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DevSkill.Inventory.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Delivery");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SalesEntities.DiscountRule", b =>
+                {
+                    b.HasOne("DevSkill.Inventory.Domain.Entities.SalesEntities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("DevSkill.Inventory.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SalesEntities.PriceListItem", b =>
+                {
+                    b.HasOne("DevSkill.Inventory.Domain.Entities.SalesEntities.PriceList", "PriceList")
+                        .WithMany("PriceListItems")
+                        .HasForeignKey("PriceListId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DevSkill.Inventory.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("PriceList");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SalesEntities.ProformaInvoice", b =>
+                {
+                    b.HasOne("DevSkill.Inventory.Domain.Entities.BusinessLocation", "BusinessLocation")
+                        .WithMany()
+                        .HasForeignKey("BusinessLocationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DevSkill.Inventory.Domain.Entities.SalesEntities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DevSkill.Inventory.Domain.Entities.SalesEntities.PaymentTerm", "PaymentTerm")
+                        .WithMany()
+                        .HasForeignKey("PaymentTermId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("BusinessLocation");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("PaymentTerm");
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SalesEntities.ProformaInvoiceItem", b =>
+                {
+                    b.HasOne("DevSkill.Inventory.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DevSkill.Inventory.Domain.Entities.SalesEntities.ProformaInvoice", "ProformaInvoice")
+                        .WithMany("ProformaInvoiceItems")
+                        .HasForeignKey("ProformaInvoiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("ProformaInvoice");
+                });
+
             modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites.StockAdjustment", b =>
                 {
                     b.HasOne("DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites.AdjustmentType", "AdjustmentType")
@@ -1033,7 +1665,7 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                     b.HasOne("DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites.StockAdjustment", "StockAdjustment")
                         .WithMany("StockAdjustmentItems")
                         .HasForeignKey("StockAdjustmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Product");
@@ -1071,12 +1703,27 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                     b.HasOne("DevSkill.Inventory.Domain.Entities.StockTransferEntities.StockTransfer", "StockTransfer")
                         .WithMany("StockTransferItems")
                         .HasForeignKey("StockTransferId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Product");
 
                     b.Navigation("StockTransfer");
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SalesEntities.Delivery", b =>
+                {
+                    b.Navigation("DeliveryItems");
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SalesEntities.PriceList", b =>
+                {
+                    b.Navigation("PriceListItems");
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SalesEntities.ProformaInvoice", b =>
+                {
+                    b.Navigation("ProformaInvoiceItems");
                 });
 
             modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites.StockAdjustment", b =>

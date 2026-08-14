@@ -1,0 +1,51 @@
+<div class="modal fade" id="priceListDetailModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title">Price List Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <dl class="row">
+                    <dt class="col-sm-3">Price List Name</dt>
+                    <dd class="col-sm-3" id="PriceListName"></dd>
+
+                    <dt class="col-sm-3">Customer Type</dt>
+                    <dd class="col-sm-3" id="PriceListCustomerType"></dd>
+
+                    <dt class="col-sm-3">Effective From</dt>
+                    <dd class="col-sm-3" id="PriceListEffectiveFrom"></dd>
+
+                    <dt class="col-sm-3">Effective To</dt>
+                    <dd class="col-sm-3" id="PriceListEffectiveTo"></dd>
+
+                    <dt class="col-sm-3">Status</dt>
+                    <dd class="col-sm-3" id="PriceListStatus"></dd>
+                </dl>
+
+                <table class="table table-bordered table-sm">
+                    <thead>
+                        <tr>
+                            <th class="text-center" width="10%">#</th>
+                            <th>Product</th>
+                            <th class="text-center" width="20%">Min Quantity</th>
+                            <th class="text-right" width="20%">Unit Price</th>
+                        </tr>
+                    </thead>
+                    <tbody id="priceListItemsTable"></tbody>
+                </table>
+
+            </div>
+
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>

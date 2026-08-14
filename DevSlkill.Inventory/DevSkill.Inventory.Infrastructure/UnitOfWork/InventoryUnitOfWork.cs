@@ -28,6 +28,24 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
 
         public IStockTransferItemRepository StockTransferItemRepository { get; private set; }
 
+        public ICustomerRepository CustomerRepository { get; private set; }
+
+        public IPaymentTermRepository PaymentTermRepository { get; private set; }
+
+        public IPriceListRepository PriceListRepository { get; private set; }
+
+        public IPriceListItemRepository PriceListItemRepository { get; private set; }
+
+        public IDiscountRuleRepository DiscountRuleRepository { get; private set; }
+
+        public IProformaInvoiceRepository ProformaInvoiceRepository { get; private set; }
+
+        public IProformaInvoiceItemRepository ProformaInvoiceItemRepository { get; private set; }
+
+        public IDeliveryRepository DeliveryRepository { get; private set; }
+
+        public IDeliveryItemRepository DeliveryItemRepository { get; private set; }
+
         public InventoryUnitOfWork(InventoryDbContext productDbContext,
             IProductRepository productRepository,
             ICategoryRepository categoryRepository,
@@ -45,7 +63,16 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
             IStockAdjustmentItemRepository stockAdjustmentItemRepository,
             IStockTransferRepository stockTransferRepository,
             IStockTransferItemRepository stockTransferItemRepository,
-            IUserActivityRepository userActivityRepository)
+            IUserActivityRepository userActivityRepository,
+            ICustomerRepository customerRepository,
+            IPaymentTermRepository paymentTermRepository,
+            IPriceListRepository priceListRepository,
+            IPriceListItemRepository priceListItemRepository,
+            IDiscountRuleRepository discountRuleRepository,
+            IProformaInvoiceRepository proformaInvoiceRepository,
+            IProformaInvoiceItemRepository proformaInvoiceItemRepository,
+            IDeliveryRepository deliveryRepository,
+            IDeliveryItemRepository deliveryItemRepository)
             : base(productDbContext)
         {
             ProductRepository = productRepository;
@@ -65,6 +92,15 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
             UserActivityRepository = userActivityRepository;
             StockTransferRepository = stockTransferRepository;
             StockTransferItemRepository = stockTransferItemRepository;
+            CustomerRepository = customerRepository;
+            PaymentTermRepository = paymentTermRepository;
+            PriceListRepository = priceListRepository;
+            PriceListItemRepository = priceListItemRepository;
+            DiscountRuleRepository = discountRuleRepository;
+            ProformaInvoiceRepository = proformaInvoiceRepository;
+            ProformaInvoiceItemRepository = proformaInvoiceItemRepository;
+            DeliveryRepository = deliveryRepository;
+            DeliveryItemRepository = deliveryItemRepository;
         }
 
         public async Task<(IList<ProductDto> data, int total, int totalDisplay)> GetPagedProductUsingSPAsync(int pageIndex, int pageSize, ProductSearchDto search, string? order)

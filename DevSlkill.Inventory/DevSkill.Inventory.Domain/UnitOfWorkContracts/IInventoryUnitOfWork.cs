@@ -23,6 +23,15 @@ namespace DevSkill.Inventory.Domain.UnitOfWorkContracts
         IUserActivityRepository UserActivityRepository { get; }
         IStockTransferRepository StockTransferRepository { get;}
         IStockTransferItemRepository StockTransferItemRepository { get; }
+        ICustomerRepository CustomerRepository { get; }
+        IPaymentTermRepository PaymentTermRepository { get; }
+        IPriceListRepository PriceListRepository { get; }
+        IPriceListItemRepository PriceListItemRepository { get; }
+        IDiscountRuleRepository DiscountRuleRepository { get; }
+        IProformaInvoiceRepository ProformaInvoiceRepository { get; }
+        IProformaInvoiceItemRepository ProformaInvoiceItemRepository { get; }
+        IDeliveryRepository DeliveryRepository { get; }
+        IDeliveryItemRepository DeliveryItemRepository { get; }
         Task<(IList<ProductDto> data, int total, int totalDisplay)> GetPagedProductUsingSPAsync(int pageIndex,
             int pageSize, ProductSearchDto search, string? order);
     }

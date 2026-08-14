@@ -1,0 +1,199 @@
+@model DeliveryUpdateModel;
+
+@{
+    ViewData["Title"] = "Update Delivery";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="Delivery" asp-action="UpdateDelivery" method="post">
+
+            <input type="hidden" asp-for="Id" />
+
+            <!-- Header -->
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Delivery</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle"></i>
+                        Only a draft delivery can be edited. The proforma invoice, the customer and the
+                        warehouse it was raised for never change.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="DeliveryNo"></label>
+                                <input asp-for="DeliveryNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="ProformaNo"></label>
+                                <input asp-for="ProformaNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="CustomerName"></label>
+                                <input asp-for="CustomerName" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="WarehouseName"></label>
+                                <input asp-for="WarehouseName" class="form-control" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="DeliveryDate">Delivery Date*</label>
+                                <input asp-for="DeliveryDate" type="date" class="form-control" />
+                                <span asp-validation-for="DeliveryDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="ReceivedBy"></label>
+                                <input asp-for="ReceivedBy" class="form-control" />
+                                <span asp-validation-for="ReceivedBy" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Notes"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Lines -->
+            <div class="card">
+
+                <div class="card-header">
+                    <h3 class="card-title">Products to deliver</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="26%">Product</th>
+                                    <th width="12%" class="text-center">Ordered</th>
+                                    <th width="12%" class="text-center">Delivered</th>
+                                    <th width="12%" class="text-center">Remaining</th>
+                                    <th width="12%" class="text-center">Available Stock</th>
+                                    <th width="16%">Deliver Now</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @for (var i = 0; i < Model.DeliveryItems.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                            <input type="hidden" asp-for="DeliveryItems[i].ProductId" />
+                                            @Model.DeliveryItems[i].ProductName
+                                            <small class="text-muted">@Model.DeliveryItems[i].UnitName</small>
+                                        </td>
+                                        <td class="text-center">@Model.DeliveryItems[i].OrderedQuantity.ToString("N2")</td>
+                                        <td class="text-center">@Model.DeliveryItems[i].AlreadyDeliveredQuantity.ToString("N2")</td>
+                                        <td class="text-center remaining-qty" data-remaining="@Model.DeliveryItems[i].RemainingQuantity">
+                                            @Model.DeliveryItems[i].RemainingQuantity.ToString("N2")
+                                        </td>
+                                        <td class="text-center available-stock" data-available="@Model.DeliveryItems[i].AvailableStock">
+                                            @Model.DeliveryItems[i].AvailableStock
+                                        </td>
+                                        <td>
+                                            <input asp-for="DeliveryItems[i].DeliveredQuantity" type="number" step="1" min="0"
+                                                   class="form-control deliver-qty" />
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Update Delivery</button>
+                    <a asp-area="Admin" asp-controller="Delivery" asp-action="DeliveryList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        $(document).ready(function () {
+
+            // The server refuses these anyway, this only saves the user a round trip.
+            $(document).on("change", ".deliver-qty", function () {
+
+                var row = $(this).closest("tr");
+                var quantity = parseFloat($(this).val()) || 0;
+                var remaining = parseFloat(row.find(".remaining-qty").data("remaining")) || 0;
+                var available = parseFloat(row.find(".available-stock").data("available")) || 0;
+
+                if (quantity < 0) {
+                    $(this).val(0);
+                    return;
+                }
+
+                if (quantity > remaining) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Too much",
+                        text: `Only ${remaining.toFixed(2)} of this product is still owed to the customer.`
+                    });
+
+                    $(this).val(remaining);
+                    return;
+                }
+
+                if (quantity > available) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Not enough stock",
+                        text: `Only ${available} of this product is available in the warehouse.`
+                    });
+
+                    $(this).val(available);
+                }
+            });
+
+        });
+
+    </script>
+}

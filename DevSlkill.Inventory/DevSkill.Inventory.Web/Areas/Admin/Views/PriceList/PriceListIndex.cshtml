@@ -1,0 +1,242 @@
+@{
+    ViewData["Title"] = "Price List";
+}
+
+@section Styles {
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>All Price List</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Sales</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Product pricing per customer type</h3>
+
+                        <a asp-area="Admin" asp-controller="PriceList" asp-action="CreatePriceList" class="btn btn-primary float-right">
+                            <i class="fas fa-plus"></i> Add Price List
+                        </a>
+                    </div>
+
+                    <div class="card-body">
+                        <partial name="_ResponsePartial" />
+                        <partial name="_ModalPartial" />
+                        <table id="priceList" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Price List Name</th>
+                                    <th>Customer Type</th>
+                                    <th>Effective From</th>
+                                    <th>Effective To</th>
+                                    <th>Status</th>
+                                    <th>Products</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tfoot>
+                                <tr>
+                                    <th>Price List Name</th>
+                                    <th>Customer Type</th>
+                                    <th>Effective From</th>
+                                    <th>Effective To</th>
+                                    <th>Status</th>
+                                    <th>Products</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<partial name="_PriceListDetailsPartial" />
+
+@section Scripts {
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            try {
+                $("#priceList").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    responsive: true,
+                    lengthChange: true,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    autoWidth: false,
+                    ajax: {
+                        url: "/Admin/PriceList/GetPriceListJsonData",
+                        type: "POST",
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: function (d) {
+                            return JSON.stringify(d);
+                        },
+                    },
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 6,
+                            render: function (data) {
+                                return `<a href="/Admin/PriceList/UpdatePriceList/${data}"
+                                           class="btn btn-info btn-sm mr-1">
+                                            <i class="fas fa-edit"></i> Edit
+                                         </a>
+                                        <button type="button" class="btn btn-danger btn-sm show-bs-modal" data-id='${data}'>
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>`;
+                            }
+                        },
+                        {
+                            targets: 4,
+                            render: function (data) {
+                                var cls = data === 'Active' ? 'badge-success' : 'badge-secondary';
+                                return `<span class="badge ${cls}">${data}</span>`;
+                            }
+                        },
+                        ...[0, 1, 2, 3, 5].map(function (target) {
+                            return {
+                                targets: target,
+                                createdCell: function (td, cellData, rowData) {
+                                    $(td).addClass('table-row');
+                                    $(td).attr('data-id', rowData[6]);
+                                }
+                            };
+                        })
+                    ],
+                    dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                }).buttons().container().appendTo('#priceList_wrapper .col-md-6:eq(0)');
+            } catch (e) {
+                console.error("DataTable init error:", e);
+            }
+        });
+
+        // Row click -> details modal
+        $(function () {
+            $('#priceList tbody').on('click', '.table-row', function () {
+                var id = $(this).data("id");
+
+                $.ajax({
+                    url: `/Admin/PriceList/GetPriceListDetails?id=${id}`,
+                    type: 'GET',
+                    success: function (data) {
+                        $('#PriceListName').text(data.priceListName || 'N/A');
+                        $('#PriceListCustomerType').text(data.customerType || 'N/A');
+                        $('#PriceListEffectiveFrom').text(
+                            data.effectiveFrom ? new Date(data.effectiveFrom).toLocaleDateString() : 'N/A');
+                        $('#PriceListEffectiveTo').text(
+                            data.effectiveTo ? new Date(data.effectiveTo).toLocaleDateString() : 'Open ended');
+                        $('#PriceListStatus').text(data.isActive ? 'Active' : 'Inactive');
+
+                        let rows = '';
+
+                        if (data.priceListItems && data.priceListItems.length > 0) {
+                            data.priceListItems.forEach(function (item, index) {
+                                rows += `
+                                    <tr>
+                                        <td class="text-center">${index + 1}</td>
+                                        <td>${item.productName ?? 'N/A'}</td>
+                                        <td class="text-center">${Number(item.minQuantity ?? 0).toFixed(2)}</td>
+                                        <td class="text-right">${Number(item.unitPrice ?? 0).toFixed(2)}</td>
+                                    </tr>`;
+                            });
+                        } else {
+                            rows = `<tr><td colspan="4" class="text-center">No Product Found</td></tr>`;
+                        }
+
+                        $("#priceListItemsTable").html(rows);
+                        $('#priceListDetailModal').modal('show');
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 403) {
+                            window.location.href = '/Account/AccessDenied';
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Error!', text: 'Failed to load price list details.' });
+                        }
+                    }
+                });
+            });
+        });
+
+        // Delete handler
+        $(function () {
+            $('#priceList').on('click', '.show-bs-modal', function () {
+                let id = $(this).data("id");
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to recover this Price List!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Delete',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/Admin/PriceList/DeletePriceList',
+                            type: 'POST',
+                            data: {
+                                id: id,
+                                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire({ icon: 'success', title: 'Deleted!', text: response.message, timer: 2000, showConfirmButton: false });
+                                    $('#priceList').DataTable().ajax.reload(null, false);
+                                } else {
+                                    Swal.fire({ icon: 'error', title: 'Failed!', text: response.message });
+                                }
+                            },
+                            error: function (error) {
+                                if (error.status === 403) {
+                                    window.location.href = '/Account/AccessDenied';
+                                } else {
+                                    Swal.fire({ icon: 'error', title: 'Error!', text: 'There was an error deleting the Price List!' });
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

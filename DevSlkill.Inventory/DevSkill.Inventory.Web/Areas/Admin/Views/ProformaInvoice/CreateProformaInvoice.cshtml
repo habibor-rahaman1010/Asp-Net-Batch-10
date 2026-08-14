@@ -1,0 +1,399 @@
+@model ProformaInvoiceCreateModel;
+
+@{
+    ViewData["Title"] = "Create Proforma Invoice";
+
+    var productOptions = string.Join("",
+        Model.ProformaInvoiceItems[0].Products.Select(x =>
+            $"<option value='{x.Value}'>{x.Text}</option>"));
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="ProformaInvoice" asp-action="CreateProformaInvoice" method="post">
+
+            <!-- Header -->
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Proforma Invoice</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="ProformaNo"></label>
+                                <input asp-for="ProformaNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="ProformaDate">Proforma Date*</label>
+                                <input asp-for="ProformaDate" type="date" class="form-control" />
+                                <span asp-validation-for="ProformaDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="ValidUntil">Valid Until*</label>
+                                <input asp-for="ValidUntil" type="date" class="form-control" />
+                                <span asp-validation-for="ValidUntil" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="CustomerId">Customer*</label>
+                                <select asp-for="CustomerId" asp-items="Model.Customers" class="form-control" id="CustomerId"></select>
+                                <span asp-validation-for="CustomerId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="BusinessLocationId">Warehouse*</label>
+                                <select asp-for="BusinessLocationId" asp-items="Model.BusinessLocations" class="form-control"></select>
+                                <span asp-validation-for="BusinessLocationId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="SalespersonId"></label>
+                                <select asp-for="SalespersonId" asp-items="Model.Salespersons" class="form-control"></select>
+                                <span asp-validation-for="SalespersonId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="PaymentTermId"></label>
+                                <select asp-for="PaymentTermId" asp-items="Model.PaymentTerms" class="form-control"></select>
+                                <span asp-validation-for="PaymentTermId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Status">Status*</label>
+                                <select asp-for="Status" asp-items="Model.Statuses" class="form-control"></select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Notes"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Products -->
+            <div class="card">
+
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
+                        <h3 class="card-title">Products</h3>
+                        <button id="btnAddProduct" type="button" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus"></i> Add Product
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-shield-alt"></i>
+                        Unit price, discount and tax below are a preview coming from the server.
+                        They are calculated again when you save, so the stored amounts can never be
+                        changed from the browser.
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="24%">Product</th>
+                                    <th width="10%">Available</th>
+                                    <th width="10%">Qty</th>
+                                    <th width="12%">Unit Price</th>
+                                    <th width="12%">Discount</th>
+                                    <th width="12%">Tax</th>
+                                    <th width="14%">Line Total</th>
+                                    <th width="6%">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="productTableBody">
+                                <tr>
+                                    <td>
+                                        <select asp-for="ProformaInvoiceItems[0].ProductId" asp-items="Model.ProformaInvoiceItems[0].Products" class="form-control product-select"></select>
+                                        <span asp-validation-for="ProformaInvoiceItems[0].ProductId" class="text-danger"></span>
+                                    </td>
+
+                                    <td>
+                                        <input class="form-control available-qty" value="0" readonly />
+                                    </td>
+
+                                    <td>
+                                        <input asp-for="ProformaInvoiceItems[0].Quantity" type="number" step="0.01" min="0.01" class="form-control line-qty" />
+                                    </td>
+
+                                    <td><input class="form-control unit-price" value="0.00" readonly /></td>
+                                    <td><input class="form-control discount-amount" value="0.00" readonly /></td>
+                                    <td><input class="form-control tax-amount" value="0.00" readonly /></td>
+                                    <td><input class="form-control line-total" value="0.00" readonly /></td>
+
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm btnRemoveRow">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="row justify-content-end">
+                        <div class="col-md-5">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th>Sub Total</th>
+                                    <td class="text-right" id="sumSubTotal">0.00</td>
+                                </tr>
+                                <tr>
+                                    <th>Item Discount</th>
+                                    <td class="text-right" id="sumDiscount">0.00</td>
+                                </tr>
+                                <tr>
+                                    <th>Tax / VAT</th>
+                                    <td class="text-right" id="sumTax">0.00</td>
+                                </tr>
+                                <tr class="bg-light">
+                                    <th>Estimated Total</th>
+                                    <th class="text-right" id="sumGrandTotal">0.00</th>
+                                </tr>
+                            </table>
+                            <small class="text-muted">
+                                Order level discount, if any rule matches, is applied by the server on save.
+                            </small>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Save Proforma Invoice</button>
+                    <a asp-area="Admin" asp-controller="ProformaInvoice" asp-action="ProformaInvoiceList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        var rowIndex = 1;
+
+        function updateDeleteButtons() {
+            $(".btnRemoveRow").prop("disabled", $("#productTableBody tr").length == 1);
+        }
+
+        function reIndexRows() {
+
+            $("#productTableBody tr").each(function (index) {
+
+                $(this).find("[name]").each(function () {
+
+                    var name = $(this).attr("name");
+
+                    name = name.replace(/ProformaInvoiceItems\[\d+\]/,
+                                        "ProformaInvoiceItems[" + index + "]");
+
+                    $(this).attr("name", name);
+                });
+
+            });
+
+            rowIndex = $("#productTableBody tr").length;
+        }
+
+        function recalculateTotals() {
+
+            var subTotal = 0, discount = 0, tax = 0, grandTotal = 0;
+
+            $("#productTableBody tr").each(function () {
+
+                var qty = parseFloat($(this).find(".line-qty").val()) || 0;
+                var price = parseFloat($(this).find(".unit-price").val()) || 0;
+
+                subTotal += qty * price;
+                discount += parseFloat($(this).find(".discount-amount").val()) || 0;
+                tax += parseFloat($(this).find(".tax-amount").val()) || 0;
+                grandTotal += parseFloat($(this).find(".line-total").val()) || 0;
+            });
+
+            $("#sumSubTotal").text(subTotal.toFixed(2));
+            $("#sumDiscount").text(discount.toFixed(2));
+            $("#sumTax").text(tax.toFixed(2));
+            $("#sumGrandTotal").text(grandTotal.toFixed(2));
+        }
+
+        // Every number shown here is produced by the server, the browser only displays it.
+        function refreshLine(row) {
+
+            var productId = row.find(".product-select").val();
+            var customerId = $("#CustomerId").val();
+            var quantity = parseFloat(row.find(".line-qty").val()) || 0;
+
+            if (!productId || !customerId || quantity <= 0) {
+                row.find(".unit-price, .discount-amount, .tax-amount, .line-total").val("0.00");
+                recalculateTotals();
+                return;
+            }
+
+            $.get('/Admin/ProformaInvoice/GetLinePreview',
+                { productId: productId, customerId: customerId, quantity: quantity },
+                function (response) {
+
+                    if (!response.success) {
+                        row.find(".unit-price, .discount-amount, .tax-amount, .line-total").val("0.00");
+                        recalculateTotals();
+                        return;
+                    }
+
+                    row.find(".available-qty").val(response.availableQuantity);
+                    row.find(".unit-price").val(Number(response.unitPrice).toFixed(2));
+                    row.find(".discount-amount").val(Number(response.discountAmount).toFixed(2));
+                    row.find(".tax-amount").val(Number(response.taxAmount).toFixed(2));
+                    row.find(".line-total").val(Number(response.lineTotal).toFixed(2));
+
+                    recalculateTotals();
+                });
+        }
+
+        function refreshAllLines() {
+            $("#productTableBody tr").each(function () {
+                refreshLine($(this));
+            });
+        }
+
+        $(document).ready(function () {
+
+            updateDeleteButtons();
+
+            $("#btnAddProduct").click(function () {
+
+                var row = `
+                <tr>
+                    <td>
+                        <select name="ProformaInvoiceItems[${rowIndex}].ProductId"
+                                class="form-control product-select">
+                            @Html.Raw(productOptions)
+                        </select>
+                    </td>
+
+                    <td><input class="form-control available-qty" value="0" readonly /></td>
+
+                    <td>
+                        <input name="ProformaInvoiceItems[${rowIndex}].Quantity"
+                               type="number" step="0.01" min="0.01" value="1"
+                               class="form-control line-qty" />
+                    </td>
+
+                    <td><input class="form-control unit-price" value="0.00" readonly /></td>
+                    <td><input class="form-control discount-amount" value="0.00" readonly /></td>
+                    <td><input class="form-control tax-amount" value="0.00" readonly /></td>
+                    <td><input class="form-control line-total" value="0.00" readonly /></td>
+
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm btnRemoveRow">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>`;
+
+                $("#productTableBody").append(row);
+                rowIndex++;
+
+                updateDeleteButtons();
+            });
+
+            $(document).on("click", ".btnRemoveRow", function () {
+
+                if ($("#productTableBody tr").length > 1) {
+                    $(this).closest("tr").remove();
+                    reIndexRows();
+                    updateDeleteButtons();
+                    recalculateTotals();
+                }
+
+            });
+
+            $(document).on("change", ".product-select", function () {
+                refreshLine($(this).closest("tr"));
+            });
+
+            $(document).on("change", ".line-qty", function () {
+
+                if (parseFloat($(this).val()) <= 0) {
+                    $(this).val(1);
+                }
+
+                refreshLine($(this).closest("tr"));
+            });
+
+            $("#CustomerId").on("change", function () {
+
+                if (!$(this).val()) {
+                    return;
+                }
+
+                // Price list and discounts depend on the customer, so every line is repriced.
+                refreshAllLines();
+            });
+
+            $("#ValidUntil, #ProformaDate").on("change", function () {
+
+                var proformaDate = $("#ProformaDate").val();
+                var validUntil = $("#ValidUntil").val();
+
+                if (proformaDate && validUntil && validUntil < proformaDate) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Invalid Date",
+                        text: "Valid Until cannot be earlier than the proforma date.",
+                        confirmButtonText: "OK"
+                    });
+
+                    $("#ValidUntil").val(proformaDate);
+                }
+            });
+
+        });
+
+    </script>
+}

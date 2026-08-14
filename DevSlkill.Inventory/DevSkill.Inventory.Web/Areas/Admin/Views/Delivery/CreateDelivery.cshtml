@@ -1,0 +1,277 @@
+@model DeliveryCreateModel;
+
+@{
+    ViewData["Title"] = "Create Delivery";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="Delivery" asp-action="CreateDelivery" method="post">
+
+            <!-- Header -->
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Delivery</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="DeliveryNo"></label>
+                                <input asp-for="DeliveryNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="ProformaInvoiceId">Proforma Invoice*</label>
+                                <select asp-for="ProformaInvoiceId" asp-items="Model.ProformaInvoices" class="form-control" id="ProformaInvoiceId"></select>
+                                <span asp-validation-for="ProformaInvoiceId" class="text-danger"></span>
+                                <small class="text-muted">Only accepted and partly delivered proforma invoices are listed.</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="DeliveryDate">Delivery Date*</label>
+                                <input asp-for="DeliveryDate" type="date" class="form-control" />
+                                <span asp-validation-for="DeliveryDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="ReceivedBy"></label>
+                                <input asp-for="ReceivedBy" class="form-control" placeholder="Who signs for the goods" />
+                                <span asp-validation-for="ReceivedBy" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Notes"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Release</label>
+                                <div class="custom-control custom-checkbox mt-2">
+                                    <input asp-for="ConfirmImmediately" class="custom-control-input" id="ConfirmImmediately" />
+                                    <label class="custom-control-label" for="ConfirmImmediately">
+                                        Confirm and release the stock now
+                                    </label>
+                                </div>
+                                <small class="text-muted">
+                                    Leave it unticked to keep the delivery as a draft. Stock only moves when it is confirmed.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Lines -->
+            <div class="card">
+
+                <div class="card-header">
+                    <h3 class="card-title">Products to deliver</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-shield-alt"></i>
+                        The lines below belong to the chosen proforma invoice. Ordered, already delivered
+                        and remaining quantities come from the server and are checked again when you save,
+                        so nothing can be over delivered from the browser.
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="26%">Product</th>
+                                    <th width="12%" class="text-center">Ordered</th>
+                                    <th width="12%" class="text-center">Delivered</th>
+                                    <th width="12%" class="text-center">Remaining</th>
+                                    <th width="12%" class="text-center">Available Stock</th>
+                                    <th width="16%">Deliver Now</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="deliveryTableBody">
+                                @if (Model.DeliveryItems.Count == 0)
+                                {
+                                    <tr id="emptyLineRow">
+                                        <td colspan="6" class="text-center">Select a proforma invoice to load its products.</td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    @for (var i = 0; i < Model.DeliveryItems.Count; i++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <input type="hidden" asp-for="DeliveryItems[i].ProductId" />
+                                                @Model.DeliveryItems[i].ProductName
+                                                <small class="text-muted">@Model.DeliveryItems[i].UnitName</small>
+                                            </td>
+                                            <td class="text-center">@Model.DeliveryItems[i].OrderedQuantity.ToString("N2")</td>
+                                            <td class="text-center">@Model.DeliveryItems[i].AlreadyDeliveredQuantity.ToString("N2")</td>
+                                            <td class="text-center remaining-qty" data-remaining="@Model.DeliveryItems[i].RemainingQuantity">
+                                                @Model.DeliveryItems[i].RemainingQuantity.ToString("N2")
+                                            </td>
+                                            <td class="text-center available-stock" data-available="@Model.DeliveryItems[i].AvailableStock">
+                                                @Model.DeliveryItems[i].AvailableStock
+                                            </td>
+                                            <td>
+                                                <input asp-for="DeliveryItems[i].DeliveredQuantity" type="number" step="1" min="0"
+                                                       class="form-control deliver-qty" />
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Save Delivery</button>
+                    <a asp-area="Admin" asp-controller="Delivery" asp-action="DeliveryList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        function buildRow(line, index) {
+
+            return `
+                <tr>
+                    <td>
+                        <input type="hidden" name="DeliveryItems[${index}].ProductId" value="${line.productId}" />
+                        ${line.productName} <small class="text-muted">${line.unitName ?? ''}</small>
+                    </td>
+                    <td class="text-center">${Number(line.orderedQuantity).toFixed(2)}</td>
+                    <td class="text-center">${Number(line.deliveredQuantity).toFixed(2)}</td>
+                    <td class="text-center remaining-qty" data-remaining="${line.remainingQuantity}">
+                        ${Number(line.remainingQuantity).toFixed(2)}
+                    </td>
+                    <td class="text-center available-stock" data-available="${line.availableStock}">
+                        ${line.availableStock}
+                    </td>
+                    <td>
+                        <input name="DeliveryItems[${index}].DeliveredQuantity" type="number" step="1" min="0"
+                               value="${line.remainingQuantity}" class="form-control deliver-qty" />
+                    </td>
+                </tr>`;
+        }
+
+        function loadProformaInvoiceLines() {
+
+            var proformaInvoiceId = $("#ProformaInvoiceId").val();
+
+            if (!proformaInvoiceId) {
+                $("#deliveryTableBody").html(
+                    `<tr id="emptyLineRow">
+                        <td colspan="6" class="text-center">Select a proforma invoice to load its products.</td>
+                     </tr>`);
+                return;
+            }
+
+            $.get('/Admin/Delivery/GetProformaInvoiceLines',
+                { proformaInvoiceId: proformaInvoiceId },
+                function (response) {
+
+                    if (!response.success) {
+                        $("#deliveryTableBody").html(
+                            `<tr><td colspan="6" class="text-center text-danger">${response.message}</td></tr>`);
+
+                        Swal.fire({ icon: 'warning', title: 'Not deliverable', text: response.message });
+                        return;
+                    }
+
+                    if (!response.lines || response.lines.length === 0) {
+                        $("#deliveryTableBody").html(
+                            `<tr><td colspan="6" class="text-center">This proforma invoice has no product line.</td></tr>`);
+                        return;
+                    }
+
+                    var rows = '';
+
+                    response.lines.forEach(function (line, index) {
+                        rows += buildRow(line, index);
+                    });
+
+                    $("#deliveryTableBody").html(rows);
+                });
+        }
+
+        $(document).ready(function () {
+
+            $("#ProformaInvoiceId").on("change", function () {
+                loadProformaInvoiceLines();
+            });
+
+            // The server refuses these anyway, this only saves the user a round trip.
+            $(document).on("change", ".deliver-qty", function () {
+
+                var row = $(this).closest("tr");
+                var quantity = parseFloat($(this).val()) || 0;
+                var remaining = parseFloat(row.find(".remaining-qty").data("remaining")) || 0;
+                var available = parseFloat(row.find(".available-stock").data("available")) || 0;
+
+                if (quantity < 0) {
+                    $(this).val(0);
+                    return;
+                }
+
+                if (quantity > remaining) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Too much",
+                        text: `Only ${remaining.toFixed(2)} of this product is still owed to the customer.`
+                    });
+
+                    $(this).val(remaining);
+                    return;
+                }
+
+                if (quantity > available) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Not enough stock",
+                        text: `Only ${available} of this product is available in the warehouse.`
+                    });
+
+                    $(this).val(available);
+                }
+            });
+
+        });
+
+    </script>
+}

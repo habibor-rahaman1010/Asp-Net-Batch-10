@@ -442,10 +442,73 @@
                                         <p>Add Stock Transfer</p>
                                     </a>
                                 </li>
-     
+
                             </ul>
                         </li>
-                        
+
+                        <!--Sales Management-->
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fa fas fa-shopping-cart"></i>
+                                <p>
+                                    Sales Management
+                                    <i class="fas fa-angle-left right"></i>
+                                    <span class="badge badge-info right">7</span>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Customer" asp-action="CustomerList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Customers</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="ProformaInvoice" asp-action="ProformaInvoiceList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Proforma Invoices</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="ProformaInvoice" asp-action="CreateProformaInvoice" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Add Proforma Invoice</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Delivery" asp-action="DeliveryList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Deliveries</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Delivery" asp-action="CreateDelivery" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Add Delivery</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="PriceList" asp-action="PriceListIndex" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Price Management</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Discount" asp-action="DiscountRuleList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Discount Management</p>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
+
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->

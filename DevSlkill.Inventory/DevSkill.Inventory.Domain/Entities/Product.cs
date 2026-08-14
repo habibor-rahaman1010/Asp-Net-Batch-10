@@ -12,6 +12,13 @@ namespace DevSkill.Inventory.Domain.Entities
         public double Ratings { get; set; }
         public int CurrentStock { get; set; }
 
+        /// <summary>
+        /// Quantity held for confirmed sales orders that are not delivered yet.
+        /// Physical stock stays in <see cref="CurrentStock"/>; sellable stock is
+        /// CurrentStock - ReservedStock.
+        /// </summary>
+        public int ReservedStock { get; set; }
+
         public Guid BarcodeTypeId { get; set; }
         public BarcodeType? BarcodeType { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using DevSkill.Inventory.Domain.Entities;
+using DevSkill.Inventory.Domain.Entities.SalesEntities;
 using DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -135,6 +136,39 @@ namespace DevSkill.Inventory.Infrastructure.RazorUtility
                          .ToList();
 
             Items.Insert(0, new SelectListItem("-- Product Select --", string.Empty));
+
+            return Items;
+        }
+
+        public static IList<SelectListItem> ConvertCustomers(IList<Customer> customers)
+        {
+            var Items = (from c in customers
+                         select new SelectListItem($"{c.CustomerName} ({c.CustomerCode})", c.Id.ToString()))
+                         .ToList();
+
+            Items.Insert(0, new SelectListItem("-- Select Customer --", string.Empty));
+
+            return Items;
+        }
+
+        public static IList<SelectListItem> ConvertPaymentTerms(IList<PaymentTerm> paymentTerms)
+        {
+            var Items = (from c in paymentTerms
+                         select new SelectListItem(c.TermName, c.Id.ToString()))
+                         .ToList();
+
+            Items.Insert(0, new SelectListItem("-- Select Payment Term --", string.Empty));
+
+            return Items;
+        }
+
+        public static IList<SelectListItem> ConvertProformaInvoices(IList<ProformaInvoice> proformaInvoices)
+        {
+            var Items = (from c in proformaInvoices
+                         select new SelectListItem($"{c.ProformaNo} - {c.Customer?.CustomerName}", c.Id.ToString()))
+                         .ToList();
+
+            Items.Insert(0, new SelectListItem("-- Select Proforma Invoice --", string.Empty));
 
             return Items;
         }

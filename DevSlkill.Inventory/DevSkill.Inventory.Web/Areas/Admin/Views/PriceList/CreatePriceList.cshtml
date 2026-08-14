@@ -1,0 +1,232 @@
+@model PriceListCreateModel;
+
+@{
+    ViewData["Title"] = "Create Price List";
+
+    var productOptions = string.Join("",
+        Model.PriceListItems[0].Products.Select(x =>
+            $"<option value='{x.Value}'>{x.Text}</option>"));
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="PriceList" asp-action="CreatePriceList" method="post">
+
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Price List</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="PriceListName">Price List Name*</label>
+                                <input asp-for="PriceListName" class="form-control" />
+                                <span asp-validation-for="PriceListName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="CustomerType">Customer Type*</label>
+                                <select asp-for="CustomerType" asp-items="Model.CustomerTypes" class="form-control"></select>
+                                <span asp-validation-for="CustomerType" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="EffectiveFrom">Effective From*</label>
+                                <input asp-for="EffectiveFrom" type="date" class="form-control" />
+                                <span asp-validation-for="EffectiveFrom" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="EffectiveTo"></label>
+                                <input asp-for="EffectiveTo" type="date" class="form-control" />
+                                <small class="form-text text-muted">Keep empty for an open ended price list.</small>
+                                <span asp-validation-for="EffectiveTo" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="IsActive"></label>
+                                <div class="form-check mt-2">
+                                    <input asp-for="IsActive" class="form-check-input" />
+                                    <label class="form-check-label" asp-for="IsActive">Active</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Products -->
+            <div class="card">
+
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
+                        <h3 class="card-title">Product Prices</h3>
+                        <button id="btnAddProduct" type="button" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus"></i> Add Product
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th width="50%">Product</th>
+                                <th width="20%">Min Quantity</th>
+                                <th width="20%">Unit Price</th>
+                                <th width="10%">Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="productTableBody">
+                            <tr>
+                                <td>
+                                    <select asp-for="PriceListItems[0].ProductId" asp-items="Model.PriceListItems[0].Products" class="form-control product-select"></select>
+                                    <span asp-validation-for="PriceListItems[0].ProductId" class="text-danger"></span>
+                                </td>
+
+                                <td>
+                                    <input asp-for="PriceListItems[0].MinQuantity" type="number" step="0.01" min="0" class="form-control min-qty" />
+                                </td>
+
+                                <td>
+                                    <input asp-for="PriceListItems[0].UnitPrice" type="number" step="0.01" min="0" class="form-control unit-price" />
+                                </td>
+
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm btnRemoveRow">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Save Price List</button>
+                    <a asp-area="Admin" asp-controller="PriceList" asp-action="PriceListIndex" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        var rowIndex = 1;
+
+        function updateDeleteButtons() {
+            if ($("#productTableBody tr").length == 1) {
+                $(".btnRemoveRow").prop("disabled", true);
+            } else {
+                $(".btnRemoveRow").prop("disabled", false);
+            }
+        }
+
+        function reIndexRows() {
+
+            $("#productTableBody tr").each(function (index) {
+
+                $(this).find("[name]").each(function () {
+
+                    var name = $(this).attr("name");
+
+                    name = name.replace(/PriceListItems\[\d+\]/,
+                                        "PriceListItems[" + index + "]");
+
+                    $(this).attr("name", name);
+                });
+
+            });
+
+            rowIndex = $("#productTableBody tr").length;
+        }
+
+        $(document).ready(function () {
+
+            updateDeleteButtons();
+
+            $("#btnAddProduct").click(function () {
+
+                var row = `
+                <tr>
+                    <td>
+                        <select name="PriceListItems[${rowIndex}].ProductId"
+                                class="form-control product-select">
+                            @Html.Raw(productOptions)
+                        </select>
+                    </td>
+
+                    <td>
+                        <input name="PriceListItems[${rowIndex}].MinQuantity"
+                               type="number" step="0.01" min="0" value="1"
+                               class="form-control min-qty" />
+                    </td>
+
+                    <td>
+                        <input name="PriceListItems[${rowIndex}].UnitPrice"
+                               type="number" step="0.01" min="0" value="0"
+                               class="form-control unit-price" />
+                    </td>
+
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm btnRemoveRow">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>`;
+
+                $("#productTableBody").append(row);
+                rowIndex++;
+
+                updateDeleteButtons();
+            });
+
+            $(document).on("click", ".btnRemoveRow", function () {
+
+                if ($("#productTableBody tr").length > 1) {
+                    $(this).closest("tr").remove();
+                    reIndexRows();
+                    updateDeleteButtons();
+                }
+
+            });
+
+            $(document).on("input", ".unit-price, .min-qty", function () {
+                if (parseFloat($(this).val()) < 0) {
+                    $(this).val(0);
+                }
+            });
+
+        });
+
+    </script>
+}

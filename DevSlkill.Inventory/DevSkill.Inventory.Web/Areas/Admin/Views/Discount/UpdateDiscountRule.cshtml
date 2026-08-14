@@ -1,0 +1,182 @@
+@model DiscountRuleUpdateModel;
+
+@{
+    ViewData["Title"] = "Update Discount Rule";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="Discount" asp-action="UpdateDiscountRule" method="post">
+
+            <input type="hidden" asp-for="Id" />
+
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Update Discount Rule</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="RuleName">Rule Name*</label>
+                                <input asp-for="RuleName" class="form-control" />
+                                <span asp-validation-for="RuleName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="Scope">Scope*</label>
+                                <select asp-for="Scope" asp-items="Model.Scopes" class="form-control" id="Scope"></select>
+                                <span asp-validation-for="Scope" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="Priority"></label>
+                                <input asp-for="Priority" type="number" min="1" class="form-control" />
+                                <span asp-validation-for="Priority" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="DiscountType">Discount Type*</label>
+                                <select asp-for="DiscountType" asp-items="Model.DiscountTypes" class="form-control"></select>
+                                <span asp-validation-for="DiscountType" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="DiscountValue">Discount Value*</label>
+                                <input asp-for="DiscountValue" type="number" step="0.01" min="0" class="form-control" />
+                                <span asp-validation-for="DiscountValue" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="MaxDiscountAmount"></label>
+                                <input asp-for="MaxDiscountAmount" type="number" step="0.01" min="0" class="form-control" />
+                                <small class="form-text text-muted">Zero means no cap.</small>
+                                <span asp-validation-for="MaxDiscountAmount" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4" id="productGroup">
+                            <div class="form-group">
+                                <label asp-for="ProductId">Product</label>
+                                <select asp-for="ProductId" asp-items="Model.Products" class="form-control"></select>
+                                <span asp-validation-for="ProductId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4" id="customerGroup">
+                            <div class="form-group">
+                                <label asp-for="CustomerId">Customer</label>
+                                <select asp-for="CustomerId" asp-items="Model.Customers" class="form-control"></select>
+                                <span asp-validation-for="CustomerId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="CustomerType"></label>
+                                <select asp-for="CustomerType" asp-items="Model.CustomerTypes" class="form-control">
+                                    <option value="">-- All Customer Types --</option>
+                                </select>
+                                <span asp-validation-for="CustomerType" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="MinQuantity"></label>
+                                <input asp-for="MinQuantity" type="number" step="0.01" min="0" class="form-control" />
+                                <span asp-validation-for="MinQuantity" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="MinOrderAmount"></label>
+                                <input asp-for="MinOrderAmount" type="number" step="0.01" min="0" class="form-control" />
+                                <span asp-validation-for="MinOrderAmount" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="IsActive"></label>
+                                <div class="form-check mt-2">
+                                    <input asp-for="IsActive" class="form-check-input" />
+                                    <label class="form-check-label" asp-for="IsActive">Active</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="EffectiveFrom">Effective From*</label>
+                                <input asp-for="EffectiveFrom" type="date" class="form-control" />
+                                <span asp-validation-for="EffectiveFrom" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="EffectiveTo"></label>
+                                <input asp-for="EffectiveTo" type="date" class="form-control" />
+                                <span asp-validation-for="EffectiveTo" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Update Discount Rule</button>
+                    <a asp-area="Admin" asp-controller="Discount" asp-action="DiscountRuleList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function applyScopeVisibility() {
+            var scope = $("#Scope").val();
+
+            // 1 = Product, 2 = Order, 3 = Customer, 4 = Quantity
+            $("#productGroup").toggle(scope === "1" || scope === "4");
+            $("#customerGroup").toggle(scope === "3" || scope === "2");
+        }
+
+        $(document).ready(function () {
+            applyScopeVisibility();
+            $("#Scope").on("change", applyScopeVisibility);
+        });
+    </script>
+}
