@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace DevSkill.Inventory.Web.Areas.Admin.Models
 {
     /// <summary>
-    /// Only a draft delivery is editable, and even then the proforma invoice, the
+    /// Only a draft delivery is editable, and even then the source document, the
     /// customer and the warehouse it was raised for stay as they are.
     /// </summary>
     public class DeliveryUpdateModel
@@ -13,8 +13,12 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
         [Display(Name = "Delivery No")]
         public string DeliveryNo { get; set; } = string.Empty;
 
-        [Display(Name = "Proforma Invoice")]
-        public string ProformaNo { get; set; } = string.Empty;
+        /// <summary>"Proforma Invoice" or "Sales Order", so the screen says which it is.</summary>
+        [Display(Name = "Raised Against")]
+        public string SourceLabel { get; set; } = string.Empty;
+
+        [Display(Name = "Source Document")]
+        public string SourceNo { get; set; } = string.Empty;
 
         [Display(Name = "Customer")]
         public string CustomerName { get; set; } = string.Empty;

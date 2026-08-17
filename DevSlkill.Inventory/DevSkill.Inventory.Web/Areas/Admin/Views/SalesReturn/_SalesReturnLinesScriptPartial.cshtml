@@ -1,0 +1,112 @@
+@*
+    Return grid behaviour shared by the create and update sales return screens.
+*@
+
+<script>
+
+    // The quantity is capped at whatever the invoice still has left to come back,
+    // and the server checks the very same rule when the return is saved.
+    function clampReturnQuantity(input) {
+
+        var row = input.closest("tr");
+        var returnable = parseFloat(row.find(".returnable-qty").val()) || 0;
+        var value = parseFloat(input.val()) || 0;
+
+        if (value < 0) {
+            value = 0;
+        }
+
+        if (value > returnable) {
+
+            Swal.fire({
+                icon: "warning",
+                title: "More Than Invoiced",
+                text: "Only " + returnable.toFixed(2) + " of this line may still come back.",
+                confirmButtonText: "OK"
+            });
+
+            value = returnable;
+        }
+
+        input.val(value);
+    }
+
+    // The credit is worth the goods plus the tax that was charged on them, which is
+    // the same figure the credit note is raised for.
+    function recalculateReturnValue() {
+
+        var total = 0;
+
+        $("#returnTableBody tr").each(function () {
+
+            var qty = parseFloat($(this).find(".return-qty").val()) || 0;
+            var price = parseFloat($(this).find(".unit-price").val()) || 0;
+            var taxRate = parseFloat($(this).find(".tax-rate").val()) || 0;
+
+            var lineAmount = qty * price;
+            var lineTotal = lineAmount + lineAmount * taxRate / 100;
+
+            $(this).find(".line-total").val(lineTotal.toFixed(2));
+
+            total += lineTotal;
+        });
+
+        $("#sumReturnValue").text(total.toFixed(2));
+    }
+
+    function buildReturnRows(lines) {
+
+        var body = $("#returnTableBody").empty();
+
+        $.each(lines, function (i, line) {
+
+            var row = $("<tr>");
+            var prefix = "SalesReturnItems[" + i + "].";
+
+            var productCell = $("<td>").text(line.productName);
+            productCell.append($('<input type="hidden">').attr("name", prefix + "ProductId").val(line.productId));
+            productCell.append($('<input type="hidden">').attr("name", prefix + "ProductName").val(line.productName));
+            productCell.append($('<input type="hidden">').attr("name", prefix + "UnitName").val(line.unitName));
+            productCell.append($('<input type="hidden">').attr("name", prefix + "InvoicedQuantity").val(line.invoicedQuantity));
+            productCell.append($('<input type="hidden">').attr("name", prefix + "AlreadyReturnedQuantity").val(line.returnedQuantity));
+            productCell.append($('<input type="hidden">').attr("name", prefix + "PendingQuantity").val(line.pendingQuantity));
+            productCell.append($('<input type="hidden" class="returnable-qty">').attr("name", prefix + "RemainingQuantity").val(line.remainingQuantity));
+            productCell.append($('<input type="hidden" class="unit-price">').attr("name", prefix + "UnitPrice").val(line.unitPrice));
+            productCell.append($('<input type="hidden" class="tax-rate">').attr("name", prefix + "TaxRate").val(line.taxRate));
+            productCell.append($('<input type="hidden">').attr("name", prefix + "Remarks").val(""));
+            row.append(productCell);
+
+            row.append($("<td>").text(line.unitName || ""));
+            row.append($('<td class="text-right">').text(Number(line.invoicedQuantity).toFixed(2)));
+            row.append($('<td class="text-right">').text(Number(line.returnedQuantity).toFixed(2)));
+            row.append($('<td class="text-right">').text(Number(line.pendingQuantity).toFixed(2)));
+            row.append($('<td class="text-right font-weight-bold">').text(Number(line.remainingQuantity).toFixed(2)));
+
+            // Nothing is defaulted in, because a full return is the exception rather
+            // than the rule.
+            row.append($("<td>").append(
+                $('<input type="number" step="1" min="0" class="form-control return-qty">')
+                    .attr("name", prefix + "ReturnQuantity")
+                    .val(0)));
+
+            row.append($('<td class="text-right">').text(Number(line.unitPrice).toFixed(2)));
+            row.append($("<td>").append($('<input class="form-control line-total" readonly>').val("0.00")));
+
+            body.append(row);
+        });
+
+        recalculateReturnValue();
+    }
+
+    $(document).ready(function () {
+
+        recalculateReturnValue();
+
+        $(document).on("change", ".return-qty", function () {
+            clampReturnQuantity($(this));
+            recalculateReturnValue();
+        });
+
+    });
+
+</script>

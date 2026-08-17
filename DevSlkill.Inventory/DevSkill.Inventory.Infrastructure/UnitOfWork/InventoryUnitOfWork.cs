@@ -46,6 +46,72 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
 
         public IDeliveryItemRepository DeliveryItemRepository { get; private set; }
 
+        public ISalespersonRepository SalespersonRepository { get; private set; }
+
+        public ISalesQuotationRepository SalesQuotationRepository { get; private set; }
+
+        public ISalesQuotationItemRepository SalesQuotationItemRepository { get; private set; }
+
+        public ISalesOrderRepository SalesOrderRepository { get; private set; }
+
+        public ISalesOrderItemRepository SalesOrderItemRepository { get; private set; }
+
+        public IStockReservationRepository StockReservationRepository { get; private set; }
+
+        public IStockReservationItemRepository StockReservationItemRepository { get; private set; }
+
+        public ISalesInvoiceRepository SalesInvoiceRepository { get; private set; }
+
+        public ISalesInvoiceItemRepository SalesInvoiceItemRepository { get; private set; }
+
+        public ICustomerPaymentRepository CustomerPaymentRepository { get; private set; }
+
+        public ICustomerPaymentAllocationRepository CustomerPaymentAllocationRepository { get; private set; }
+
+        public ISalesReturnRepository SalesReturnRepository { get; private set; }
+
+        public ISalesReturnItemRepository SalesReturnItemRepository { get; private set; }
+
+        public ICreditNoteRepository CreditNoteRepository { get; private set; }
+
+        public ICreditNoteItemRepository CreditNoteItemRepository { get; private set; }
+
+        public ISalesCommissionRepository SalesCommissionRepository { get; private set; }
+
+        public ISupplierRepository SupplierRepository { get; private set; }
+
+        public IPurchaseRequisitionRepository PurchaseRequisitionRepository { get; private set; }
+
+        public IPurchaseRequisitionItemRepository PurchaseRequisitionItemRepository { get; private set; }
+
+        public IPurchaseOrderRepository PurchaseOrderRepository { get; private set; }
+
+        public IPurchaseOrderItemRepository PurchaseOrderItemRepository { get; private set; }
+
+        public IGoodsReceiptRepository GoodsReceiptRepository { get; private set; }
+
+        public IGoodsReceiptItemRepository GoodsReceiptItemRepository { get; private set; }
+
+        public IPurchaseInvoiceRepository PurchaseInvoiceRepository { get; private set; }
+
+        public IPurchaseInvoiceItemRepository PurchaseInvoiceItemRepository { get; private set; }
+
+        public IPurchaseReturnRepository PurchaseReturnRepository { get; private set; }
+
+        public IPurchaseReturnItemRepository PurchaseReturnItemRepository { get; private set; }
+
+        public ISupplierPaymentRepository SupplierPaymentRepository { get; private set; }
+
+        public ISupplierPaymentAllocationRepository SupplierPaymentAllocationRepository { get; private set; }
+
+        public IRequestForQuotationRepository RequestForQuotationRepository { get; private set; }
+
+        public IRequestForQuotationItemRepository RequestForQuotationItemRepository { get; private set; }
+
+        public ISupplierQuotationRepository SupplierQuotationRepository { get; private set; }
+
+        public ISupplierQuotationItemRepository SupplierQuotationItemRepository { get; private set; }
+
         public InventoryUnitOfWork(InventoryDbContext productDbContext,
             IProductRepository productRepository,
             ICategoryRepository categoryRepository,
@@ -72,7 +138,40 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
             IProformaInvoiceRepository proformaInvoiceRepository,
             IProformaInvoiceItemRepository proformaInvoiceItemRepository,
             IDeliveryRepository deliveryRepository,
-            IDeliveryItemRepository deliveryItemRepository)
+            IDeliveryItemRepository deliveryItemRepository,
+            ISalespersonRepository salespersonRepository,
+            ISalesQuotationRepository salesQuotationRepository,
+            ISalesQuotationItemRepository salesQuotationItemRepository,
+            ISalesOrderRepository salesOrderRepository,
+            ISalesOrderItemRepository salesOrderItemRepository,
+            IStockReservationRepository stockReservationRepository,
+            IStockReservationItemRepository stockReservationItemRepository,
+            ISalesInvoiceRepository salesInvoiceRepository,
+            ISalesInvoiceItemRepository salesInvoiceItemRepository,
+            ICustomerPaymentRepository customerPaymentRepository,
+            ICustomerPaymentAllocationRepository customerPaymentAllocationRepository,
+            ISalesReturnRepository salesReturnRepository,
+            ISalesReturnItemRepository salesReturnItemRepository,
+            ICreditNoteRepository creditNoteRepository,
+            ICreditNoteItemRepository creditNoteItemRepository,
+            ISalesCommissionRepository salesCommissionRepository,
+            ISupplierRepository supplierRepository,
+            IPurchaseRequisitionRepository purchaseRequisitionRepository,
+            IPurchaseRequisitionItemRepository purchaseRequisitionItemRepository,
+            IPurchaseOrderRepository purchaseOrderRepository,
+            IPurchaseOrderItemRepository purchaseOrderItemRepository,
+            IGoodsReceiptRepository goodsReceiptRepository,
+            IGoodsReceiptItemRepository goodsReceiptItemRepository,
+            IPurchaseInvoiceRepository purchaseInvoiceRepository,
+            IPurchaseInvoiceItemRepository purchaseInvoiceItemRepository,
+            IPurchaseReturnRepository purchaseReturnRepository,
+            IPurchaseReturnItemRepository purchaseReturnItemRepository,
+            ISupplierPaymentRepository supplierPaymentRepository,
+            ISupplierPaymentAllocationRepository supplierPaymentAllocationRepository,
+            IRequestForQuotationRepository requestForQuotationRepository,
+            IRequestForQuotationItemRepository requestForQuotationItemRepository,
+            ISupplierQuotationRepository supplierQuotationRepository,
+            ISupplierQuotationItemRepository supplierQuotationItemRepository)
             : base(productDbContext)
         {
             ProductRepository = productRepository;
@@ -101,6 +200,39 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
             ProformaInvoiceItemRepository = proformaInvoiceItemRepository;
             DeliveryRepository = deliveryRepository;
             DeliveryItemRepository = deliveryItemRepository;
+            SalespersonRepository = salespersonRepository;
+            SalesQuotationRepository = salesQuotationRepository;
+            SalesQuotationItemRepository = salesQuotationItemRepository;
+            SalesOrderRepository = salesOrderRepository;
+            SalesOrderItemRepository = salesOrderItemRepository;
+            StockReservationRepository = stockReservationRepository;
+            StockReservationItemRepository = stockReservationItemRepository;
+            SalesInvoiceRepository = salesInvoiceRepository;
+            SalesInvoiceItemRepository = salesInvoiceItemRepository;
+            CustomerPaymentRepository = customerPaymentRepository;
+            CustomerPaymentAllocationRepository = customerPaymentAllocationRepository;
+            SalesReturnRepository = salesReturnRepository;
+            SalesReturnItemRepository = salesReturnItemRepository;
+            CreditNoteRepository = creditNoteRepository;
+            CreditNoteItemRepository = creditNoteItemRepository;
+            SalesCommissionRepository = salesCommissionRepository;
+            SupplierRepository = supplierRepository;
+            PurchaseRequisitionRepository = purchaseRequisitionRepository;
+            PurchaseRequisitionItemRepository = purchaseRequisitionItemRepository;
+            PurchaseOrderRepository = purchaseOrderRepository;
+            PurchaseOrderItemRepository = purchaseOrderItemRepository;
+            GoodsReceiptRepository = goodsReceiptRepository;
+            GoodsReceiptItemRepository = goodsReceiptItemRepository;
+            PurchaseInvoiceRepository = purchaseInvoiceRepository;
+            PurchaseInvoiceItemRepository = purchaseInvoiceItemRepository;
+            PurchaseReturnRepository = purchaseReturnRepository;
+            PurchaseReturnItemRepository = purchaseReturnItemRepository;
+            SupplierPaymentRepository = supplierPaymentRepository;
+            SupplierPaymentAllocationRepository = supplierPaymentAllocationRepository;
+            RequestForQuotationRepository = requestForQuotationRepository;
+            RequestForQuotationItemRepository = requestForQuotationItemRepository;
+            SupplierQuotationRepository = supplierQuotationRepository;
+            SupplierQuotationItemRepository = supplierQuotationItemRepository;
         }
 
         public async Task<(IList<ProductDto> data, int total, int totalDisplay)> GetPagedProductUsingSPAsync(int pageIndex, int pageSize, ProductSearchDto search, string? order)

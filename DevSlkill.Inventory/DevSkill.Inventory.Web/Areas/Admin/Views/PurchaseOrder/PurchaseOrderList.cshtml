@@ -1,0 +1,423 @@
+@{
+    ViewData["Title"] = "Purchase Order List";
+}
+
+@section Styles {
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Purchase Orders</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Purchase</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Raising an order never changes stock; receiving the goods does.</h3>
+
+                        <a asp-area="Admin" asp-controller="PurchaseOrder" asp-action="CreatePurchaseOrder" class="btn btn-primary float-right">
+                            <i class="fas fa-plus"></i> Add Purchase Order
+                        </a>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <partial name="_ResponsePartial" />
+                        <partial name="_ModalPartial" />
+                        <table id="purchaseOrder" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Order No</th>
+                                    <th>Supplier</th>
+                                    <th>Order Date</th>
+                                    <th>Expected</th>
+                                    <th>Warehouse</th>
+                                    <th>Grand Total</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tfoot>
+                                <tr>
+                                    <th>Order No</th>
+                                    <th>Supplier</th>
+                                    <th>Order Date</th>
+                                    <th>Expected</th>
+                                    <th>Warehouse</th>
+                                    <th>Grand Total</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+<partial name="_PurchaseOrderDetailsPartial" />
+
+<!-- /.content -->
+@section Scripts {
+    <!-- DataTables  & Plugins -->
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+    <script type="text/javascript">
+
+        function statusBadgeClass(status) {
+            switch (status) {
+                case 'Approved': return 'badge-success';
+                case 'Submitted': return 'badge-warning';
+                case 'Rejected': return 'badge-danger';
+                case 'Cancelled': return 'badge-dark';
+                case 'Received': return 'badge-primary';
+                case 'PartiallyReceived': return 'badge-info';
+                case 'Closed': return 'badge-dark';
+                default: return 'badge-secondary';
+            }
+        }
+
+        // The buttons follow the flow: a draft is edited and submitted, a submitted one
+        // is approved or rejected, and an approved one is received against.
+        function actionButtons(id, status) {
+
+            var buttons = '';
+
+            if (status === 'Draft' || status === 'Rejected') {
+                buttons += `<a href="/Admin/PurchaseOrder/UpdatePurchaseOrder/${id}"
+                               class="btn btn-info btn-sm mr-1" title="Edit"><i class="fas fa-edit"></i></a>`;
+            }
+
+            if (status === 'Draft') {
+                buttons += `<button type="button" class="btn btn-primary btn-sm mr-1 btn-submit" data-id='${id}'
+                                title="Submit for approval"><i class="fas fa-paper-plane"></i></button>`;
+            }
+
+            if (status === 'Submitted') {
+                buttons += `<button type="button" class="btn btn-success btn-sm mr-1 btn-approve" data-id='${id}'
+                                title="Approve"><i class="fas fa-check"></i></button>
+                            <button type="button" class="btn btn-warning btn-sm mr-1 btn-reject" data-id='${id}'
+                                title="Reject"><i class="fas fa-times"></i></button>`;
+            }
+
+            if (status === 'Approved' || status === 'PartiallyReceived') {
+                buttons += `<a href="/Admin/GoodsReceipt/CreateGoodsReceipt?purchaseOrderId=${id}"
+                               class="btn btn-success btn-sm mr-1" title="Receive goods"><i class="fas fa-dolly"></i></a>
+                            <button type="button" class="btn btn-secondary btn-sm mr-1 btn-close-short" data-id='${id}'
+                                title="Close short"><i class="fas fa-flag-checkered"></i></button>`;
+            }
+
+            if (status === 'Draft' || status === 'Approved' || status === 'Rejected') {
+                buttons += `<button type="button" class="btn btn-warning btn-sm mr-1 btn-cancel" data-id='${id}'
+                                title="Cancel"><i class="fas fa-ban"></i></button>`;
+            }
+
+            if (status === 'Draft' || status === 'Rejected' || status === 'Cancelled') {
+                buttons += `<button type="button" class="btn btn-danger btn-sm show-bs-modal" data-id='${id}'
+                                title="Delete"><i class="fas fa-trash"></i></button>`;
+            }
+
+            return buttons === '' ? '<span class="text-muted">—</span>' : buttons;
+        }
+
+        function postAction(url, data, successTitle) {
+
+            data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({ icon: 'success', title: successTitle, text: response.message, timer: 1800, showConfirmButton: false });
+                        $('#purchaseOrder').DataTable().ajax.reload(null, false);
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Failed!', text: response.message });
+                    }
+                },
+                error: function (error) {
+                    if (error.status === 403) {
+                        window.location.href = '/Account/AccessDenied';
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Error!', text: 'The action could not be completed.' });
+                    }
+                }
+            });
+        }
+
+        $(function () {
+            try {
+                $("#purchaseOrder").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    responsive: true,
+                    lengthChange: true,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    autoWidth: false,
+                    ajax: {
+                        url: "/Admin/PurchaseOrder/GetPurchaseOrderJsonData",
+                        type: "POST",
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: function (d) {
+                            return JSON.stringify(d);
+                        },
+                    },
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 7,
+                            render: function (data, type, row) {
+                                return actionButtons(data, row[6]);
+                            }
+                        },
+                        {
+                            targets: 6,
+                            render: function (data) {
+                                return `<span class="badge ${statusBadgeClass(data)}">${data}</span>`;
+                            }
+                        },
+                        ...[0, 1, 2, 3, 4, 5].map(function (target) {
+                            return {
+                                targets: target,
+                                createdCell: function (td, cellData, rowData) {
+                                    $(td).addClass('table-row');
+                                    $(td).attr('data-id', rowData[7]);
+                                }
+                            };
+                        })
+                    ],
+                    dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                }).buttons().container().appendTo('#purchaseOrder_wrapper .col-md-6:eq(0)');
+            } catch (e) {
+                console.error("DataTable init error:", e);
+            }
+        });
+
+        // Row click -> purchase order details modal
+        $(function () {
+            $('#purchaseOrder tbody').on('click', '.table-row', function () {
+                var id = $(this).data("id");
+
+                $.ajax({
+                    url: `/Admin/PurchaseOrder/GetPurchaseOrderDetails?id=${id}`,
+                    type: 'GET',
+                    success: function (data) {
+
+                        $('#PoNo').text(data.purchaseOrderNo || 'N/A');
+                        $('#PoDate').text(data.orderDate ? new Date(data.orderDate).toLocaleDateString() : 'N/A');
+                        $('#PoExpectedDate').text(data.expectedDeliveryDate ? new Date(data.expectedDeliveryDate).toLocaleDateString() : 'N/A');
+                        $('#PoSupplier').text((data.supplierName || 'N/A') + (data.supplierCode ? ' (' + data.supplierCode + ')' : ''));
+                        $('#PoWarehouse').text(data.warehouse || 'N/A');
+                        $('#PoPaymentTerms').text(data.paymentTerms || 'N/A');
+                        $('#PoRequisitionNo').text(data.requisitionNo || 'Direct order');
+                        $('#PoStatus').text(data.status || 'N/A');
+                        $('#PoApprovedBy').text(data.approvedBy || 'N/A');
+                        $('#PoApprovedDate').text(data.approvedDate ? new Date(data.approvedDate).toLocaleString('en-US', { hour12: true }) : 'N/A');
+                        $('#PoNotes').text(data.notes || 'N/A');
+
+                        $('#PoSubTotal').text(Number(data.subTotal ?? 0).toFixed(2));
+                        $('#PoItemDiscount').text(Number(data.itemDiscountTotal ?? 0).toFixed(2));
+                        $('#PoTotalTax').text(Number(data.totalTax ?? 0).toFixed(2));
+                        $('#PoOtherCharges').text(Number(data.otherCharges ?? 0).toFixed(2));
+                        $('#PoGrandTotal').text(Number(data.grandTotal ?? 0).toFixed(2));
+
+                        if (data.rejectionReason) {
+                            $('#PoRejectionReason').text(data.rejectionReason);
+                            $('#PoRejectionBlock').removeClass('d-none');
+                        } else {
+                            $('#PoRejectionBlock').addClass('d-none');
+                        }
+
+                        var body = $('#PoItemsBody').empty();
+
+                        $.each(data.purchaseOrderItems || [], function (i, item) {
+                            var row = $('<tr>');
+                            row.append($('<td>').text(item.productName || ''));
+                            row.append($('<td>').text(item.unitName || ''));
+                            row.append($('<td class="text-right">').text(Number(item.quantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.receivedQuantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.pendingQuantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.invoicedQuantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.unitPrice ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.discountAmount ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.taxAmount ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.lineTotal ?? 0).toFixed(2)));
+                            body.append(row);
+                        });
+
+                        $('#purchaseOrderDetailModal').modal('show');
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 403) {
+                            window.location.href = '/Account/AccessDenied';
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Error!', text: 'Failed to load purchase order details.' });
+                        }
+                    }
+                });
+            });
+        });
+
+        $(function () {
+
+            $('#purchaseOrder').on('click', '.btn-submit', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Submit for approval?',
+                    text: 'The order can no longer be edited until it is approved or rejected.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, Submit',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/PurchaseOrder/SubmitPurchaseOrder', { id: id }, 'Submitted!');
+                    }
+                });
+            });
+
+            $('#purchaseOrder').on('click', '.btn-approve', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Approve this purchase order?',
+                    text: 'Once approved the goods can be received against it.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    confirmButtonText: 'Yes, Approve',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/PurchaseOrder/ApprovePurchaseOrder', { id: id }, 'Approved!');
+                    }
+                });
+            });
+
+            $('#purchaseOrder').on('click', '.btn-reject', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Reject this purchase order?',
+                    input: 'textarea',
+                    inputLabel: 'Reason for rejection',
+                    inputPlaceholder: 'Tell the buyer what to change...',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Reject',
+                    cancelButtonText: 'Cancel',
+                    inputValidator: function (value) {
+                        if (!value || !value.trim()) {
+                            return 'A rejection reason is required.';
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/PurchaseOrder/RejectPurchaseOrder',
+                            { id: id, reason: result.value }, 'Rejected!');
+                    }
+                });
+            });
+
+            $('#purchaseOrder').on('click', '.btn-close-short', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Close this order short?',
+                    text: 'Nothing more can be received against it afterwards.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Close It',
+                    cancelButtonText: 'Keep It Open'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/PurchaseOrder/ClosePurchaseOrder', { id: id }, 'Closed!');
+                    }
+                });
+            });
+
+            $('#purchaseOrder').on('click', '.btn-cancel', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Cancel this purchase order?',
+                    text: 'A cancelled order can no longer be used.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Cancel It',
+                    cancelButtonText: 'Keep It'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/PurchaseOrder/CancelPurchaseOrder', { id: id }, 'Cancelled!');
+                    }
+                });
+            });
+
+            $('#purchaseOrder').on('click', '.show-bs-modal', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to recover this purchase order!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Delete',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/PurchaseOrder/DeletePurchaseOrder', { id: id }, 'Deleted!');
+                    }
+                });
+            });
+
+        });
+    </script>
+}

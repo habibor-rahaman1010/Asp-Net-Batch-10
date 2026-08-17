@@ -1,0 +1,81 @@
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model List<RequestForQuotationItemModel>
+
+@*
+    The requested-products grid, shared by the create and update screens.
+    The product list is handed in through ViewData so the same markup serves both
+    the create and the update model.
+*@
+
+@{
+    var products = ViewData["Products"] as IList<SelectListItem> ?? new List<SelectListItem>();
+}
+
+<div class="card">
+
+    <div class="card-header">
+        <div class="d-flex justify-content-between">
+            <h3 class="card-title">Requested Products</h3>
+            <button id="btnAddProduct" type="button" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus"></i> Add Product
+            </button>
+        </div>
+    </div>
+
+    <div class="card-body">
+
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            Ask for a quantity and say what you need; leave the price out. The price is
+            what each supplier fills in on their own quotation, and the quotations are
+            then compared side by side before one is awarded.
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th width="34%">Product</th>
+                        <th width="12%">In Stock</th>
+                        <th width="14%">Qty</th>
+                        <th width="32%">Remarks</th>
+                        <th width="8%">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="productTableBody">
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <select name="RequestForQuotationItems[@i].ProductId" class="form-control product-select"
+                                        asp-items="@(new SelectList(products, "Value", "Text", Model[i].ProductId))">
+                                </select>
+                            </td>
+
+                            <td><input class="form-control current-stock" value="0" readonly /></td>
+
+                            <td>
+                                <input name="RequestForQuotationItems[@i].Quantity" value="@Model[i].Quantity"
+                                       type="number" step="0.01" min="0.01" class="form-control line-qty" />
+                            </td>
+
+                            <td>
+                                <input name="RequestForQuotationItems[@i].Remarks" value="@Model[i].Remarks"
+                                       class="form-control" placeholder="Specification, brand, packing ..." />
+                            </td>
+
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm btnRemoveRow">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>

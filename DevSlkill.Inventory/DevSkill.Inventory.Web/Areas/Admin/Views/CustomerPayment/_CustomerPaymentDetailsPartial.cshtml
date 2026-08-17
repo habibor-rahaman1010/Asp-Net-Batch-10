@@ -1,0 +1,93 @@
+<div class="modal fade" id="customerPaymentDetailModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title">Collection Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Collection No</dt>
+                            <dd class="col-sm-7" id="CpNo"></dd>
+
+                            <dt class="col-sm-5">Customer</dt>
+                            <dd class="col-sm-7" id="CpCustomer"></dd>
+
+                            <dt class="col-sm-5">Date</dt>
+                            <dd class="col-sm-7" id="CpDate"></dd>
+
+                            <dt class="col-sm-5">Method</dt>
+                            <dd class="col-sm-7" id="CpMethod"></dd>
+                        </dl>
+                    </div>
+
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Reference</dt>
+                            <dd class="col-sm-7" id="CpReference"></dd>
+
+                            <dt class="col-sm-5">Credit Note</dt>
+                            <dd class="col-sm-7" id="CpCreditNote"></dd>
+
+                            <dt class="col-sm-5">Status</dt>
+                            <dd class="col-sm-7" id="CpStatus"></dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>Invoice No</th>
+                                <th>Invoice Date</th>
+                                <th class="text-right">Invoice Value</th>
+                                <th class="text-right">Was Owing</th>
+                                <th class="text-right">Allocated</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody id="CpAllocationsBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="row justify-content-end">
+                    <div class="col-md-5">
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Amount Received</th>
+                                <td class="text-right" id="CpAmount"></td>
+                            </tr>
+                            <tr>
+                                <th>Allocated</th>
+                                <td class="text-right" id="CpAllocated"></td>
+                            </tr>
+                            <tr class="bg-light">
+                                <th>Unallocated Advance</th>
+                                <th class="text-right" id="CpUnallocated"></th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-2">Notes</dt>
+                    <dd class="col-sm-10" id="CpNotes"></dd>
+                </dl>
+
+            </div>
+
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>

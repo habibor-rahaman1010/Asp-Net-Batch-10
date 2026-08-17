@@ -25,7 +25,8 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
                     return await GetDynamicAsync(null, order,
                         x => x.Include(n => n.Customer)
                               .Include(n => n.BusinessLocation)
-                              .Include(n => n.ProformaInvoice),
+                              .Include(n => n.ProformaInvoice)
+                              .Include(n => n.SalesOrder),
                         pageIndex, pageSize, true);
                 }
                 else
@@ -33,12 +34,14 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
                     return await GetDynamicAsync(
                         x => x.DeliveryNo.Contains(search.Value) ||
                              x.ProformaInvoice!.ProformaNo.Contains(search.Value) ||
+                             x.SalesOrder!.SalesOrderNo.Contains(search.Value) ||
                              x.Customer!.CustomerName.Contains(search.Value) ||
                              x.Customer!.CustomerCode.Contains(search.Value),
                         order,
                         x => x.Include(n => n.Customer)
                               .Include(n => n.BusinessLocation)
-                              .Include(n => n.ProformaInvoice),
+                              .Include(n => n.ProformaInvoice)
+                              .Include(n => n.SalesOrder),
                         pageIndex, pageSize, true);
                 }
             }
@@ -56,6 +59,9 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
                 .Include(x => x.ProformaInvoice!)
                     .ThenInclude(x => x.ProformaInvoiceItems!)
                         .ThenInclude(x => x.Product)
+                .Include(x => x.SalesOrder!)
+                    .ThenInclude(x => x.SalesOrderItems!)
+                        .ThenInclude(x => x.Product)
                 .Include(x => x.DeliveryItems!)
                     .ThenInclude(x => x.Product)
                         .ThenInclude(x => x!.Unit)
@@ -71,6 +77,18 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
             return await _inventoryDbContext.Deliveries
                 .Include(x => x.DeliveryItems)
                 .Where(x => x.ProformaInvoiceId == proformaInvoiceId)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Every shipment already written against one sales order, read the same way
+        /// as the proforma side so both sources answer the question identically.
+        /// </summary>
+        public async Task<IList<Delivery>> GetDeliveriesBySalesOrderAsync(Guid salesOrderId)
+        {
+            return await _inventoryDbContext.Deliveries
+                .Include(x => x.DeliveryItems)
+                .Where(x => x.SalesOrderId == salesOrderId)
                 .ToListAsync();
         }
 

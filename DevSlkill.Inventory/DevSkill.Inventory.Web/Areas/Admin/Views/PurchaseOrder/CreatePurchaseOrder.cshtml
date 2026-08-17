@@ -1,0 +1,349 @@
+@model PurchaseOrderCreateModel;
+
+@{
+    ViewData["Title"] = "Create Purchase Order";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="PurchaseOrder" asp-action="CreatePurchaseOrder" method="post">
+
+            <!-- Header -->
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Purchase Order</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="PurchaseOrderNo"></label>
+                                <input asp-for="PurchaseOrderNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="OrderDate">Order Date*</label>
+                                <input asp-for="OrderDate" type="date" class="form-control" />
+                                <span asp-validation-for="OrderDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="ExpectedDeliveryDate">Expected Delivery*</label>
+                                <input asp-for="ExpectedDeliveryDate" type="date" class="form-control" />
+                                <span asp-validation-for="ExpectedDeliveryDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="PurchaseRequisitionId"></label>
+                                <select asp-for="PurchaseRequisitionId" asp-items="Model.PurchaseRequisitions" class="form-control" id="PurchaseRequisitionId"></select>
+                                <small class="form-text text-muted">
+                                    Picking an approved requisition fills the lines with whatever it still has open.
+                                </small>
+                                <span asp-validation-for="PurchaseRequisitionId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="SupplierId">Supplier*</label>
+                                <select asp-for="SupplierId" asp-items="Model.Suppliers" class="form-control"></select>
+                                <span asp-validation-for="SupplierId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="BusinessLocationId">Warehouse*</label>
+                                <select asp-for="BusinessLocationId" asp-items="Model.BusinessLocations" class="form-control" id="BusinessLocationId"></select>
+                                <small class="form-text text-muted">
+                                    Products are loaded from this warehouse, and it cannot be changed once the order is saved.
+                                </small>
+                                <span asp-validation-for="BusinessLocationId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label asp-for="SupplierQuotationId"></label>
+                                <select asp-for="SupplierQuotationId" asp-items="Model.SupplierQuotations" class="form-control" id="SupplierQuotationId"></select>
+                                <small class="form-text text-muted">
+                                    Only quotations that won their request are listed. Picking one fills the
+                                    supplier, the terms and every line at the price that was actually quoted.
+                                </small>
+                                <span asp-validation-for="SupplierQuotationId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="PaymentTermId"></label>
+                                <select asp-for="PaymentTermId" asp-items="Model.PaymentTerms" class="form-control"></select>
+                                <span asp-validation-for="PaymentTermId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Status">Status*</label>
+                                <select asp-for="Status" asp-items="Model.Statuses" class="form-control"></select>
+                                <small class="form-text text-muted">Submitted sends it straight to the approver.</small>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="OtherCharges"></label>
+                                <input asp-for="OtherCharges" type="number" step="0.01" min="0" class="form-control" id="OtherCharges" />
+                                <small class="form-text text-muted">Freight, handling and anything else that belongs to no single line.</small>
+                                <span asp-validation-for="OtherCharges" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label asp-for="Notes"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <partial name="_PurchaseOrderLinesPartial" model="Model.PurchaseOrderItems" />
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Save Purchase Order</button>
+                    <a asp-area="Admin" asp-controller="PurchaseOrder" asp-action="PurchaseOrderList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_PurchaseOrderLinesScriptPartial" />
+
+    <script>
+
+        var rowIndex = @Model.PurchaseOrderItems.Count;
+
+        function loadWarehouseProducts(warehouseId, done) {
+
+            if (!warehouseId) {
+                warehouseProducts = [];
+                $(".product-select").each(function () { loadProducts($(this)); });
+                recalculateTotals();
+                return;
+            }
+
+            $.ajax({
+                url: "/Admin/PurchaseOrder/GetProductsByWarehouse",
+                type: "GET",
+                data: { warehouseId: warehouseId },
+                success: function (response) {
+
+                    warehouseProducts = response;
+
+                    $(".product-select").each(function () { loadProducts($(this)); });
+
+                    if (done) { done(); } else { recalculateTotals(); }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Products Not Loaded",
+                        text: "The products of the selected warehouse could not be loaded.",
+                        confirmButtonText: "OK"
+                    });
+                }
+            });
+        }
+
+        $(document).ready(function () {
+
+            updateDeleteButtons();
+            captureRenderedProducts();
+            refreshAllLines();
+
+            // An order is delivered into one warehouse, so its products decide what the
+            // lines may hold. Changing the warehouse starts the lines over.
+            $("#BusinessLocationId").on("change", function () {
+
+                $("#productTableBody tr").each(function () {
+                    clearLinePreview($(this));
+                });
+
+                loadWarehouseProducts($(this).val());
+            });
+
+            // Choosing a requisition rebuilds the grid from whatever it still has open.
+            $("#PurchaseRequisitionId").on("change", function () {
+
+                var requisitionId = $(this).val();
+
+                if (!requisitionId) {
+                    return;
+                }
+
+                $.get('/Admin/PurchaseOrder/GetRequisitionLines', { requisitionId: requisitionId }, function (response) {
+
+                    if (!response.success) {
+                        Swal.fire({ icon: "error", title: "Requisition", text: response.message });
+                        $("#PurchaseRequisitionId").val("");
+                        return;
+                    }
+
+                    if (!response.lines || response.lines.length === 0) {
+                        Swal.fire({ icon: "info", title: "Nothing Left", text: "This requisition has nothing left to order." });
+                        $("#PurchaseRequisitionId").val("");
+                        return;
+                    }
+
+                    // The order has to be delivered into the requisition's warehouse.
+                    $("#BusinessLocationId").val(response.warehouseId);
+
+                    loadWarehouseProducts(response.warehouseId, function () {
+
+                        $("#productTableBody").empty();
+                        rowIndex = 0;
+
+                        $.each(response.lines, function (i, line) {
+
+                            var row = appendRow(rowIndex);
+                            rowIndex++;
+
+                            row.find(".product-select").val(line.productId);
+                            row.find(".line-qty").val(Number(line.remainingQuantity).toFixed(2));
+                            row.find(".unit-price").val(Number(line.estimatedUnitPrice).toFixed(2));
+                        });
+
+                        updateDeleteButtons();
+                        refreshAllLines();
+                    });
+                });
+            });
+
+            // Choosing an awarded quotation rebuilds the order at the price that was won.
+            $("#SupplierQuotationId").on("change", function () {
+
+                var supplierQuotationId = $(this).val();
+
+                if (!supplierQuotationId) {
+                    return;
+                }
+
+                $.get('/Admin/PurchaseOrder/GetQuotationLines', { supplierQuotationId: supplierQuotationId }, function (response) {
+
+                    if (!response.success) {
+                        Swal.fire({ icon: "error", title: "Quotation", text: response.message });
+                        $("#SupplierQuotationId").val("");
+                        return;
+                    }
+
+                    if (!response.lines || response.lines.length === 0) {
+                        Swal.fire({ icon: "info", title: "Nothing To Order", text: "This quotation has no lines." });
+                        $("#SupplierQuotationId").val("");
+                        return;
+                    }
+
+                    // The order is raised on the winning supplier, into the warehouse the
+                    // request was raised for.
+                    $("#SupplierId").val(response.supplierId);
+                    $("#PaymentTermId").val(response.paymentTermId || "");
+                    $("#OtherCharges").val(Number(response.otherCharges).toFixed(2));
+
+                    if (response.purchaseRequisitionId) {
+                        $("#PurchaseRequisitionId").val(response.purchaseRequisitionId);
+                    }
+
+                    $("#BusinessLocationId").val(response.warehouseId);
+
+                    loadWarehouseProducts(response.warehouseId, function () {
+
+                        $("#productTableBody").empty();
+                        rowIndex = 0;
+
+                        $.each(response.lines, function (i, line) {
+
+                            var row = appendRow(rowIndex);
+                            rowIndex++;
+
+                            row.find(".product-select").val(line.productId);
+                            row.find(".line-qty").val(Number(line.quantity).toFixed(2));
+                            row.find(".unit-price").val(Number(line.unitPrice).toFixed(2));
+                            row.find(".discount-amount").val(Number(line.discountAmount).toFixed(2));
+                        });
+
+                        updateDeleteButtons();
+                        refreshAllLines();
+                    });
+                });
+            });
+
+            $("#btnAddProduct").click(function () {
+
+                if (!$("#BusinessLocationId").val()) {
+
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Warehouse Required",
+                        text: "Select a warehouse first, its products are the ones you can order.",
+                        confirmButtonText: "OK"
+                    });
+
+                    return;
+                }
+
+                appendRow(rowIndex);
+                rowIndex++;
+
+                updateDeleteButtons();
+            });
+
+            $("#ExpectedDeliveryDate, #OrderDate").on("change", function () {
+
+                var orderDate = $("#OrderDate").val();
+                var deliveryDate = $("#ExpectedDeliveryDate").val();
+
+                if (orderDate && deliveryDate && deliveryDate < orderDate) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Invalid Date",
+                        text: "Expected Delivery cannot be earlier than the order date.",
+                        confirmButtonText: "OK"
+                    });
+
+                    $("#ExpectedDeliveryDate").val(orderDate);
+                }
+            });
+
+        });
+
+    </script>
+}

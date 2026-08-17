@@ -22,27 +22,37 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         [Authorize(Policy = "CreatePermission")]
-        public async Task<IActionResult> CreateDelivery(Guid? proformaInvoiceId)
+        public async Task<IActionResult> CreateDelivery(Guid? proformaInvoiceId, Guid? salesOrderId)
         {
             var model = new DeliveryCreateModel
             {
                 DeliveryNo = await _deliveryManagementService.GenerateDeliveryNoAsync()
             };
 
-            // Coming straight from the proforma invoice list, the document is already
-            // known, so the lines can be shown without a second click.
+            // Coming straight from the proforma invoice or sales order list, the source
+            // document is already known, so the lines are shown without a second click.
             if (proformaInvoiceId.HasValue && proformaInvoiceId.Value != Guid.Empty)
             {
+                model.SourceType = DeliveryCreateModel.ProformaSource;
                 model.ProformaInvoiceId = proformaInvoiceId.Value;
+            }
+            else if (salesOrderId.HasValue && salesOrderId.Value != Guid.Empty)
+            {
+                model.SourceType = DeliveryCreateModel.SalesOrderSource;
+                model.SalesOrderId = salesOrderId.Value;
+            }
 
+            if (model.SelectedSourceId.HasValue && model.SelectedSourceId.Value != Guid.Empty)
+            {
                 try
                 {
-                    model.DeliveryItems = await LoadLinesAsync(proformaInvoiceId.Value, null, null);
+                    model.DeliveryItems = await LoadLinesAsync(model.ProformaInvoiceId, model.SalesOrderId, null, null);
                 }
                 catch (InvalidOperationException ex)
                 {
                     ModelState.AddModelError(string.Empty, ex.Message);
-                    model.ProformaInvoiceId = Guid.Empty;
+                    model.ProformaInvoiceId = null;
+                    model.SalesOrderId = null;
                 }
             }
 
@@ -54,6 +64,23 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "CreatePermission")]
         public async Task<IActionResult> CreateDelivery(DeliveryCreateModel model)
         {
+            // Only the id of the chosen source is kept; the other one is cleared so a
+            // stale value left in the browser cannot reach the service.
+            if (model.SourceType == DeliveryCreateModel.ProformaSource)
+            {
+                model.SalesOrderId = null;
+            }
+            else
+            {
+                model.ProformaInvoiceId = null;
+            }
+
+            if (!model.SelectedSourceId.HasValue || model.SelectedSourceId.Value == Guid.Empty)
+            {
+                ModelState.AddModelError(string.Empty,
+                    "A delivery has to be raised against a proforma invoice or a sales order.");
+            }
+
             if (!ModelState.IsValid)
             {
                 await RebuildAsync(model);
@@ -65,6 +92,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 var delivery = new Delivery
                 {
                     ProformaInvoiceId = model.ProformaInvoiceId,
+                    SalesOrderId = model.SalesOrderId,
                     DeliveryDate = model.DeliveryDate,
                     ReceivedBy = model.ReceivedBy,
                     Notes = model.Notes,
@@ -113,13 +141,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             {
                 Id = delivery.Id,
                 DeliveryNo = delivery.DeliveryNo,
-                ProformaNo = delivery.ProformaInvoice?.ProformaNo ?? string.Empty,
+                SourceLabel = delivery.SalesOrderId.HasValue ? "Sales Order" : "Proforma Invoice",
+                SourceNo = delivery.SalesOrder?.SalesOrderNo ?? delivery.ProformaInvoice?.ProformaNo ?? string.Empty,
                 CustomerName = delivery.Customer?.CustomerName ?? string.Empty,
                 WarehouseName = delivery.BusinessLocation?.LocationName ?? string.Empty,
                 DeliveryDate = delivery.DeliveryDate,
                 ReceivedBy = delivery.ReceivedBy,
                 Notes = delivery.Notes,
-                DeliveryItems = await LoadLinesAsync(delivery.ProformaInvoiceId, delivery.Id,
+                DeliveryItems = await LoadLinesAsync(delivery.ProformaInvoiceId, delivery.SalesOrderId, delivery.Id,
                     delivery.DeliveryItems?.ToDictionary(x => x.ProductId, x => x.DeliveredQuantity))
             };
 
@@ -277,7 +306,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                         select new string[]
                         {
                             HttpUtility.HtmlEncode(record.DeliveryNo),
-                            HttpUtility.HtmlEncode(record.ProformaInvoice?.ProformaNo),
+                            HttpUtility.HtmlEncode(record.SalesOrder?.SalesOrderNo
+                                ?? record.ProformaInvoice?.ProformaNo),
                             HttpUtility.HtmlEncode(record.Customer?.CustomerName),
                             HttpUtility.HtmlEncode(record.DeliveryDate.ToString("dd-MM-yyyy")),
                             HttpUtility.HtmlEncode(record.BusinessLocation?.LocationName),
@@ -304,7 +334,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             {
                 id = delivery.Id,
                 deliveryNo = delivery.DeliveryNo,
-                proformaNo = delivery.ProformaInvoice?.ProformaNo,
+                sourceLabel = delivery.SalesOrderId.HasValue ? "Sales Order" : "Proforma Invoice",
+                sourceNo = delivery.SalesOrder?.SalesOrderNo ?? delivery.ProformaInvoice?.ProformaNo,
                 deliveryDate = delivery.DeliveryDate,
                 status = delivery.Status.ToString(),
                 customerName = delivery.Customer?.CustomerName,
@@ -327,20 +358,30 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         /// <summary>
-        /// Feeds the create screen once a proforma invoice is picked. Every quantity
-        /// here comes from the server, the browser only prints it.
+        /// Feeds the create screen once a source document is picked, whichever of the
+        /// two it is. Every quantity here comes from the server, the browser only
+        /// prints it.
         /// </summary>
         [HttpGet, Authorize(Policy = "ReadPermission")]
-        public async Task<JsonResult> GetProformaInvoiceLines(Guid proformaInvoiceId)
+        public async Task<JsonResult> GetSourceLines(Guid? proformaInvoiceId, Guid? salesOrderId)
         {
-            if (proformaInvoiceId == Guid.Empty)
+            var hasProforma = proformaInvoiceId.HasValue && proformaInvoiceId.Value != Guid.Empty;
+            var hasSalesOrder = salesOrderId.HasValue && salesOrderId.Value != Guid.Empty;
+
+            if (hasProforma == hasSalesOrder)
             {
-                return Json(new { success = false, message = "Please select a proforma invoice." });
+                return Json(new
+                {
+                    success = false,
+                    message = "Please pick either a proforma invoice or a sales order."
+                });
             }
 
             try
             {
-                var lines = await _deliveryManagementService.GetDeliverableLinesAsync(proformaInvoiceId);
+                var lines = await _deliveryManagementService.GetDeliverableLinesAsync(
+                    hasProforma ? proformaInvoiceId : null,
+                    hasSalesOrder ? salesOrderId : null);
 
                 return Json(new
                 {
@@ -364,9 +405,9 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Loading proforma invoice lines failed.");
+                _logger.LogError(ex, "Loading the source document lines failed.");
 
-                return Json(new { success = false, message = "Loading the proforma invoice lines failed." });
+                return Json(new { success = false, message = "Loading the source document lines failed." });
             }
         }
 
@@ -386,13 +427,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         /// <summary>
-        /// Builds the line rows of the screen from the proforma invoice, keeping the
-        /// quantities the user already typed.
+        /// Builds the line rows of the screen from the source document, whichever of
+        /// the two it is, keeping the quantities the user already typed.
         /// </summary>
-        private async Task<List<DeliveryItemModel>> LoadLinesAsync(Guid proformaInvoiceId, Guid? excludeDeliveryId,
-            IDictionary<Guid, decimal>? enteredQuantities)
+        private async Task<List<DeliveryItemModel>> LoadLinesAsync(Guid? proformaInvoiceId, Guid? salesOrderId,
+            Guid? excludeDeliveryId, IDictionary<Guid, decimal>? enteredQuantities)
         {
-            var lines = await _deliveryManagementService.GetDeliverableLinesAsync(proformaInvoiceId, excludeDeliveryId);
+            var lines = await _deliveryManagementService.GetDeliverableLinesAsync(
+                proformaInvoiceId, salesOrderId, excludeDeliveryId);
 
             return lines.Select(x => new DeliveryItemModel
             {
@@ -417,6 +459,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             }
 
             model.SetProformaInvoiceValues(await _deliveryManagementService.GetDeliverableProformaInvoicesAsync());
+            model.SetSalesOrderValues(await _deliveryManagementService.GetDeliverableSalesOrdersAsync());
         }
 
         /// <summary>
@@ -432,7 +475,9 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 
             try
             {
-                model.DeliveryItems = await LoadLinesAsync(model.ProformaInvoiceId, null, entered);
+                model.DeliveryItems = model.SelectedSourceId.HasValue && model.SelectedSourceId.Value != Guid.Empty
+                    ? await LoadLinesAsync(model.ProformaInvoiceId, model.SalesOrderId, null, entered)
+                    : new List<DeliveryItemModel>();
             }
             catch (InvalidOperationException)
             {
@@ -453,7 +498,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             }
 
             model.DeliveryNo = delivery.DeliveryNo;
-            model.ProformaNo = delivery.ProformaInvoice?.ProformaNo ?? string.Empty;
+            model.SourceLabel = delivery.SalesOrderId.HasValue ? "Sales Order" : "Proforma Invoice";
+            model.SourceNo = delivery.SalesOrder?.SalesOrderNo ?? delivery.ProformaInvoice?.ProformaNo ?? string.Empty;
             model.CustomerName = delivery.Customer?.CustomerName ?? string.Empty;
             model.WarehouseName = delivery.BusinessLocation?.LocationName ?? string.Empty;
 
@@ -464,7 +510,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 
             try
             {
-                model.DeliveryItems = await LoadLinesAsync(delivery.ProformaInvoiceId, delivery.Id, entered);
+                model.DeliveryItems = await LoadLinesAsync(delivery.ProformaInvoiceId, delivery.SalesOrderId,
+                    delivery.Id, entered);
             }
             catch (InvalidOperationException)
             {

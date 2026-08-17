@@ -1,0 +1,142 @@
+@model CustomerPaymentUpdateModel;
+
+@{
+    ViewData["Title"] = "Update Collection";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="CustomerPayment" asp-action="UpdateCustomerPayment" method="post">
+
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CustomerId" />
+
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Update Collection</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        Only a draft collection can be edited. Once the money is in, moving it around
+                        would silently re-settle invoices, so cancel it and take it again instead.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="PaymentNo"></label>
+                                <input asp-for="PaymentNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="CustomerName"></label>
+                                <input asp-for="CustomerName" class="form-control" readonly />
+                                <small class="form-text text-muted">A collection never moves to another customer.</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="PaymentDate">Collection Date*</label>
+                                <input asp-for="PaymentDate" type="date" class="form-control" />
+                                <span asp-validation-for="PaymentDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="Amount">Amount Received*</label>
+                                <input asp-for="Amount" type="number" step="0.01" min="0" class="form-control" id="Amount" />
+                                <span asp-validation-for="Amount" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="PaymentMethod">Payment Method*</label>
+                                <select asp-for="PaymentMethod" asp-items="Model.PaymentMethods" class="form-control" id="PaymentMethod"></select>
+                                <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group" id="creditNoteGroup">
+                                <label asp-for="CreditNoteId"></label>
+                                <select asp-for="CreditNoteId" asp-items="Model.CreditNotes" class="form-control" id="CreditNoteId"></select>
+                                <span asp-validation-for="CreditNoteId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="ReferenceNo"></label>
+                                <input asp-for="ReferenceNo" class="form-control" />
+                                <span asp-validation-for="ReferenceNo" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label asp-for="Notes"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <partial name="_CustomerPaymentAllocationsPartial" model="Model.CustomerPaymentAllocations" />
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Update Collection</button>
+                    <a asp-area="Admin" asp-controller="CustomerPayment" asp-action="CustomerPaymentList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_CustomerPaymentAllocationsScriptPartial" />
+
+    <script>
+
+        function refreshCreditNoteVisibility() {
+
+            var isAdjustment = $("#PaymentMethod").val() === "5";
+
+            $("#creditNoteGroup").toggle(isAdjustment);
+
+            if (!isAdjustment) {
+                $("#CreditNoteId").val("");
+            }
+        }
+
+        $(document).ready(function () {
+
+            refreshCreditNoteVisibility();
+
+            $("#PaymentMethod").on("change", refreshCreditNoteVisibility);
+
+        });
+
+    </script>
+}

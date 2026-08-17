@@ -1,0 +1,118 @@
+<div class="modal fade" id="purchaseOrderDetailModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title">Purchase Order Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Order No</dt>
+                            <dd class="col-sm-7" id="PoNo"></dd>
+
+                            <dt class="col-sm-5">Order Date</dt>
+                            <dd class="col-sm-7" id="PoDate"></dd>
+
+                            <dt class="col-sm-5">Expected Delivery</dt>
+                            <dd class="col-sm-7" id="PoExpectedDate"></dd>
+
+                            <dt class="col-sm-5">Supplier</dt>
+                            <dd class="col-sm-7" id="PoSupplier"></dd>
+
+                            <dt class="col-sm-5">Warehouse</dt>
+                            <dd class="col-sm-7" id="PoWarehouse"></dd>
+                        </dl>
+                    </div>
+
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Payment Terms</dt>
+                            <dd class="col-sm-7" id="PoPaymentTerms"></dd>
+
+                            <dt class="col-sm-5">From Requisition</dt>
+                            <dd class="col-sm-7" id="PoRequisitionNo"></dd>
+
+                            <dt class="col-sm-5">Status</dt>
+                            <dd class="col-sm-7" id="PoStatus"></dd>
+
+                            <dt class="col-sm-5">Approved By</dt>
+                            <dd class="col-sm-7" id="PoApprovedBy"></dd>
+
+                            <dt class="col-sm-5">Approved On</dt>
+                            <dd class="col-sm-7" id="PoApprovedDate"></dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="alert alert-danger d-none" id="PoRejectionBlock">
+                    <strong>Rejected:</strong> <span id="PoRejectionReason"></span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Unit</th>
+                                <th class="text-right">Ordered</th>
+                                <th class="text-right">Received</th>
+                                <th class="text-right">Pending</th>
+                                <th class="text-right">Invoiced</th>
+                                <th class="text-right">Unit Price</th>
+                                <th class="text-right">Discount</th>
+                                <th class="text-right">Tax</th>
+                                <th class="text-right">Line Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="PoItemsBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="row justify-content-end">
+                    <div class="col-md-5">
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Sub Total</th>
+                                <td class="text-right" id="PoSubTotal"></td>
+                            </tr>
+                            <tr>
+                                <th>Item Discount</th>
+                                <td class="text-right" id="PoItemDiscount"></td>
+                            </tr>
+                            <tr>
+                                <th>Tax / VAT</th>
+                                <td class="text-right" id="PoTotalTax"></td>
+                            </tr>
+                            <tr>
+                                <th>Other Charges</th>
+                                <td class="text-right" id="PoOtherCharges"></td>
+                            </tr>
+                            <tr class="bg-light">
+                                <th>Grand Total</th>
+                                <th class="text-right" id="PoGrandTotal"></th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-2">Notes</dt>
+                    <dd class="col-sm-10" id="PoNotes"></dd>
+                </dl>
+
+            </div>
+
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -2,10 +2,6 @@
 
 @{
     ViewData["Title"] = "Create Proforma Invoice";
-
-    var productOptions = string.Join("",
-        Model.ProformaInvoiceItems[0].Products.Select(x =>
-            $"<option value='{x.Value}'>{x.Text}</option>"));
 }
 
 <section class="content mt-2">
@@ -60,8 +56,12 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label asp-for="BusinessLocationId">Warehouse*</label>
-                                <select asp-for="BusinessLocationId" asp-items="Model.BusinessLocations" class="form-control"></select>
+                                <select asp-for="BusinessLocationId" asp-items="Model.BusinessLocations" class="form-control" id="BusinessLocationId"></select>
                                 <span asp-validation-for="BusinessLocationId" class="text-danger"></span>
+                                <small class="form-text text-muted">
+                                    Products are loaded from the warehouse you pick here, and the warehouse
+                                    cannot be changed once the proforma is saved.
+                                </small>
                             </div>
                         </div>
 
@@ -120,6 +120,7 @@
 
                     <div class="alert alert-info">
                         <i class="fas fa-shield-alt"></i>
+                        Pick a warehouse first, the product list below is loaded from it.
                         Unit price, discount and tax below are a preview coming from the server.
                         They are calculated again when you save, so the stored amounts can never be
                         changed from the browser.
@@ -218,6 +219,45 @@
 
         var rowIndex = 1;
 
+        // The products a line may hold always belong to the selected warehouse.
+        var warehouseProducts = [];
+
+        // A failed post comes back with the warehouse's products already rendered,
+        // so they are picked up here instead of being fetched again.
+        function captureRenderedProducts() {
+
+            warehouseProducts = [];
+
+            $("#productTableBody .product-select").first().find("option").each(function () {
+
+                if ($(this).val()) {
+                    warehouseProducts.push({ id: $(this).val(), text: $(this).text() });
+                }
+
+            });
+        }
+
+        function loadProducts(dropdown) {
+
+            dropdown.empty();
+            dropdown.append($("<option>").val("").text("-- Product Select --"));
+
+            $.each(warehouseProducts, function (i, product) {
+
+                dropdown.append(
+                    $("<option>")
+                        .val(product.id)
+                        .text(product.text)
+                );
+
+            });
+        }
+
+        function clearLinePreview(row) {
+            row.find(".available-qty").val(0);
+            row.find(".unit-price, .discount-amount, .tax-amount, .line-total").val("0.00");
+        }
+
         function updateDeleteButtons() {
             $(".btnRemoveRow").prop("disabled", $("#productTableBody tr").length == 1);
         }
@@ -304,15 +344,68 @@
         $(document).ready(function () {
 
             updateDeleteButtons();
+            captureRenderedProducts();
+
+            // A proforma is served from one warehouse, so its products decide what the
+            // lines may hold. Changing the warehouse starts the lines over.
+            $("#BusinessLocationId").on("change", function () {
+
+                var warehouseId = $(this).val();
+
+                $("#productTableBody tr").each(function () {
+                    clearLinePreview($(this));
+                });
+
+                if (!warehouseId) {
+                    warehouseProducts = [];
+                    $(".product-select").each(function () { loadProducts($(this)); });
+                    recalculateTotals();
+                    return;
+                }
+
+                $.ajax({
+                    url: "/Admin/ProformaInvoice/GetProductsByWarehouse",
+                    type: "GET",
+                    data: { warehouseId: warehouseId },
+                    success: function (response) {
+
+                        warehouseProducts = response;
+
+                        $(".product-select").each(function () { loadProducts($(this)); });
+
+                        recalculateTotals();
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Products Not Loaded",
+                            text: "The products of the selected warehouse could not be loaded.",
+                            confirmButtonText: "OK"
+                        });
+                    }
+                });
+
+            });
 
             $("#btnAddProduct").click(function () {
+
+                if (!$("#BusinessLocationId").val()) {
+
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Warehouse Required",
+                        text: "Select a warehouse first, its products are the ones you can bill.",
+                        confirmButtonText: "OK"
+                    });
+
+                    return;
+                }
 
                 var row = `
                 <tr>
                     <td>
                         <select name="ProformaInvoiceItems[${rowIndex}].ProductId"
                                 class="form-control product-select">
-                            @Html.Raw(productOptions)
                         </select>
                     </td>
 
@@ -338,6 +431,8 @@
 
                 $("#productTableBody").append(row);
                 rowIndex++;
+
+                loadProducts($("#productTableBody tr:last").find(".product-select"));
 
                 updateDeleteButtons();
             });

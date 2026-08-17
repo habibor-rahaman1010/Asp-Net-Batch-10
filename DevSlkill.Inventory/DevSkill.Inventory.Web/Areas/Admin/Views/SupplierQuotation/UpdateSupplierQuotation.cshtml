@@ -1,0 +1,171 @@
+@model SupplierQuotationUpdateModel;
+
+@{
+    ViewData["Title"] = "Update Supplier Quotation";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="SupplierQuotation" asp-action="UpdateSupplierQuotation" method="post">
+
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="RequestForQuotationId" />
+            <input type="hidden" asp-for="SupplierId" />
+
+            <!-- Header -->
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Update Supplier Quotation</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        Only a received quotation can be corrected. Once it has been selected or
+                        rejected the offer is part of the award record and is left as it stands.
+                        The request and the supplier are what this quotation is, so neither can
+                        be moved.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="QuotationNo"></label>
+                                <input asp-for="QuotationNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="SupplierQuotationNo"></label>
+                                <input asp-for="SupplierQuotationNo" class="form-control" />
+                                <span asp-validation-for="SupplierQuotationNo" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="RfqNo"></label>
+                                <input asp-for="RfqNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="SupplierName"></label>
+                                <input asp-for="SupplierName" class="form-control" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="QuotationDate">Quotation Date*</label>
+                                <input asp-for="QuotationDate" type="date" class="form-control" />
+                                <span asp-validation-for="QuotationDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="ValidUntil">Valid Until*</label>
+                                <input asp-for="ValidUntil" type="date" class="form-control" />
+                                <span asp-validation-for="ValidUntil" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="DeliveryDays"></label>
+                                <input asp-for="DeliveryDays" type="number" min="0" step="1" class="form-control" />
+                                <span asp-validation-for="DeliveryDays" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="OtherCharges"></label>
+                                <input asp-for="OtherCharges" type="number" min="0" step="0.01" class="form-control" id="OtherCharges" />
+                                <span asp-validation-for="OtherCharges" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="PaymentTermId"></label>
+                                <select asp-for="PaymentTermId" asp-items="Model.PaymentTerms" class="form-control"></select>
+                                <span asp-validation-for="PaymentTermId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="WarehouseName"></label>
+                                <input asp-for="WarehouseName" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="Notes"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <partial name="_SupplierQuotationLinesPartial" model="Model.SupplierQuotationItems" />
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Update Quotation</button>
+                    <a asp-area="Admin" asp-controller="SupplierQuotation" asp-action="SupplierQuotationList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_SupplierQuotationLinesScriptPartial" />
+
+    <script>
+
+        $(document).ready(function () {
+
+            recalculateTotals();
+
+            $("#QuotationDate, #ValidUntil").on("change", function () {
+
+                var quotationDate = $("#QuotationDate").val();
+                var validUntil = $("#ValidUntil").val();
+
+                if (quotationDate && validUntil && validUntil < quotationDate) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Invalid Date",
+                        text: "A quotation cannot expire before the day it was given.",
+                        confirmButtonText: "OK"
+                    });
+
+                    $("#ValidUntil").val(quotationDate);
+                }
+            });
+
+        });
+
+    </script>
+}

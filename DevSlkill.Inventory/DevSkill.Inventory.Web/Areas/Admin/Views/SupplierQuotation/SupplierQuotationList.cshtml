@@ -1,0 +1,314 @@
+@{
+    ViewData["Title"] = "Supplier Quotation List";
+}
+
+@section Styles {
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Supplier Quotations</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Purchase</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">A quotation is an offer only; the award decides which one an order is raised from.</h3>
+
+                        <a asp-area="Admin" asp-controller="SupplierQuotation" asp-action="CompareQuotations" class="btn btn-secondary float-right ml-2">
+                            <i class="fas fa-balance-scale"></i> Compare
+                        </a>
+
+                        <a asp-area="Admin" asp-controller="SupplierQuotation" asp-action="CreateSupplierQuotation" class="btn btn-primary float-right">
+                            <i class="fas fa-plus"></i> Add Quotation
+                        </a>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <partial name="_ResponsePartial" />
+                        <partial name="_ModalPartial" />
+                        <table id="supplierQuotation" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Quotation No</th>
+                                    <th>RFQ No</th>
+                                    <th>Supplier</th>
+                                    <th>Date</th>
+                                    <th>Valid Until</th>
+                                    <th>Delivery Days</th>
+                                    <th>Grand Total</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tfoot>
+                                <tr>
+                                    <th>Quotation No</th>
+                                    <th>RFQ No</th>
+                                    <th>Supplier</th>
+                                    <th>Date</th>
+                                    <th>Valid Until</th>
+                                    <th>Delivery Days</th>
+                                    <th>Grand Total</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+<partial name="_SupplierQuotationDetailsPartial" />
+
+<!-- /.content -->
+@section Scripts {
+    <!-- DataTables  & Plugins -->
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+    <script type="text/javascript">
+
+        function statusBadgeClass(status) {
+            switch (status) {
+                case 'Selected': return 'badge-success';
+                case 'Rejected': return 'badge-warning';
+                case 'Cancelled': return 'badge-danger';
+                default: return 'badge-info';
+            }
+        }
+
+        // A received offer is still live, so it can be corrected, withdrawn or deleted.
+        // Once it is selected it is the award record, and the only way back is to undo
+        // the award from the comparison screen.
+        function actionButtons(id, status) {
+
+            var buttons = '';
+
+            if (status === 'Received') {
+                buttons += `<a href="/Admin/SupplierQuotation/UpdateSupplierQuotation/${id}"
+                               class="btn btn-info btn-sm mr-1" title="Edit"><i class="fas fa-edit"></i></a>
+                            <button type="button" class="btn btn-warning btn-sm mr-1 btn-cancel" data-id='${id}'
+                                title="Withdraw this offer"><i class="fas fa-ban"></i></button>`;
+            }
+
+            if (status === 'Received' || status === 'Cancelled' || status === 'Rejected') {
+                buttons += `<button type="button" class="btn btn-danger btn-sm show-bs-modal" data-id='${id}'
+                                title="Delete"><i class="fas fa-trash"></i></button>`;
+            }
+
+            return buttons === '' ? '<span class="text-muted">—</span>' : buttons;
+        }
+
+        function postAction(url, data, successTitle) {
+
+            data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({ icon: 'success', title: successTitle, text: response.message, timer: 2200, showConfirmButton: false });
+                        $('#supplierQuotation').DataTable().ajax.reload(null, false);
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Failed!', text: response.message });
+                    }
+                },
+                error: function (error) {
+                    if (error.status === 403) {
+                        window.location.href = '/Account/AccessDenied';
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Error!', text: 'The action could not be completed.' });
+                    }
+                }
+            });
+        }
+
+        $(function () {
+            try {
+                $("#supplierQuotation").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    responsive: true,
+                    lengthChange: true,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    autoWidth: false,
+                    ajax: {
+                        url: "/Admin/SupplierQuotation/GetSupplierQuotationJsonData",
+                        type: "POST",
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: function (d) {
+                            return JSON.stringify(d);
+                        },
+                    },
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 8,
+                            render: function (data, type, row) {
+                                return actionButtons(data, row[7]);
+                            }
+                        },
+                        {
+                            targets: 7,
+                            render: function (data) {
+                                return `<span class="badge ${statusBadgeClass(data)}">${data}</span>`;
+                            }
+                        },
+                        ...[0, 1, 2, 3, 4, 5, 6].map(function (target) {
+                            return {
+                                targets: target,
+                                createdCell: function (td, cellData, rowData) {
+                                    $(td).addClass('table-row');
+                                    $(td).attr('data-id', rowData[8]);
+                                }
+                            };
+                        })
+                    ],
+                    dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                }).buttons().container().appendTo('#supplierQuotation_wrapper .col-md-6:eq(0)');
+            } catch (e) {
+                console.error("DataTable init error:", e);
+            }
+        });
+
+        // Row click -> supplier quotation details modal
+        $(function () {
+            $('#supplierQuotation tbody').on('click', '.table-row', function () {
+                var id = $(this).data("id");
+
+                $.ajax({
+                    url: `/Admin/SupplierQuotation/GetSupplierQuotationDetails?id=${id}`,
+                    type: 'GET',
+                    success: function (data) {
+
+                        $('#SqNo').text(data.quotationNo || 'N/A');
+                        $('#SqSupplierRef').text(data.supplierQuotationNo || 'N/A');
+                        $('#SqRfqNo').text(data.rfqNo || 'N/A');
+                        $('#SqSupplier').text(data.supplierName || 'N/A');
+                        $('#SqDate').text(data.quotationDate ? new Date(data.quotationDate).toLocaleDateString() : 'N/A');
+                        $('#SqValidUntil').text(data.validUntil ? new Date(data.validUntil).toLocaleDateString() : 'N/A');
+                        $('#SqDeliveryDays').text(data.deliveryDays ?? 'N/A');
+                        $('#SqPaymentTerm').text(data.paymentTerm || 'N/A');
+                        $('#SqStatus').text(data.status || 'N/A');
+                        $('#SqNotes').text(data.notes || 'N/A');
+
+                        $('#SqSubTotal').text(Number(data.subTotal ?? 0).toFixed(2));
+                        $('#SqDiscountTotal').text(Number(data.discountTotal ?? 0).toFixed(2));
+                        $('#SqOtherCharges').text(Number(data.otherCharges ?? 0).toFixed(2));
+                        $('#SqGrandTotal').text(Number(data.grandTotal ?? 0).toFixed(2));
+
+                        var body = $('#SqItemsBody').empty();
+
+                        $.each(data.supplierQuotationItems || [], function (i, item) {
+                            var row = $('<tr>');
+                            row.append($('<td>').text(item.productName || ''));
+                            row.append($('<td>').text(item.unitName || ''));
+                            row.append($('<td class="text-right">').text(Number(item.quantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.unitPrice ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.discountAmount ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.lineTotal ?? 0).toFixed(2)));
+                            row.append($('<td>').text(item.remarks || ''));
+                            body.append(row);
+                        });
+
+                        $('#supplierQuotationDetailModal').modal('show');
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 403) {
+                            window.location.href = '/Account/AccessDenied';
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Error!', text: 'Failed to load supplier quotation details.' });
+                        }
+                    }
+                });
+            });
+        });
+
+        $(function () {
+
+            $('#supplierQuotation').on('click', '.btn-cancel', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Withdraw this quotation?',
+                    text: 'It will no longer be weighed against the other offers on the request.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Withdraw',
+                    cancelButtonText: 'Keep It'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/SupplierQuotation/CancelSupplierQuotation', { id: id }, 'Cancelled!');
+                    }
+                });
+            });
+
+            $('#supplierQuotation').on('click', '.show-bs-modal', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to recover this supplier quotation!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Delete',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/SupplierQuotation/DeleteSupplierQuotation', { id: id }, 'Deleted!');
+                    }
+                });
+            });
+
+        });
+    </script>
+}

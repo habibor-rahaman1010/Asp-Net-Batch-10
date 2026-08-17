@@ -1,0 +1,146 @@
+@*
+    Invoice grid behaviour shared by the create and update purchase invoice screens.
+    Every figure here is a preview; the server recalculates all of them on save.
+*@
+
+<script>
+
+    // Only what has actually been received may be billed, and the server checks the
+    // very same rule when the invoice is saved.
+    function clampBilledQuantity(input) {
+
+        var row = input.closest("tr");
+        var remaining = parseFloat(row.find(".remaining-qty").val()) || 0;
+        var value = parseFloat(input.val()) || 0;
+
+        if (value < 0) {
+            value = 0;
+        }
+
+        if (value > remaining) {
+
+            Swal.fire({
+                icon: "warning",
+                title: "More Than Received",
+                text: "Only " + remaining.toFixed(2) + " has been received but not yet billed on this line.",
+                confirmButtonText: "OK"
+            });
+
+            value = remaining;
+        }
+
+        input.val(value);
+    }
+
+    function recalculateInvoiceTotals() {
+
+        var subTotal = 0, discountTotal = 0, taxTotal = 0, lineTotals = 0;
+
+        $("#invoiceTableBody tr").each(function () {
+
+            var qty = parseFloat($(this).find(".line-qty").val()) || 0;
+            var price = parseFloat($(this).find(".unit-price").val()) || 0;
+            var taxRate = parseFloat($(this).find(".tax-rate").val()) || 0;
+
+            var lineAmount = qty * price;
+
+            var discountInput = $(this).find(".discount-amount");
+            var discount = parseFloat(discountInput.val()) || 0;
+
+            // The server clamps the discount to the line amount, so the preview does
+            // the same rather than showing a figure that will not be stored.
+            if (discount > lineAmount) {
+                discount = lineAmount;
+                discountInput.val(discount.toFixed(2));
+            }
+
+            var taxable = lineAmount - discount;
+            var tax = taxable * taxRate / 100;
+            var lineTotal = taxable + tax;
+
+            $(this).find(".line-total").val(lineTotal.toFixed(2));
+
+            subTotal += lineAmount;
+            discountTotal += discount;
+            taxTotal += tax;
+            lineTotals += lineTotal;
+        });
+
+        var otherCharges = parseFloat($("#OtherCharges").val()) || 0;
+
+        $("#sumSubTotal").text(subTotal.toFixed(2));
+        $("#sumDiscount").text(discountTotal.toFixed(2));
+        $("#sumTax").text(taxTotal.toFixed(2));
+        $("#sumOtherCharges").text(otherCharges.toFixed(2));
+        $("#sumGrandTotal").text((lineTotals + otherCharges).toFixed(2));
+    }
+
+    function buildInvoiceRows(lines) {
+
+        var body = $("#invoiceTableBody").empty();
+
+        $.each(lines, function (i, line) {
+
+            var row = $("<tr>");
+
+            var productCell = $("<td>").text(line.productName);
+            productCell.append($('<input type="hidden">').attr("name", "PurchaseInvoiceItems[" + i + "].ProductId").val(line.productId));
+            productCell.append($('<input type="hidden">').attr("name", "PurchaseInvoiceItems[" + i + "].ProductName").val(line.productName));
+            productCell.append($('<input type="hidden">').attr("name", "PurchaseInvoiceItems[" + i + "].UnitName").val(line.unitName));
+            productCell.append($('<input type="hidden">').attr("name", "PurchaseInvoiceItems[" + i + "].ReceivedQuantity").val(line.receivedQuantity));
+            productCell.append($('<input type="hidden">').attr("name", "PurchaseInvoiceItems[" + i + "].InvoicedQuantity").val(line.invoicedQuantity));
+            productCell.append($('<input type="hidden" class="remaining-qty">').attr("name", "PurchaseInvoiceItems[" + i + "].RemainingQuantity").val(line.remainingQuantity));
+            productCell.append($('<input type="hidden" class="unit-price">').attr("name", "PurchaseInvoiceItems[" + i + "].UnitPrice").val(line.unitPrice));
+            productCell.append($('<input type="hidden" class="tax-rate">').attr("name", "PurchaseInvoiceItems[" + i + "].TaxRate").val(line.taxRate));
+            row.append(productCell);
+
+            row.append($("<td>").text(line.unitName || ""));
+            row.append($('<td class="text-right">').text(Number(line.receivedQuantity).toFixed(2)));
+            row.append($('<td class="text-right">').text(Number(line.invoicedQuantity).toFixed(2)));
+            row.append($('<td class="text-right font-weight-bold">').text(Number(line.remainingQuantity).toFixed(2)));
+
+            row.append($("<td>").append(
+                $('<input type="number" step="0.01" min="0" class="form-control line-qty">')
+                    .attr("name", "PurchaseInvoiceItems[" + i + "].Quantity")
+                    .val(Number(line.remainingQuantity))));
+
+            row.append($('<td class="text-right">').text(Number(line.unitPrice).toFixed(2)));
+
+            row.append($("<td>").append(
+                $('<input type="number" step="0.01" min="0" class="form-control discount-amount">')
+                    .attr("name", "PurchaseInvoiceItems[" + i + "].DiscountAmount")
+                    .val(Number(line.discountAmount).toFixed(2))));
+
+            row.append($("<td>").append($('<input class="form-control line-total" readonly>').val("0.00")));
+
+            body.append(row);
+        });
+
+        recalculateInvoiceTotals();
+    }
+
+    $(document).ready(function () {
+
+        recalculateInvoiceTotals();
+
+        $(document).on("change", ".line-qty", function () {
+            clampBilledQuantity($(this));
+            recalculateInvoiceTotals();
+        });
+
+        $(document).on("change", ".discount-amount", function () {
+
+            if (parseFloat($(this).val()) < 0) {
+                $(this).val(0);
+            }
+
+            recalculateInvoiceTotals();
+        });
+
+        $("#OtherCharges").on("input change", function () {
+            recalculateInvoiceTotals();
+        });
+
+    });
+
+</script>

@@ -1,0 +1,110 @@
+@model List<SupplierPaymentAllocationModel>
+
+@*
+    The allocation grid, shared by the create and update screens. Everything but
+    the paid column comes from the invoice itself and is read only.
+*@
+
+<div class="card">
+
+    <div class="card-header">
+        <h3 class="card-title">Outstanding Invoices</h3>
+    </div>
+
+    <div class="card-body">
+
+        <div class="alert alert-warning">
+            <i class="fas fa-money-bill-wave"></i>
+            <strong>Paying Now</strong> is what this payment puts against each invoice. A line
+            can never go past what the invoice still owes, and the allocations together can
+            never go past the payment amount. Anything left over stays as an advance.
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th width="13%">Invoice No</th>
+                        <th width="13%">Supplier Invoice</th>
+                        <th width="11%">Invoice Date</th>
+                        <th width="11%">Due Date</th>
+                        <th width="9%">Overdue</th>
+                        <th width="11%">Invoice Total</th>
+                        <th width="10%">Already Paid</th>
+                        <th width="11%">Outstanding</th>
+                        <th width="11%">Paying Now</th>
+                    </tr>
+                </thead>
+
+                <tbody id="allocationTableBody">
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Model[i].InvoiceNo
+                                <input type="hidden" name="SupplierPaymentAllocations[@i].PurchaseInvoiceId" value="@Model[i].PurchaseInvoiceId" />
+                                <input type="hidden" name="SupplierPaymentAllocations[@i].InvoiceNo" value="@Model[i].InvoiceNo" />
+                                <input type="hidden" name="SupplierPaymentAllocations[@i].SupplierInvoiceNo" value="@Model[i].SupplierInvoiceNo" />
+                                <input type="hidden" name="SupplierPaymentAllocations[@i].InvoiceDate" value="@Model[i].InvoiceDate.ToString("yyyy-MM-dd")" />
+                                <input type="hidden" name="SupplierPaymentAllocations[@i].DueDate" value="@Model[i].DueDate.ToString("yyyy-MM-dd")" />
+                                <input type="hidden" name="SupplierPaymentAllocations[@i].OverdueDays" value="@Model[i].OverdueDays" />
+                                <input type="hidden" name="SupplierPaymentAllocations[@i].GrandTotal" value="@Model[i].GrandTotal" />
+                                <input type="hidden" name="SupplierPaymentAllocations[@i].PaidAmount" value="@Model[i].PaidAmount" />
+                                <input type="hidden" name="SupplierPaymentAllocations[@i].RemainingAmount" value="@Model[i].RemainingAmount" class="outstanding-amount" />
+                            </td>
+
+                            <td>@Model[i].SupplierInvoiceNo</td>
+                            <td>@Model[i].InvoiceDate.ToString("dd-MM-yyyy")</td>
+                            <td>@Model[i].DueDate.ToString("dd-MM-yyyy")</td>
+
+                            <td class="text-right">
+                                @if (Model[i].OverdueDays > 0)
+                                {
+                                    <span class="badge badge-danger">@Model[i].OverdueDays d</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
+
+                            <td class="text-right">@Model[i].GrandTotal.ToString("N2")</td>
+                            <td class="text-right">@Model[i].PaidAmount.ToString("N2")</td>
+                            <td class="text-right font-weight-bold">@Model[i].RemainingAmount.ToString("N2")</td>
+
+                            <td>
+                                <input name="SupplierPaymentAllocations[@i].AllocatedAmount" value="@Model[i].AllocatedAmount"
+                                       type="number" step="0.01" min="0" class="form-control allocated-amount" />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.Count == 0)
+        {
+            <div class="alert alert-info mb-0">
+                <i class="fas fa-info-circle"></i>
+                Choose a supplier above and its outstanding invoices will appear here.
+            </div>
+        }
+
+        <div class="row justify-content-end">
+            <div class="col-md-5">
+                <table class="table table-sm">
+                    <tr>
+                        <th>Allocated</th>
+                        <th class="text-right" id="sumAllocated">0.00</th>
+                    </tr>
+                    <tr class="bg-light">
+                        <th>Unallocated (advance)</th>
+                        <th class="text-right" id="sumUnallocated">0.00</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</div>

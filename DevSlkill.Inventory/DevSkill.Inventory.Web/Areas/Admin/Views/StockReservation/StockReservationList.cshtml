@@ -1,0 +1,352 @@
+@{
+    ViewData["Title"] = "Stock Reservation List";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Stock Reservations</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Sales</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            A hold moves no goods. It only keeps them from being promised twice, and an
+                            expired hold still holds until someone releases it.
+                        </h3>
+
+                        <a asp-area="Admin" asp-controller="StockReservation" asp-action="CreateStockReservation" class="btn btn-primary float-right">
+                            <i class="fas fa-plus"></i> Reserve Stock
+                        </a>
+                    </div>
+
+                    <div class="card-body">
+                        <partial name="_ResponsePartial" />
+                        <partial name="_ModalPartial" />
+                        <table id="stockReservation" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Reservation No</th>
+                                    <th>Sales Order</th>
+                                    <th>Customer</th>
+                                    <th>Reserved On</th>
+                                    <th>Expires</th>
+                                    <th>Warehouse</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tfoot>
+                                <tr>
+                                    <th>Reservation No</th>
+                                    <th>Sales Order</th>
+                                    <th>Customer</th>
+                                    <th>Reserved On</th>
+                                    <th>Expires</th>
+                                    <th>Warehouse</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<partial name="_StockReservationDetailsPartial" />
+
+@section Scripts {
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+    <script type="text/javascript">
+
+        function statusBadgeClass(status) {
+            switch (status) {
+                case 'Reserved': return 'badge-primary';
+                case 'Consumed': return 'badge-success';
+                case 'Released': return 'badge-secondary';
+                case 'Cancelled': return 'badge-danger';
+                default: return 'badge-secondary';
+            }
+        }
+
+        // A draft is edited, confirmed or deleted. A live hold is released or
+        // cancelled; a consumed one has already gone out on a delivery.
+        function actionButtons(id, status) {
+
+            var buttons = '';
+
+            if (status === 'Draft') {
+                buttons += `<a href="/Admin/StockReservation/UpdateStockReservation/${id}"
+                               class="btn btn-info btn-sm mr-1" title="Edit"><i class="fas fa-edit"></i></a>
+                            <button type="button" class="btn btn-primary btn-sm mr-1 btn-confirm" data-id='${id}'
+                                title="Hold the stock"><i class="fas fa-lock"></i></button>`;
+            }
+
+            if (status === 'Reserved') {
+                buttons += `<button type="button" class="btn btn-secondary btn-sm mr-1 btn-release" data-id='${id}'
+                                title="Release"><i class="fas fa-lock-open"></i></button>`;
+            }
+
+            if (status === 'Draft' || status === 'Reserved') {
+                buttons += `<button type="button" class="btn btn-warning btn-sm mr-1 btn-cancel" data-id='${id}'
+                                title="Cancel"><i class="fas fa-ban"></i></button>`;
+            }
+
+            if (status === 'Draft') {
+                buttons += `<button type="button" class="btn btn-danger btn-sm show-bs-modal" data-id='${id}'
+                                title="Delete"><i class="fas fa-trash"></i></button>`;
+            }
+
+            return buttons === '' ? '<span class="text-muted">—</span>' : buttons;
+        }
+
+        function postAction(url, data, successTitle) {
+
+            data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({ icon: 'success', title: successTitle, text: response.message, timer: 2600, showConfirmButton: false });
+                        $('#stockReservation').DataTable().ajax.reload(null, false);
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Failed!', text: response.message });
+                    }
+                },
+                error: function (error) {
+                    if (error.status === 403) {
+                        window.location.href = '/Account/AccessDenied';
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Error!', text: 'The action could not be completed.' });
+                    }
+                }
+            });
+        }
+
+        $(function () {
+            try {
+                $("#stockReservation").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    responsive: true,
+                    lengthChange: true,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    autoWidth: false,
+                    ajax: {
+                        url: "/Admin/StockReservation/GetStockReservationJsonData",
+                        type: "POST",
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: function (d) {
+                            return JSON.stringify(d);
+                        },
+                    },
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 7,
+                            render: function (data, type, row) {
+                                return actionButtons(data, row[6]);
+                            }
+                        },
+                        {
+                            targets: 6,
+                            render: function (data) {
+                                return `<span class="badge ${statusBadgeClass(data)}">${data}</span>`;
+                            }
+                        },
+                        {
+                            targets: 4,
+                            render: function (data) {
+                                return data && data.indexOf('(expired)') > -1
+                                    ? `<span class="text-danger font-weight-bold">${data}</span>`
+                                    : data;
+                            }
+                        },
+                        ...[0, 1, 2, 3, 5].map(function (target) {
+                            return {
+                                targets: target,
+                                createdCell: function (td, cellData, rowData) {
+                                    $(td).addClass('table-row');
+                                    $(td).attr('data-id', rowData[7]);
+                                }
+                            };
+                        })
+                    ],
+                    dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                }).buttons().container().appendTo('#stockReservation_wrapper .col-md-6:eq(0)');
+            } catch (e) {
+                console.error("DataTable init error:", e);
+            }
+        });
+
+        // Row click -> stock reservation details modal
+        $(function () {
+            $('#stockReservation tbody').on('click', '.table-row', function () {
+                var id = $(this).data("id");
+
+                $.ajax({
+                    url: `/Admin/StockReservation/GetStockReservationDetails?id=${id}`,
+                    type: 'GET',
+                    success: function (data) {
+
+                        $('#SrNo').text(data.reservationNo || 'N/A');
+                        $('#SrOrderNo').text(data.salesOrderNo || 'N/A');
+                        $('#SrCustomer').text(
+                            data.customerName ? `${data.customerName} (${data.customerCode})` : 'N/A');
+                        $('#SrWarehouse').text(data.warehouse || 'N/A');
+                        $('#SrDate').text(data.reservationDate ? new Date(data.reservationDate).toLocaleDateString() : 'N/A');
+
+                        var expiry = data.expiryDate ? new Date(data.expiryDate).toLocaleDateString() : 'N/A';
+                        $('#SrExpiry').text(data.isExpired ? expiry + ' (expired)' : expiry);
+
+                        $('#SrStatus').text(data.status || 'N/A');
+                        $('#SrNotes').text(data.notes || 'N/A');
+
+                        var body = $('#SrItemsBody').empty();
+
+                        $.each(data.stockReservationItems || [], function (i, item) {
+                            var row = $('<tr>');
+                            row.append($('<td>').text(item.productName || ''));
+                            row.append($('<td>').text(item.unitName || ''));
+                            row.append($('<td class="text-right">').text(Number(item.orderedQuantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.reservedQuantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.consumedQuantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.outstandingQuantity ?? 0).toFixed(2)));
+                            row.append($('<td>').text(item.remarks || ''));
+                            body.append(row);
+                        });
+
+                        $('#stockReservationDetailModal').modal('show');
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 403) {
+                            window.location.href = '/Account/AccessDenied';
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Error!', text: 'Failed to load reservation details.' });
+                        }
+                    }
+                });
+            });
+        });
+
+        $(function () {
+
+            $('#stockReservation').on('click', '.btn-confirm', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Hold this stock?',
+                    text: 'It stops being available to anyone else straight away.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#007bff',
+                    confirmButtonText: 'Yes, Hold It',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/StockReservation/ConfirmStockReservation', { id: id }, 'Reserved!');
+                    }
+                });
+            });
+
+            $('#stockReservation').on('click', '.btn-release', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Release this hold?',
+                    text: 'Whatever it still holds goes back to free stock. Anything already shipped stays shipped.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Release',
+                    cancelButtonText: 'Keep Holding'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/StockReservation/ReleaseStockReservation', { id: id }, 'Released!');
+                    }
+                });
+            });
+
+            $('#stockReservation').on('click', '.btn-cancel', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Cancel this reservation?',
+                    text: 'Any stock it was holding becomes available again.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Cancel It',
+                    cancelButtonText: 'Keep It'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/StockReservation/CancelStockReservation', { id: id }, 'Cancelled!');
+                    }
+                });
+            });
+
+            $('#stockReservation').on('click', '.show-bs-modal', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to recover this reservation!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Delete',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/StockReservation/DeleteStockReservation', { id: id }, 'Deleted!');
+                    }
+                });
+            });
+
+        });
+    </script>
+}

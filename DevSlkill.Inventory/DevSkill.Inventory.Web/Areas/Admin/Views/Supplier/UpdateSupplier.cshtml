@@ -1,0 +1,148 @@
+@model SupplierUpdateModel;
+
+@{
+    ViewData["Title"] = "Update Supplier";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="Supplier" asp-action="UpdateSupplier" method="post">
+
+            <input type="hidden" asp-for="Id" />
+
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Update Supplier</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="SupplierName">Supplier Name*</label>
+                                <input asp-for="SupplierName" class="form-control" />
+                                <span asp-validation-for="SupplierName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="SupplierCode">Supplier Code*</label>
+                                <input asp-for="SupplierCode" class="form-control" readonly />
+                                <span asp-validation-for="SupplierCode" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="ContactPerson"></label>
+                                <input asp-for="ContactPerson" class="form-control" />
+                                <span asp-validation-for="ContactPerson" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Phone"></label>
+                                <input asp-for="Phone" class="form-control" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Email"></label>
+                                <input asp-for="Email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label asp-for="Address"></label>
+                                <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Address" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="TaxNumber"></label>
+                                <input asp-for="TaxNumber" class="form-control" />
+                                <span asp-validation-for="TaxNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="PaymentTermId"></label>
+                                <select asp-for="PaymentTermId" asp-items="Model.PaymentTerms" class="form-control"></select>
+                                <span asp-validation-for="PaymentTermId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Status">Status*</label>
+                                <select asp-for="Status" asp-items="Model.Statuses" class="form-control"></select>
+                                <small class="form-text text-muted">A blacklisted supplier is kept for history but cannot be purchased from.</small>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="CreditLimit"></label>
+                                <input asp-for="CreditLimit" type="number" step="0.01" min="0" class="form-control" />
+                                <span asp-validation-for="CreditLimit" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="OpeningBalance"></label>
+                                <input asp-for="OpeningBalance" type="number" step="0.01" class="form-control" />
+                                <small class="form-text text-muted">Changing this shifts the outstanding balance by the same amount.</small>
+                                <span asp-validation-for="OpeningBalance" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="CurrentOutstanding"></label>
+                                <input asp-for="CurrentOutstanding" class="form-control" readonly />
+                                <small class="form-text text-muted">Only invoices, returns and payments move this figure.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Update Supplier</button>
+                    <a asp-area="Admin" asp-controller="Supplier" asp-action="SupplierList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

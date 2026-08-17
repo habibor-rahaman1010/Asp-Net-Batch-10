@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DevSkill.Inventory.Domain.Entities;
+using DevSkill.Inventory.Domain.Entities.PurchaseEntities;
 using DevSkill.Inventory.Domain.Entities.SalesEntities;
 using DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites;
 using DevSkill.Inventory.Domain.Entities.StockTransferEntities;
@@ -56,6 +57,10 @@ namespace DevSkill.Inventory.Web.AutoMapProfile
             //Sales Management module
             CreateMap<CustomerCreateModel, Customer>().ReverseMap();
             CreateMap<CustomerUpdateModel, Customer>().ReverseMap();
+
+            //Purchase Management module
+            CreateMap<SupplierCreateModel, Supplier>().ReverseMap();
+            CreateMap<SupplierUpdateModel, Supplier>().ReverseMap();
         }
     }
 }

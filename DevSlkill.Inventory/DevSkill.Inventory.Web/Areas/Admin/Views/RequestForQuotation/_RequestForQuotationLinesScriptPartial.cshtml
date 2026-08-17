@@ -1,0 +1,144 @@
+@*
+    Line grid behaviour shared by the create and update request screens.
+    Both pages define `rowIndex` themselves and then call into these helpers.
+
+    There is no price anywhere in this grid on purpose: the price is exactly what
+    the suppliers are being asked to state on their quotations.
+*@
+
+<script>
+
+    // Filled from the options the server already rendered, so a new row can be
+    // built without asking for the product list again.
+    var quotableProducts = [];
+
+    function captureRenderedProducts() {
+
+        quotableProducts = [];
+
+        $("#productTableBody .product-select").first().find("option").each(function () {
+
+            if ($(this).val()) {
+                quotableProducts.push({ id: $(this).val(), text: $(this).text() });
+            }
+
+        });
+    }
+
+    function loadProducts(dropdown) {
+
+        dropdown.empty();
+        dropdown.append($("<option>").val("").text("-- Product Select --"));
+
+        $.each(quotableProducts, function (i, product) {
+
+            dropdown.append(
+                $("<option>")
+                    .val(product.id)
+                    .text(product.text)
+            );
+
+        });
+    }
+
+    function updateDeleteButtons() {
+        $(".btnRemoveRow").prop("disabled", $("#productTableBody tr").length == 1);
+    }
+
+    function reIndexRows() {
+
+        $("#productTableBody tr").each(function (index) {
+
+            $(this).find("[name]").each(function () {
+
+                var name = $(this).attr("name");
+
+                name = name.replace(/RequestForQuotationItems\[\d+\]/,
+                                    "RequestForQuotationItems[" + index + "]");
+
+                $(this).attr("name", name);
+            });
+
+        });
+
+        rowIndex = $("#productTableBody tr").length;
+    }
+
+    // Shown only so the buyer can see why the purchase is needed. Nothing about a
+    // request for quotation ever touches a stored quantity.
+    function refreshStock(row) {
+
+        var productId = row.find(".product-select").val();
+
+        if (!productId) {
+            row.find(".current-stock").val(0);
+            return;
+        }
+
+        $.get('/Admin/Product/GetProductInfo', { productId: productId }, function (response) {
+            row.find(".current-stock").val(response.availableQuantity);
+        });
+    }
+
+    function appendRow(index) {
+
+        var row = `
+        <tr>
+            <td>
+                <select name="RequestForQuotationItems[${index}].ProductId"
+                        class="form-control product-select">
+                </select>
+            </td>
+
+            <td><input class="form-control current-stock" value="0" readonly /></td>
+
+            <td>
+                <input name="RequestForQuotationItems[${index}].Quantity"
+                       type="number" step="0.01" min="0.01" value="1"
+                       class="form-control line-qty" />
+            </td>
+
+            <td>
+                <input name="RequestForQuotationItems[${index}].Remarks" class="form-control"
+                       placeholder="Specification, brand, packing ..." />
+            </td>
+
+            <td>
+                <button type="button" class="btn btn-danger btn-sm btnRemoveRow">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>`;
+
+        $("#productTableBody").append(row);
+
+        loadProducts($("#productTableBody tr:last").find(".product-select"));
+    }
+
+    $(document).ready(function () {
+
+        $(document).on("click", ".btnRemoveRow", function () {
+
+            if ($("#productTableBody tr").length > 1) {
+                $(this).closest("tr").remove();
+                reIndexRows();
+                updateDeleteButtons();
+            }
+
+        });
+
+        $(document).on("change", ".product-select", function () {
+            refreshStock($(this).closest("tr"));
+        });
+
+        $(document).on("input change", ".line-qty", function () {
+
+            if (parseFloat($(this).val()) <= 0) {
+                $(this).val(1);
+            }
+
+        });
+
+    });
+
+</script>

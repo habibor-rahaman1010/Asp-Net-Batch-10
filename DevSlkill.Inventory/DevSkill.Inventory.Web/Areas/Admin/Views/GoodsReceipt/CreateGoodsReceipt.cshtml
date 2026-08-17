@@ -1,0 +1,173 @@
+@model GoodsReceiptCreateModel;
+
+@{
+    ViewData["Title"] = "Receive Goods";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="GoodsReceipt" asp-action="CreateGoodsReceipt" method="post">
+
+            <!-- Header -->
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Goods Receipt</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="GoodsReceiptNo"></label>
+                                <input asp-for="GoodsReceiptNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="PurchaseOrderId">Purchase Order*</label>
+                                <select asp-for="PurchaseOrderId" asp-items="Model.PurchaseOrders" class="form-control" id="PurchaseOrderId"></select>
+                                <small class="form-text text-muted">Only approved orders with something still outstanding appear here.</small>
+                                <span asp-validation-for="PurchaseOrderId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="ReceiptDate">Receipt Date*</label>
+                                <input asp-for="ReceiptDate" type="date" class="form-control" />
+                                <span asp-validation-for="ReceiptDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="SupplierName"></label>
+                                <input asp-for="SupplierName" class="form-control" id="SupplierName" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="WarehouseName"></label>
+                                <input asp-for="WarehouseName" class="form-control" id="WarehouseName" readonly />
+                                <small class="form-text text-muted">The goods always land in the warehouse the order was raised for.</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="SupplierChallanNo"></label>
+                                <input asp-for="SupplierChallanNo" class="form-control" />
+                                <span asp-validation-for="SupplierChallanNo" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="ReceivedBy"></label>
+                                <input asp-for="ReceivedBy" class="form-control" />
+                                <span asp-validation-for="ReceivedBy" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Status">Status*</label>
+                                <select asp-for="Status" asp-items="Model.Statuses" class="form-control"></select>
+                                <small class="form-text text-muted">
+                                    <strong>Received</strong> adds the goods to stock immediately. A draft holds no stock.
+                                </small>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Notes"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <partial name="_GoodsReceiptLinesPartial" model="Model.GoodsReceiptItems" />
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Save Goods Receipt</button>
+                    <a asp-area="Admin" asp-controller="GoodsReceipt" asp-action="GoodsReceiptList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_GoodsReceiptLinesScriptPartial" />
+
+    <script>
+
+        $(document).ready(function () {
+
+            // Choosing an order rebuilds the grid from whatever it still has outstanding.
+            $("#PurchaseOrderId").on("change", function () {
+
+                var purchaseOrderId = $(this).val();
+
+                if (!purchaseOrderId) {
+                    $("#receiptTableBody").empty();
+                    $("#SupplierName, #WarehouseName").val("");
+                    recalculateReceiptValue();
+                    return;
+                }
+
+                $.get('/Admin/GoodsReceipt/GetReceivableLines', { purchaseOrderId: purchaseOrderId }, function (response) {
+
+                    if (!response.success) {
+                        Swal.fire({ icon: "error", title: "Purchase Order", text: response.message });
+                        return;
+                    }
+
+                    $("#SupplierName").val(response.supplierName || "");
+                    $("#WarehouseName").val(response.warehouseName || "");
+
+                    var open = (response.lines || []).filter(function (line) {
+                        return line.remainingQuantity > 0;
+                    });
+
+                    if (open.length === 0) {
+                        $("#receiptTableBody").empty();
+                        recalculateReceiptValue();
+
+                        Swal.fire({
+                            icon: "info",
+                            title: "Nothing Outstanding",
+                            text: "Everything on this purchase order has already been received."
+                        });
+
+                        return;
+                    }
+
+                    buildReceiptRows(open);
+                });
+            });
+
+        });
+
+    </script>
+}

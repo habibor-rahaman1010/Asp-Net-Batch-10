@@ -1,0 +1,119 @@
+@*
+    Return grid behaviour shared by the create and update purchase return screens.
+*@
+
+<script>
+
+    // The quantity is capped at whatever the goods receipt still has left to give
+    // back, and the server checks the very same rule when the return is saved.
+    function clampReturnQuantity(input) {
+
+        var row = input.closest("tr");
+        var returnable = parseFloat(row.find(".returnable-qty").val()) || 0;
+        var stock = parseFloat(row.find(".current-stock").val()) || 0;
+        var value = parseFloat(input.val()) || 0;
+
+        if (value < 0) {
+            value = 0;
+        }
+
+        if (value > returnable) {
+
+            Swal.fire({
+                icon: "warning",
+                title: "More Than Received",
+                text: "Only " + returnable.toFixed(2) + " is still returnable on this line.",
+                confirmButtonText: "OK"
+            });
+
+            value = returnable;
+        }
+
+        // The goods have to be on the shelf to go back, so a line that is already
+        // sold cannot be returned to the supplier.
+        if (value > stock) {
+
+            Swal.fire({
+                icon: "warning",
+                title: "Not Enough Stock",
+                text: "Only " + stock + " of this product is in stock, so more cannot be sent back.",
+                confirmButtonText: "OK"
+            });
+
+            value = stock;
+        }
+
+        input.val(value);
+    }
+
+    function recalculateReturnValue() {
+
+        var total = 0;
+
+        $("#returnTableBody tr").each(function () {
+
+            var qty = parseFloat($(this).find(".return-qty").val()) || 0;
+            var price = parseFloat($(this).find(".unit-price").val()) || 0;
+            var lineTotal = qty * price;
+
+            $(this).find(".line-total").val(lineTotal.toFixed(2));
+
+            total += lineTotal;
+        });
+
+        $("#sumReturnValue").text(total.toFixed(2));
+    }
+
+    function buildReturnRows(lines) {
+
+        var body = $("#returnTableBody").empty();
+
+        $.each(lines, function (i, line) {
+
+            var row = $("<tr>");
+
+            var productCell = $("<td>").text(line.productName);
+            productCell.append($('<input type="hidden">').attr("name", "PurchaseReturnItems[" + i + "].ProductId").val(line.productId));
+            productCell.append($('<input type="hidden">').attr("name", "PurchaseReturnItems[" + i + "].ProductName").val(line.productName));
+            productCell.append($('<input type="hidden">').attr("name", "PurchaseReturnItems[" + i + "].UnitName").val(line.unitName));
+            productCell.append($('<input type="hidden">').attr("name", "PurchaseReturnItems[" + i + "].ReceivedQuantity").val(line.receivedQuantity));
+            productCell.append($('<input type="hidden">').attr("name", "PurchaseReturnItems[" + i + "].AlreadyReturnedQuantity").val(line.returnedQuantity));
+            productCell.append($('<input type="hidden" class="returnable-qty">').attr("name", "PurchaseReturnItems[" + i + "].RemainingQuantity").val(line.remainingQuantity));
+            productCell.append($('<input type="hidden" class="unit-price">').attr("name", "PurchaseReturnItems[" + i + "].UnitPrice").val(line.unitPrice));
+            productCell.append($('<input type="hidden" class="current-stock">').attr("name", "PurchaseReturnItems[" + i + "].CurrentStock").val(line.currentStock));
+            row.append(productCell);
+
+            row.append($("<td>").text(line.unitName || ""));
+            row.append($('<td class="text-right">').text(Number(line.receivedQuantity).toFixed(2)));
+            row.append($('<td class="text-right">').text(Number(line.returnedQuantity).toFixed(2)));
+            row.append($('<td class="text-right font-weight-bold">').text(Number(line.remainingQuantity).toFixed(2)));
+
+            // Nothing is defaulted in, because sending everything back is the
+            // exception rather than the rule.
+            row.append($("<td>").append(
+                $('<input type="number" step="1" min="0" class="form-control return-qty">')
+                    .attr("name", "PurchaseReturnItems[" + i + "].ReturnQuantity")
+                    .val(0)));
+
+            row.append($('<td class="text-right">').text(line.currentStock));
+            row.append($('<td class="text-right">').text(Number(line.unitPrice).toFixed(2)));
+            row.append($("<td>").append($('<input class="form-control line-total" readonly>').val("0.00")));
+
+            body.append(row);
+        });
+
+        recalculateReturnValue();
+    }
+
+    $(document).ready(function () {
+
+        recalculateReturnValue();
+
+        $(document).on("change", ".return-qty", function () {
+            clampReturnQuantity($(this));
+            recalculateReturnValue();
+        });
+
+    });
+
+</script>

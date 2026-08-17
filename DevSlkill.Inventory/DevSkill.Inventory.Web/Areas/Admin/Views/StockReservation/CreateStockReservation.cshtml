@@ -1,0 +1,172 @@
+@model StockReservationCreateModel;
+
+@{
+    ViewData["Title"] = "Reserve Stock";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="StockReservation" asp-action="CreateStockReservation" method="post">
+
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Stock Reservation</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="ReservationNo"></label>
+                                <input asp-for="ReservationNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="SalesOrderId">Sales Order*</label>
+                                <select asp-for="SalesOrderId" asp-items="Model.SalesOrders" class="form-control" id="SalesOrderId"></select>
+                                <small class="form-text text-muted">Only confirmed and partly delivered orders can be held against.</small>
+                                <span asp-validation-for="SalesOrderId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Hold</label>
+                                <div class="custom-control custom-checkbox mt-2">
+                                    <input asp-for="ReserveImmediately" class="custom-control-input" id="ReserveImmediately" />
+                                    <label class="custom-control-label" for="ReserveImmediately">
+                                        Hold the stock now
+                                    </label>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Leave it unticked to keep the reservation as a draft. Nothing is held until it is confirmed.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="CustomerName"></label>
+                                <input asp-for="CustomerName" class="form-control" id="CustomerName" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="WarehouseName"></label>
+                                <input asp-for="WarehouseName" class="form-control" id="WarehouseName" readonly />
+                                <small class="form-text text-muted">The hold follows the order's warehouse.</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="ReservationDate">Reservation Date*</label>
+                                <input asp-for="ReservationDate" type="date" class="form-control" id="ReservationDate" />
+                                <span asp-validation-for="ReservationDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="ExpiryDate">Expiry Date*</label>
+                                <input asp-for="ExpiryDate" type="date" class="form-control" id="ExpiryDate" />
+                                <small class="form-text text-muted">
+                                    Past this date the hold is reported as expired, but it still holds
+                                    stock until someone releases it.
+                                </small>
+                                <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label asp-for="Notes"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <partial name="_StockReservationLinesPartial" model="Model.StockReservationItems" />
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Save Reservation</button>
+                    <a asp-area="Admin" asp-controller="StockReservation" asp-action="StockReservationList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_StockReservationLinesScriptPartial" />
+
+    <script>
+
+        $(document).ready(function () {
+
+            // Choosing an order rebuilds the grid from whatever it still has to hold.
+            $("#SalesOrderId").on("change", function () {
+
+                var salesOrderId = $(this).val();
+
+                if (!salesOrderId) {
+                    $("#reservationTableBody").empty();
+                    $("#CustomerName, #WarehouseName").val("");
+                    recalculateHeldQuantity();
+                    return;
+                }
+
+                $.get('/Admin/StockReservation/GetReservableLines', { salesOrderId: salesOrderId }, function (response) {
+
+                    if (!response.success) {
+                        Swal.fire({ icon: "error", title: "Sales Order", text: response.message });
+                        return;
+                    }
+
+                    $("#CustomerName").val(response.customerName || "");
+                    $("#WarehouseName").val(response.warehouseName || "");
+
+                    var open = (response.lines || []).filter(function (line) {
+                        return line.remainingQuantity > 0;
+                    });
+
+                    if (open.length === 0) {
+                        $("#reservationTableBody").empty();
+                        recalculateHeldQuantity();
+
+                        Swal.fire({
+                            icon: "info",
+                            title: "Nothing To Hold",
+                            text: "Everything on this sales order is already held or delivered."
+                        });
+
+                        return;
+                    }
+
+                    buildHoldRows(open);
+                });
+            });
+
+        });
+
+    </script>
+}

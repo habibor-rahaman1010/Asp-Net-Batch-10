@@ -1,0 +1,150 @@
+@*
+    Allocation grid behaviour shared by the create and update collection screens.
+*@
+
+<script>
+
+    // An allocation can never go past what the invoice still owes. The server checks
+    // the very same rule when the money is taken.
+    function clampAllocation(input) {
+
+        var row = input.closest("tr");
+        var owing = parseFloat(row.find(".owing-amount").val()) || 0;
+        var value = parseFloat(input.val()) || 0;
+
+        if (value < 0) {
+            value = 0;
+        }
+
+        if (value > owing) {
+
+            Swal.fire({
+                icon: "warning",
+                title: "More Than Owed",
+                text: "This invoice only has " + owing.toFixed(2) + " left owing.",
+                confirmButtonText: "OK"
+            });
+
+            value = owing;
+        }
+
+        input.val(value.toFixed(2));
+    }
+
+    function recalculateAllocations() {
+
+        var received = parseFloat($("#Amount").val()) || 0;
+        var allocated = 0;
+
+        $("#allocationTableBody tr").each(function () {
+            allocated += parseFloat($(this).find(".allocate-amount").val()) || 0;
+        });
+
+        $("#sumReceived").text(received.toFixed(2));
+        $("#sumAllocated").text(allocated.toFixed(2));
+
+        var unallocated = received - allocated;
+
+        $("#sumUnallocated")
+            .text(unallocated.toFixed(2))
+            .toggleClass("text-danger", unallocated < 0);
+    }
+
+    // Oldest debt first is how a collection is normally applied, so the button does
+    // exactly that rather than leaving it to be typed line by line.
+    function autoAllocate() {
+
+        var remaining = parseFloat($("#Amount").val()) || 0;
+
+        if (remaining <= 0) {
+
+            Swal.fire({
+                icon: "warning",
+                title: "Nothing To Spread",
+                text: "Enter the amount received first.",
+                confirmButtonText: "OK"
+            });
+
+            return;
+        }
+
+        $("#allocationTableBody tr").each(function () {
+
+            var input = $(this).find(".allocate-amount");
+            var owing = parseFloat($(this).find(".owing-amount").val()) || 0;
+            var take = Math.min(remaining, owing);
+
+            input.val(take.toFixed(2));
+            remaining -= take;
+        });
+
+        recalculateAllocations();
+    }
+
+    function buildAllocationRows(invoices) {
+
+        var body = $("#allocationTableBody").empty();
+
+        $.each(invoices, function (i, invoice) {
+
+            var row = $("<tr>");
+            var prefix = "CustomerPaymentAllocations[" + i + "].";
+
+            var invoiceCell = $("<td>").text(invoice.invoiceNo);
+            invoiceCell.append($('<input type="hidden">').attr("name", prefix + "SalesInvoiceId").val(invoice.salesInvoiceId));
+            invoiceCell.append($('<input type="hidden">').attr("name", prefix + "InvoiceNo").val(invoice.invoiceNo));
+            invoiceCell.append($('<input type="hidden">').attr("name", prefix + "InvoiceDate").val(invoice.invoiceDate));
+            invoiceCell.append($('<input type="hidden">').attr("name", prefix + "DueDate").val(invoice.dueDate));
+            invoiceCell.append($('<input type="hidden">').attr("name", prefix + "OverdueDays").val(invoice.overdueDays));
+            invoiceCell.append($('<input type="hidden">').attr("name", prefix + "GrandTotal").val(invoice.grandTotal));
+            invoiceCell.append($('<input type="hidden">').attr("name", prefix + "PaidAmount").val(invoice.paidAmount));
+            invoiceCell.append($('<input type="hidden">').attr("name", prefix + "PendingAmount").val(invoice.pendingAmount));
+            invoiceCell.append($('<input type="hidden" class="owing-amount">').attr("name", prefix + "RemainingAmount").val(invoice.remainingAmount));
+            invoiceCell.append($('<input type="hidden">').attr("name", prefix + "DueAmount").val(invoice.remainingAmount));
+            invoiceCell.append($('<input type="hidden">').attr("name", prefix + "Remarks").val(""));
+            row.append(invoiceCell);
+
+            row.append($("<td>").text(new Date(invoice.invoiceDate).toLocaleDateString()));
+            row.append($("<td>").text(new Date(invoice.dueDate).toLocaleDateString()));
+
+            row.append(invoice.overdueDays > 0
+                ? $('<td class="text-right">').append($('<span class="text-danger font-weight-bold">').text(invoice.overdueDays + " d"))
+                : $('<td class="text-right">').append($('<span class="text-muted">').text("—")));
+
+            row.append($('<td class="text-right">').text(Number(invoice.grandTotal).toFixed(2)));
+            row.append($('<td class="text-right">').text(Number(invoice.paidAmount).toFixed(2)));
+            row.append($('<td class="text-right font-weight-bold">').text(Number(invoice.remainingAmount).toFixed(2)));
+
+            // Nothing is put on an invoice by default: how the money is split is the
+            // whole decision being made on this screen.
+            row.append($("<td>").append(
+                $('<input type="number" step="0.01" min="0" class="form-control allocate-amount">')
+                    .attr("name", prefix + "AllocatedAmount")
+                    .val("0.00")));
+
+            body.append(row);
+        });
+
+        recalculateAllocations();
+    }
+
+    $(document).ready(function () {
+
+        recalculateAllocations();
+
+        $(document).on("change", ".allocate-amount", function () {
+            clampAllocation($(this));
+            recalculateAllocations();
+        });
+
+        $("#Amount").on("input change", function () {
+            recalculateAllocations();
+        });
+
+        $("#btnAutoAllocate").on("click", function () {
+            autoAllocate();
+        });
+
+    });
+
+</script>

@@ -1,0 +1,362 @@
+@{
+    ViewData["Title"] = "Sales Order List";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Sales Orders</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Sales</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            Confirming an order checks the customer's credit limit. It holds no stock by
+                            itself; a reservation does that and a delivery takes it out.
+                        </h3>
+
+                        <a asp-area="Admin" asp-controller="SalesOrder" asp-action="CreateSalesOrder" class="btn btn-primary float-right">
+                            <i class="fas fa-plus"></i> New Sales Order
+                        </a>
+                    </div>
+
+                    <div class="card-body">
+                        <partial name="_ResponsePartial" />
+                        <partial name="_ModalPartial" />
+                        <table id="salesOrder" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Order No</th>
+                                    <th>Customer</th>
+                                    <th>Order Date</th>
+                                    <th>Expected Delivery</th>
+                                    <th>Warehouse</th>
+                                    <th>Grand Total</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tfoot>
+                                <tr>
+                                    <th>Order No</th>
+                                    <th>Customer</th>
+                                    <th>Order Date</th>
+                                    <th>Expected Delivery</th>
+                                    <th>Warehouse</th>
+                                    <th>Grand Total</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<partial name="_SalesOrderDetailsPartial" />
+
+@section Scripts {
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+    <script type="text/javascript">
+
+        function statusBadgeClass(status) {
+            switch (status) {
+                case 'Delivered': return 'badge-success';
+                case 'PartiallyDelivered': return 'badge-info';
+                case 'Confirmed': return 'badge-primary';
+                case 'Closed': return 'badge-dark';
+                case 'Cancelled': return 'badge-danger';
+                default: return 'badge-secondary';
+            }
+        }
+
+        // A draft is edited, confirmed or deleted. A confirmed order can be reserved
+        // against and delivered, and is closed short or cancelled from here.
+        function actionButtons(id, status) {
+
+            var buttons = '';
+
+            if (status === 'Draft') {
+                buttons += `<a href="/Admin/SalesOrder/UpdateSalesOrder/${id}"
+                               class="btn btn-info btn-sm mr-1" title="Edit"><i class="fas fa-edit"></i></a>
+                            <button type="button" class="btn btn-primary btn-sm mr-1 btn-confirm" data-id='${id}'
+                                title="Confirm"><i class="fas fa-check"></i></button>`;
+            }
+
+            if (status === 'Confirmed' || status === 'PartiallyDelivered') {
+                buttons += `<a href="/Admin/StockReservation/CreateStockReservation?salesOrderId=${id}"
+                               class="btn btn-secondary btn-sm mr-1" title="Reserve stock"><i class="fas fa-lock"></i></a>
+                            <a href="/Admin/Delivery/CreateDelivery?salesOrderId=${id}"
+                               class="btn btn-success btn-sm mr-1" title="Deliver"><i class="fas fa-truck"></i></a>
+                            <button type="button" class="btn btn-dark btn-sm mr-1 btn-close-order" data-id='${id}'
+                                title="Close short"><i class="fas fa-flag-checkered"></i></button>`;
+            }
+
+            if (status === 'PartiallyDelivered' || status === 'Delivered' || status === 'Closed') {
+                buttons += `<a href="/Admin/SalesInvoice/CreateSalesInvoice?salesOrderId=${id}"
+                               class="btn btn-warning btn-sm mr-1" title="Invoice"><i class="fas fa-file-invoice-dollar"></i></a>`;
+            }
+
+            if (status === 'Draft' || status === 'Confirmed') {
+                buttons += `<button type="button" class="btn btn-warning btn-sm mr-1 btn-cancel" data-id='${id}'
+                                title="Cancel"><i class="fas fa-ban"></i></button>`;
+            }
+
+            if (status === 'Draft' || status === 'Cancelled') {
+                buttons += `<button type="button" class="btn btn-danger btn-sm show-bs-modal" data-id='${id}'
+                                title="Delete"><i class="fas fa-trash"></i></button>`;
+            }
+
+            return buttons === '' ? '<span class="text-muted">—</span>' : buttons;
+        }
+
+        function postAction(url, data, successTitle) {
+
+            data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({ icon: 'success', title: successTitle, text: response.message, timer: 2600, showConfirmButton: false });
+                        $('#salesOrder').DataTable().ajax.reload(null, false);
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Failed!', text: response.message });
+                    }
+                },
+                error: function (error) {
+                    if (error.status === 403) {
+                        window.location.href = '/Account/AccessDenied';
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Error!', text: 'The action could not be completed.' });
+                    }
+                }
+            });
+        }
+
+        $(function () {
+            try {
+                $("#salesOrder").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    responsive: true,
+                    lengthChange: true,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    autoWidth: false,
+                    ajax: {
+                        url: "/Admin/SalesOrder/GetSalesOrderJsonData",
+                        type: "POST",
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: function (d) {
+                            return JSON.stringify(d);
+                        },
+                    },
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 7,
+                            render: function (data, type, row) {
+                                return actionButtons(data, row[6]);
+                            }
+                        },
+                        {
+                            targets: 6,
+                            render: function (data) {
+                                return `<span class="badge ${statusBadgeClass(data)}">${data}</span>`;
+                            }
+                        },
+                        ...[0, 1, 2, 3, 4, 5].map(function (target) {
+                            return {
+                                targets: target,
+                                createdCell: function (td, cellData, rowData) {
+                                    $(td).addClass('table-row');
+                                    $(td).attr('data-id', rowData[7]);
+                                }
+                            };
+                        })
+                    ],
+                    dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                }).buttons().container().appendTo('#salesOrder_wrapper .col-md-6:eq(0)');
+            } catch (e) {
+                console.error("DataTable init error:", e);
+            }
+        });
+
+        // Row click -> sales order details modal
+        $(function () {
+            $('#salesOrder tbody').on('click', '.table-row', function () {
+                var id = $(this).data("id");
+
+                $.ajax({
+                    url: `/Admin/SalesOrder/GetSalesOrderDetails?id=${id}`,
+                    type: 'GET',
+                    success: function (data) {
+
+                        $('#SoNo').text(data.salesOrderNo || 'N/A');
+                        $('#SoQuotationNo').text(data.quotationNo || 'Direct order');
+                        $('#SoCustomer').text(
+                            data.customerName ? `${data.customerName} (${data.customerCode})` : 'N/A');
+                        $('#SoWarehouse').text(data.warehouse || 'N/A');
+                        $('#SoDate').text(data.orderDate ? new Date(data.orderDate).toLocaleDateString() : 'N/A');
+                        $('#SoExpected').text(data.expectedDeliveryDate ? new Date(data.expectedDeliveryDate).toLocaleDateString() : 'N/A');
+                        $('#SoSalesperson').text(data.salesperson || 'N/A');
+                        $('#SoStatus').text(data.status || 'N/A');
+                        $('#SoReference').text(data.customerReference || 'N/A');
+                        $('#SoNotes').text(data.notes || 'N/A');
+
+                        $('#SoSubTotal').text(Number(data.subTotal ?? 0).toFixed(2));
+                        $('#SoDiscount').text(Number(data.itemDiscountTotal ?? 0).toFixed(2));
+                        $('#SoTax').text(Number(data.totalTax ?? 0).toFixed(2));
+                        $('#SoOtherCharges').text(Number(data.otherCharges ?? 0).toFixed(2));
+                        $('#SoGrandTotal').text(Number(data.grandTotal ?? 0).toFixed(2));
+
+                        var body = $('#SoItemsBody').empty();
+
+                        $.each(data.salesOrderItems || [], function (i, item) {
+                            var row = $('<tr>');
+                            row.append($('<td>').text(item.productName || ''));
+                            row.append($('<td>').text(item.unitName || ''));
+                            row.append($('<td class="text-right">').text(Number(item.quantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.deliveredQuantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.invoicedQuantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.pendingQuantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.unitPrice ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.discountAmount ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.taxAmount ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.lineTotal ?? 0).toFixed(2)));
+                            body.append(row);
+                        });
+
+                        $('#salesOrderDetailModal').modal('show');
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 403) {
+                            window.location.href = '/Account/AccessDenied';
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Error!', text: 'Failed to load sales order details.' });
+                        }
+                    }
+                });
+            });
+        });
+
+        $(function () {
+
+            $('#salesOrder').on('click', '.btn-confirm', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Confirm this sales order?',
+                    text: "The customer's credit limit is checked now, and after this the order can no longer be edited.",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#007bff',
+                    confirmButtonText: 'Yes, Confirm',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/SalesOrder/ConfirmSalesOrder', { id: id }, 'Confirmed!');
+                    }
+                });
+            });
+
+            $('#salesOrder').on('click', '.btn-close-order', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Close this order short?',
+                    text: 'The customer will take no more. Any stock still held for it goes back to free stock.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#343a40',
+                    confirmButtonText: 'Yes, Close It',
+                    cancelButtonText: 'Keep It Open'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/SalesOrder/CloseSalesOrder', { id: id }, 'Closed!');
+                    }
+                });
+            });
+
+            $('#salesOrder').on('click', '.btn-cancel', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Cancel this sales order?',
+                    text: 'Every hold it still has is released. Anything already delivered has to be returned first.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Cancel It',
+                    cancelButtonText: 'Keep It'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/SalesOrder/CancelSalesOrder', { id: id }, 'Cancelled!');
+                    }
+                });
+            });
+
+            $('#salesOrder').on('click', '.show-bs-modal', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to recover this sales order!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Delete',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/SalesOrder/DeleteSalesOrder', { id: id }, 'Deleted!');
+                    }
+                });
+            });
+
+        });
+    </script>
+}

@@ -87,6 +87,11 @@ namespace DevSkill.Inventory.Application.Services
                 GuardAgainstLockedStatus(existing.Status, "edited");
                 await GuardAgainstDeliveriesAsync(existing.Id, "edited");
 
+                // The warehouse a proforma was issued from is part of its identity and
+                // decides which products its lines may hold. An edit may change the
+                // lines, never where they are served from.
+                proformaInvoice.BusinessLocationId = existing.BusinessLocationId;
+
                 var context = await ValidateAsync(proformaInvoice);
 
                 // The old lines go away and the new set is priced from scratch, so a
@@ -296,6 +301,14 @@ namespace DevSkill.Inventory.Application.Services
                 if (product.Status != ProductStatus.Active)
                 {
                     throw new InvalidOperationException($"'{product.ProductName}' is inactive and cannot be billed.");
+                }
+
+                // The dropdown only offers the warehouse's own products; this makes the
+                // same rule hold for anything that reaches the server another way.
+                if (product.BusinessLocationId != context.Warehouse.Id)
+                {
+                    throw new InvalidOperationException(
+                        $"'{product.ProductName}' is not stocked in '{context.Warehouse.LocationName}'.");
                 }
 
                 var unitPrice = await _priceListManagementService.GetEffectiveUnitPriceAsync(

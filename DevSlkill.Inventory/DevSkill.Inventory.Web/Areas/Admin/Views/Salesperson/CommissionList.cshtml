@@ -1,0 +1,264 @@
+@{
+    ViewData["Title"] = "Commission List";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Commissions</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Sales</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            A commission line is written when its invoice is posted and withdrawn when
+                            that invoice is cancelled, so the two can never disagree.
+                        </h3>
+
+                        <a asp-area="Admin" asp-controller="Salesperson" asp-action="SalespersonList" class="btn btn-secondary float-right">
+                            <i class="fas fa-users"></i> Salespersons
+                        </a>
+                    </div>
+
+                    <div class="card-body">
+                        <partial name="_ResponsePartial" />
+                        <partial name="_ModalPartial" />
+                        <table id="commission" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Earned</th>
+                                    <th>Salesperson</th>
+                                    <th>Invoice No</th>
+                                    <th>Basis Amount</th>
+                                    <th>Rate</th>
+                                    <th>Commission</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tfoot>
+                                <tr>
+                                    <th>Earned</th>
+                                    <th>Salesperson</th>
+                                    <th>Invoice No</th>
+                                    <th>Basis Amount</th>
+                                    <th>Rate</th>
+                                    <th>Commission</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+    <script type="text/javascript">
+
+        function statusBadgeClass(status) {
+            switch (status) {
+                case 'Paid': return 'badge-success';
+                case 'Approved': return 'badge-primary';
+                case 'Pending': return 'badge-warning';
+                case 'Cancelled': return 'badge-danger';
+                default: return 'badge-secondary';
+            }
+        }
+
+        // Pending is approved or written off; approved is paid or written off. A paid
+        // commission is settled money and is left alone.
+        function actionButtons(id, status) {
+
+            var buttons = '';
+
+            if (status === 'Pending') {
+                buttons += `<button type="button" class="btn btn-primary btn-sm mr-1 btn-approve" data-id='${id}'
+                                title="Approve"><i class="fas fa-check"></i></button>`;
+            }
+
+            if (status === 'Approved') {
+                buttons += `<button type="button" class="btn btn-success btn-sm mr-1 btn-pay" data-id='${id}'
+                                title="Pay"><i class="fas fa-money-bill"></i></button>`;
+            }
+
+            if (status === 'Pending' || status === 'Approved') {
+                buttons += `<button type="button" class="btn btn-warning btn-sm btn-cancel" data-id='${id}'
+                                title="Write off"><i class="fas fa-ban"></i></button>`;
+            }
+
+            return buttons === '' ? '<span class="text-muted">—</span>' : buttons;
+        }
+
+        function postAction(url, data, successTitle) {
+
+            data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({ icon: 'success', title: successTitle, text: response.message, timer: 2200, showConfirmButton: false });
+                        $('#commission').DataTable().ajax.reload(null, false);
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Failed!', text: response.message });
+                    }
+                },
+                error: function (error) {
+                    if (error.status === 403) {
+                        window.location.href = '/Account/AccessDenied';
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Error!', text: 'The action could not be completed.' });
+                    }
+                }
+            });
+        }
+
+        $(function () {
+            try {
+                $("#commission").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    responsive: true,
+                    lengthChange: true,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    autoWidth: false,
+                    ajax: {
+                        url: "/Admin/Salesperson/GetCommissionJsonData",
+                        type: "POST",
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: function (d) {
+                            return JSON.stringify(d);
+                        },
+                    },
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 7,
+                            render: function (data, type, row) {
+                                return actionButtons(data, row[6]);
+                            }
+                        },
+                        {
+                            targets: 6,
+                            render: function (data) {
+                                return `<span class="badge ${statusBadgeClass(data)}">${data}</span>`;
+                            }
+                        }
+                    ],
+                    dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                }).buttons().container().appendTo('#commission_wrapper .col-md-6:eq(0)');
+            } catch (e) {
+                console.error("DataTable init error:", e);
+            }
+        });
+
+        $(function () {
+
+            $('#commission').on('click', '.btn-approve', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Approve this commission?',
+                    text: 'Approving it confirms the money is really owed, so it can then be paid.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#007bff',
+                    confirmButtonText: 'Yes, Approve',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/Salesperson/ApproveCommission', { id: id }, 'Approved!');
+                    }
+                });
+            });
+
+            $('#commission').on('click', '.btn-pay', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Pay this commission?',
+                    text: 'Once it is paid the invoice behind it can no longer be cancelled.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    confirmButtonText: 'Yes, Pay',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/Salesperson/PayCommission', { id: id }, 'Paid!');
+                    }
+                });
+            });
+
+            $('#commission').on('click', '.btn-cancel', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Write this commission off?',
+                    input: 'text',
+                    inputLabel: 'Reason',
+                    inputPlaceholder: 'Why is it not being paid?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Write Off',
+                    cancelButtonText: 'Keep It',
+                    inputValidator: function (value) {
+                        if (!value) {
+                            return 'A reason is needed, so the write off can be explained later.';
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/Salesperson/CancelCommission', { id: id, reason: result.value }, 'Written Off!');
+                    }
+                });
+            });
+
+        });
+    </script>
+}

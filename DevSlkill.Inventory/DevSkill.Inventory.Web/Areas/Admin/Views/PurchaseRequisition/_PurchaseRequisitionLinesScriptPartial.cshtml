@@ -1,0 +1,176 @@
+@*
+    Line grid behaviour shared by the create and update requisition screens.
+    Both pages define `rowIndex` themselves and then call into these helpers.
+*@
+
+<script>
+
+    // The products a line may hold always belong to the requisition's warehouse.
+    var warehouseProducts = [];
+
+    // A failed post, or an edit, comes back with the warehouse's products already
+    // rendered, so they are picked up here instead of being fetched again.
+    function captureRenderedProducts() {
+
+        warehouseProducts = [];
+
+        $("#productTableBody .product-select").first().find("option").each(function () {
+
+            if ($(this).val()) {
+                warehouseProducts.push({ id: $(this).val(), text: $(this).text() });
+            }
+
+        });
+    }
+
+    function loadProducts(dropdown) {
+
+        dropdown.empty();
+        dropdown.append($("<option>").val("").text("-- Product Select --"));
+
+        $.each(warehouseProducts, function (i, product) {
+
+            dropdown.append(
+                $("<option>")
+                    .val(product.id)
+                    .text(product.text)
+            );
+
+        });
+    }
+
+    function clearLinePreview(row) {
+        row.find(".current-stock").val(0);
+        row.find(".line-total").val("0.00");
+    }
+
+    function updateDeleteButtons() {
+        $(".btnRemoveRow").prop("disabled", $("#productTableBody tr").length == 1);
+    }
+
+    function reIndexRows() {
+
+        $("#productTableBody tr").each(function (index) {
+
+            $(this).find("[name]").each(function () {
+
+                var name = $(this).attr("name");
+
+                name = name.replace(/PurchaseRequisitionItems\[\d+\]/,
+                                    "PurchaseRequisitionItems[" + index + "]");
+
+                $(this).attr("name", name);
+            });
+
+        });
+
+        rowIndex = $("#productTableBody tr").length;
+    }
+
+    function recalculateLine(row) {
+
+        var qty = parseFloat(row.find(".line-qty").val()) || 0;
+        var price = parseFloat(row.find(".unit-price").val()) || 0;
+
+        row.find(".line-total").val((qty * price).toFixed(2));
+    }
+
+    function recalculateTotals() {
+
+        var grandTotal = 0;
+
+        $("#productTableBody tr").each(function () {
+            recalculateLine($(this));
+            grandTotal += parseFloat($(this).find(".line-total").val()) || 0;
+        });
+
+        $("#sumGrandTotal").text(grandTotal.toFixed(2));
+    }
+
+    // Shows what is already on hand, so the requester can see why the purchase is
+    // needed. It never changes any stored quantity.
+    function refreshStock(row) {
+
+        var productId = row.find(".product-select").val();
+
+        if (!productId) {
+            row.find(".current-stock").val(0);
+            return;
+        }
+
+        $.get('/Admin/Product/GetProductInfo', { productId: productId }, function (response) {
+            row.find(".current-stock").val(response.availableQuantity);
+        });
+    }
+
+    function appendRow(index) {
+
+        var row = `
+        <tr>
+            <td>
+                <select name="PurchaseRequisitionItems[${index}].ProductId"
+                        class="form-control product-select">
+                </select>
+            </td>
+
+            <td><input class="form-control current-stock" value="0" readonly /></td>
+
+            <td>
+                <input name="PurchaseRequisitionItems[${index}].Quantity"
+                       type="number" step="0.01" min="0.01" value="1"
+                       class="form-control line-qty" />
+            </td>
+
+            <td>
+                <input name="PurchaseRequisitionItems[${index}].EstimatedUnitPrice"
+                       type="number" step="0.01" min="0" value="0"
+                       class="form-control unit-price" />
+            </td>
+
+            <td><input class="form-control line-total" value="0.00" readonly /></td>
+
+            <td>
+                <input name="PurchaseRequisitionItems[${index}].Remarks" class="form-control" />
+            </td>
+
+            <td>
+                <button type="button" class="btn btn-danger btn-sm btnRemoveRow">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>`;
+
+        $("#productTableBody").append(row);
+
+        loadProducts($("#productTableBody tr:last").find(".product-select"));
+    }
+
+    $(document).ready(function () {
+
+        $(document).on("click", ".btnRemoveRow", function () {
+
+            if ($("#productTableBody tr").length > 1) {
+                $(this).closest("tr").remove();
+                reIndexRows();
+                updateDeleteButtons();
+                recalculateTotals();
+            }
+
+        });
+
+        $(document).on("change", ".product-select", function () {
+            refreshStock($(this).closest("tr"));
+        });
+
+        $(document).on("input change", ".line-qty, .unit-price", function () {
+
+            if ($(this).hasClass("line-qty") && parseFloat($(this).val()) <= 0) {
+                $(this).val(1);
+            }
+
+            recalculateTotals();
+        });
+
+    });
+
+</script>

@@ -45,7 +45,7 @@
                             <thead>
                                 <tr>
                                     <th>Delivery No</th>
-                                    <th>Proforma No</th>
+                                    <th>Source Document</th>
                                     <th>Customer</th>
                                     <th>Delivery Date</th>
                                     <th>Warehouse</th>
@@ -57,7 +57,7 @@
                             <tfoot>
                                 <tr>
                                     <th>Delivery No</th>
-                                    <th>Proforma No</th>
+                                    <th>Source Document</th>
                                     <th>Customer</th>
                                     <th>Delivery Date</th>
                                     <th>Warehouse</th>
@@ -184,7 +184,8 @@
                     type: 'GET',
                     success: function (data) {
                         $('#DlDeliveryNo').text(data.deliveryNo || 'N/A');
-                        $('#DlProformaNo').text(data.proformaNo || 'N/A');
+                        $('#DlSourceLabel').text(data.sourceLabel || 'N/A');
+                        $('#DlSourceNo').text(data.sourceNo || 'N/A');
                         $('#DlCustomer').text(
                             data.customerName ? `${data.customerName} (${data.customerCode})` : 'N/A');
                         $('#DlWarehouse').text(data.warehouse || 'N/A');

@@ -1,0 +1,406 @@
+@{
+    ViewData["Title"] = "Purchase Requisition List";
+}
+
+@section Styles {
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Purchase Requisitions</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Purchase</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Every internal purchase request is listed here.</h3>
+
+                        <a asp-area="Admin" asp-controller="PurchaseRequisition" asp-action="CreatePurchaseRequisition" class="btn btn-primary float-right">
+                            <i class="fas fa-plus"></i> Add Requisition
+                        </a>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <partial name="_ResponsePartial" />
+                        <partial name="_ModalPartial" />
+                        <table id="requisition" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Requisition No</th>
+                                    <th>Date</th>
+                                    <th>Required By</th>
+                                    <th>Warehouse</th>
+                                    <th>Requested By</th>
+                                    <th>Estimated Total</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tfoot>
+                                <tr>
+                                    <th>Requisition No</th>
+                                    <th>Date</th>
+                                    <th>Required By</th>
+                                    <th>Warehouse</th>
+                                    <th>Requested By</th>
+                                    <th>Estimated Total</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+<partial name="_PurchaseRequisitionDetailsPartial" />
+
+<!-- /.content -->
+@section Scripts {
+    <!-- DataTables  & Plugins -->
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+    <script type="text/javascript">
+
+        function statusBadgeClass(status) {
+            switch (status) {
+                case 'Approved': return 'badge-success';
+                case 'Submitted': return 'badge-warning';
+                case 'Rejected': return 'badge-danger';
+                case 'Cancelled': return 'badge-dark';
+                case 'Converted': return 'badge-primary';
+                case 'PartiallyConverted': return 'badge-info';
+                default: return 'badge-secondary';
+            }
+        }
+
+        // The buttons follow the flow: a draft is edited and submitted, a submitted one
+        // is approved or rejected, and anything already converted is read only.
+        function actionButtons(id, status) {
+
+            var buttons = '';
+
+            if (status === 'Draft' || status === 'Rejected') {
+                buttons += `<a href="/Admin/PurchaseRequisition/UpdatePurchaseRequisition/${id}"
+                               class="btn btn-info btn-sm mr-1"><i class="fas fa-edit"></i></a>`;
+            }
+
+            if (status === 'Draft') {
+                buttons += `<button type="button" class="btn btn-primary btn-sm mr-1 btn-submit" data-id='${id}'
+                                title="Submit for approval"><i class="fas fa-paper-plane"></i></button>`;
+            }
+
+            if (status === 'Submitted') {
+                buttons += `<button type="button" class="btn btn-success btn-sm mr-1 btn-approve" data-id='${id}'
+                                title="Approve"><i class="fas fa-check"></i></button>
+                            <button type="button" class="btn btn-warning btn-sm mr-1 btn-reject" data-id='${id}'
+                                title="Reject"><i class="fas fa-times"></i></button>`;
+            }
+
+            if (status === 'Approved' || status === 'PartiallyConverted') {
+                buttons += `<a href="/Admin/PurchaseOrder/CreatePurchaseOrder?requisitionId=${id}"
+                               class="btn btn-primary btn-sm mr-1" title="Convert to purchase order">
+                                <i class="fas fa-file-invoice"></i>
+                            </a>`;
+            }
+
+            if (status === 'Draft' || status === 'Approved' || status === 'Rejected') {
+                buttons += `<button type="button" class="btn btn-secondary btn-sm mr-1 btn-cancel" data-id='${id}'
+                                title="Cancel"><i class="fas fa-ban"></i></button>`;
+            }
+
+            if (status === 'Draft' || status === 'Rejected' || status === 'Cancelled') {
+                buttons += `<button type="button" class="btn btn-danger btn-sm show-bs-modal" data-id='${id}'
+                                title="Delete"><i class="fas fa-trash"></i></button>`;
+            }
+
+            return buttons === '' ? '<span class="text-muted">—</span>' : buttons;
+        }
+
+        function postAction(url, data, successTitle) {
+
+            data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({ icon: 'success', title: successTitle, text: response.message, timer: 1800, showConfirmButton: false });
+                        $('#requisition').DataTable().ajax.reload(null, false);
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Failed!', text: response.message });
+                    }
+                },
+                error: function (error) {
+                    if (error.status === 403) {
+                        window.location.href = '/Account/AccessDenied';
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Error!', text: 'The action could not be completed.' });
+                    }
+                }
+            });
+        }
+
+        $(function () {
+            try {
+                $("#requisition").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    responsive: true,
+                    lengthChange: true,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    autoWidth: false,
+                    ajax: {
+                        url: "/Admin/PurchaseRequisition/GetPurchaseRequisitionJsonData",
+                        type: "POST",
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: function (d) {
+                            return JSON.stringify(d);
+                        },
+                    },
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 7,
+                            render: function (data, type, row) {
+                                return actionButtons(data, row[6]);
+                            }
+                        },
+                        {
+                            targets: 6,
+                            render: function (data) {
+                                return `<span class="badge ${statusBadgeClass(data)}">${data}</span>`;
+                            }
+                        },
+                        ...[0, 1, 2, 3, 4, 5].map(function (target) {
+                            return {
+                                targets: target,
+                                createdCell: function (td, cellData, rowData) {
+                                    $(td).addClass('table-row');
+                                    $(td).attr('data-id', rowData[7]);
+                                }
+                            };
+                        })
+                    ],
+                    dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                }).buttons().container().appendTo('#requisition_wrapper .col-md-6:eq(0)');
+            } catch (e) {
+                console.error("DataTable init error:", e);
+            }
+        });
+
+        // Row click -> requisition details modal
+        $(function () {
+            $('#requisition tbody').on('click', '.table-row', function () {
+                var id = $(this).data("id");
+
+                $.ajax({
+                    url: `/Admin/PurchaseRequisition/GetPurchaseRequisitionDetails?id=${id}`,
+                    type: 'GET',
+                    success: function (data) {
+
+                        $('#PrNo').text(data.requisitionNo || 'N/A');
+                        $('#PrDate').text(data.requisitionDate ? new Date(data.requisitionDate).toLocaleDateString() : 'N/A');
+                        $('#PrRequiredDate').text(data.requiredDate ? new Date(data.requiredDate).toLocaleDateString() : 'N/A');
+                        $('#PrWarehouse').text(data.warehouse || 'N/A');
+                        $('#PrRequestedBy').text(data.requestedBy || 'N/A');
+                        $('#PrStatus').text(data.status || 'N/A');
+                        $('#PrApprovedBy').text(data.approvedBy || 'N/A');
+                        $('#PrApprovedDate').text(data.approvedDate ? new Date(data.approvedDate).toLocaleString('en-US', { hour12: true }) : 'N/A');
+                        $('#PrNotes').text(data.notes || 'N/A');
+                        $('#PrEstimatedTotal').text(Number(data.estimatedTotal ?? 0).toFixed(2));
+
+                        if (data.rejectionReason) {
+                            $('#PrRejectionReason').text(data.rejectionReason);
+                            $('#PrRejectionBlock').removeClass('d-none');
+                        } else {
+                            $('#PrRejectionBlock').addClass('d-none');
+                        }
+
+                        var body = $('#PrItemsBody').empty();
+
+                        $.each(data.purchaseRequisitionItems || [], function (i, item) {
+                            var row = $('<tr>');
+                            row.append($('<td>').text(item.productName || ''));
+                            row.append($('<td>').text(item.unitName || ''));
+                            row.append($('<td class="text-right">').text(Number(item.quantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.orderedQuantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.remainingQuantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.estimatedUnitPrice ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.lineTotal ?? 0).toFixed(2)));
+                            row.append($('<td>').text(item.remarks || ''));
+                            body.append(row);
+                        });
+
+                        $('#requisitionDetailModal').modal('show');
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 403) {
+                            window.location.href = '/Account/AccessDenied';
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Error!', text: 'Failed to load requisition details.' });
+                        }
+                    }
+                });
+            });
+        });
+
+        // Submit for approval
+        $(function () {
+            $('#requisition').on('click', '.btn-submit', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Submit for approval?',
+                    text: 'The requisition can no longer be edited until it is approved or rejected.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, Submit',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/PurchaseRequisition/SubmitPurchaseRequisition', { id: id }, 'Submitted!');
+                    }
+                });
+            });
+        });
+
+        // Approve
+        $(function () {
+            $('#requisition').on('click', '.btn-approve', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Approve this requisition?',
+                    text: 'Once approved it can be turned into a purchase order.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    confirmButtonText: 'Yes, Approve',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/PurchaseRequisition/ApprovePurchaseRequisition', { id: id }, 'Approved!');
+                    }
+                });
+            });
+        });
+
+        // Reject, a reason is always required
+        $(function () {
+            $('#requisition').on('click', '.btn-reject', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Reject this requisition?',
+                    input: 'textarea',
+                    inputLabel: 'Reason for rejection',
+                    inputPlaceholder: 'Tell the requester what to change...',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Reject',
+                    cancelButtonText: 'Cancel',
+                    inputValidator: function (value) {
+                        if (!value || !value.trim()) {
+                            return 'A rejection reason is required.';
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/PurchaseRequisition/RejectPurchaseRequisition',
+                            { id: id, reason: result.value }, 'Rejected!');
+                    }
+                });
+            });
+        });
+
+        // Cancel
+        $(function () {
+            $('#requisition').on('click', '.btn-cancel', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Cancel this requisition?',
+                    text: 'A cancelled requisition can no longer be used.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Cancel It',
+                    cancelButtonText: 'Keep It'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/PurchaseRequisition/CancelPurchaseRequisition', { id: id }, 'Cancelled!');
+                    }
+                });
+            });
+        });
+
+        // Delete
+        $(function () {
+            $('#requisition').on('click', '.show-bs-modal', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to recover this requisition!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Delete',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/PurchaseRequisition/DeletePurchaseRequisition', { id: id }, 'Deleted!');
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,318 @@
+@{
+    ViewData["Title"] = "Collection List";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Payments / Collections</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Sales</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">A draft settles nothing. Receiving the money is what clears the invoices.</h3>
+
+                        <a asp-area="Admin" asp-controller="CustomerPayment" asp-action="CreateCustomerPayment" class="btn btn-primary float-right">
+                            <i class="fas fa-plus"></i> Receive Collection
+                        </a>
+                    </div>
+
+                    <div class="card-body">
+                        <partial name="_ResponsePartial" />
+                        <partial name="_ModalPartial" />
+                        <table id="customerPayment" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Collection No</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Method</th>
+                                    <th>Reference</th>
+                                    <th>Amount</th>
+                                    <th>Allocated</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tfoot>
+                                <tr>
+                                    <th>Collection No</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Method</th>
+                                    <th>Reference</th>
+                                    <th>Amount</th>
+                                    <th>Allocated</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<partial name="_CustomerPaymentDetailsPartial" />
+
+@section Scripts {
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+    <script type="text/javascript">
+
+        function statusBadgeClass(status) {
+            switch (status) {
+                case 'Received': return 'badge-success';
+                case 'Cancelled': return 'badge-danger';
+                default: return 'badge-secondary';
+            }
+        }
+
+        // A draft is edited, received or deleted. A received collection has already
+        // settled invoices, so only a cancellation can undo it.
+        function actionButtons(id, status) {
+
+            var buttons = '';
+
+            if (status === 'Draft') {
+                buttons += `<a href="/Admin/CustomerPayment/UpdateCustomerPayment/${id}"
+                               class="btn btn-info btn-sm mr-1" title="Edit"><i class="fas fa-edit"></i></a>
+                            <button type="button" class="btn btn-success btn-sm mr-1 btn-receive" data-id='${id}'
+                                title="Receive"><i class="fas fa-check"></i></button>`;
+            }
+
+            if (status === 'Draft' || status === 'Received') {
+                buttons += `<button type="button" class="btn btn-warning btn-sm mr-1 btn-cancel" data-id='${id}'
+                                title="Cancel"><i class="fas fa-ban"></i></button>`;
+            }
+
+            if (status === 'Draft') {
+                buttons += `<button type="button" class="btn btn-danger btn-sm show-bs-modal" data-id='${id}'
+                                title="Delete"><i class="fas fa-trash"></i></button>`;
+            }
+
+            return buttons === '' ? '<span class="text-muted">—</span>' : buttons;
+        }
+
+        function postAction(url, data, successTitle) {
+
+            data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({ icon: 'success', title: successTitle, text: response.message, timer: 2600, showConfirmButton: false });
+                        $('#customerPayment').DataTable().ajax.reload(null, false);
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Failed!', text: response.message });
+                    }
+                },
+                error: function (error) {
+                    if (error.status === 403) {
+                        window.location.href = '/Account/AccessDenied';
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Error!', text: 'The action could not be completed.' });
+                    }
+                }
+            });
+        }
+
+        $(function () {
+            try {
+                $("#customerPayment").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    responsive: true,
+                    lengthChange: true,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    autoWidth: false,
+                    ajax: {
+                        url: "/Admin/CustomerPayment/GetCustomerPaymentJsonData",
+                        type: "POST",
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: function (d) {
+                            return JSON.stringify(d);
+                        },
+                    },
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 8,
+                            render: function (data, type, row) {
+                                return actionButtons(data, row[7]);
+                            }
+                        },
+                        {
+                            targets: 7,
+                            render: function (data) {
+                                return `<span class="badge ${statusBadgeClass(data)}">${data}</span>`;
+                            }
+                        },
+                        ...[0, 1, 2, 3, 4, 5, 6].map(function (target) {
+                            return {
+                                targets: target,
+                                createdCell: function (td, cellData, rowData) {
+                                    $(td).addClass('table-row');
+                                    $(td).attr('data-id', rowData[8]);
+                                }
+                            };
+                        })
+                    ],
+                    dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                }).buttons().container().appendTo('#customerPayment_wrapper .col-md-6:eq(0)');
+            } catch (e) {
+                console.error("DataTable init error:", e);
+            }
+        });
+
+        // Row click -> collection details modal
+        $(function () {
+            $('#customerPayment tbody').on('click', '.table-row', function () {
+                var id = $(this).data("id");
+
+                $.ajax({
+                    url: `/Admin/CustomerPayment/GetCustomerPaymentDetails?id=${id}`,
+                    type: 'GET',
+                    success: function (data) {
+
+                        $('#CpNo').text(data.paymentNo || 'N/A');
+                        $('#CpCustomer').text(
+                            data.customerName ? `${data.customerName} (${data.customerCode})` : 'N/A');
+                        $('#CpDate').text(data.paymentDate ? new Date(data.paymentDate).toLocaleDateString() : 'N/A');
+                        $('#CpMethod').text(data.paymentMethod || 'N/A');
+                        $('#CpReference').text(data.referenceNo || 'N/A');
+                        $('#CpCreditNote').text(data.creditNoteNo || '—');
+                        $('#CpStatus').text(data.status || 'N/A');
+                        $('#CpNotes').text(data.notes || 'N/A');
+
+                        $('#CpAmount').text(Number(data.amount ?? 0).toFixed(2));
+                        $('#CpAllocated').text(Number(data.allocatedAmount ?? 0).toFixed(2));
+                        $('#CpUnallocated').text(Number(data.unallocatedAmount ?? 0).toFixed(2));
+
+                        var body = $('#CpAllocationsBody').empty();
+
+                        $.each(data.allocations || [], function (i, item) {
+                            var row = $('<tr>');
+                            row.append($('<td>').text(item.invoiceNo || ''));
+                            row.append($('<td>').text(item.invoiceDate ? new Date(item.invoiceDate).toLocaleDateString() : ''));
+                            row.append($('<td class="text-right">').text(Number(item.grandTotal ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.dueAmount ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.allocatedAmount ?? 0).toFixed(2)));
+                            row.append($('<td>').text(item.remarks || ''));
+                            body.append(row);
+                        });
+
+                        $('#customerPaymentDetailModal').modal('show');
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 403) {
+                            window.location.href = '/Account/AccessDenied';
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Error!', text: 'Failed to load collection details.' });
+                        }
+                    }
+                });
+            });
+        });
+
+        $(function () {
+
+            $('#customerPayment').on('click', '.btn-receive', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Receive this money?',
+                    text: 'The invoices it was put against are settled by that much straight away.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    confirmButtonText: 'Yes, Receive',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/CustomerPayment/ReceiveCustomerPayment', { id: id }, 'Received!');
+                    }
+                });
+            });
+
+            $('#customerPayment').on('click', '.btn-cancel', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Cancel this collection?',
+                    text: 'If it was already received, the invoices owe their money again.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Cancel It',
+                    cancelButtonText: 'Keep It'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/CustomerPayment/CancelCustomerPayment', { id: id }, 'Cancelled!');
+                    }
+                });
+            });
+
+            $('#customerPayment').on('click', '.show-bs-modal', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to recover this collection!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Delete',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/CustomerPayment/DeleteCustomerPayment', { id: id }, 'Deleted!');
+                    }
+                });
+            });
+
+        });
+    </script>
+}

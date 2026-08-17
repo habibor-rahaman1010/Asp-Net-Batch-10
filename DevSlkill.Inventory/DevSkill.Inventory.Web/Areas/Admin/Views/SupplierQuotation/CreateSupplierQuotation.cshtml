@@ -1,0 +1,221 @@
+@model SupplierQuotationCreateModel;
+
+@{
+    ViewData["Title"] = "Record Supplier Quotation";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="SupplierQuotation" asp-action="CreateSupplierQuotation" method="post">
+
+            <!-- Header -->
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Supplier Quotation</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="QuotationNo"></label>
+                                <input asp-for="QuotationNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="SupplierQuotationNo"></label>
+                                <input asp-for="SupplierQuotationNo" class="form-control"
+                                       placeholder="The number on the supplier's own paper" />
+                                <span asp-validation-for="SupplierQuotationNo" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="WarehouseName"></label>
+                                <input asp-for="WarehouseName" class="form-control" id="WarehouseName" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="RequestForQuotationId">Request For Quotation*</label>
+                                <select asp-for="RequestForQuotationId" asp-items="Model.RequestForQuotations" class="form-control" id="RequestForQuotationId"></select>
+                                <small class="form-text text-muted">
+                                    Only a request that has been sent can be quoted against. Picking one
+                                    fills the grid with the products it asked for.
+                                </small>
+                                <span asp-validation-for="RequestForQuotationId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="SupplierId">Supplier*</label>
+                                <select asp-for="SupplierId" asp-items="Model.Suppliers" class="form-control"></select>
+                                <small class="form-text text-muted">
+                                    A supplier can only have one live quotation per request.
+                                </small>
+                                <span asp-validation-for="SupplierId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="PaymentTermId"></label>
+                                <select asp-for="PaymentTermId" asp-items="Model.PaymentTerms" class="form-control"></select>
+                                <span asp-validation-for="PaymentTermId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="QuotationDate">Quotation Date*</label>
+                                <input asp-for="QuotationDate" type="date" class="form-control" />
+                                <span asp-validation-for="QuotationDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="ValidUntil">Valid Until*</label>
+                                <input asp-for="ValidUntil" type="date" class="form-control" />
+                                <small class="form-text text-muted">
+                                    After this date the price is no longer held, and the offer is
+                                    flagged as expired in the comparison.
+                                </small>
+                                <span asp-validation-for="ValidUntil" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="DeliveryDays"></label>
+                                <input asp-for="DeliveryDays" type="number" min="0" step="1" class="form-control" />
+                                <span asp-validation-for="DeliveryDays" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="OtherCharges"></label>
+                                <input asp-for="OtherCharges" type="number" min="0" step="0.01" class="form-control" id="OtherCharges" />
+                                <small class="form-text text-muted">Freight, handling and the like.</small>
+                                <span asp-validation-for="OtherCharges" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label asp-for="Notes"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <partial name="_SupplierQuotationLinesPartial" model="Model.SupplierQuotationItems" />
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Save Quotation</button>
+                    <a asp-area="Admin" asp-controller="SupplierQuotation" asp-action="SupplierQuotationList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_SupplierQuotationLinesScriptPartial" />
+
+    <script>
+
+        $(document).ready(function () {
+
+            recalculateTotals();
+
+            // The request decides which products may be quoted, so choosing one
+            // rebuilds the grid from it.
+            $("#RequestForQuotationId").on("change", function () {
+
+                var requestId = $(this).val();
+
+                $("#quotationTableBody").empty();
+                $("#WarehouseName").val("");
+
+                if (!requestId) {
+                    recalculateTotals();
+                    return;
+                }
+
+                $.ajax({
+                    url: "/Admin/SupplierQuotation/GetRequestLines",
+                    type: "GET",
+                    data: { requestForQuotationId: requestId },
+                    success: function (response) {
+
+                        if (!response.success) {
+                            Swal.fire({ icon: "error", title: "Not Loaded", text: response.message });
+                            return;
+                        }
+
+                        $("#WarehouseName").val(response.warehouseName || "");
+
+                        $.each(response.lines, function (i, line) {
+                            appendQuotationRow(i, line);
+                        });
+
+                        recalculateTotals();
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Request Not Loaded",
+                            text: "The lines of the selected request could not be loaded.",
+                            confirmButtonText: "OK"
+                        });
+                    }
+                });
+
+            });
+
+            $("#QuotationDate, #ValidUntil").on("change", function () {
+
+                var quotationDate = $("#QuotationDate").val();
+                var validUntil = $("#ValidUntil").val();
+
+                if (quotationDate && validUntil && validUntil < quotationDate) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Invalid Date",
+                        text: "A quotation cannot expire before the day it was given.",
+                        confirmButtonText: "OK"
+                    });
+
+                    $("#ValidUntil").val(quotationDate);
+                }
+            });
+
+        });
+
+    </script>
+}

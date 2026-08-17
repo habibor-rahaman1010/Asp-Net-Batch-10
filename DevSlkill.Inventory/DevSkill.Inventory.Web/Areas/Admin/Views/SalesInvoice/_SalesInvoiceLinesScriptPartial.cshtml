@@ -1,0 +1,150 @@
+@*
+    Billing grid behaviour shared by the create and update invoice screens. The
+    figures shown here are a preview only; the server recalculates every one of
+    them when the invoice is saved.
+*@
+
+<script>
+
+    // The quantity is capped at what has been delivered and not yet billed. The
+    // server checks the very same rule.
+    function clampBillQuantity(input) {
+
+        var row = input.closest("tr");
+        var billable = parseFloat(row.find(".billable-qty").val()) || 0;
+        var value = parseFloat(input.val()) || 0;
+
+        if (value < 0) {
+            value = 0;
+        }
+
+        if (value > billable) {
+
+            Swal.fire({
+                icon: "warning",
+                title: "Not Delivered Yet",
+                text: "Only " + billable.toFixed(2) + " of this product is delivered and still unbilled.",
+                confirmButtonText: "OK"
+            });
+
+            value = billable;
+        }
+
+        input.val(value);
+    }
+
+    // The discount on the order belongs to its whole quantity, so billing part of a
+    // line only carries its share. That is the same split the server makes.
+    function recalculateInvoiceTotals() {
+
+        var subTotal = 0, discountTotal = 0, taxTotal = 0, grandLines = 0;
+
+        $("#invoiceTableBody tr").each(function () {
+
+            var row = $(this);
+            var qty = parseFloat(row.find(".bill-qty").val()) || 0;
+            var billable = parseFloat(row.find(".billable-qty").val()) || 0;
+            var price = parseFloat(row.find(".unit-price").val()) || 0;
+            var fullDiscount = parseFloat(row.find(".discount-amount").val()) || 0;
+            var taxRate = parseFloat(row.find(".tax-rate").val()) || 0;
+
+            var lineAmount = qty * price;
+            var discount = billable > 0 ? fullDiscount * Math.min(qty, billable) / billable : 0;
+            var net = lineAmount - discount;
+            var tax = net * taxRate / 100;
+            var lineTotal = net + tax;
+
+            row.find(".line-total").val(lineTotal.toFixed(2));
+
+            subTotal += lineAmount;
+            discountTotal += discount;
+            taxTotal += tax;
+            grandLines += lineTotal;
+        });
+
+        var otherCharges = parseFloat($("#OtherCharges").val()) || 0;
+
+        $("#sumSubTotal").text(subTotal.toFixed(2));
+        $("#sumDiscount").text(discountTotal.toFixed(2));
+        $("#sumTax").text(taxTotal.toFixed(2));
+        $("#sumOtherCharges").text(otherCharges.toFixed(2));
+        $("#sumGrandTotal").text((grandLines + otherCharges).toFixed(2));
+    }
+
+    function buildInvoiceRows(lines) {
+
+        var body = $("#invoiceTableBody").empty();
+
+        $.each(lines, function (i, line) {
+
+            var row = $("<tr>");
+            var prefix = "SalesInvoiceItems[" + i + "].";
+
+            var productCell = $("<td>").text(line.productName);
+            productCell.append($('<input type="hidden">').attr("name", prefix + "ProductId").val(line.productId));
+            productCell.append($('<input type="hidden">').attr("name", prefix + "ProductName").val(line.productName));
+            productCell.append($('<input type="hidden">').attr("name", prefix + "UnitName").val(line.unitName));
+            productCell.append($('<input type="hidden">').attr("name", prefix + "OrderedQuantity").val(line.orderedQuantity));
+            productCell.append($('<input type="hidden">').attr("name", prefix + "DeliveredQuantity").val(line.deliveredQuantity));
+            productCell.append($('<input type="hidden">').attr("name", prefix + "AlreadyInvoicedQuantity").val(line.invoicedQuantity));
+            productCell.append($('<input type="hidden" class="billable-qty">').attr("name", prefix + "RemainingQuantity").val(line.remainingQuantity));
+            productCell.append($('<input type="hidden" class="unit-price">').attr("name", prefix + "UnitPrice").val(line.unitPrice));
+            productCell.append($('<input type="hidden" class="discount-amount">').attr("name", prefix + "DiscountAmount").val(line.discountAmount));
+            productCell.append($('<input type="hidden" class="tax-rate">').attr("name", prefix + "TaxRate").val(line.taxRate));
+            row.append(productCell);
+
+            row.append($("<td>").text(line.unitName || ""));
+            row.append($('<td class="text-right">').text(Number(line.orderedQuantity).toFixed(2)));
+            row.append($('<td class="text-right">').text(Number(line.deliveredQuantity).toFixed(2)));
+            row.append($('<td class="text-right">').text(Number(line.invoicedQuantity).toFixed(2)));
+            row.append($('<td class="text-right font-weight-bold">').text(Number(line.remainingQuantity).toFixed(2)));
+
+            // Billing everything that has shipped is the normal case, so it is offered.
+            row.append($("<td>").append(
+                $('<input type="number" step="0.01" min="0" class="form-control bill-qty">')
+                    .attr("name", prefix + "Quantity")
+                    .val(Number(line.remainingQuantity).toFixed(2))));
+
+            row.append($('<td class="text-right">').text(Number(line.unitPrice).toFixed(2)));
+            row.append($('<td class="text-right">').text(Number(line.discountAmount).toFixed(2)));
+            row.append($("<td>").append($('<input class="form-control line-total" readonly>').val("0.00")));
+
+            body.append(row);
+        });
+
+        recalculateInvoiceTotals();
+    }
+
+    $(document).ready(function () {
+
+        recalculateInvoiceTotals();
+
+        $(document).on("change", ".bill-qty", function () {
+            clampBillQuantity($(this));
+            recalculateInvoiceTotals();
+        });
+
+        $("#OtherCharges").on("input change", function () {
+            recalculateInvoiceTotals();
+        });
+
+        $("#InvoiceDate, #DueDate").on("change", function () {
+
+            var invoiceDate = $("#InvoiceDate").val();
+            var dueDate = $("#DueDate").val();
+
+            if (invoiceDate && dueDate && dueDate < invoiceDate) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Invalid Date",
+                    text: "An invoice cannot fall due before the day it was raised.",
+                    confirmButtonText: "OK"
+                });
+
+                $("#DueDate").val(invoiceDate);
+            }
+        });
+
+    });
+
+</script>

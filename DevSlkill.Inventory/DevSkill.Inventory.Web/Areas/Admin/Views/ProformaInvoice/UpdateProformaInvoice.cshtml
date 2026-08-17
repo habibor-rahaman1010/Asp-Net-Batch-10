@@ -2,10 +2,6 @@
 
 @{
     ViewData["Title"] = "Update Proforma Invoice";
-
-    var productOptions = string.Join("",
-        Model.ProformaInvoiceItems[0].Products.Select(x =>
-            $"<option value='{x.Value}'>{x.Text}</option>"));
 }
 
 <section class="content mt-2">
@@ -63,8 +59,13 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label asp-for="BusinessLocationId">Warehouse*</label>
-                                <select asp-for="BusinessLocationId" asp-items="Model.BusinessLocations" class="form-control"></select>
-                                <span asp-validation-for="BusinessLocationId" class="text-danger"></span>
+
+                                @* The lines belong to this warehouse, so it is shown but never edited.
+                                   The disabled select posts nothing; the hidden field carries the value. *@
+                                <input type="hidden" asp-for="BusinessLocationId" id="BusinessLocationIdHidden" />
+                                <select asp-for="BusinessLocationId" asp-items="Model.BusinessLocations" class="form-control" disabled></select>
+
+                                <small class="form-text text-muted">The warehouse is fixed once the proforma is created.</small>
                             </div>
                         </div>
 
@@ -123,8 +124,9 @@
 
                     <div class="alert alert-info">
                         <i class="fas fa-shield-alt"></i>
-                        Saving reprices every line from the current price list and discount rules,
-                        so the stored amounts always come from the server.
+                        Only products of the proforma's warehouse can be billed, and the warehouse
+                        cannot be changed here. Saving reprices every line from the current price
+                        list and discount rules, so the stored amounts always come from the server.
                     </div>
 
                     <div class="table-responsive">
@@ -223,6 +225,39 @@
 
         var rowIndex = @Model.ProformaInvoiceItems.Count;
 
+        // The warehouse cannot change here, so the products the server rendered are
+        // the only ones any line, old or new, may hold.
+        var warehouseProducts = [];
+
+        function captureRenderedProducts() {
+
+            warehouseProducts = [];
+
+            $("#productTableBody .product-select").first().find("option").each(function () {
+
+                if ($(this).val()) {
+                    warehouseProducts.push({ id: $(this).val(), text: $(this).text() });
+                }
+
+            });
+        }
+
+        function loadProducts(dropdown) {
+
+            dropdown.empty();
+            dropdown.append($("<option>").val("").text("-- Product Select --"));
+
+            $.each(warehouseProducts, function (i, product) {
+
+                dropdown.append(
+                    $("<option>")
+                        .val(product.id)
+                        .text(product.text)
+                );
+
+            });
+        }
+
         function updateDeleteButtons() {
             $(".btnRemoveRow").prop("disabled", $("#productTableBody tr").length == 1);
         }
@@ -309,6 +344,7 @@
         $(document).ready(function () {
 
             updateDeleteButtons();
+            captureRenderedProducts();
 
             // Show the saved lines with their current server side pricing straight away.
             refreshAllLines();
@@ -320,7 +356,6 @@
                     <td>
                         <select name="ProformaInvoiceItems[${rowIndex}].ProductId"
                                 class="form-control product-select">
-                            @Html.Raw(productOptions)
                         </select>
                     </td>
 
@@ -346,6 +381,8 @@
 
                 $("#productTableBody").append(row);
                 rowIndex++;
+
+                loadProducts($("#productTableBody tr:last").find(".product-select"));
 
                 updateDeleteButtons();
             });

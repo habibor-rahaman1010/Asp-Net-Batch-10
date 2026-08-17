@@ -1,0 +1,345 @@
+@{
+    ViewData["Title"] = "Purchase Invoice List";
+}
+
+@section Styles {
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Purchase Invoices</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Purchase</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Posting an invoice is what raises the supplier's outstanding balance.</h3>
+
+                        <a asp-area="Admin" asp-controller="PurchaseInvoice" asp-action="CreatePurchaseInvoice" class="btn btn-primary float-right ml-2">
+                            <i class="fas fa-plus"></i> Add Invoice
+                        </a>
+
+                        <a asp-area="Admin" asp-controller="PurchaseInvoice" asp-action="ThreeWayMatch" class="btn btn-secondary float-right">
+                            <i class="fas fa-balance-scale"></i> 3-Way Match
+                        </a>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <partial name="_ResponsePartial" />
+                        <partial name="_ModalPartial" />
+                        <table id="purchaseInvoice" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Invoice No</th>
+                                    <th>Supplier Ref</th>
+                                    <th>Supplier</th>
+                                    <th>Order No</th>
+                                    <th>Invoice Date</th>
+                                    <th>Due Date</th>
+                                    <th>Grand Total</th>
+                                    <th>Due</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tfoot>
+                                <tr>
+                                    <th>Invoice No</th>
+                                    <th>Supplier Ref</th>
+                                    <th>Supplier</th>
+                                    <th>Order No</th>
+                                    <th>Invoice Date</th>
+                                    <th>Due Date</th>
+                                    <th>Grand Total</th>
+                                    <th>Due</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+<partial name="_PurchaseInvoiceDetailsPartial" />
+
+<!-- /.content -->
+@section Scripts {
+    <!-- DataTables  & Plugins -->
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+    <script type="text/javascript">
+
+        function statusBadgeClass(status) {
+            switch (status) {
+                case 'Posted': return 'badge-warning';
+                case 'PartiallyPaid': return 'badge-info';
+                case 'Paid': return 'badge-success';
+                case 'Cancelled': return 'badge-danger';
+                default: return 'badge-secondary';
+            }
+        }
+
+        function actionButtons(id, status) {
+
+            var buttons = '';
+
+            if (status === 'Draft') {
+                buttons += `<a href="/Admin/PurchaseInvoice/UpdatePurchaseInvoice/${id}"
+                               class="btn btn-info btn-sm mr-1" title="Edit"><i class="fas fa-edit"></i></a>
+                            <button type="button" class="btn btn-success btn-sm mr-1 btn-post" data-id='${id}'
+                                title="Post to supplier ledger"><i class="fas fa-check"></i></button>`;
+            }
+
+            if (status === 'Posted' || status === 'PartiallyPaid') {
+                buttons += `<a href="/Admin/SupplierPayment/CreateSupplierPayment?invoiceId=${id}"
+                               class="btn btn-primary btn-sm mr-1" title="Record payment"><i class="fas fa-money-bill"></i></a>`;
+            }
+
+            if (status === 'Draft' || status === 'Posted') {
+                buttons += `<button type="button" class="btn btn-warning btn-sm mr-1 btn-cancel" data-id='${id}'
+                                title="Cancel"><i class="fas fa-ban"></i></button>`;
+            }
+
+            if (status === 'Draft' || status === 'Cancelled') {
+                buttons += `<button type="button" class="btn btn-danger btn-sm show-bs-modal" data-id='${id}'
+                                title="Delete"><i class="fas fa-trash"></i></button>`;
+            }
+
+            return buttons === '' ? '<span class="text-muted">—</span>' : buttons;
+        }
+
+        function postAction(url, data, successTitle) {
+
+            data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({ icon: 'success', title: successTitle, text: response.message, timer: 2200, showConfirmButton: false });
+                        $('#purchaseInvoice').DataTable().ajax.reload(null, false);
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Failed!', text: response.message });
+                    }
+                },
+                error: function (error) {
+                    if (error.status === 403) {
+                        window.location.href = '/Account/AccessDenied';
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Error!', text: 'The action could not be completed.' });
+                    }
+                }
+            });
+        }
+
+        $(function () {
+            try {
+                $("#purchaseInvoice").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    responsive: true,
+                    lengthChange: true,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    autoWidth: false,
+                    ajax: {
+                        url: "/Admin/PurchaseInvoice/GetPurchaseInvoiceJsonData",
+                        type: "POST",
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: function (d) {
+                            return JSON.stringify(d);
+                        },
+                    },
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 9,
+                            render: function (data, type, row) {
+                                return actionButtons(data, row[8]);
+                            }
+                        },
+                        {
+                            targets: 8,
+                            render: function (data) {
+                                return `<span class="badge ${statusBadgeClass(data)}">${data}</span>`;
+                            }
+                        },
+                        ...[0, 1, 2, 3, 4, 5, 6, 7].map(function (target) {
+                            return {
+                                targets: target,
+                                createdCell: function (td, cellData, rowData) {
+                                    $(td).addClass('table-row');
+                                    $(td).attr('data-id', rowData[9]);
+                                }
+                            };
+                        })
+                    ],
+                    dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                }).buttons().container().appendTo('#purchaseInvoice_wrapper .col-md-6:eq(0)');
+            } catch (e) {
+                console.error("DataTable init error:", e);
+            }
+        });
+
+        // Row click -> purchase invoice details modal
+        $(function () {
+            $('#purchaseInvoice tbody').on('click', '.table-row', function () {
+                var id = $(this).data("id");
+
+                $.ajax({
+                    url: `/Admin/PurchaseInvoice/GetPurchaseInvoiceDetails?id=${id}`,
+                    type: 'GET',
+                    success: function (data) {
+
+                        $('#PiNo').text(data.invoiceNo || 'N/A');
+                        $('#PiSupplierInvoiceNo').text(data.supplierInvoiceNo || 'N/A');
+                        $('#PiSupplier').text(data.supplierName || 'N/A');
+                        $('#PiPoNo').text(data.purchaseOrderNo || 'N/A');
+                        $('#PiGrnNo').text(data.goodsReceiptNo || 'Whole order');
+                        $('#PiDate').text(data.invoiceDate ? new Date(data.invoiceDate).toLocaleDateString() : 'N/A');
+                        $('#PiDueDate').text(data.dueDate ? new Date(data.dueDate).toLocaleDateString() : 'N/A');
+                        $('#PiPaymentTerms').text(data.paymentTerms || 'N/A');
+                        $('#PiStatus').text(data.status || 'N/A');
+                        $('#PiNotes').text(data.notes || 'N/A');
+
+                        $('#PiSubTotal').text(Number(data.subTotal ?? 0).toFixed(2));
+                        $('#PiItemDiscount').text(Number(data.itemDiscountTotal ?? 0).toFixed(2));
+                        $('#PiTotalTax').text(Number(data.totalTax ?? 0).toFixed(2));
+                        $('#PiOtherCharges').text(Number(data.otherCharges ?? 0).toFixed(2));
+                        $('#PiGrandTotal').text(Number(data.grandTotal ?? 0).toFixed(2));
+                        $('#PiPaidAmount').text(Number(data.paidAmount ?? 0).toFixed(2));
+                        $('#PiDueAmount').text(Number(data.dueAmount ?? 0).toFixed(2));
+
+                        var body = $('#PiItemsBody').empty();
+
+                        $.each(data.purchaseInvoiceItems || [], function (i, item) {
+                            var row = $('<tr>');
+                            row.append($('<td>').text(item.productName || ''));
+                            row.append($('<td>').text(item.unitName || ''));
+                            row.append($('<td class="text-right">').text(Number(item.quantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.unitPrice ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.discountAmount ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.taxAmount ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.lineTotal ?? 0).toFixed(2)));
+                            body.append(row);
+                        });
+
+                        $('#purchaseInvoiceDetailModal').modal('show');
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 403) {
+                            window.location.href = '/Account/AccessDenied';
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Error!', text: 'Failed to load purchase invoice details.' });
+                        }
+                    }
+                });
+            });
+        });
+
+        $(function () {
+
+            $('#purchaseInvoice').on('click', '.btn-post', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Post this invoice?',
+                    text: 'The amount goes onto the supplier ledger and the invoice can no longer be edited.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    confirmButtonText: 'Yes, Post',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/PurchaseInvoice/PostPurchaseInvoice', { id: id }, 'Posted!');
+                    }
+                });
+            });
+
+            $('#purchaseInvoice').on('click', '.btn-cancel', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Cancel this purchase invoice?',
+                    text: 'If it was already posted, the amount is taken back off the supplier ledger.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Cancel It',
+                    cancelButtonText: 'Keep It'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/PurchaseInvoice/CancelPurchaseInvoice', { id: id }, 'Cancelled!');
+                    }
+                });
+            });
+
+            $('#purchaseInvoice').on('click', '.show-bs-modal', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to recover this purchase invoice!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Delete',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/PurchaseInvoice/DeletePurchaseInvoice', { id: id }, 'Deleted!');
+                    }
+                });
+            });
+
+        });
+    </script>
+}

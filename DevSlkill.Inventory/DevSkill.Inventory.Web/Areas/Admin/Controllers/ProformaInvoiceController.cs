@@ -1,13 +1,13 @@
 using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Domain.Entities;
 using DevSkill.Inventory.Domain.Entities.SalesEntities;
+using DevSkill.Inventory.Domain.Enums;
 using DevSkill.Inventory.Infrastructure;
-using DevSkill.Inventory.Infrastructure.InventoryIdentity;
+using DevSkill.Inventory.Infrastructure.RazorUtility;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using System.Web;
 
 namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
@@ -22,7 +22,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         private readonly IPriceListManagementService _priceListManagementService;
         private readonly IDiscountRuleManagementService _discountRuleManagementService;
         private readonly IPaymentTermManagementService _paymentTermManagementService;
-        private readonly ApplicationUserManager _applicationUserManager;
+        private readonly ISalespersonManagementService _salespersonManagementService;
         private readonly ILogger<ProformaInvoiceController> _logger;
 
         public ProformaInvoiceController(IProformaInvoiceManagementService proformaInvoiceManagementService,
@@ -32,7 +32,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             IPriceListManagementService priceListManagementService,
             IDiscountRuleManagementService discountRuleManagementService,
             IPaymentTermManagementService paymentTermManagementService,
-            ApplicationUserManager applicationUserManager,
+            ISalespersonManagementService salespersonManagementService,
             ILogger<ProformaInvoiceController> logger)
         {
             _proformaInvoiceManagementService = proformaInvoiceManagementService;
@@ -42,7 +42,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _priceListManagementService = priceListManagementService;
             _discountRuleManagementService = discountRuleManagementService;
             _paymentTermManagementService = paymentTermManagementService;
-            _applicationUserManager = applicationUserManager;
+            _salespersonManagementService = salespersonManagementService;
             _logger = logger;
         }
 
@@ -153,6 +153,19 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         [HttpPost, ValidateAntiForgeryToken, Authorize(Policy = "UpdatePermission")]
         public async Task<IActionResult> UpdateProformaInvoice(ProformaInvoiceUpdateModel model)
         {
+            var existing = await _proformaInvoiceManagementService.GetProformaInvoiceByIdAsync(model.Id);
+
+            if (existing == null)
+            {
+                return NotFound();
+            }
+
+            // The warehouse decides which products the lines may hold, so it stays as
+            // it was issued. The field is locked in the browser and the posted value is
+            // discarded here as well.
+            model.BusinessLocationId = existing.BusinessLocationId;
+            ModelState.Remove(nameof(model.BusinessLocationId));
+
             if (!ModelState.IsValid)
             {
                 await PopulateAsync(model);
@@ -376,6 +389,40 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         }
 
         /// <summary>
+        /// Feeds the product dropdowns after a warehouse is chosen on the create page.
+        /// A proforma is issued from one warehouse, so only the stock kept there may
+        /// be offered on its lines.
+        /// </summary>
+        [HttpGet, Authorize(Policy = "ReadPermission")]
+        public async Task<JsonResult> GetProductsByWarehouse(Guid warehouseId)
+        {
+            var products = await LoadWarehouseProductsAsync(warehouseId);
+
+            return Json(products.Select(x => new
+            {
+                id = x.Id,
+                text = x.ProductName
+            }));
+        }
+
+        /// <summary>
+        /// Active products of one warehouse. An empty warehouse means no product may
+        /// be picked yet, so the list is deliberately empty.
+        /// </summary>
+        private async Task<IList<Product>> LoadWarehouseProductsAsync(Guid warehouseId)
+        {
+            if (warehouseId == Guid.Empty)
+            {
+                return new List<Product>();
+            }
+
+            return (await _productManagementService.GetAllProductByWarehouseAsync(warehouseId))
+                .Where(x => x.Status == ProductStatus.Active)
+                .OrderBy(x => x.ProductName)
+                .ToList();
+        }
+
+        /// <summary>
         /// Only product and quantity travel to the service; it prices the lines itself.
         /// </summary>
         private static List<ProformaInvoiceItem> ToLineRequests(IEnumerable<ProformaInvoiceItemModel> items)
@@ -397,11 +444,9 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 return string.Empty;
             }
 
-            var salesperson = await _applicationUserManager.FindByIdAsync(salespersonId.Value.ToString());
+            var salesperson = await _salespersonManagementService.GetSalespersonByIdAsync(salespersonId.Value);
 
-            return salesperson == null
-                ? string.Empty
-                : $"{salesperson.FirstName} {salesperson.LastName}".Trim();
+            return salesperson?.SalespersonName ?? string.Empty;
         }
 
         private async Task PopulateAsync(ProformaInvoiceCreateModel model)
@@ -411,7 +456,9 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 model.ProformaNo = await _proformaInvoiceManagementService.GenerateProformaNoAsync();
             }
 
-            var lookups = await LoadLookupsAsync();
+            // The product list follows the chosen warehouse, so nothing is offered
+            // until one is picked.
+            var lookups = await LoadLookupsAsync(model.BusinessLocationId);
 
             model.SetCustomerValues(lookups.Customers);
             model.SetBusinessLocationValues(lookups.Warehouses);
@@ -426,20 +473,54 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
 
         private async Task PopulateAsync(ProformaInvoiceUpdateModel model)
         {
-            var lookups = await LoadLookupsAsync();
+            // The warehouse is fixed on an edit, so its products are the only ones
+            // that can ever appear here.
+            var lookups = await LoadLookupsAsync(model.BusinessLocationId);
 
             model.SetCustomerValues(lookups.Customers);
             model.SetBusinessLocationValues(lookups.Warehouses);
             model.SetSalespersonValues(lookups.Salespersons);
             model.SetPaymentTermValues(lookups.PaymentTerms);
 
+            var products = await IncludeExistingLineProductsAsync(lookups.Products, model.ProformaInvoiceItems);
+
             foreach (var item in model.ProformaInvoiceItems)
             {
-                item.SetProductValues(lookups.Products);
+                item.SetProductValues(products);
             }
         }
 
-        private async Task<LookupData> LoadLookupsAsync()
+        /// <summary>
+        /// A product that was billed earlier but has since been deactivated or moved to
+        /// another warehouse stays in the dropdown, otherwise its line would quietly
+        /// disappear on the next save instead of being decided by the user.
+        /// </summary>
+        private async Task<IList<Product>> IncludeExistingLineProductsAsync(IList<Product> warehouseProducts,
+            IEnumerable<ProformaInvoiceItemModel> items)
+        {
+            var products = warehouseProducts.ToList();
+
+            var missingIds = items
+                .Select(x => x.ProductId)
+                .Where(x => x != Guid.Empty)
+                .Distinct()
+                .Where(id => products.All(x => x.Id != id))
+                .ToList();
+
+            foreach (var id in missingIds)
+            {
+                var product = await _productManagementService.GetProductByIdAsync(id);
+
+                if (product != null)
+                {
+                    products.Add(product);
+                }
+            }
+
+            return products.OrderBy(x => x.ProductName).ToList();
+        }
+
+        private async Task<LookupData> LoadLookupsAsync(Guid warehouseId)
         {
             var customers = await _customerManagementService.GetActiveCustomerAsync();
 
@@ -447,18 +528,13 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 .Where(x => x.IsActive)
                 .ToList();
 
-            var salespersons = await _applicationUserManager.Users
-                .OrderBy(x => x.FirstName)
-                .Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = (x.FirstName + " " + x.LastName).Trim() == "" ? x.Email! : x.FirstName + " " + x.LastName
-                })
-                .ToListAsync();
+            // The people who sell, not the people who log in. Commission is earned by a
+            // salesperson, so naming a login here would leave the document pointing at
+            // something no commission can ever be paid to.
+            var salespersons = Utility.ConvertSalespersons(
+                await _salespersonManagementService.GetActiveSalespersonsAsync());
 
-            salespersons.Insert(0, new SelectListItem("-- Select Salesperson --", string.Empty));
-
-            var products = await _productManagementService.GetAllProductAsync();
+            var products = await LoadWarehouseProductsAsync(warehouseId);
 
             var paymentTerms = await _paymentTermManagementService.GetActivePaymentTermAsync();
 

@@ -1,0 +1,110 @@
+<div class="modal fade" id="salesQuotationDetailModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title">Sales Quotation Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Quotation No</dt>
+                            <dd class="col-sm-7" id="SqNo"></dd>
+
+                            <dt class="col-sm-5">Customer</dt>
+                            <dd class="col-sm-7" id="SqCustomer"></dd>
+
+                            <dt class="col-sm-5">Warehouse</dt>
+                            <dd class="col-sm-7" id="SqWarehouse"></dd>
+
+                            <dt class="col-sm-5">Salesperson</dt>
+                            <dd class="col-sm-7" id="SqSalesperson"></dd>
+                        </dl>
+                    </div>
+
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Quotation Date</dt>
+                            <dd class="col-sm-7" id="SqDate"></dd>
+
+                            <dt class="col-sm-5">Valid Until</dt>
+                            <dd class="col-sm-7" id="SqValidUntil"></dd>
+
+                            <dt class="col-sm-5">Payment Terms</dt>
+                            <dd class="col-sm-7" id="SqPaymentTerms"></dd>
+
+                            <dt class="col-sm-5">Status</dt>
+                            <dd class="col-sm-7" id="SqStatus"></dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Unit</th>
+                                <th class="text-right">Qty</th>
+                                <th class="text-right">Ordered</th>
+                                <th class="text-right">Open</th>
+                                <th class="text-right">Unit Price</th>
+                                <th class="text-right">Discount</th>
+                                <th class="text-right">Tax</th>
+                                <th class="text-right">Line Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="SqItemsBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="row justify-content-end">
+                    <div class="col-md-5">
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Sub Total</th>
+                                <td class="text-right" id="SqSubTotal"></td>
+                            </tr>
+                            <tr>
+                                <th>Item Discount</th>
+                                <td class="text-right" id="SqDiscount"></td>
+                            </tr>
+                            <tr>
+                                <th>Tax / VAT</th>
+                                <td class="text-right" id="SqTax"></td>
+                            </tr>
+                            <tr>
+                                <th>Other Charges</th>
+                                <td class="text-right" id="SqOtherCharges"></td>
+                            </tr>
+                            <tr class="bg-light">
+                                <th>Grand Total</th>
+                                <th class="text-right" id="SqGrandTotal"></th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-2">Reference</dt>
+                    <dd class="col-sm-4" id="SqReference"></dd>
+
+                    <dt class="col-sm-2">Notes</dt>
+                    <dd class="col-sm-4" id="SqNotes"></dd>
+                </dl>
+
+            </div>
+
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>

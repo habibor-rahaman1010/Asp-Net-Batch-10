@@ -1,0 +1,154 @@
+@model CreditNoteCreateModel;
+
+@{
+    ViewData["Title"] = "Create Credit Note";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="CreditNote" asp-action="CreateCreditNote" method="post">
+
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Credit Note</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="CreditNoteNo"></label>
+                                <input asp-for="CreditNoteNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="CustomerId">Customer*</label>
+                                <select asp-for="CustomerId" asp-items="Model.Customers" class="form-control" id="CustomerId"></select>
+                                <span asp-validation-for="CustomerId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="SalesInvoiceId"></label>
+                                <select asp-for="SalesInvoiceId" asp-items="Model.SalesInvoices" class="form-control" id="SalesInvoiceId"></select>
+                                <small class="form-text text-muted">
+                                    The credit can never come to more than the invoice it corrects.
+                                </small>
+                                <span asp-validation-for="SalesInvoiceId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Issue</label>
+                                <div class="custom-control custom-checkbox mt-2">
+                                    <input asp-for="IssueImmediately" class="custom-control-input" id="IssueImmediately" />
+                                    <label class="custom-control-label" for="IssueImmediately">
+                                        Issue the credit now
+                                    </label>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Issuing takes the amount off what the customer owes. A draft does not.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="CreditNoteDate">Credit Note Date*</label>
+                                <input asp-for="CreditNoteDate" type="date" class="form-control" />
+                                <span asp-validation-for="CreditNoteDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Reason">Reason*</label>
+                                <input asp-for="Reason" class="form-control" placeholder="Overcharged, agreed rebate, goodwill..." />
+                                <span asp-validation-for="Reason" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Notes"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <partial name="_CreditNoteLinesPartial" model="Model.CreditNoteItems" />
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Save Credit Note</button>
+                    <a asp-area="Admin" asp-controller="CreditNote" asp-action="CreditNoteList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_CreditNoteLinesScriptPartial" />
+
+    <script>
+
+        var rowIndex = @Model.CreditNoteItems.Count;
+
+        $(document).ready(function () {
+
+            // The invoice list follows the customer, so a note can never be raised
+            // against someone else's invoice.
+            $("#CustomerId").on("change", function () {
+
+                var customerId = $(this).val();
+                var dropdown = $("#SalesInvoiceId").empty();
+
+                dropdown.append($("<option>").val("").text("-- Select Sales Invoice --"));
+
+                if (!customerId) {
+                    return;
+                }
+
+                $.get('/Admin/CreditNote/GetCreditableInvoices', { customerId: customerId }, function (response) {
+
+                    if (!response.success) {
+                        Swal.fire({ icon: "error", title: "Customer", text: response.message });
+                        return;
+                    }
+
+                    $.each(response.invoices || [], function (i, invoice) {
+                        dropdown.append($("<option>").val(invoice.id).text(invoice.text));
+                    });
+
+                    if ((response.invoices || []).length === 0) {
+                        Swal.fire({
+                            icon: "info",
+                            title: "No Invoices",
+                            text: "This customer has no posted invoice to credit against."
+                        });
+                    }
+                });
+            });
+
+        });
+
+    </script>
+}

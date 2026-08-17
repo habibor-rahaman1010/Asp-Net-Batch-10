@@ -1,0 +1,106 @@
+@model List<CreditNoteItemModel>
+
+@*
+    The credit grid, shared by the create and update screens. A line may name a
+    product or none at all: a pure price adjustment credits money rather than goods
+    and carries only a description.
+*@
+
+<div class="card">
+
+    <div class="card-header">
+        <div class="d-flex justify-content-between">
+            <h3 class="card-title">What Is Being Credited</h3>
+            <button id="btnAddLine" type="button" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus"></i> Add Line
+            </button>
+        </div>
+    </div>
+
+    <div class="card-body">
+
+        <div class="alert alert-info">
+            <i class="fas fa-receipt"></i>
+            A credit note raised here is a <strong>price adjustment</strong>: it hands money back
+            without any goods coming with it. Goods that actually come back are credited by the
+            sales return instead. The total can never come to more than the invoice it corrects.
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th width="24%">Product (optional)</th>
+                        <th width="28%">Description</th>
+                        <th width="11%">Qty</th>
+                        <th width="13%">Unit Price</th>
+                        <th width="10%">Tax %</th>
+                        <th width="9%">Line Total</th>
+                        <th width="5%">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="creditTableBody">
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <select asp-for="@Model[i].ProductId" name="CreditNoteItems[@i].ProductId" asp-items="Model[i].Products" class="form-control product-select"></select>
+                                <span asp-validation-for="@Model[i].ProductId" class="text-danger"></span>
+                            </td>
+
+                            <td>
+                                <input asp-for="@Model[i].Description" name="CreditNoteItems[@i].Description" class="form-control line-description" placeholder="What the credit is for" />
+                                <span asp-validation-for="@Model[i].Description" class="text-danger"></span>
+                            </td>
+
+                            <td>
+                                <input asp-for="@Model[i].Quantity" name="CreditNoteItems[@i].Quantity" type="number" step="0.01" min="0.01" class="form-control line-qty" />
+                                <span asp-validation-for="@Model[i].Quantity" class="text-danger"></span>
+                            </td>
+
+                            <td>
+                                <input asp-for="@Model[i].UnitPrice" name="CreditNoteItems[@i].UnitPrice" type="number" step="0.01" min="0" class="form-control unit-price" />
+                                <span asp-validation-for="@Model[i].UnitPrice" class="text-danger"></span>
+                            </td>
+
+                            <td>
+                                <input asp-for="@Model[i].TaxRate" name="CreditNoteItems[@i].TaxRate" type="number" step="0.01" min="0" max="100" class="form-control tax-rate" />
+                                <span asp-validation-for="@Model[i].TaxRate" class="text-danger"></span>
+                            </td>
+
+                            <td><input class="form-control line-total" value="0.00" readonly /></td>
+
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm btnRemoveRow">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row justify-content-end">
+            <div class="col-md-5">
+                <table class="table table-sm">
+                    <tr>
+                        <th>Sub Total</th>
+                        <td class="text-right" id="sumSubTotal">0.00</td>
+                    </tr>
+                    <tr>
+                        <th>Tax / VAT</th>
+                        <td class="text-right" id="sumTax">0.00</td>
+                    </tr>
+                    <tr class="bg-light">
+                        <th>Credit To Customer</th>
+                        <th class="text-right" id="sumTotal">0.00</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</div>

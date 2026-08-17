@@ -1,0 +1,212 @@
+@model PurchaseReportModel;
+
+@{
+    ViewData["Title"] = "Purchase Reports";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Purchase Reports</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Purchase</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <form asp-area="Admin" asp-controller="PurchaseReport" asp-action="PurchaseReports" method="get">
+
+            <input type="hidden" name="run" value="true" />
+
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Choose a report</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="ReportType"></label>
+                                <select asp-for="ReportType" asp-items="Model.ReportTypes" class="form-control"></select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label asp-for="FromDate"></label>
+                                <input asp-for="FromDate" type="date" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label asp-for="ToDate"></label>
+                                <input asp-for="ToDate" type="date" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="SupplierId"></label>
+                                <select asp-for="SupplierId" asp-items="Model.Suppliers" class="form-control"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="ProductId"></label>
+                                <select asp-for="ProductId" asp-items="Model.Products" class="form-control"></select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="BusinessLocationId"></label>
+                                <select asp-for="BusinessLocationId" asp-items="Model.BusinessLocations" class="form-control"></select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i> Run Report
+                                    </button>
+                                </div>
+                                <small class="form-text text-muted">
+                                    A report simply ignores a filter that does not apply to it.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </form>
+
+        @if (Model.Report != null)
+        {
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        @Model.Report.Title
+                        <small class="text-muted ml-2">
+                            @Model.Report.FromDate.ToString("dd-MM-yyyy") &ndash; @Model.Report.ToDate.ToString("dd-MM-yyyy")
+                        </small>
+                    </h3>
+                </div>
+
+                <div class="card-body">
+
+                    <p class="text-muted">@Model.Report.Description</p>
+
+                    @if (Model.Report.Rows.Count == 0)
+                    {
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle"></i>
+                            Nothing was found for this filter.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table id="purchaseReport" class="table table-bordered table-striped table-sm">
+                                <thead>
+                                    <tr>
+                                        @foreach (var column in Model.Report.Columns)
+                                        {
+                                            <th class="@(column.Numeric ? "text-right" : string.Empty)">@column.Title</th>
+                                        }
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @foreach (var row in Model.Report.Rows)
+                                    {
+                                        <tr>
+                                            @for (int i = 0; i < row.Count; i++)
+                                            {
+                                                <td class="@(Model.Report.Columns[i].Numeric ? "text-right" : string.Empty)">@row[i]</td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+
+                                @if (Model.Report.Totals.Count > 0)
+                                {
+                                    <tfoot>
+                                        <tr class="bg-light font-weight-bold">
+                                            @for (int i = 0; i < Model.Report.Totals.Count; i++)
+                                            {
+                                                <th class="@(Model.Report.Columns[i].Numeric ? "text-right" : string.Empty)">@Model.Report.Totals[i]</th>
+                                            }
+                                        </tr>
+                                    </tfoot>
+                                }
+                            </table>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        }
+
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(function () {
+
+            // The rows are already on the page, so this is only for sorting and for
+            // the copy/csv/excel/pdf/print buttons a report is usually wanted for.
+            if ($("#purchaseReport").length) {
+                $("#purchaseReport").DataTable({
+                    paging: true,
+                    pageLength: 25,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    autoWidth: false,
+                    dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                    buttons: ["copy", "csv", "excel", "pdf", "print"]
+                });
+            }
+
+        });
+
+    </script>
+}

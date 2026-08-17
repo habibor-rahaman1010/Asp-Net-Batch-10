@@ -1,0 +1,107 @@
+@model CreditNoteUpdateModel;
+
+@{
+    ViewData["Title"] = "Update Credit Note";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="CreditNote" asp-action="UpdateCreditNote" method="post">
+
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CustomerId" />
+
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Update Credit Note</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        Only a draft credit note can be edited. An issued one is already sitting on the
+                        customer account, so it is withdrawn and raised again rather than changed here.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="CreditNoteNo"></label>
+                                <input asp-for="CreditNoteNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="CustomerName"></label>
+                                <input asp-for="CustomerName" class="form-control" readonly />
+                                <small class="form-text text-muted">A credit never moves to another customer.</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="SalesInvoiceId"></label>
+                                <select asp-for="SalesInvoiceId" asp-items="Model.SalesInvoices" class="form-control"></select>
+                                <span asp-validation-for="SalesInvoiceId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="CreditNoteDate">Credit Note Date*</label>
+                                <input asp-for="CreditNoteDate" type="date" class="form-control" />
+                                <span asp-validation-for="CreditNoteDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="Reason">Reason*</label>
+                                <input asp-for="Reason" class="form-control" />
+                                <span asp-validation-for="Reason" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="Notes"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <partial name="_CreditNoteLinesPartial" model="Model.CreditNoteItems" />
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Update Credit Note</button>
+                    <a asp-area="Admin" asp-controller="CreditNote" asp-action="CreditNoteList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_CreditNoteLinesScriptPartial" />
+
+    <script>
+
+        var rowIndex = @Model.CreditNoteItems.Count;
+
+    </script>
+}

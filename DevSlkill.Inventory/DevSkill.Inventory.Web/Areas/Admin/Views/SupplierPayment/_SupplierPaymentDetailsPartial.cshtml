@@ -1,0 +1,85 @@
+<div class="modal fade" id="supplierPaymentDetailModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title">Supplier Payment Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Payment No</dt>
+                            <dd class="col-sm-7" id="SpmNo"></dd>
+
+                            <dt class="col-sm-5">Supplier</dt>
+                            <dd class="col-sm-7" id="SpmSupplier"></dd>
+
+                            <dt class="col-sm-5">Payment Date</dt>
+                            <dd class="col-sm-7" id="SpmDate"></dd>
+
+                            <dt class="col-sm-5">Status</dt>
+                            <dd class="col-sm-7" id="SpmStatus"></dd>
+                        </dl>
+                    </div>
+
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Method</dt>
+                            <dd class="col-sm-7" id="SpmMethod"></dd>
+
+                            <dt class="col-sm-5">Reference</dt>
+                            <dd class="col-sm-7" id="SpmReference"></dd>
+
+                            <dt class="col-sm-5">Amount</dt>
+                            <dd class="col-sm-7" id="SpmAmount"></dd>
+
+                            <dt class="col-sm-5">Unallocated</dt>
+                            <dd class="col-sm-7" id="SpmUnallocated"></dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>Invoice No</th>
+                                <th>Supplier Invoice</th>
+                                <th>Invoice Date</th>
+                                <th class="text-right">Invoice Total</th>
+                                <th class="text-right">Was Due</th>
+                                <th class="text-right">Paid</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody id="SpmItemsBody"></tbody>
+                        <tfoot>
+                            <tr class="bg-light">
+                                <th colspan="5" class="text-right">Allocated</th>
+                                <th class="text-right" id="SpmAllocated"></th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-2">Notes</dt>
+                    <dd class="col-sm-10" id="SpmNotes"></dd>
+                </dl>
+
+            </div>
+
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>

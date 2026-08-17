@@ -1,0 +1,210 @@
+@model SalesInvoiceCreateModel;
+
+@{
+    ViewData["Title"] = "Create Sales Invoice";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="SalesInvoice" asp-action="CreateSalesInvoice" method="post">
+
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Sales Invoice</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="InvoiceNo"></label>
+                                <input asp-for="InvoiceNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="SalesOrderId">Sales Order*</label>
+                                <select asp-for="SalesOrderId" asp-items="Model.SalesOrders" class="form-control" id="SalesOrderId"></select>
+                                <small class="form-text text-muted">Only orders with goods already delivered are listed.</small>
+                                <span asp-validation-for="SalesOrderId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="DeliveryId"></label>
+                                <select asp-for="DeliveryId" asp-items="Model.Deliveries" class="form-control" id="DeliveryId"></select>
+                                <small class="form-text text-muted">
+                                    Leave it on the whole order to bill everything delivered so far.
+                                </small>
+                                <span asp-validation-for="DeliveryId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Post</label>
+                                <div class="custom-control custom-checkbox mt-2">
+                                    <input asp-for="PostImmediately" class="custom-control-input" id="PostImmediately" />
+                                    <label class="custom-control-label" for="PostImmediately">
+                                        Post the invoice now
+                                    </label>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Posting claims the money and earns the commission. A draft claims nothing.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="CustomerName"></label>
+                                <input asp-for="CustomerName" class="form-control" id="CustomerName" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="WarehouseName"></label>
+                                <input asp-for="WarehouseName" class="form-control" id="WarehouseName" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="InvoiceDate">Invoice Date*</label>
+                                <input asp-for="InvoiceDate" type="date" class="form-control" id="InvoiceDate" />
+                                <span asp-validation-for="InvoiceDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="DueDate">Due Date*</label>
+                                <input asp-for="DueDate" type="date" class="form-control" id="DueDate" />
+                                <small class="form-text text-muted">
+                                    Left the same as the invoice date, the payment term works it out.
+                                </small>
+                                <span asp-validation-for="DueDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="PaymentTermId"></label>
+                                <select asp-for="PaymentTermId" asp-items="Model.PaymentTerms" class="form-control" id="PaymentTermId"></select>
+                                <span asp-validation-for="PaymentTermId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="OtherCharges"></label>
+                                <input asp-for="OtherCharges" type="number" step="0.01" min="0" class="form-control" id="OtherCharges" />
+                                <span asp-validation-for="OtherCharges" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Notes"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <partial name="_SalesInvoiceLinesPartial" model="Model.SalesInvoiceItems" />
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Save Sales Invoice</button>
+                    <a asp-area="Admin" asp-controller="SalesInvoice" asp-action="SalesInvoiceList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_SalesInvoiceLinesScriptPartial" />
+
+    <script>
+
+        $(document).ready(function () {
+
+            // Choosing an order rebuilds the grid from whatever it has delivered but
+            // not yet billed, and lists its shipments.
+            $("#SalesOrderId").on("change", function () {
+
+                var salesOrderId = $(this).val();
+
+                if (!salesOrderId) {
+                    $("#invoiceTableBody").empty();
+                    $("#CustomerName, #WarehouseName").val("");
+                    $("#DeliveryId").empty().append($("<option>").val("").text("-- Whole order, no single shipment --"));
+                    recalculateInvoiceTotals();
+                    return;
+                }
+
+                $.get('/Admin/SalesInvoice/GetBillableLines', { salesOrderId: salesOrderId }, function (response) {
+
+                    if (!response.success) {
+                        Swal.fire({ icon: "error", title: "Sales Order", text: response.message });
+                        return;
+                    }
+
+                    $("#CustomerName").val(response.customerName || "");
+                    $("#WarehouseName").val(response.warehouseName || "");
+
+                    if (response.paymentTermId) {
+                        $("#PaymentTermId").val(response.paymentTermId);
+                    }
+
+                    var deliveryDropdown = $("#DeliveryId").empty();
+                    deliveryDropdown.append($("<option>").val("").text("-- Whole order, no single shipment --"));
+
+                    $.each(response.deliveries || [], function (i, delivery) {
+                        deliveryDropdown.append($("<option>").val(delivery.id).text(delivery.text));
+                    });
+
+                    var open = (response.lines || []).filter(function (line) {
+                        return line.remainingQuantity > 0;
+                    });
+
+                    if (open.length === 0) {
+                        $("#invoiceTableBody").empty();
+                        recalculateInvoiceTotals();
+
+                        Swal.fire({
+                            icon: "info",
+                            title: "Nothing To Bill",
+                            text: "Everything delivered on this order has already been invoiced."
+                        });
+
+                        return;
+                    }
+
+                    buildInvoiceRows(open);
+                });
+            });
+
+        });
+
+    </script>
+}

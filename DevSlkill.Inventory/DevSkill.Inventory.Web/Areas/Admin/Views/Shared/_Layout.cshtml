@@ -453,7 +453,7 @@
                                 <p>
                                     Sales Management
                                     <i class="fas fa-angle-left right"></i>
-                                    <span class="badge badge-info right">7</span>
+                                    <span class="badge badge-info right">23</span>
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
@@ -461,6 +461,41 @@
                                     <a asp-area="Admin" asp-controller="Customer" asp-action="CustomerList" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Customers</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="SalesQuotation" asp-action="SalesQuotationList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Sales Quotations</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="SalesQuotation" asp-action="CreateSalesQuotation" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Add Sales Quotation</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="SalesOrder" asp-action="SalesOrderList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Sales Orders</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="SalesOrder" asp-action="CreateSalesOrder" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Add Sales Order</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="StockReservation" asp-action="StockReservationList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Stock Reservations</p>
                                     </a>
                                 </li>
 
@@ -493,6 +528,55 @@
                                 </li>
 
                                 <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="SalesInvoice" asp-action="SalesInvoiceList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Sales Invoices</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="SalesInvoice" asp-action="CreateSalesInvoice" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Add Sales Invoice</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="CustomerPayment" asp-action="CustomerPaymentList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Payment / Collection</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="CustomerPayment" asp-action="CreateCustomerPayment" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Receive Payment</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="SalesReturn" asp-action="SalesReturnList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Sales Returns</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="SalesReturn" asp-action="CreateSalesReturn" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Add Sales Return</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="CreditNote" asp-action="CreditNoteList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Credit Notes</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
                                     <a asp-area="Admin" asp-controller="PriceList" asp-action="PriceListIndex" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Price Management</p>
@@ -503,6 +587,188 @@
                                     <a asp-area="Admin" asp-controller="Discount" asp-action="DiscountRuleList" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Discount Management</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Salesperson" asp-action="SalespersonList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Salespersons</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Salesperson" asp-action="CommissionList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Commissions</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="SalesReport" asp-action="CustomerLedger" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Customer Ledger</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="SalesReport" asp-action="SalesReports" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Sales Reports</p>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
+
+                        <!--Purchase Management-->
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fa fas fa-truck-loading"></i>
+                                <p>
+                                    Purchase Management
+                                    <i class="fas fa-angle-left right"></i>
+                                    <span class="badge badge-info right">20</span>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="Supplier" asp-action="SupplierList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Suppliers</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="PurchaseRequisition" asp-action="PurchaseRequisitionList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Purchase Requisitions</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="PurchaseRequisition" asp-action="CreatePurchaseRequisition" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Add Requisition</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="RequestForQuotation" asp-action="RequestForQuotationList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Requests For Quotation</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="RequestForQuotation" asp-action="CreateRequestForQuotation" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Add RFQ</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="SupplierQuotation" asp-action="SupplierQuotationList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Supplier Quotations</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="SupplierQuotation" asp-action="CreateSupplierQuotation" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Add Quotation</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="SupplierQuotation" asp-action="CompareQuotations" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Compare Quotations</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="PurchaseOrder" asp-action="PurchaseOrderList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Purchase Orders</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="PurchaseOrder" asp-action="CreatePurchaseOrder" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Add Purchase Order</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="GoodsReceipt" asp-action="GoodsReceiptList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Goods Receipts</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="GoodsReceipt" asp-action="CreateGoodsReceipt" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Receive Goods</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="PurchaseInvoice" asp-action="PurchaseInvoiceList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Purchase Invoices</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="PurchaseInvoice" asp-action="ThreeWayMatch" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>3-Way Match</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="PurchaseReturn" asp-action="PurchaseReturnList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Purchase Returns</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="PurchaseReturn" asp-action="CreatePurchaseReturn" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Return Goods</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="SupplierPayment" asp-action="SupplierPaymentList" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Supplier Payments</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="SupplierPayment" asp-action="CreateSupplierPayment" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Record Payment</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="PurchaseReport" asp-action="SupplierLedger" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Supplier Ledger</p>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a asp-area="Admin" asp-controller="PurchaseReport" asp-action="PurchaseReports" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Purchase Reports</p>
                                     </a>
                                 </li>
 

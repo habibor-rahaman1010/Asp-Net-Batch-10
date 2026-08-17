@@ -1,0 +1,166 @@
+@model SalesReturnCreateModel;
+
+@{
+    ViewData["Title"] = "Return Goods";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="SalesReturn" asp-action="CreateSalesReturn" method="post">
+
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Sales Return</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="ReturnNo"></label>
+                                <input asp-for="ReturnNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="SalesInvoiceId">Sales Invoice*</label>
+                                <select asp-for="SalesInvoiceId" asp-items="Model.SalesInvoices" class="form-control" id="SalesInvoiceId"></select>
+                                <small class="form-text text-muted">Only posted invoices appear here, because only they billed anything.</small>
+                                <span asp-validation-for="SalesInvoiceId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="ReturnDate">Return Date*</label>
+                                <input asp-for="ReturnDate" type="date" class="form-control" />
+                                <span asp-validation-for="ReturnDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Confirm</label>
+                                <div class="custom-control custom-checkbox mt-2">
+                                    <input asp-for="ConfirmImmediately" class="custom-control-input" id="ConfirmImmediately" />
+                                    <label class="custom-control-label" for="ConfirmImmediately">
+                                        Take the goods back now
+                                    </label>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Confirming puts the stock back and raises the credit note. A draft does neither.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="CustomerName"></label>
+                                <input asp-for="CustomerName" class="form-control" id="CustomerName" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="WarehouseName"></label>
+                                <input asp-for="WarehouseName" class="form-control" id="WarehouseName" readonly />
+                                <small class="form-text text-muted">The goods come back into the warehouse they left from.</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="Reason">Reason*</label>
+                                <input asp-for="Reason" class="form-control" placeholder="Damaged, wrong item, changed their mind..." />
+                                <span asp-validation-for="Reason" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="Notes"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <partial name="_SalesReturnLinesPartial" model="Model.SalesReturnItems" />
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Save Sales Return</button>
+                    <a asp-area="Admin" asp-controller="SalesReturn" asp-action="SalesReturnList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_SalesReturnLinesScriptPartial" />
+
+    <script>
+
+        $(document).ready(function () {
+
+            // Choosing an invoice rebuilds the grid from whatever may still come back.
+            $("#SalesInvoiceId").on("change", function () {
+
+                var salesInvoiceId = $(this).val();
+
+                if (!salesInvoiceId) {
+                    $("#returnTableBody").empty();
+                    $("#CustomerName, #WarehouseName").val("");
+                    recalculateReturnValue();
+                    return;
+                }
+
+                $.get('/Admin/SalesReturn/GetReturnableLines', { salesInvoiceId: salesInvoiceId }, function (response) {
+
+                    if (!response.success) {
+                        Swal.fire({ icon: "error", title: "Sales Invoice", text: response.message });
+                        return;
+                    }
+
+                    $("#CustomerName").val(response.customerName || "");
+                    $("#WarehouseName").val(response.warehouseName || "");
+
+                    var open = (response.lines || []).filter(function (line) {
+                        return line.remainingQuantity > 0;
+                    });
+
+                    if (open.length === 0) {
+                        $("#returnTableBody").empty();
+                        recalculateReturnValue();
+
+                        Swal.fire({
+                            icon: "info",
+                            title: "Nothing To Return",
+                            text: "Everything on this invoice has already come back."
+                        });
+
+                        return;
+                    }
+
+                    buildReturnRows(open);
+                });
+            });
+
+        });
+
+    </script>
+}

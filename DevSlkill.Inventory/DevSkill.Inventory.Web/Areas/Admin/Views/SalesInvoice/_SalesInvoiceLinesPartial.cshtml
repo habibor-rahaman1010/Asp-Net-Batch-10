@@ -1,0 +1,116 @@
+@model List<SalesInvoiceItemModel>
+
+@*
+    The billing grid, shared by the create and update invoice screens. Product,
+    price, discount and tax all come off the sales order and are read only; only
+    the quantity being billed is typed.
+*@
+
+<div class="card">
+
+    <div class="card-header">
+        <h3 class="card-title">Products To Bill</h3>
+    </div>
+
+    <div class="card-body">
+
+        <div class="alert alert-info">
+            <i class="fas fa-file-invoice-dollar"></i>
+            Only goods that have <strong>actually been delivered</strong> may be billed, and only once.
+            The prices come off the sales order, so an invoice can never charge something that was
+            never agreed. Every total is calculated again by the server when you save.
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th width="22%">Product</th>
+                        <th width="7%">Unit</th>
+                        <th width="9%">Ordered</th>
+                        <th width="9%">Delivered</th>
+                        <th width="9%">Invoiced</th>
+                        <th width="10%">Billable</th>
+                        <th width="11%">Bill Now</th>
+                        <th width="8%">Unit Price</th>
+                        <th width="8%">Discount</th>
+                        <th width="7%">Line Total</th>
+                    </tr>
+                </thead>
+
+                <tbody id="invoiceTableBody">
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Model[i].ProductName
+                                <input type="hidden" name="SalesInvoiceItems[@i].ProductId" value="@Model[i].ProductId" />
+                                <input type="hidden" name="SalesInvoiceItems[@i].ProductName" value="@Model[i].ProductName" />
+                                <input type="hidden" name="SalesInvoiceItems[@i].UnitName" value="@Model[i].UnitName" />
+                                <input type="hidden" name="SalesInvoiceItems[@i].OrderedQuantity" value="@Model[i].OrderedQuantity" />
+                                <input type="hidden" name="SalesInvoiceItems[@i].DeliveredQuantity" value="@Model[i].DeliveredQuantity" />
+                                <input type="hidden" name="SalesInvoiceItems[@i].AlreadyInvoicedQuantity" value="@Model[i].AlreadyInvoicedQuantity" />
+                                <input type="hidden" name="SalesInvoiceItems[@i].RemainingQuantity" value="@Model[i].RemainingQuantity" class="billable-qty" />
+                                <input type="hidden" name="SalesInvoiceItems[@i].UnitPrice" value="@Model[i].UnitPrice" class="unit-price" />
+                                <input type="hidden" name="SalesInvoiceItems[@i].DiscountAmount" value="@Model[i].DiscountAmount" class="discount-amount" />
+                                <input type="hidden" name="SalesInvoiceItems[@i].TaxRate" value="@Model[i].TaxRate" class="tax-rate" />
+                            </td>
+
+                            <td>@Model[i].UnitName</td>
+                            <td class="text-right">@Model[i].OrderedQuantity.ToString("N2")</td>
+                            <td class="text-right">@Model[i].DeliveredQuantity.ToString("N2")</td>
+                            <td class="text-right">@Model[i].AlreadyInvoicedQuantity.ToString("N2")</td>
+                            <td class="text-right font-weight-bold">@Model[i].RemainingQuantity.ToString("N2")</td>
+
+                            <td>
+                                <input name="SalesInvoiceItems[@i].Quantity" value="@Model[i].Quantity"
+                                       type="number" step="0.01" min="0" class="form-control bill-qty" />
+                            </td>
+
+                            <td class="text-right">@Model[i].UnitPrice.ToString("N2")</td>
+                            <td class="text-right">@Model[i].DiscountAmount.ToString("N2")</td>
+                            <td><input class="form-control line-total" value="0.00" readonly /></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.Count == 0)
+        {
+            <div class="alert alert-info mb-0">
+                <i class="fas fa-info-circle"></i>
+                Choose a sales order above and whatever it has delivered but not yet billed will appear here.
+            </div>
+        }
+
+        <div class="row justify-content-end">
+            <div class="col-md-5">
+                <table class="table table-sm">
+                    <tr>
+                        <th>Sub Total</th>
+                        <td class="text-right" id="sumSubTotal">0.00</td>
+                    </tr>
+                    <tr>
+                        <th>Item Discount</th>
+                        <td class="text-right" id="sumDiscount">0.00</td>
+                    </tr>
+                    <tr>
+                        <th>Tax / VAT</th>
+                        <td class="text-right" id="sumTax">0.00</td>
+                    </tr>
+                    <tr>
+                        <th>Other Charges</th>
+                        <td class="text-right" id="sumOtherCharges">0.00</td>
+                    </tr>
+                    <tr class="bg-light">
+                        <th>Grand Total</th>
+                        <th class="text-right" id="sumGrandTotal">0.00</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</div>

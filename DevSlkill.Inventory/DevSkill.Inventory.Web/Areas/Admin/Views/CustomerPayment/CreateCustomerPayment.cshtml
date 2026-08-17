@@ -1,0 +1,210 @@
+@model CustomerPaymentCreateModel;
+
+@{
+    ViewData["Title"] = "Receive Collection";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="CustomerPayment" asp-action="CreateCustomerPayment" method="post">
+
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Customer Collection</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="PaymentNo"></label>
+                                <input asp-for="PaymentNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="CustomerId">Customer*</label>
+                                <select asp-for="CustomerId" asp-items="Model.Customers" class="form-control" id="CustomerId"></select>
+                                <span asp-validation-for="CustomerId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="PaymentDate">Collection Date*</label>
+                                <input asp-for="PaymentDate" type="date" class="form-control" />
+                                <span asp-validation-for="PaymentDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Receive</label>
+                                <div class="custom-control custom-checkbox mt-2">
+                                    <input asp-for="ReceiveImmediately" class="custom-control-input" id="ReceiveImmediately" />
+                                    <label class="custom-control-label" for="ReceiveImmediately">
+                                        Receive the money now
+                                    </label>
+                                </div>
+                                <small class="form-text text-muted">
+                                    A draft settles nothing until it is received.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="PaymentMethod">Payment Method*</label>
+                                <select asp-for="PaymentMethod" asp-items="Model.PaymentMethods" class="form-control" id="PaymentMethod"></select>
+                                <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group" id="creditNoteGroup">
+                                <label asp-for="CreditNoteId"></label>
+                                <select asp-for="CreditNoteId" asp-items="Model.CreditNotes" class="form-control" id="CreditNoteId"></select>
+                                <small class="form-text text-muted">
+                                    Needed when the method is <strong>Adjustment</strong>: the credit note funds
+                                    the collection instead of money.
+                                </small>
+                                <span asp-validation-for="CreditNoteId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="ReferenceNo"></label>
+                                <input asp-for="ReferenceNo" class="form-control" placeholder="Cheque number, transaction id..." />
+                                <span asp-validation-for="ReferenceNo" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="Amount">Amount Received*</label>
+                                <input asp-for="Amount" type="number" step="0.01" min="0" class="form-control" id="Amount" />
+                                <span asp-validation-for="Amount" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label asp-for="Notes"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <partial name="_CustomerPaymentAllocationsPartial" model="Model.CustomerPaymentAllocations" />
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Save Collection</button>
+                    <a asp-area="Admin" asp-controller="CustomerPayment" asp-action="CustomerPaymentList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_CustomerPaymentAllocationsScriptPartial" />
+
+    <script>
+
+        // The credit note only matters when the collection is funded by one, so it is
+        // hidden the rest of the time rather than sitting there inviting a mistake.
+        function refreshCreditNoteVisibility() {
+
+            var isAdjustment = $("#PaymentMethod").val() === "5";
+
+            $("#creditNoteGroup").toggle(isAdjustment);
+
+            if (!isAdjustment) {
+                $("#CreditNoteId").val("");
+            }
+        }
+
+        $(document).ready(function () {
+
+            refreshCreditNoteVisibility();
+
+            $("#PaymentMethod").on("change", refreshCreditNoteVisibility);
+
+            // A credit note can only pay out what it still has left, so choosing one
+            // offers that amount straight away.
+            $("#CreditNoteId").on("change", function () {
+
+                var text = $(this).find("option:selected").text();
+                var match = text.match(/-\s([\d,]+\.\d{2})\sleft/);
+
+                if (match) {
+                    $("#Amount").val(match[1].replace(/,/g, ""));
+                    recalculateAllocations();
+                }
+            });
+
+            // Choosing a customer rebuilds the grid from their open invoices.
+            $("#CustomerId").on("change", function () {
+
+                var customerId = $(this).val();
+
+                if (!customerId) {
+                    $("#allocationTableBody").empty();
+                    $("#CreditNoteId").empty().append($("<option>").val("").text("-- Select Credit Note --"));
+                    recalculateAllocations();
+                    return;
+                }
+
+                $.get('/Admin/CustomerPayment/GetReceivableInvoices', { customerId: customerId }, function (response) {
+
+                    if (!response.success) {
+                        Swal.fire({ icon: "error", title: "Customer", text: response.message });
+                        return;
+                    }
+
+                    var creditDropdown = $("#CreditNoteId").empty();
+                    creditDropdown.append($("<option>").val("").text("-- Select Credit Note --"));
+
+                    $.each(response.creditNotes || [], function (i, creditNote) {
+                        creditDropdown.append($("<option>").val(creditNote.id).text(creditNote.text));
+                    });
+
+                    if (!response.invoices || response.invoices.length === 0) {
+                        $("#allocationTableBody").empty();
+                        recalculateAllocations();
+
+                        Swal.fire({
+                            icon: "info",
+                            title: "Nothing Owing",
+                            text: "This customer has no invoice with money still owing."
+                        });
+
+                        return;
+                    }
+
+                    buildAllocationRows(response.invoices);
+                });
+            });
+
+        });
+
+    </script>
+}

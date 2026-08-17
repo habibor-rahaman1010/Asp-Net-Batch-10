@@ -1,0 +1,230 @@
+@*
+    Line grid behaviour shared by the create and update sales order screens.
+    Both pages define `rowIndex` themselves and then call into these helpers.
+*@
+
+<script>
+
+    // The products a line may hold always belong to the quotation's warehouse.
+    var warehouseProducts = [];
+
+    // A failed post, or an edit, comes back with the warehouse's products already
+    // rendered, so they are picked up here instead of being fetched again.
+    function captureRenderedProducts() {
+
+        warehouseProducts = [];
+
+        $("#productTableBody .product-select").first().find("option").each(function () {
+
+            if ($(this).val()) {
+                warehouseProducts.push({ id: $(this).val(), text: $(this).text() });
+            }
+
+        });
+    }
+
+    function loadProducts(dropdown) {
+
+        dropdown.empty();
+        dropdown.append($("<option>").val("").text("-- Product Select --"));
+
+        $.each(warehouseProducts, function (i, product) {
+
+            dropdown.append(
+                $("<option>")
+                    .val(product.id)
+                    .text(product.text)
+            );
+
+        });
+    }
+
+    function clearLinePreview(row) {
+        row.find(".product-select").val("");
+        row.find(".current-stock, .available-stock").val("0");
+        row.find(".tax-amount, .line-total").val("0.00");
+    }
+
+    function updateDeleteButtons() {
+        $(".btnRemoveRow").prop("disabled", $("#productTableBody tr").length == 1);
+    }
+
+    function reIndexRows() {
+
+        $("#productTableBody tr").each(function (index) {
+
+            $(this).find("[name]").each(function () {
+
+                var name = $(this).attr("name");
+
+                name = name.replace(/SalesOrderItems\[\d+\]/,
+                                    "SalesOrderItems[" + index + "]");
+
+                $(this).attr("name", name);
+            });
+
+        });
+
+        rowIndex = $("#productTableBody tr").length;
+    }
+
+    function recalculateTotals() {
+
+        var subTotal = 0, discount = 0, tax = 0, lineTotals = 0;
+
+        $("#productTableBody tr").each(function () {
+
+            var qty = parseFloat($(this).find(".line-qty").val()) || 0;
+            var price = parseFloat($(this).find(".unit-price").val()) || 0;
+
+            subTotal += qty * price;
+            discount += parseFloat($(this).find(".discount-amount").val()) || 0;
+            tax += parseFloat($(this).find(".tax-amount").val()) || 0;
+            lineTotals += parseFloat($(this).find(".line-total").val()) || 0;
+        });
+
+        var otherCharges = parseFloat($("#OtherCharges").val()) || 0;
+
+        $("#sumSubTotal").text(subTotal.toFixed(2));
+        $("#sumDiscount").text(discount.toFixed(2));
+        $("#sumTax").text(tax.toFixed(2));
+        $("#sumOtherCharges").text(otherCharges.toFixed(2));
+        $("#sumGrandTotal").text((lineTotals + otherCharges).toFixed(2));
+    }
+
+    // The price, discount, tax and line total shown here are all produced by the
+    // server; the browser only displays them. That is what makes the price list and
+    // the discount rules visible while typing rather than only after saving.
+    function refreshLine(row) {
+
+        var productId = row.find(".product-select").val();
+        var quantity = parseFloat(row.find(".line-qty").val()) || 0;
+        var unitPrice = parseFloat(row.find(".unit-price").val()) || 0;
+        var discountAmount = parseFloat(row.find(".discount-amount").val()) || 0;
+
+        if (!productId || quantity <= 0) {
+            row.find(".tax-amount, .line-total").val("0.00");
+            recalculateTotals();
+            return;
+        }
+
+        $.get('/Admin/SalesOrder/GetLinePreview',
+            {
+                productId: productId,
+                quantity: quantity,
+                unitPrice: unitPrice,
+                discountAmount: discountAmount
+            },
+            function (response) {
+
+                if (!response.success) {
+                    row.find(".tax-amount, .line-total").val("0.00");
+                    recalculateTotals();
+                    return;
+                }
+
+                row.find(".current-stock").val(response.currentStock);
+                row.find(".available-stock").val(response.availableStock);
+                row.find(".unit-price").val(Number(response.sellingPrice).toFixed(2));
+                row.find(".discount-amount").val(Number(response.discountAmount).toFixed(2));
+                row.find(".tax-amount").val(Number(response.taxAmount).toFixed(2));
+                row.find(".line-total").val(Number(response.lineTotal).toFixed(2));
+
+                recalculateTotals();
+            });
+    }
+
+    function refreshAllLines() {
+        $("#productTableBody tr").each(function () {
+            refreshLine($(this));
+        });
+    }
+
+    function appendRow(index) {
+
+        var row = `
+        <tr>
+            <td>
+                <select name="SalesOrderItems[${index}].ProductId"
+                        class="form-control product-select">
+                </select>
+            </td>
+
+            <td><input class="form-control current-stock" value="0" readonly /></td>
+            <td><input class="form-control available-stock" value="0" readonly /></td>
+
+            <td>
+                <input name="SalesOrderItems[${index}].Quantity"
+                       type="number" step="0.01" min="0.01" value="1"
+                       class="form-control line-qty" />
+            </td>
+
+            <td>
+                <input name="SalesOrderItems[${index}].UnitPrice"
+                       type="number" step="0.01" min="0" value="0"
+                       class="form-control unit-price" />
+            </td>
+
+            <td>
+                <input name="SalesOrderItems[${index}].DiscountAmount"
+                       type="number" step="0.01" min="0" value="0"
+                       class="form-control discount-amount" />
+            </td>
+
+            <td><input class="form-control tax-amount" value="0.00" readonly /></td>
+            <td><input class="form-control line-total" value="0.00" readonly /></td>
+
+            <td>
+                <button type="button" class="btn btn-danger btn-sm btnRemoveRow">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>`;
+
+        $("#productTableBody").append(row);
+
+        loadProducts($("#productTableBody tr:last").find(".product-select"));
+
+        return $("#productTableBody tr:last");
+    }
+
+    $(document).ready(function () {
+
+        $(document).on("click", ".btnRemoveRow", function () {
+
+            if ($("#productTableBody tr").length > 1) {
+                $(this).closest("tr").remove();
+                reIndexRows();
+                updateDeleteButtons();
+                recalculateTotals();
+            }
+
+        });
+
+        $(document).on("change", ".product-select", function () {
+            refreshLine($(this).closest("tr"));
+        });
+
+        $(document).on("change", ".line-qty, .unit-price, .discount-amount", function () {
+
+            // An emptied box is not a number, and a required number that is missing
+            // stops the whole form being submitted. Blank therefore falls back to what
+            // the box means when nothing is typed: one unit, and no money.
+            if ($.trim($(this).val()) === "") {
+                $(this).val($(this).hasClass("line-qty") ? 1 : 0);
+            }
+
+            if ($(this).hasClass("line-qty") && parseFloat($(this).val()) <= 0) {
+                $(this).val(1);
+            }
+
+            refreshLine($(this).closest("tr"));
+        });
+
+        $("#OtherCharges").on("input change", function () {
+            recalculateTotals();
+        });
+
+    });
+
+</script>

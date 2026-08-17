@@ -1,0 +1,241 @@
+@model ThreeWayMatchViewModel;
+
+@{
+    ViewData["Title"] = "Three Way Match";
+    var match = Model.Match;
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Three Way Match</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Purchase</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">Purchase Order vs Goods Receipt vs Purchase Invoice</h3>
+            </div>
+
+            <div class="card-body">
+
+                <div class="alert alert-info">
+                    <i class="fas fa-balance-scale"></i>
+                    Only confirmed goods receipts and posted purchase invoices are compared here.
+                    Drafts and cancelled documents never took effect, so they are left out.
+                </div>
+
+                <form asp-area="Admin" asp-controller="PurchaseInvoice" asp-action="ThreeWayMatch" method="get">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="PurchaseOrderId">Purchase Order</label>
+                                <select asp-for="PurchaseOrderId" asp-items="Model.PurchaseOrders" name="purchaseOrderId" class="form-control" id="PurchaseOrderId"></select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <button type="submit" class="form-control btn btn-primary">
+                                    <i class="fas fa-search"></i> Compare
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+        @if (match != null)
+        {
+            <div class="card @(match.IsMatched ? "card-success" : "card-warning")">
+
+                <div class="card-header">
+                    <h3 class="card-title">
+                        @match.PurchaseOrderNo &mdash; @match.SupplierName
+                    </h3>
+
+                    <span class="float-right badge @(match.IsMatched ? "badge-success" : "badge-warning") p-2">
+                        @(match.IsMatched ? "Fully matched" : "Mismatch found")
+                    </span>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-info"><i class="fas fa-file-invoice"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Ordered</span>
+                                    <span class="info-box-number">@match.OrderedAmount.ToString("N2")</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-primary"><i class="fas fa-dolly"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Received</span>
+                                    <span class="info-box-number">@match.ReceivedAmount.ToString("N2")</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-warning"><i class="fas fa-file-invoice-dollar"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Invoiced</span>
+                                    <span class="info-box-number">@match.InvoicedAmount.ToString("N2")</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="info-box">
+                                <span class="info-box-icon @(match.IsMatched ? "bg-success" : "bg-danger")">
+                                    <i class="fas fa-not-equal"></i>
+                                </span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Received &minus; Invoiced</span>
+                                    <span class="info-box-number">@((match.ReceivedAmount - match.InvoicedAmount).ToString("N2"))</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (match.Mismatches.Count > 0)
+                    {
+                        <div class="alert alert-danger">
+                            <h6><i class="fas fa-exclamation-triangle"></i> What does not line up</h6>
+                            <ul class="mb-0">
+                                @foreach (var mismatch in match.Mismatches)
+                                {
+                                    <li>@mismatch</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-success mb-3">
+                            <i class="fas fa-check-circle"></i>
+                            Every line matches on both quantity and amount.
+                        </div>
+                    }
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2">Product</th>
+                                    <th rowspan="2">Unit</th>
+                                    <th colspan="2" class="text-center bg-light">Purchase Order</th>
+                                    <th colspan="2" class="text-center bg-light">Goods Receipt</th>
+                                    <th colspan="2" class="text-center bg-light">Purchase Invoice</th>
+                                    <th colspan="2" class="text-center bg-light">Variance</th>
+                                    <th rowspan="2">Match</th>
+                                </tr>
+                                <tr>
+                                    <th class="text-right">Qty</th>
+                                    <th class="text-right">Amount</th>
+                                    <th class="text-right">Qty</th>
+                                    <th class="text-right">Amount</th>
+                                    <th class="text-right">Qty</th>
+                                    <th class="text-right">Amount</th>
+                                    <th class="text-right">Qty</th>
+                                    <th class="text-right">Amount</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var line in match.Lines)
+                                {
+                                    <tr class="@(line.IsMatched ? "" : "table-warning")">
+                                        <td>@line.ProductName</td>
+                                        <td>@line.UnitName</td>
+                                        <td class="text-right">@line.OrderedQuantity.ToString("N2")</td>
+                                        <td class="text-right">@line.OrderedAmount.ToString("N2")</td>
+                                        <td class="text-right">@line.ReceivedQuantity.ToString("N2")</td>
+                                        <td class="text-right">@line.ReceivedAmount.ToString("N2")</td>
+                                        <td class="text-right">@line.InvoicedQuantity.ToString("N2")</td>
+                                        <td class="text-right">@line.InvoicedAmount.ToString("N2")</td>
+                                        <td class="text-right @(line.QuantityVariance == 0 ? "" : "text-danger font-weight-bold")">
+                                            @line.QuantityVariance.ToString("N2")
+                                        </td>
+                                        <td class="text-right @(line.AmountVariance == 0 ? "" : "text-danger font-weight-bold")">
+                                            @line.AmountVariance.ToString("N2")
+                                        </td>
+                                        <td class="text-center">
+                                            @if (line.IsMatched)
+                                            {
+                                                <span class="badge badge-success"><i class="fas fa-check"></i></span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-warning"><i class="fas fa-exclamation"></i></span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <dl class="row mb-0">
+                        <dt class="col-sm-2">Warehouse</dt>
+                        <dd class="col-sm-4">@match.WarehouseName</dd>
+
+                        <dt class="col-sm-2">Order Date</dt>
+                        <dd class="col-sm-4">@match.OrderDate.ToString("dd-MM-yyyy")</dd>
+
+                        <dt class="col-sm-2">Order Status</dt>
+                        <dd class="col-sm-4">@match.Status</dd>
+                    </dl>
+
+                </div>
+
+            </div>
+        }
+        else if (Model.PurchaseOrderId != Guid.Empty)
+        {
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i>
+                That purchase order could not be found.
+            </div>
+        }
+
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            // Picking an order compares it straight away, no second click needed.
+            $("#PurchaseOrderId").on("change", function () {
+
+                if ($(this).val()) {
+                    $(this).closest("form").submit();
+                }
+            });
+
+        });
+    </script>
+}

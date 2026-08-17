@@ -22,10 +22,12 @@ namespace DevSkill.Inventory.Domain.Entities.SalesEntities
         public virtual BusinessLocation? BusinessLocation { get; set; }
 
         /// <summary>
-        /// Identity user acting as salesperson. Identity lives in a different
-        /// DbContext, so this is stored without a foreign key.
+        /// The salesperson the offer is credited to, the same one every other sales
+        /// document names. <see cref="SalespersonName"/> keeps what they were called
+        /// when the document was raised, so a later rename cannot rewrite history.
         /// </summary>
         public Guid? SalespersonId { get; set; }
+        public virtual Salesperson? Salesperson { get; set; }
         public string SalespersonName { get; set; } = string.Empty;
 
         /// <summary>

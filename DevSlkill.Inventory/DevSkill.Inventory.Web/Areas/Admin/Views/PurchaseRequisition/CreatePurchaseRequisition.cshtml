@@ -1,0 +1,281 @@
+@model PurchaseRequisitionCreateModel;
+
+@{
+    ViewData["Title"] = "Create Purchase Requisition";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="PurchaseRequisition" asp-action="CreatePurchaseRequisition" method="post">
+
+            <!-- Header -->
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Purchase Requisition</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="RequisitionNo"></label>
+                                <input asp-for="RequisitionNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="RequisitionDate">Requisition Date*</label>
+                                <input asp-for="RequisitionDate" type="date" class="form-control" />
+                                <span asp-validation-for="RequisitionDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="RequiredDate">Required Date*</label>
+                                <input asp-for="RequiredDate" type="date" class="form-control" />
+                                <span asp-validation-for="RequiredDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="BusinessLocationId">Warehouse*</label>
+                                <select asp-for="BusinessLocationId" asp-items="Model.BusinessLocations" class="form-control" id="BusinessLocationId"></select>
+                                <small class="form-text text-muted">
+                                    Products are loaded from the warehouse you pick here, and it cannot be
+                                    changed once the requisition is saved.
+                                </small>
+                                <span asp-validation-for="BusinessLocationId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="RequestedById"></label>
+                                <select asp-for="RequestedById" asp-items="Model.Requesters" class="form-control"></select>
+                                <span asp-validation-for="RequestedById" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Status">Status*</label>
+                                <select asp-for="Status" asp-items="Model.Statuses" class="form-control"></select>
+                                <small class="form-text text-muted">Submitted sends it straight to the approver.</small>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label asp-for="Notes"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Products -->
+            <div class="card">
+
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
+                        <h3 class="card-title">Requested Products</h3>
+                        <button id="btnAddProduct" type="button" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus"></i> Add Product
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        Pick a warehouse first, the product list below is loaded from it.
+                        The estimated price is only a guide for the buyer; the firm price is
+                        agreed on the purchase order.
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="26%">Product</th>
+                                    <th width="10%">In Stock</th>
+                                    <th width="12%">Qty</th>
+                                    <th width="14%">Est. Unit Price</th>
+                                    <th width="14%">Est. Line Total</th>
+                                    <th width="18%">Remarks</th>
+                                    <th width="6%">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="productTableBody">
+                                <tr>
+                                    <td>
+                                        <select asp-for="PurchaseRequisitionItems[0].ProductId" asp-items="Model.PurchaseRequisitionItems[0].Products" class="form-control product-select"></select>
+                                        <span asp-validation-for="PurchaseRequisitionItems[0].ProductId" class="text-danger"></span>
+                                    </td>
+
+                                    <td><input class="form-control current-stock" value="0" readonly /></td>
+
+                                    <td>
+                                        <input asp-for="PurchaseRequisitionItems[0].Quantity" type="number" step="0.01" min="0.01" class="form-control line-qty" />
+                                    </td>
+
+                                    <td>
+                                        <input asp-for="PurchaseRequisitionItems[0].EstimatedUnitPrice" type="number" step="0.01" min="0" class="form-control unit-price" />
+                                    </td>
+
+                                    <td><input class="form-control line-total" value="0.00" readonly /></td>
+
+                                    <td>
+                                        <input asp-for="PurchaseRequisitionItems[0].Remarks" class="form-control" />
+                                    </td>
+
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm btnRemoveRow">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="row justify-content-end">
+                        <div class="col-md-4">
+                            <table class="table table-sm">
+                                <tr class="bg-light">
+                                    <th>Estimated Total</th>
+                                    <th class="text-right" id="sumGrandTotal">0.00</th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Save Requisition</button>
+                    <a asp-area="Admin" asp-controller="PurchaseRequisition" asp-action="PurchaseRequisitionList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_PurchaseRequisitionLinesScriptPartial" />
+
+    <script>
+
+        var rowIndex = 1;
+
+        $(document).ready(function () {
+
+            updateDeleteButtons();
+            captureRenderedProducts();
+            recalculateTotals();
+
+            // A requisition is raised for one warehouse, so its products decide what
+            // the lines may hold. Changing the warehouse starts the lines over.
+            $("#BusinessLocationId").on("change", function () {
+
+                var warehouseId = $(this).val();
+
+                $("#productTableBody tr").each(function () {
+                    clearLinePreview($(this));
+                });
+
+                if (!warehouseId) {
+                    warehouseProducts = [];
+                    $(".product-select").each(function () { loadProducts($(this)); });
+                    recalculateTotals();
+                    return;
+                }
+
+                $.ajax({
+                    url: "/Admin/PurchaseRequisition/GetProductsByWarehouse",
+                    type: "GET",
+                    data: { warehouseId: warehouseId },
+                    success: function (response) {
+
+                        warehouseProducts = response;
+
+                        $(".product-select").each(function () { loadProducts($(this)); });
+
+                        recalculateTotals();
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Products Not Loaded",
+                            text: "The products of the selected warehouse could not be loaded.",
+                            confirmButtonText: "OK"
+                        });
+                    }
+                });
+
+            });
+
+            $("#btnAddProduct").click(function () {
+
+                if (!$("#BusinessLocationId").val()) {
+
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Warehouse Required",
+                        text: "Select a warehouse first, its products are the ones you can request.",
+                        confirmButtonText: "OK"
+                    });
+
+                    return;
+                }
+
+                appendRow(rowIndex);
+                rowIndex++;
+
+                updateDeleteButtons();
+            });
+
+            $("#RequiredDate, #RequisitionDate").on("change", function () {
+
+                var requisitionDate = $("#RequisitionDate").val();
+                var requiredDate = $("#RequiredDate").val();
+
+                if (requisitionDate && requiredDate && requiredDate < requisitionDate) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Invalid Date",
+                        text: "Required Date cannot be earlier than the requisition date.",
+                        confirmButtonText: "OK"
+                    });
+
+                    $("#RequiredDate").val(requisitionDate);
+                }
+            });
+
+        });
+
+    </script>
+}

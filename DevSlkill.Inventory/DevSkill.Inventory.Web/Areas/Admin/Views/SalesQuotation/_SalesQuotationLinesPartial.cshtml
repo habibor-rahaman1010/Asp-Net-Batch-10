@@ -1,0 +1,130 @@
+@model List<SalesQuotationItemModel>
+
+@*
+    The line grid, shared by the create and update sales quotation screens. A price
+    or discount left at zero falls back to the customer's price list and the
+    discount rules; anything typed in wins. Tax and every total come from the server.
+*@
+
+<div class="card">
+
+    <div class="card-header">
+        <div class="d-flex justify-content-between">
+            <h3 class="card-title">Quoted Products</h3>
+            <button id="btnAddProduct" type="button" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus"></i> Add Product
+            </button>
+        </div>
+    </div>
+
+    <div class="card-body">
+
+        <div class="alert alert-info">
+            <i class="fas fa-tags"></i>
+            Leave the <strong>unit price</strong> at zero and the customer's price list decides it.
+            Leave the <strong>discount</strong> at zero and the discount rules decide it. Type either
+            in and yours wins. Tax and every total are calculated again by the server when you save.
+            Quoting does <strong>not</strong> hold stock; only a reservation does.
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th width="22%">Product</th>
+                        <th width="8%">In Stock</th>
+                        <th width="8%">Free</th>
+                        <th width="10%">Qty</th>
+                        <th width="12%">Unit Price</th>
+                        <th width="12%">Discount</th>
+                        <th width="11%">Tax</th>
+                        <th width="12%">Line Total</th>
+                        <th width="5%">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="productTableBody">
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <select asp-for="@Model[i].ProductId" name="SalesQuotationItems[@i].ProductId" asp-items="Model[i].Products" class="form-control product-select"></select>
+                                <input type="hidden" name="SalesQuotationItems[@i].Remarks" value="@Model[i].Remarks" />
+
+                                @* The message container has to carry the very name the field
+                                   is posted under, otherwise both the browser and the server
+                                   have nowhere to put the error and the save fails in
+                                   silence. *@
+                                <span class="text-danger field-validation-valid"
+                                      data-valmsg-for="SalesQuotationItems[@i].ProductId"
+                                      data-valmsg-replace="true"></span>
+                            </td>
+
+                            <td><input class="form-control current-stock" value="0" readonly /></td>
+                            <td><input class="form-control available-stock" value="0" readonly /></td>
+
+                            <td>
+                                <input asp-for="@Model[i].Quantity" name="SalesQuotationItems[@i].Quantity" type="number" step="0.01" min="0.01" class="form-control line-qty" />
+                                <span class="text-danger field-validation-valid"
+                                      data-valmsg-for="SalesQuotationItems[@i].Quantity"
+                                      data-valmsg-replace="true"></span>
+                            </td>
+
+                            <td>
+                                <input asp-for="@Model[i].UnitPrice" name="SalesQuotationItems[@i].UnitPrice" type="number" step="0.01" min="0" class="form-control unit-price" />
+                                <span class="text-danger field-validation-valid"
+                                      data-valmsg-for="SalesQuotationItems[@i].UnitPrice"
+                                      data-valmsg-replace="true"></span>
+                            </td>
+
+                            <td>
+                                <input asp-for="@Model[i].DiscountAmount" name="SalesQuotationItems[@i].DiscountAmount" type="number" step="0.01" min="0" class="form-control discount-amount" />
+                                <span class="text-danger field-validation-valid"
+                                      data-valmsg-for="SalesQuotationItems[@i].DiscountAmount"
+                                      data-valmsg-replace="true"></span>
+                            </td>
+
+                            <td><input class="form-control tax-amount" value="0.00" readonly /></td>
+                            <td><input class="form-control line-total" value="0.00" readonly /></td>
+
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm btnRemoveRow">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row justify-content-end">
+            <div class="col-md-5">
+                <table class="table table-sm">
+                    <tr>
+                        <th>Sub Total</th>
+                        <td class="text-right" id="sumSubTotal">0.00</td>
+                    </tr>
+                    <tr>
+                        <th>Item Discount</th>
+                        <td class="text-right" id="sumDiscount">0.00</td>
+                    </tr>
+                    <tr>
+                        <th>Tax / VAT</th>
+                        <td class="text-right" id="sumTax">0.00</td>
+                    </tr>
+                    <tr>
+                        <th>Other Charges</th>
+                        <td class="text-right" id="sumOtherCharges">0.00</td>
+                    </tr>
+                    <tr class="bg-light">
+                        <th>Grand Total</th>
+                        <th class="text-right" id="sumGrandTotal">0.00</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</div>

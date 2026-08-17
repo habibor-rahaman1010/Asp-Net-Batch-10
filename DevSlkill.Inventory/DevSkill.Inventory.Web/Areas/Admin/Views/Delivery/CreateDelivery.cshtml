@@ -20,15 +20,35 @@
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label asp-for="DeliveryNo"></label>
                                 <input asp-for="DeliveryNo" class="form-control" readonly />
                             </div>
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
+                                <label asp-for="SourceType">Raised Against*</label>
+                                <select asp-for="SourceType" class="form-control" id="SourceType">
+                                    <option value="@DeliveryCreateModel.SalesOrderSource">Sales Order</option>
+                                    <option value="@DeliveryCreateModel.ProformaSource">Proforma Invoice</option>
+                                </select>
+                                <small class="text-muted">
+                                    A shipment answers to one document, never to both.
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group" id="salesOrderGroup">
+                                <label asp-for="SalesOrderId">Sales Order*</label>
+                                <select asp-for="SalesOrderId" asp-items="Model.SalesOrders" class="form-control" id="SalesOrderId"></select>
+                                <span asp-validation-for="SalesOrderId" class="text-danger"></span>
+                                <small class="text-muted">Only confirmed and partly delivered orders are listed.</small>
+                            </div>
+
+                            <div class="form-group" id="proformaGroup">
                                 <label asp-for="ProformaInvoiceId">Proforma Invoice*</label>
                                 <select asp-for="ProformaInvoiceId" asp-items="Model.ProformaInvoices" class="form-control" id="ProformaInvoiceId"></select>
                                 <span asp-validation-for="ProformaInvoiceId" class="text-danger"></span>
@@ -36,7 +56,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label asp-for="DeliveryDate">Delivery Date*</label>
                                 <input asp-for="DeliveryDate" type="date" class="form-control" />
@@ -93,7 +113,7 @@
 
                     <div class="alert alert-info">
                         <i class="fas fa-shield-alt"></i>
-                        The lines below belong to the chosen proforma invoice. Ordered, already delivered
+                        The lines below belong to the chosen source document. Ordered, already delivered
                         and remaining quantities come from the server and are checked again when you save,
                         so nothing can be over delivered from the browser.
                     </div>
@@ -115,7 +135,7 @@
                                 @if (Model.DeliveryItems.Count == 0)
                                 {
                                     <tr id="emptyLineRow">
-                                        <td colspan="6" class="text-center">Select a proforma invoice to load its products.</td>
+                                        <td colspan="6" class="text-center">Select a source document to load its products.</td>
                                     </tr>
                                 }
                                 else
@@ -190,50 +210,82 @@
                 </tr>`;
         }
 
-        function loadProformaInvoiceLines() {
+        function emptyLines(message) {
+            $("#deliveryTableBody").html(
+                `<tr id="emptyLineRow"><td colspan="6" class="text-center">${message}</td></tr>`);
+        }
 
-            var proformaInvoiceId = $("#ProformaInvoiceId").val();
+        // Exactly one of the two ids is sent, so the server is never asked to guess
+        // which document the shipment answers to.
+        function loadSourceLines() {
 
-            if (!proformaInvoiceId) {
-                $("#deliveryTableBody").html(
-                    `<tr id="emptyLineRow">
-                        <td colspan="6" class="text-center">Select a proforma invoice to load its products.</td>
-                     </tr>`);
+            var isProforma = $("#SourceType").val() === "@DeliveryCreateModel.ProformaSource";
+            var sourceId = isProforma ? $("#ProformaInvoiceId").val() : $("#SalesOrderId").val();
+
+            if (!sourceId) {
+                emptyLines("Select a source document to load its products.");
                 return;
             }
 
-            $.get('/Admin/Delivery/GetProformaInvoiceLines',
-                { proformaInvoiceId: proformaInvoiceId },
-                function (response) {
+            var query = isProforma
+                ? { proformaInvoiceId: sourceId }
+                : { salesOrderId: sourceId };
 
-                    if (!response.success) {
-                        $("#deliveryTableBody").html(
-                            `<tr><td colspan="6" class="text-center text-danger">${response.message}</td></tr>`);
+            $.get('/Admin/Delivery/GetSourceLines', query, function (response) {
 
-                        Swal.fire({ icon: 'warning', title: 'Not deliverable', text: response.message });
-                        return;
-                    }
+                if (!response.success) {
+                    $("#deliveryTableBody").html(
+                        `<tr><td colspan="6" class="text-center text-danger">${response.message}</td></tr>`);
 
-                    if (!response.lines || response.lines.length === 0) {
-                        $("#deliveryTableBody").html(
-                            `<tr><td colspan="6" class="text-center">This proforma invoice has no product line.</td></tr>`);
-                        return;
-                    }
+                    Swal.fire({ icon: 'warning', title: 'Not deliverable', text: response.message });
+                    return;
+                }
 
-                    var rows = '';
+                if (!response.lines || response.lines.length === 0) {
+                    emptyLines("This document has no product line.");
+                    return;
+                }
 
-                    response.lines.forEach(function (line, index) {
-                        rows += buildRow(line, index);
-                    });
+                var rows = '';
 
-                    $("#deliveryTableBody").html(rows);
+                response.lines.forEach(function (line, index) {
+                    rows += buildRow(line, index);
                 });
+
+                $("#deliveryTableBody").html(rows);
+            });
+        }
+
+        // Only the chosen source's dropdown is shown, and the other one is cleared, so
+        // a leftover selection cannot be posted along with the real one.
+        function refreshSourceChoice(reload) {
+
+            var isProforma = $("#SourceType").val() === "@DeliveryCreateModel.ProformaSource";
+
+            $("#proformaGroup").toggle(isProforma);
+            $("#salesOrderGroup").toggle(!isProforma);
+
+            if (isProforma) {
+                $("#SalesOrderId").val("");
+            } else {
+                $("#ProformaInvoiceId").val("");
+            }
+
+            if (reload) {
+                loadSourceLines();
+            }
         }
 
         $(document).ready(function () {
 
-            $("#ProformaInvoiceId").on("change", function () {
-                loadProformaInvoiceLines();
+            refreshSourceChoice(false);
+
+            $("#SourceType").on("change", function () {
+                refreshSourceChoice(true);
+            });
+
+            $("#ProformaInvoiceId, #SalesOrderId").on("change", function () {
+                loadSourceLines();
             });
 
             // The server refuses these anyway, this only saves the user a round trip.

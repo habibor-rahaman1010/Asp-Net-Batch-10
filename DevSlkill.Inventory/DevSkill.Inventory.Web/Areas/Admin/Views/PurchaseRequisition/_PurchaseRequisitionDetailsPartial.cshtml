@@ -1,0 +1,90 @@
+<div class="modal fade" id="requisitionDetailModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title">Purchase Requisition Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Requisition No</dt>
+                            <dd class="col-sm-7" id="PrNo"></dd>
+
+                            <dt class="col-sm-5">Requisition Date</dt>
+                            <dd class="col-sm-7" id="PrDate"></dd>
+
+                            <dt class="col-sm-5">Required Date</dt>
+                            <dd class="col-sm-7" id="PrRequiredDate"></dd>
+
+                            <dt class="col-sm-5">Warehouse</dt>
+                            <dd class="col-sm-7" id="PrWarehouse"></dd>
+                        </dl>
+                    </div>
+
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Requested By</dt>
+                            <dd class="col-sm-7" id="PrRequestedBy"></dd>
+
+                            <dt class="col-sm-5">Status</dt>
+                            <dd class="col-sm-7" id="PrStatus"></dd>
+
+                            <dt class="col-sm-5">Approved By</dt>
+                            <dd class="col-sm-7" id="PrApprovedBy"></dd>
+
+                            <dt class="col-sm-5">Approved On</dt>
+                            <dd class="col-sm-7" id="PrApprovedDate"></dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="alert alert-danger d-none" id="PrRejectionBlock">
+                    <strong>Rejected:</strong> <span id="PrRejectionReason"></span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Unit</th>
+                                <th class="text-right">Requested</th>
+                                <th class="text-right">Ordered</th>
+                                <th class="text-right">Remaining</th>
+                                <th class="text-right">Est. Unit Price</th>
+                                <th class="text-right">Est. Line Total</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody id="PrItemsBody"></tbody>
+                        <tfoot>
+                            <tr class="bg-light">
+                                <th colspan="6" class="text-right">Estimated Total</th>
+                                <th class="text-right" id="PrEstimatedTotal"></th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-2">Notes</dt>
+                    <dd class="col-sm-10" id="PrNotes"></dd>
+                </dl>
+
+            </div>
+
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>

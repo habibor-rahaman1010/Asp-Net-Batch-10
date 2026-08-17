@@ -1,0 +1,72 @@
+<div class="modal fade" id="requestForQuotationDetailModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title">Request For Quotation Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">RFQ No</dt>
+                            <dd class="col-sm-7" id="RfqNo"></dd>
+
+                            <dt class="col-sm-5">Requisition</dt>
+                            <dd class="col-sm-7" id="RfqRequisitionNo"></dd>
+
+                            <dt class="col-sm-5">Warehouse</dt>
+                            <dd class="col-sm-7" id="RfqWarehouse"></dd>
+                        </dl>
+                    </div>
+
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">RFQ Date</dt>
+                            <dd class="col-sm-7" id="RfqDate"></dd>
+
+                            <dt class="col-sm-5">Response Deadline</dt>
+                            <dd class="col-sm-7" id="RfqDeadline"></dd>
+
+                            <dt class="col-sm-5">Status</dt>
+                            <dd class="col-sm-7" id="RfqStatus"></dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Unit</th>
+                                <th class="text-right">Quantity</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody id="RfqItemsBody"></tbody>
+                    </table>
+                </div>
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-2">Notes</dt>
+                    <dd class="col-sm-10" id="RfqNotes"></dd>
+                </dl>
+
+            </div>
+
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <a href="#" id="RfqCompareLink" class="btn btn-primary">
+                    <i class="fas fa-balance-scale"></i> Compare Quotations
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>

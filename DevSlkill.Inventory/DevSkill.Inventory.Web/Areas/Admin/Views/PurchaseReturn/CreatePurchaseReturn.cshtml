@@ -1,0 +1,165 @@
+@model PurchaseReturnCreateModel;
+
+@{
+    ViewData["Title"] = "Return Goods";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="PurchaseReturn" asp-action="CreatePurchaseReturn" method="post">
+
+            <!-- Header -->
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Purchase Return</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="ReturnNo"></label>
+                                <input asp-for="ReturnNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="GoodsReceiptId">Goods Receipt*</label>
+                                <select asp-for="GoodsReceiptId" asp-items="Model.GoodsReceipts" class="form-control" id="GoodsReceiptId"></select>
+                                <small class="form-text text-muted">Only received receipts appear here, because only they hold stock.</small>
+                                <span asp-validation-for="GoodsReceiptId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="ReturnDate">Return Date*</label>
+                                <input asp-for="ReturnDate" type="date" class="form-control" />
+                                <span asp-validation-for="ReturnDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="SupplierName"></label>
+                                <input asp-for="SupplierName" class="form-control" id="SupplierName" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="WarehouseName"></label>
+                                <input asp-for="WarehouseName" class="form-control" id="WarehouseName" readonly />
+                                <small class="form-text text-muted">The goods always leave the warehouse they were received into.</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Status">Status*</label>
+                                <select asp-for="Status" asp-items="Model.Statuses" class="form-control"></select>
+                                <small class="form-text text-muted">
+                                    <strong>Returned</strong> takes the goods out of stock immediately. A draft holds no stock.
+                                </small>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="Reason">Reason*</label>
+                                <input asp-for="Reason" class="form-control" placeholder="Damaged on arrival, wrong item, failed inspection..." />
+                                <span asp-validation-for="Reason" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="Notes"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <partial name="_PurchaseReturnLinesPartial" model="Model.PurchaseReturnItems" />
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Save Purchase Return</button>
+                    <a asp-area="Admin" asp-controller="PurchaseReturn" asp-action="PurchaseReturnList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_PurchaseReturnLinesScriptPartial" />
+
+    <script>
+
+        $(document).ready(function () {
+
+            // Choosing a receipt rebuilds the grid from whatever it still has to give back.
+            $("#GoodsReceiptId").on("change", function () {
+
+                var goodsReceiptId = $(this).val();
+
+                if (!goodsReceiptId) {
+                    $("#returnTableBody").empty();
+                    $("#SupplierName, #WarehouseName").val("");
+                    recalculateReturnValue();
+                    return;
+                }
+
+                $.get('/Admin/PurchaseReturn/GetReturnableLines', { goodsReceiptId: goodsReceiptId }, function (response) {
+
+                    if (!response.success) {
+                        Swal.fire({ icon: "error", title: "Goods Receipt", text: response.message });
+                        return;
+                    }
+
+                    $("#SupplierName").val(response.supplierName || "");
+                    $("#WarehouseName").val(response.warehouseName || "");
+
+                    var open = (response.lines || []).filter(function (line) {
+                        return line.remainingQuantity > 0;
+                    });
+
+                    if (open.length === 0) {
+                        $("#returnTableBody").empty();
+                        recalculateReturnValue();
+
+                        Swal.fire({
+                            icon: "info",
+                            title: "Nothing To Return",
+                            text: "Everything on this goods receipt has already been returned."
+                        });
+
+                        return;
+                    }
+
+                    buildReturnRows(open);
+                });
+            });
+
+        });
+
+    </script>
+}

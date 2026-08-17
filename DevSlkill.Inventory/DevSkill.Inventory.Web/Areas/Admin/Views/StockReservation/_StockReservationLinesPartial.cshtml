@@ -1,0 +1,101 @@
+@model List<StockReservationItemModel>
+
+@*
+    The hold grid, shared by the create and update reservation screens. Everything
+    but "Hold Now" comes off the sales order and the product and is read only; the
+    server works the same figures out again when the hold is saved.
+*@
+
+<div class="card">
+
+    <div class="card-header">
+        <h3 class="card-title">Products To Hold</h3>
+    </div>
+
+    <div class="card-body">
+
+        <div class="alert alert-warning">
+            <i class="fas fa-lock"></i>
+            <strong>Hold Now</strong> raises the reserved column, which is what keeps these goods
+            from being promised to a second customer. Nothing physical moves until a delivery is
+            confirmed. A line can never hold more than the order still owes, nor more than the
+            warehouse actually has free.
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th width="20%">Product</th>
+                        <th width="7%">Unit</th>
+                        <th width="9%">Ordered</th>
+                        <th width="9%">Delivered</th>
+                        <th width="9%">Held</th>
+                        <th width="9%">Pending</th>
+                        <th width="10%">Holdable</th>
+                        <th width="8%">In Stock</th>
+                        <th width="8%">Free</th>
+                        <th width="11%">Hold Now</th>
+                    </tr>
+                </thead>
+
+                <tbody id="reservationTableBody">
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Model[i].ProductName
+                                <input type="hidden" name="StockReservationItems[@i].ProductId" value="@Model[i].ProductId" />
+                                <input type="hidden" name="StockReservationItems[@i].ProductName" value="@Model[i].ProductName" />
+                                <input type="hidden" name="StockReservationItems[@i].UnitName" value="@Model[i].UnitName" />
+                                <input type="hidden" name="StockReservationItems[@i].OrderedQuantity" value="@Model[i].OrderedQuantity" />
+                                <input type="hidden" name="StockReservationItems[@i].AlreadyReservedQuantity" value="@Model[i].AlreadyReservedQuantity" />
+                                <input type="hidden" name="StockReservationItems[@i].PendingQuantity" value="@Model[i].PendingQuantity" />
+                                <input type="hidden" name="StockReservationItems[@i].DeliveredQuantity" value="@Model[i].DeliveredQuantity" />
+                                <input type="hidden" name="StockReservationItems[@i].RemainingQuantity" value="@Model[i].RemainingQuantity" class="holdable-qty" />
+                                <input type="hidden" name="StockReservationItems[@i].CurrentStock" value="@Model[i].CurrentStock" />
+                                <input type="hidden" name="StockReservationItems[@i].AvailableStock" value="@Model[i].AvailableStock" class="free-stock" />
+                                <input type="hidden" name="StockReservationItems[@i].Remarks" value="@Model[i].Remarks" />
+                            </td>
+
+                            <td>@Model[i].UnitName</td>
+                            <td class="text-right">@Model[i].OrderedQuantity.ToString("N2")</td>
+                            <td class="text-right">@Model[i].DeliveredQuantity.ToString("N2")</td>
+                            <td class="text-right">@Model[i].AlreadyReservedQuantity.ToString("N2")</td>
+                            <td class="text-right">@Model[i].PendingQuantity.ToString("N2")</td>
+                            <td class="text-right font-weight-bold">@Model[i].RemainingQuantity.ToString("N2")</td>
+                            <td class="text-right">@Model[i].CurrentStock</td>
+                            <td class="text-right">@Model[i].AvailableStock</td>
+
+                            <td>
+                                <input name="StockReservationItems[@i].ReservedQuantity" value="@Model[i].ReservedQuantity"
+                                       type="number" step="1" min="0" class="form-control hold-qty" />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.Count == 0)
+        {
+            <div class="alert alert-info mb-0">
+                <i class="fas fa-info-circle"></i>
+                Choose a sales order above and its holdable lines will appear here.
+            </div>
+        }
+
+        <div class="row justify-content-end">
+            <div class="col-md-4">
+                <table class="table table-sm">
+                    <tr class="bg-light">
+                        <th>Total Being Held</th>
+                        <th class="text-right" id="sumHeldQuantity">0.00</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</div>

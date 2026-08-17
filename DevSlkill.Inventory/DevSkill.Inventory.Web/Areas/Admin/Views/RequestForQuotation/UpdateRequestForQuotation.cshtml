@@ -1,0 +1,163 @@
+@model RequestForQuotationUpdateModel;
+
+@{
+    ViewData["Title"] = "Update Request For Quotation";
+    ViewData["Products"] = Model.Products;
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="RequestForQuotation" asp-action="UpdateRequestForQuotation" method="post">
+
+            <input type="hidden" asp-for="Id" />
+
+            <!-- Header -->
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Update Request For Quotation</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        Only a draft request can be edited. Once it is sent, suppliers may already
+                        be quoting against these lines, so they are frozen.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="RfqNo"></label>
+                                <input asp-for="RfqNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="RfqDate">RFQ Date*</label>
+                                <input asp-for="RfqDate" type="date" class="form-control" />
+                                <span asp-validation-for="RfqDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="ResponseDeadline">Response Deadline*</label>
+                                <input asp-for="ResponseDeadline" type="date" class="form-control" />
+                                <span asp-validation-for="ResponseDeadline" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="PurchaseRequisitionId"></label>
+                                <select asp-for="PurchaseRequisitionId" asp-items="Model.PurchaseRequisitions" class="form-control" id="PurchaseRequisitionId"></select>
+                                <span asp-validation-for="PurchaseRequisitionId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="BusinessLocationId">Warehouse*</label>
+                                <select asp-for="BusinessLocationId" asp-items="Model.BusinessLocations" class="form-control" id="BusinessLocationId"></select>
+                                <span asp-validation-for="BusinessLocationId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Status">Status*</label>
+                                <select asp-for="Status" asp-items="Model.Statuses" class="form-control"></select>
+                                <small class="form-text text-muted">
+                                    Suppliers can only quote against a request that has been sent.
+                                </small>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label asp-for="Notes"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <partial name="_RequestForQuotationLinesPartial" model="Model.RequestForQuotationItems" view-data="ViewData" />
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Update Request</button>
+                    <a asp-area="Admin" asp-controller="RequestForQuotation" asp-action="RequestForQuotationList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_RequestForQuotationLinesScriptPartial" />
+
+    <script>
+
+        var rowIndex = @Model.RequestForQuotationItems.Count;
+
+        $(document).ready(function () {
+
+            captureRenderedProducts();
+
+            if (rowIndex === 0) {
+                appendRow(rowIndex);
+                rowIndex++;
+            }
+
+            updateDeleteButtons();
+
+            $("#productTableBody tr").each(function () {
+                refreshStock($(this));
+            });
+
+            $("#btnAddProduct").click(function () {
+
+                appendRow(rowIndex);
+                rowIndex++;
+
+                updateDeleteButtons();
+            });
+
+            $("#RfqDate, #ResponseDeadline").on("change", function () {
+
+                var rfqDate = $("#RfqDate").val();
+                var deadline = $("#ResponseDeadline").val();
+
+                if (rfqDate && deadline && deadline < rfqDate) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Invalid Date",
+                        text: "The response deadline cannot be earlier than the RFQ date.",
+                        confirmButtonText: "OK"
+                    });
+
+                    $("#ResponseDeadline").val(rfqDate);
+                }
+            });
+
+        });
+
+    </script>
+}

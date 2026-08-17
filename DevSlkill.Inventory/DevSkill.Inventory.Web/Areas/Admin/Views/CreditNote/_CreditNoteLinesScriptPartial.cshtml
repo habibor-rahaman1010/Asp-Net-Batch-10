@@ -1,0 +1,180 @@
+@*
+    Credit grid behaviour shared by the create and update credit note screens.
+    Both pages define `rowIndex` themselves and then call into these helpers.
+*@
+
+<script>
+
+    // The product dropdown is rendered once and copied onto every new row, so the
+    // list is never fetched twice.
+    var creditProducts = [];
+
+    function captureRenderedProducts() {
+
+        creditProducts = [];
+
+        $("#creditTableBody .product-select").first().find("option").each(function () {
+
+            if ($(this).val()) {
+                creditProducts.push({ id: $(this).val(), text: $(this).text() });
+            }
+
+        });
+    }
+
+    function loadProducts(dropdown) {
+
+        dropdown.empty();
+        dropdown.append($("<option>").val("").text("-- No product, price only --"));
+
+        $.each(creditProducts, function (i, product) {
+            dropdown.append($("<option>").val(product.id).text(product.text));
+        });
+    }
+
+    function updateDeleteButtons() {
+        $(".btnRemoveRow").prop("disabled", $("#creditTableBody tr").length == 1);
+    }
+
+    function reIndexRows() {
+
+        $("#creditTableBody tr").each(function (index) {
+
+            $(this).find("[name]").each(function () {
+
+                var name = $(this).attr("name");
+
+                name = name.replace(/CreditNoteItems\[\d+\]/, "CreditNoteItems[" + index + "]");
+
+                $(this).attr("name", name);
+            });
+
+        });
+
+        rowIndex = $("#creditTableBody tr").length;
+    }
+
+    function recalculateCreditTotals() {
+
+        var subTotal = 0, taxTotal = 0;
+
+        $("#creditTableBody tr").each(function () {
+
+            var qty = parseFloat($(this).find(".line-qty").val()) || 0;
+            var price = parseFloat($(this).find(".unit-price").val()) || 0;
+            var taxRate = parseFloat($(this).find(".tax-rate").val()) || 0;
+
+            var lineAmount = qty * price;
+            var tax = lineAmount * taxRate / 100;
+
+            $(this).find(".line-total").val((lineAmount + tax).toFixed(2));
+
+            subTotal += lineAmount;
+            taxTotal += tax;
+        });
+
+        $("#sumSubTotal").text(subTotal.toFixed(2));
+        $("#sumTax").text(taxTotal.toFixed(2));
+        $("#sumTotal").text((subTotal + taxTotal).toFixed(2));
+    }
+
+    function appendRow(index) {
+
+        var row = `
+        <tr>
+            <td>
+                <select name="CreditNoteItems[${index}].ProductId" class="form-control product-select"></select>
+            </td>
+
+            <td>
+                <input name="CreditNoteItems[${index}].Description"
+                       class="form-control line-description" placeholder="What the credit is for" />
+            </td>
+
+            <td>
+                <input name="CreditNoteItems[${index}].Quantity"
+                       type="number" step="0.01" min="0.01" value="1" class="form-control line-qty" />
+            </td>
+
+            <td>
+                <input name="CreditNoteItems[${index}].UnitPrice"
+                       type="number" step="0.01" min="0" value="0" class="form-control unit-price" />
+            </td>
+
+            <td>
+                <input name="CreditNoteItems[${index}].TaxRate"
+                       type="number" step="0.01" min="0" max="100" value="0" class="form-control tax-rate" />
+            </td>
+
+            <td><input class="form-control line-total" value="0.00" readonly /></td>
+
+            <td>
+                <button type="button" class="btn btn-danger btn-sm btnRemoveRow">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>`;
+
+        $("#creditTableBody").append(row);
+
+        loadProducts($("#creditTableBody tr:last").find(".product-select"));
+
+        return $("#creditTableBody tr:last");
+    }
+
+    $(document).ready(function () {
+
+        captureRenderedProducts();
+        updateDeleteButtons();
+        recalculateCreditTotals();
+
+        $(document).on("click", ".btnRemoveRow", function () {
+
+            if ($("#creditTableBody tr").length > 1) {
+                $(this).closest("tr").remove();
+                reIndexRows();
+                updateDeleteButtons();
+                recalculateCreditTotals();
+            }
+
+        });
+
+        // Naming a product fills the description in, so the printed note still says
+        // what was credited even though the product is optional.
+        $(document).on("change", ".product-select", function () {
+
+            var row = $(this).closest("tr");
+            var description = row.find(".line-description");
+
+            if ($(this).val() && !description.val()) {
+                description.val($(this).find("option:selected").text());
+            }
+        });
+
+        $(document).on("change", ".line-qty, .unit-price, .tax-rate", function () {
+
+            // An emptied box is not a number, and a required number that is missing
+            // stops the whole form being submitted. Blank therefore falls back to what
+            // the box means when nothing is typed: one unit, and no money.
+            if ($.trim($(this).val()) === "") {
+                $(this).val($(this).hasClass("line-qty") ? 1 : 0);
+            }
+
+            if ($(this).hasClass("line-qty") && parseFloat($(this).val()) <= 0) {
+                $(this).val(1);
+            }
+
+            recalculateCreditTotals();
+        });
+
+        $("#btnAddLine").click(function () {
+
+            appendRow(rowIndex);
+            rowIndex++;
+
+            updateDeleteButtons();
+        });
+
+    });
+
+</script>

@@ -1,0 +1,299 @@
+@model SalesOrderCreateModel;
+
+@{
+    ViewData["Title"] = "Create Sales Order";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="SalesOrder" asp-action="CreateSalesOrder" method="post">
+
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Sales Order</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="SalesOrderNo"></label>
+                                <input asp-for="SalesOrderNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="SalesQuotationId"></label>
+                                <select asp-for="SalesQuotationId" asp-items="Model.SalesQuotations" class="form-control" id="SalesQuotationId"></select>
+                                <small class="form-text text-muted">Only offers the customer accepted are listed.</small>
+                                <span asp-validation-for="SalesQuotationId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="CustomerId">Customer*</label>
+                                <select asp-for="CustomerId" asp-items="Model.Customers" class="form-control" id="CustomerId"></select>
+                                <small class="form-text text-muted">Their credit limit is checked when the order is confirmed.</small>
+                                <span asp-validation-for="CustomerId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="BusinessLocationId">Warehouse*</label>
+                                <select asp-for="BusinessLocationId" asp-items="Model.BusinessLocations" class="form-control" id="BusinessLocationId"></select>
+                                <small class="form-text text-muted">The goods will be served out of here.</small>
+                                <span asp-validation-for="BusinessLocationId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="OrderDate">Order Date*</label>
+                                <input asp-for="OrderDate" type="date" class="form-control" id="OrderDate" />
+                                <span asp-validation-for="OrderDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="ExpectedDeliveryDate">Expected Delivery*</label>
+                                <input asp-for="ExpectedDeliveryDate" type="date" class="form-control" id="ExpectedDeliveryDate" />
+                                <span asp-validation-for="ExpectedDeliveryDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="SalespersonId"></label>
+                                <select asp-for="SalespersonId" asp-items="Model.Salespersons" class="form-control"></select>
+                                <small class="form-text text-muted">They earn the commission when the invoice is posted.</small>
+                                <span asp-validation-for="SalespersonId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="PaymentTermId"></label>
+                                <select asp-for="PaymentTermId" asp-items="Model.PaymentTerms" class="form-control"></select>
+                                <span asp-validation-for="PaymentTermId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="CustomerReference"></label>
+                                <input asp-for="CustomerReference" class="form-control" placeholder="Their purchase order number" />
+                                <span asp-validation-for="CustomerReference" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="OtherCharges"></label>
+                                <input asp-for="OtherCharges" type="number" step="0.01" min="0" class="form-control" id="OtherCharges" />
+                                <span asp-validation-for="OtherCharges" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="Status">Status*</label>
+                                <select asp-for="Status" asp-items="Model.Statuses" class="form-control"></select>
+                                <small class="form-text text-muted">
+                                    A new order is a draft. Confirming it is done from the list, because
+                                    that is where the credit limit is checked.
+                                </small>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="Notes"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <partial name="_SalesOrderLinesPartial" model="Model.SalesOrderItems" />
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Save Sales Order</button>
+                    <a asp-area="Admin" asp-controller="SalesOrder" asp-action="SalesOrderList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_SalesOrderLinesScriptPartial" />
+
+    <script>
+
+        var rowIndex = @Model.SalesOrderItems.Count;
+
+        function loadWarehouseProducts(warehouseId, done) {
+
+            if (!warehouseId) {
+                warehouseProducts = [];
+                $(".product-select").each(function () { loadProducts($(this)); });
+                recalculateTotals();
+                return;
+            }
+
+            $.ajax({
+                url: "/Admin/SalesOrder/GetProductsByWarehouse",
+                type: "GET",
+                data: { warehouseId: warehouseId },
+                success: function (response) {
+
+                    warehouseProducts = response;
+
+                    $(".product-select").each(function () { loadProducts($(this)); });
+
+                    if (done) { done(); } else { recalculateTotals(); }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Products Not Loaded",
+                        text: "The products of the selected warehouse could not be loaded.",
+                        confirmButtonText: "OK"
+                    });
+                }
+            });
+        }
+
+        $(document).ready(function () {
+
+            updateDeleteButtons();
+            captureRenderedProducts();
+            refreshAllLines();
+
+            $("#BusinessLocationId").on("change", function () {
+
+                $("#productTableBody tr").each(function () {
+                    clearLinePreview($(this));
+                });
+
+                loadWarehouseProducts($(this).val());
+            });
+
+            $("#CustomerId").on("change", function () {
+                refreshAllLines();
+            });
+
+            // Choosing an accepted quotation rebuilds the order at the price agreed.
+            $("#SalesQuotationId").on("change", function () {
+
+                var salesQuotationId = $(this).val();
+
+                if (!salesQuotationId) {
+                    return;
+                }
+
+                $.get('/Admin/SalesOrder/GetQuotationLines', { salesQuotationId: salesQuotationId }, function (response) {
+
+                    if (!response.success) {
+                        Swal.fire({ icon: "error", title: "Quotation", text: response.message });
+                        $("#SalesQuotationId").val("");
+                        return;
+                    }
+
+                    if (!response.lines || response.lines.length === 0) {
+                        Swal.fire({ icon: "info", title: "Nothing Left", text: "This quotation has nothing left to order." });
+                        $("#SalesQuotationId").val("");
+                        return;
+                    }
+
+                    // The order inherits the customer and warehouse the offer was made for.
+                    $("#CustomerId").val(response.customerId);
+                    $("#SalespersonId").val(response.salespersonId || "");
+                    $("#PaymentTermId").val(response.paymentTermId || "");
+                    $("#CustomerReference").val(response.customerReference || "");
+                    $("#OtherCharges").val(Number(response.otherCharges).toFixed(2));
+                    $("#BusinessLocationId").val(response.warehouseId);
+
+                    loadWarehouseProducts(response.warehouseId, function () {
+
+                        $("#productTableBody").empty();
+                        rowIndex = 0;
+
+                        $.each(response.lines, function (i, line) {
+
+                            var row = appendRow(rowIndex);
+                            rowIndex++;
+
+                            row.find(".product-select").val(line.productId);
+                            row.find(".line-qty").val(Number(line.remainingQuantity).toFixed(2));
+                            row.find(".unit-price").val(Number(line.unitPrice).toFixed(2));
+                            row.find(".discount-amount").val(Number(line.discountAmount).toFixed(2));
+                        });
+
+                        updateDeleteButtons();
+                        refreshAllLines();
+                    });
+                });
+            });
+
+            $("#btnAddProduct").click(function () {
+
+                if (!$("#BusinessLocationId").val()) {
+
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Warehouse Required",
+                        text: "Select a warehouse first, its products are the ones you can sell.",
+                        confirmButtonText: "OK"
+                    });
+
+                    return;
+                }
+
+                appendRow(rowIndex);
+                rowIndex++;
+
+                updateDeleteButtons();
+            });
+
+            $("#ExpectedDeliveryDate, #OrderDate").on("change", function () {
+
+                var orderDate = $("#OrderDate").val();
+                var deliveryDate = $("#ExpectedDeliveryDate").val();
+
+                if (orderDate && deliveryDate && deliveryDate < orderDate) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Invalid Date",
+                        text: "Expected Delivery cannot be earlier than the order date.",
+                        confirmButtonText: "OK"
+                    });
+
+                    $("#ExpectedDeliveryDate").val(orderDate);
+                }
+            });
+
+        });
+
+    </script>
+}

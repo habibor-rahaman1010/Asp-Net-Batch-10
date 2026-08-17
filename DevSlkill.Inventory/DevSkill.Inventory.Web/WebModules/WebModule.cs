@@ -235,6 +235,224 @@ namespace DevSkill.Inventory.Web.WebModules
                 .As<IDeliveryManagementService>()
                 .InstancePerLifetimeScope();
 
+            //Sales Management order-to-cash chain
+            builder.RegisterType<SalespersonRepository>()
+                .As<ISalespersonRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SalesCommissionRepository>()
+                .As<ISalesCommissionRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SalespersonManagementService>()
+                .As<ISalespersonManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SalesQuotationRepository>()
+                .As<ISalesQuotationRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SalesQuotationItemRepository>()
+                .As<ISalesQuotationItemRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SalesQuotationManagementService>()
+                .As<ISalesQuotationManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SalesOrderRepository>()
+                .As<ISalesOrderRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SalesOrderItemRepository>()
+                .As<ISalesOrderItemRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SalesOrderManagementService>()
+                .As<ISalesOrderManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<StockReservationRepository>()
+                .As<IStockReservationRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<StockReservationItemRepository>()
+                .As<IStockReservationItemRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<StockReservationManagementService>()
+                .As<IStockReservationManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SalesInvoiceRepository>()
+                .As<ISalesInvoiceRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SalesInvoiceItemRepository>()
+                .As<ISalesInvoiceItemRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SalesInvoiceManagementService>()
+                .As<ISalesInvoiceManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<CustomerPaymentRepository>()
+                .As<ICustomerPaymentRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<CustomerPaymentAllocationRepository>()
+                .As<ICustomerPaymentAllocationRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<CustomerPaymentManagementService>()
+                .As<ICustomerPaymentManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SalesReturnRepository>()
+                .As<ISalesReturnRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SalesReturnItemRepository>()
+                .As<ISalesReturnItemRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SalesReturnManagementService>()
+                .As<ISalesReturnManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<CreditNoteRepository>()
+                .As<ICreditNoteRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<CreditNoteItemRepository>()
+                .As<ICreditNoteItemRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<CreditNoteManagementService>()
+                .As<ICreditNoteManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<CustomerLedgerService>()
+                .As<ICustomerLedgerService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SalesReportService>()
+                .As<ISalesReportService>()
+                .InstancePerLifetimeScope();
+
+            //Purchase Management module
+            builder.RegisterType<SupplierRepository>()
+                .As<ISupplierRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SupplierManagementService>()
+                .As<ISupplierManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<PurchaseRequisitionRepository>()
+                .As<IPurchaseRequisitionRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<PurchaseRequisitionItemRepository>()
+                .As<IPurchaseRequisitionItemRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<PurchaseRequisitionManagementService>()
+                .As<IPurchaseRequisitionManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<PurchaseOrderRepository>()
+                .As<IPurchaseOrderRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<PurchaseOrderItemRepository>()
+                .As<IPurchaseOrderItemRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<PurchaseOrderManagementService>()
+                .As<IPurchaseOrderManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<GoodsReceiptRepository>()
+                .As<IGoodsReceiptRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<GoodsReceiptItemRepository>()
+                .As<IGoodsReceiptItemRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<GoodsReceiptManagementService>()
+                .As<IGoodsReceiptManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<PurchaseInvoiceRepository>()
+                .As<IPurchaseInvoiceRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<PurchaseInvoiceItemRepository>()
+                .As<IPurchaseInvoiceItemRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<PurchaseInvoiceManagementService>()
+                .As<IPurchaseInvoiceManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<PurchaseReturnRepository>()
+                .As<IPurchaseReturnRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<PurchaseReturnItemRepository>()
+                .As<IPurchaseReturnItemRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<PurchaseReturnManagementService>()
+                .As<IPurchaseReturnManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SupplierPaymentRepository>()
+                .As<ISupplierPaymentRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SupplierPaymentAllocationRepository>()
+                .As<ISupplierPaymentAllocationRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SupplierPaymentManagementService>()
+                .As<ISupplierPaymentManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SupplierLedgerService>()
+                .As<ISupplierLedgerService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<PurchaseReportService>()
+                .As<IPurchaseReportService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<RequestForQuotationRepository>()
+                .As<IRequestForQuotationRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<RequestForQuotationItemRepository>()
+                .As<IRequestForQuotationItemRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<RequestForQuotationManagementService>()
+                .As<IRequestForQuotationManagementService>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SupplierQuotationRepository>()
+                .As<ISupplierQuotationRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SupplierQuotationItemRepository>()
+                .As<ISupplierQuotationItemRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SupplierQuotationManagementService>()
+                .As<ISupplierQuotationManagementService>()
+                .InstancePerLifetimeScope();
+
             builder.RegisterType<EmailUtility>()
                 .As<IEmailUtility>()
                 .InstancePerLifetimeScope();

@@ -1,0 +1,114 @@
+@model List<PurchaseOrderItemModel>
+
+@*
+    The line grid itself, shared by the create and update purchase order screens.
+    The unit price and discount are typed by the buyer because they are negotiated;
+    the tax and every total come back from the server.
+*@
+
+<div class="card">
+
+    <div class="card-header">
+        <div class="d-flex justify-content-between">
+            <h3 class="card-title">Ordered Products</h3>
+            <button id="btnAddProduct" type="button" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus"></i> Add Product
+            </button>
+        </div>
+    </div>
+
+    <div class="card-body">
+
+        <div class="alert alert-info">
+            <i class="fas fa-shield-alt"></i>
+            The unit price and discount are agreed with the supplier and typed here.
+            Tax and every total are calculated again by the server when you save, so
+            the stored amounts can never be changed from the browser.
+            Saving this order does <strong>not</strong> change stock; only a goods receipt does.
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th width="24%">Product</th>
+                        <th width="9%">In Stock</th>
+                        <th width="11%">Qty</th>
+                        <th width="13%">Unit Price</th>
+                        <th width="13%">Discount</th>
+                        <th width="12%">Tax</th>
+                        <th width="13%">Line Total</th>
+                        <th width="5%">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="productTableBody">
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <select asp-for="@Model[i].ProductId" name="PurchaseOrderItems[@i].ProductId" asp-items="Model[i].Products" class="form-control product-select"></select>
+                                <span asp-validation-for="@Model[i].ProductId" class="text-danger"></span>
+                            </td>
+
+                            <td><input class="form-control current-stock" value="0" readonly /></td>
+
+                            <td>
+                                <input asp-for="@Model[i].Quantity" name="PurchaseOrderItems[@i].Quantity" type="number" step="0.01" min="0.01" class="form-control line-qty" />
+                                <span asp-validation-for="@Model[i].Quantity" class="text-danger"></span>
+                            </td>
+
+                            <td>
+                                <input asp-for="@Model[i].UnitPrice" name="PurchaseOrderItems[@i].UnitPrice" type="number" step="0.01" min="0" class="form-control unit-price" />
+                                <span asp-validation-for="@Model[i].UnitPrice" class="text-danger"></span>
+                            </td>
+
+                            <td>
+                                <input asp-for="@Model[i].DiscountAmount" name="PurchaseOrderItems[@i].DiscountAmount" type="number" step="0.01" min="0" class="form-control discount-amount" />
+                                <span asp-validation-for="@Model[i].DiscountAmount" class="text-danger"></span>
+                            </td>
+
+                            <td><input class="form-control tax-amount" value="0.00" readonly /></td>
+                            <td><input class="form-control line-total" value="0.00" readonly /></td>
+
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm btnRemoveRow">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row justify-content-end">
+            <div class="col-md-5">
+                <table class="table table-sm">
+                    <tr>
+                        <th>Sub Total</th>
+                        <td class="text-right" id="sumSubTotal">0.00</td>
+                    </tr>
+                    <tr>
+                        <th>Item Discount</th>
+                        <td class="text-right" id="sumDiscount">0.00</td>
+                    </tr>
+                    <tr>
+                        <th>Tax / VAT</th>
+                        <td class="text-right" id="sumTax">0.00</td>
+                    </tr>
+                    <tr>
+                        <th>Other Charges</th>
+                        <td class="text-right" id="sumOtherCharges">0.00</td>
+                    </tr>
+                    <tr class="bg-light">
+                        <th>Grand Total</th>
+                        <th class="text-right" id="sumGrandTotal">0.00</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</div>

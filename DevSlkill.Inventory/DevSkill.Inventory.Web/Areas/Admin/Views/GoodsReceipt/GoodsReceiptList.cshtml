@@ -1,0 +1,326 @@
+@{
+    ViewData["Title"] = "Goods Receipt List";
+}
+
+@section Styles {
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Goods Receipts</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Purchase</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Stock goes up only when a receipt is marked as received.</h3>
+
+                        <a asp-area="Admin" asp-controller="GoodsReceipt" asp-action="CreateGoodsReceipt" class="btn btn-primary float-right">
+                            <i class="fas fa-plus"></i> Receive Goods
+                        </a>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <partial name="_ResponsePartial" />
+                        <partial name="_ModalPartial" />
+                        <table id="goodsReceipt" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Receipt No</th>
+                                    <th>Order No</th>
+                                    <th>Supplier</th>
+                                    <th>Receipt Date</th>
+                                    <th>Warehouse</th>
+                                    <th>Challan No</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tfoot>
+                                <tr>
+                                    <th>Receipt No</th>
+                                    <th>Order No</th>
+                                    <th>Supplier</th>
+                                    <th>Receipt Date</th>
+                                    <th>Warehouse</th>
+                                    <th>Challan No</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+<partial name="_GoodsReceiptDetailsPartial" />
+
+<!-- /.content -->
+@section Scripts {
+    <!-- DataTables  & Plugins -->
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+    <script type="text/javascript">
+
+        function statusBadgeClass(status) {
+            switch (status) {
+                case 'Received': return 'badge-success';
+                case 'Cancelled': return 'badge-danger';
+                default: return 'badge-secondary';
+            }
+        }
+
+        // A draft is edited, confirmed or deleted. A confirmed receipt has already
+        // moved stock, so only a cancellation can undo it.
+        function actionButtons(id, status) {
+
+            var buttons = '';
+
+            if (status === 'Draft') {
+                buttons += `<a href="/Admin/GoodsReceipt/UpdateGoodsReceipt/${id}"
+                               class="btn btn-info btn-sm mr-1" title="Edit"><i class="fas fa-edit"></i></a>
+                            <button type="button" class="btn btn-success btn-sm mr-1 btn-confirm" data-id='${id}'
+                                title="Receive into stock"><i class="fas fa-check"></i></button>`;
+            }
+
+            if (status === 'Draft' || status === 'Received') {
+                buttons += `<button type="button" class="btn btn-warning btn-sm mr-1 btn-cancel" data-id='${id}'
+                                title="Cancel"><i class="fas fa-ban"></i></button>`;
+            }
+
+            if (status === 'Draft' || status === 'Cancelled') {
+                buttons += `<button type="button" class="btn btn-danger btn-sm show-bs-modal" data-id='${id}'
+                                title="Delete"><i class="fas fa-trash"></i></button>`;
+            }
+
+            return buttons === '' ? '<span class="text-muted">—</span>' : buttons;
+        }
+
+        function postAction(url, data, successTitle) {
+
+            data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({ icon: 'success', title: successTitle, text: response.message, timer: 2200, showConfirmButton: false });
+                        $('#goodsReceipt').DataTable().ajax.reload(null, false);
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Failed!', text: response.message });
+                    }
+                },
+                error: function (error) {
+                    if (error.status === 403) {
+                        window.location.href = '/Account/AccessDenied';
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Error!', text: 'The action could not be completed.' });
+                    }
+                }
+            });
+        }
+
+        $(function () {
+            try {
+                $("#goodsReceipt").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    responsive: true,
+                    lengthChange: true,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    autoWidth: false,
+                    ajax: {
+                        url: "/Admin/GoodsReceipt/GetGoodsReceiptJsonData",
+                        type: "POST",
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: function (d) {
+                            return JSON.stringify(d);
+                        },
+                    },
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 7,
+                            render: function (data, type, row) {
+                                return actionButtons(data, row[6]);
+                            }
+                        },
+                        {
+                            targets: 6,
+                            render: function (data) {
+                                return `<span class="badge ${statusBadgeClass(data)}">${data}</span>`;
+                            }
+                        },
+                        ...[0, 1, 2, 3, 4, 5].map(function (target) {
+                            return {
+                                targets: target,
+                                createdCell: function (td, cellData, rowData) {
+                                    $(td).addClass('table-row');
+                                    $(td).attr('data-id', rowData[7]);
+                                }
+                            };
+                        })
+                    ],
+                    dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                }).buttons().container().appendTo('#goodsReceipt_wrapper .col-md-6:eq(0)');
+            } catch (e) {
+                console.error("DataTable init error:", e);
+            }
+        });
+
+        // Row click -> goods receipt details modal
+        $(function () {
+            $('#goodsReceipt tbody').on('click', '.table-row', function () {
+                var id = $(this).data("id");
+
+                $.ajax({
+                    url: `/Admin/GoodsReceipt/GetGoodsReceiptDetails?id=${id}`,
+                    type: 'GET',
+                    success: function (data) {
+
+                        $('#GrnNo').text(data.goodsReceiptNo || 'N/A');
+                        $('#GrnPoNo').text(data.purchaseOrderNo || 'N/A');
+                        $('#GrnSupplier').text(data.supplierName || 'N/A');
+                        $('#GrnWarehouse').text(data.warehouse || 'N/A');
+                        $('#GrnDate').text(data.receiptDate ? new Date(data.receiptDate).toLocaleDateString() : 'N/A');
+                        $('#GrnChallan').text(data.supplierChallanNo || 'N/A');
+                        $('#GrnReceivedBy').text(data.receivedBy || 'N/A');
+                        $('#GrnStatus').text(data.status || 'N/A');
+                        $('#GrnNotes').text(data.notes || 'N/A');
+                        $('#GrnTotalValue').text(Number(data.totalValue ?? 0).toFixed(2));
+
+                        var body = $('#GrnItemsBody').empty();
+
+                        $.each(data.goodsReceiptItems || [], function (i, item) {
+                            var row = $('<tr>');
+                            row.append($('<td>').text(item.productName || ''));
+                            row.append($('<td>').text(item.unitName || ''));
+                            row.append($('<td class="text-right">').text(Number(item.orderedQuantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.receivedQuantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.rejectedQuantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.returnedQuantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.unitPrice ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.lineValue ?? 0).toFixed(2)));
+                            row.append($('<td>').text(item.remarks || ''));
+                            body.append(row);
+                        });
+
+                        $('#goodsReceiptDetailModal').modal('show');
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 403) {
+                            window.location.href = '/Account/AccessDenied';
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Error!', text: 'Failed to load goods receipt details.' });
+                        }
+                    }
+                });
+            });
+        });
+
+        $(function () {
+
+            $('#goodsReceipt').on('click', '.btn-confirm', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Receive these goods?',
+                    text: 'The received quantities are added to stock straight away.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    confirmButtonText: 'Yes, Receive',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/GoodsReceipt/ConfirmGoodsReceipt', { id: id }, 'Received!');
+                    }
+                });
+            });
+
+            $('#goodsReceipt').on('click', '.btn-cancel', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Cancel this goods receipt?',
+                    text: 'If it was already received, the stock it brought in is taken straight back out.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Cancel It',
+                    cancelButtonText: 'Keep It'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/GoodsReceipt/CancelGoodsReceipt', { id: id }, 'Cancelled!');
+                    }
+                });
+            });
+
+            $('#goodsReceipt').on('click', '.show-bs-modal', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to recover this goods receipt!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Delete',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/GoodsReceipt/DeleteGoodsReceipt', { id: id }, 'Deleted!');
+                    }
+                });
+            });
+
+        });
+    </script>
+}

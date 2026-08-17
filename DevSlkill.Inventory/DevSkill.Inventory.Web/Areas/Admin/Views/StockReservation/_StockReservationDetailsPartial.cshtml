@@ -1,0 +1,75 @@
+<div class="modal fade" id="stockReservationDetailModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title">Stock Reservation Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Reservation No</dt>
+                            <dd class="col-sm-7" id="SrNo"></dd>
+
+                            <dt class="col-sm-5">Sales Order</dt>
+                            <dd class="col-sm-7" id="SrOrderNo"></dd>
+
+                            <dt class="col-sm-5">Customer</dt>
+                            <dd class="col-sm-7" id="SrCustomer"></dd>
+
+                            <dt class="col-sm-5">Warehouse</dt>
+                            <dd class="col-sm-7" id="SrWarehouse"></dd>
+                        </dl>
+                    </div>
+
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Reserved On</dt>
+                            <dd class="col-sm-7" id="SrDate"></dd>
+
+                            <dt class="col-sm-5">Expires</dt>
+                            <dd class="col-sm-7" id="SrExpiry"></dd>
+
+                            <dt class="col-sm-5">Status</dt>
+                            <dd class="col-sm-7" id="SrStatus"></dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Unit</th>
+                                <th class="text-right">Ordered</th>
+                                <th class="text-right">Held</th>
+                                <th class="text-right">Shipped From Hold</th>
+                                <th class="text-right">Still Holding</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody id="SrItemsBody"></tbody>
+                    </table>
+                </div>
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-2">Notes</dt>
+                    <dd class="col-sm-10" id="SrNotes"></dd>
+                </dl>
+
+            </div>
+
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>

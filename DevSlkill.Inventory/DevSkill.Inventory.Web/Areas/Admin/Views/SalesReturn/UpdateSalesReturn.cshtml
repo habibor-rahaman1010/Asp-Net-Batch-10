@@ -1,0 +1,107 @@
+@model SalesReturnUpdateModel;
+
+@{
+    ViewData["Title"] = "Update Sales Return";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="SalesReturn" asp-action="UpdateSalesReturn" method="post">
+
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="SalesInvoiceId" />
+
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Update Sales Return</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        Only a draft return can be edited. Once the goods are back and credited, cancel
+                        it and raise a new one rather than changing the quantities here.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="ReturnNo"></label>
+                                <input asp-for="ReturnNo" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="InvoiceNo"></label>
+                                <input asp-for="InvoiceNo" class="form-control" readonly />
+                                <small class="form-text text-muted">A return never moves to another invoice.</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="CustomerName"></label>
+                                <input asp-for="CustomerName" class="form-control" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="WarehouseName"></label>
+                                <input asp-for="WarehouseName" class="form-control" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="ReturnDate">Return Date*</label>
+                                <input asp-for="ReturnDate" type="date" class="form-control" />
+                                <span asp-validation-for="ReturnDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Reason">Reason*</label>
+                                <input asp-for="Reason" class="form-control" />
+                                <span asp-validation-for="Reason" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Notes"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <partial name="_SalesReturnLinesPartial" model="Model.SalesReturnItems" />
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Update Sales Return</button>
+                    <a asp-area="Admin" asp-controller="SalesReturn" asp-action="SalesReturnList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_SalesReturnLinesScriptPartial" />
+}

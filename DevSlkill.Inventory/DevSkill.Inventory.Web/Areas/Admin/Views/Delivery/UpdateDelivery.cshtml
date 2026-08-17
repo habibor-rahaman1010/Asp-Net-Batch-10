@@ -37,8 +37,9 @@
 
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label asp-for="ProformaNo"></label>
-                                <input asp-for="ProformaNo" class="form-control" readonly />
+                                <label asp-for="SourceNo">@Model.SourceLabel</label>
+                                <input asp-for="SourceNo" class="form-control" readonly />
+                                <input type="hidden" asp-for="SourceLabel" />
                             </div>
                         </div>
 

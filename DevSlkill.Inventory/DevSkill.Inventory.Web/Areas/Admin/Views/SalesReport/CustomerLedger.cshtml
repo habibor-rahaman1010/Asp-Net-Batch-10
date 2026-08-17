@@ -1,0 +1,250 @@
+@model CustomerLedgerModel;
+
+@{
+    ViewData["Title"] = "Customer Ledger";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Customer Ledger</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Sales</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <form asp-area="Admin" asp-controller="SalesReport" asp-action="CustomerLedger" method="get">
+
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Choose a customer and a period</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label asp-for="CustomerId"></label>
+                                <select asp-for="CustomerId" asp-items="Model.Customers" class="form-control"></select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="FromDate"></label>
+                                <input asp-for="FromDate" type="date" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label asp-for="ToDate"></label>
+                                <input asp-for="ToDate" type="date" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-book"></i> Show Ledger
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </form>
+
+        @if (Model.Ledger != null)
+        {
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="small-box bg-info">
+                        <div class="inner">
+                            <h3>@Model.Ledger.OpeningBalance.ToString("N2")</h3>
+                            <p>Opening Balance</p>
+                        </div>
+                        <div class="icon"><i class="fas fa-flag"></i></div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h3>@Model.Ledger.TotalDebit.ToString("N2")</h3>
+                            <p>Billed (debit)</p>
+                        </div>
+                        <div class="icon"><i class="fas fa-file-invoice"></i></div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3>@Model.Ledger.TotalCredit.ToString("N2")</h3>
+                            <p>Collected &amp; credited</p>
+                        </div>
+                        <div class="icon"><i class="fas fa-money-bill-wave"></i></div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="small-box @(Model.Ledger.CreditLimit > 0 && Model.Ledger.ClosingBalance > Model.Ledger.CreditLimit ? "bg-danger" : "bg-primary")">
+                        <div class="inner">
+                            <h3>@Model.Ledger.ClosingBalance.ToString("N2")</h3>
+                            <p>
+                                Closing Due
+                                @if (Model.Ledger.CreditLimit > 0)
+                                {
+                                    <span>&middot; limit @Model.Ledger.CreditLimit.ToString("N2")</span>
+                                }
+                            </p>
+                        </div>
+                        <div class="icon"><i class="fas fa-balance-scale"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.Ledger.CreditLimit > 0 && Model.Ledger.ClosingBalance > Model.Ledger.CreditLimit)
+            {
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    This customer is over their credit limit by
+                    @((Model.Ledger.ClosingBalance - Model.Ledger.CreditLimit).ToString("N2")).
+                </div>
+            }
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        @Model.Ledger.CustomerName
+                        <small class="text-muted ml-2">
+                            @Model.Ledger.CustomerCode &middot;
+                            @Model.Ledger.FromDate.ToString("dd-MM-yyyy") &ndash; @Model.Ledger.ToDate.ToString("dd-MM-yyyy")
+                        </small>
+                    </h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="table-responsive">
+                        <table id="customerLedger" class="table table-bordered table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Document No</th>
+                                    <th>Particulars</th>
+                                    <th class="text-right">Debit</th>
+                                    <th class="text-right">Credit</th>
+                                    <th class="text-right">Balance</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr class="bg-light">
+                                    <td>@Model.Ledger.FromDate.ToString("dd-MM-yyyy")</td>
+                                    <td>—</td>
+                                    <td>—</td>
+                                    <td><em>Opening balance</em></td>
+                                    <td class="text-right">—</td>
+                                    <td class="text-right">—</td>
+                                    <td class="text-right font-weight-bold">@Model.Ledger.OpeningBalance.ToString("N2")</td>
+                                </tr>
+
+                                @foreach (var entry in Model.Ledger.Entries)
+                                {
+                                    <tr>
+                                        <td>@entry.Date.ToString("dd-MM-yyyy")</td>
+                                        <td>@entry.DocumentType</td>
+                                        <td>@entry.DocumentNo</td>
+                                        <td>@entry.Particulars</td>
+                                        <td class="text-right">@(entry.Debit == 0 ? "—" : entry.Debit.ToString("N2"))</td>
+                                        <td class="text-right">@(entry.Credit == 0 ? "—" : entry.Credit.ToString("N2"))</td>
+                                        <td class="text-right">@entry.Balance.ToString("N2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                            <tfoot>
+                                <tr class="bg-light font-weight-bold">
+                                    <th colspan="4" class="text-right">Closing Balance</th>
+                                    <th class="text-right">@Model.Ledger.TotalDebit.ToString("N2")</th>
+                                    <th class="text-right">@Model.Ledger.TotalCredit.ToString("N2")</th>
+                                    <th class="text-right">@Model.Ledger.ClosingBalance.ToString("N2")</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    @if (Model.Ledger.Entries.Count == 0)
+                    {
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle"></i>
+                            Nothing moved on this account during the period.
+                        </div>
+                    }
+
+                </div>
+            </div>
+        }
+
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(function () {
+
+            // Ordering stays off: a running balance only reads correctly in date
+            // order, so re-sorting the rows would make the balance column a lie.
+            if ($("#customerLedger tbody tr").length > 1) {
+                $("#customerLedger").DataTable({
+                    paging: false,
+                    searching: true,
+                    ordering: false,
+                    info: false,
+                    autoWidth: false,
+                    dom: '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>>',
+                    buttons: ["copy", "csv", "excel", "pdf", "print"]
+                });
+            }
+
+        });
+
+    </script>
+}

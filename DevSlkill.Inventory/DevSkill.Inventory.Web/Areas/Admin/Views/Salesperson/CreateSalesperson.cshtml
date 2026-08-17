@@ -1,0 +1,136 @@
+@model SalespersonCreateModel;
+
+@{
+    ViewData["Title"] = "Add Salesperson";
+}
+
+<section class="content mt-2">
+    <div class="container-fluid">
+        <form asp-antiforgery="true" asp-area="Admin" asp-controller="Salesperson" asp-action="CreateSalesperson" method="post">
+
+            <div class="card card-primary">
+
+                <div class="card-header">
+                    <h3 class="card-title">Salesperson</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="SalespersonCode"></label>
+                                <input asp-for="SalespersonCode" class="form-control" readonly />
+                                <small class="form-text text-muted">Issued once and never changes.</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="SalespersonName">Salesperson Name*</label>
+                                <input asp-for="SalespersonName" class="form-control" placeholder="Full name" />
+                                <span asp-validation-for="SalespersonName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Status">Status*</label>
+                                <select asp-for="Status" asp-items="Model.Statuses" class="form-control"></select>
+                                <small class="form-text text-muted">An inactive salesperson cannot be named on a new document.</small>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="Phone"></label>
+                                <input asp-for="Phone" class="form-control" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="Email"></label>
+                                <input asp-for="Email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="CommissionBasis">Commission Basis*</label>
+                                <select asp-for="CommissionBasis" asp-items="Model.CommissionBases" class="form-control" id="CommissionBasis"></select>
+                                <span asp-validation-for="CommissionBasis" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="CommissionRate">Commission Rate*</label>
+                                <input asp-for="CommissionRate" type="number" step="0.01" min="0" class="form-control" id="CommissionRate" />
+                                <small class="form-text text-muted" id="rateHint">A percentage of the invoice value, so it cannot go past 100.</small>
+                                <span asp-validation-for="CommissionRate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="MonthlyTarget"></label>
+                                <input asp-for="MonthlyTarget" type="number" step="0.01" min="0" class="form-control" />
+                                <small class="form-text text-muted">Used to work out the achievement on the performance report.</small>
+                                <span asp-validation-for="MonthlyTarget" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Save Salesperson</button>
+                    <a asp-area="Admin" asp-controller="Salesperson" asp-action="SalespersonList" class="btn btn-danger">Cancel</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        // The rate means two different things, so the hint says which one is being
+        // typed rather than leaving the number to be guessed at.
+        function refreshRateHint() {
+
+            var isPercentage = $("#CommissionBasis").val() === "0";
+
+            $("#rateHint").text(isPercentage
+                ? "A percentage of the invoice value, so it cannot go past 100."
+                : "A flat amount earned on every invoice, whatever it comes to.");
+
+            $("#CommissionRate").attr("max", isPercentage ? 100 : null);
+        }
+
+        $(document).ready(function () {
+
+            refreshRateHint();
+
+            $("#CommissionBasis").on("change", refreshRateHint);
+
+        });
+
+    </script>
+}

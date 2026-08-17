@@ -1,0 +1,404 @@
+@{
+    ViewData["Title"] = "Sales Quotation List";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Sales Quotations</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Sales</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">An offer holds no stock. Accepting one lets it become a sales order.</h3>
+
+                        <a asp-area="Admin" asp-controller="SalesQuotation" asp-action="CreateSalesQuotation" class="btn btn-primary float-right">
+                            <i class="fas fa-plus"></i> New Quotation
+                        </a>
+                    </div>
+
+                    <div class="card-body">
+                        <partial name="_ResponsePartial" />
+                        <partial name="_ModalPartial" />
+                        <table id="salesQuotation" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Quotation No</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Valid Until</th>
+                                    <th>Warehouse</th>
+                                    <th>Grand Total</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tfoot>
+                                <tr>
+                                    <th>Quotation No</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Valid Until</th>
+                                    <th>Warehouse</th>
+                                    <th>Grand Total</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<partial name="_SalesQuotationDetailsPartial" />
+
+@section Scripts {
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+    <script type="text/javascript">
+
+        function statusBadgeClass(status) {
+            switch (status) {
+                case 'Accepted': return 'badge-success';
+                case 'Converted': return 'badge-primary';
+                case 'Sent': return 'badge-info';
+                case 'Rejected': return 'badge-danger';
+                case 'Expired': return 'badge-warning';
+                case 'Cancelled': return 'badge-danger';
+                default: return 'badge-secondary';
+            }
+        }
+
+        // A draft is edited or sent. A sent offer waits for the customer's answer.
+        // An accepted one becomes a sales order and is no longer touched here.
+        function actionButtons(id, status) {
+
+            var buttons = '';
+
+            if (status === 'Draft' || status === 'Sent') {
+                buttons += `<a href="/Admin/SalesQuotation/UpdateSalesQuotation/${id}"
+                               class="btn btn-info btn-sm mr-1" title="Edit"><i class="fas fa-edit"></i></a>`;
+            }
+
+            if (status === 'Draft') {
+                buttons += `<button type="button" class="btn btn-primary btn-sm mr-1 btn-send" data-id='${id}'
+                                title="Send to customer"><i class="fas fa-paper-plane"></i></button>`;
+            }
+
+            if (status === 'Sent') {
+                buttons += `<button type="button" class="btn btn-success btn-sm mr-1 btn-accept" data-id='${id}'
+                                title="Customer accepted"><i class="fas fa-check"></i></button>
+                            <button type="button" class="btn btn-secondary btn-sm mr-1 btn-reject" data-id='${id}'
+                                title="Customer rejected"><i class="fas fa-times"></i></button>
+                            <button type="button" class="btn btn-warning btn-sm mr-1 btn-expire" data-id='${id}'
+                                title="Mark expired"><i class="fas fa-hourglass-end"></i></button>`;
+            }
+
+            if (status === 'Accepted') {
+                buttons += `<a href="/Admin/SalesOrder/CreateSalesOrder?salesQuotationId=${id}"
+                               class="btn btn-success btn-sm mr-1" title="Raise sales order"><i class="fas fa-file-invoice"></i></a>`;
+            }
+
+            if (status === 'Draft' || status === 'Sent') {
+                buttons += `<button type="button" class="btn btn-warning btn-sm mr-1 btn-cancel" data-id='${id}'
+                                title="Cancel"><i class="fas fa-ban"></i></button>`;
+            }
+
+            if (status === 'Draft' || status === 'Cancelled' || status === 'Rejected' || status === 'Expired') {
+                buttons += `<button type="button" class="btn btn-danger btn-sm show-bs-modal" data-id='${id}'
+                                title="Delete"><i class="fas fa-trash"></i></button>`;
+            }
+
+            return buttons === '' ? '<span class="text-muted">—</span>' : buttons;
+        }
+
+        function postAction(url, data, successTitle) {
+
+            data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({ icon: 'success', title: successTitle, text: response.message, timer: 2200, showConfirmButton: false });
+                        $('#salesQuotation').DataTable().ajax.reload(null, false);
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Failed!', text: response.message });
+                    }
+                },
+                error: function (error) {
+                    if (error.status === 403) {
+                        window.location.href = '/Account/AccessDenied';
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Error!', text: 'The action could not be completed.' });
+                    }
+                }
+            });
+        }
+
+        $(function () {
+            try {
+                $("#salesQuotation").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    responsive: true,
+                    lengthChange: true,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    autoWidth: false,
+                    ajax: {
+                        url: "/Admin/SalesQuotation/GetSalesQuotationJsonData",
+                        type: "POST",
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: function (d) {
+                            return JSON.stringify(d);
+                        },
+                    },
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 7,
+                            render: function (data, type, row) {
+                                return actionButtons(data, row[6]);
+                            }
+                        },
+                        {
+                            targets: 6,
+                            render: function (data) {
+                                return `<span class="badge ${statusBadgeClass(data)}">${data}</span>`;
+                            }
+                        },
+                        ...[0, 1, 2, 3, 4, 5].map(function (target) {
+                            return {
+                                targets: target,
+                                createdCell: function (td, cellData, rowData) {
+                                    $(td).addClass('table-row');
+                                    $(td).attr('data-id', rowData[7]);
+                                }
+                            };
+                        })
+                    ],
+                    dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                }).buttons().container().appendTo('#salesQuotation_wrapper .col-md-6:eq(0)');
+            } catch (e) {
+                console.error("DataTable init error:", e);
+            }
+        });
+
+        // Row click -> sales quotation details modal
+        $(function () {
+            $('#salesQuotation tbody').on('click', '.table-row', function () {
+                var id = $(this).data("id");
+
+                $.ajax({
+                    url: `/Admin/SalesQuotation/GetSalesQuotationDetails?id=${id}`,
+                    type: 'GET',
+                    success: function (data) {
+
+                        $('#SqNo').text(data.quotationNo || 'N/A');
+                        $('#SqCustomer').text(data.customerName || 'N/A');
+                        $('#SqWarehouse').text(data.warehouse || 'N/A');
+                        $('#SqSalesperson').text(data.salesperson || 'N/A');
+                        $('#SqDate').text(data.quotationDate ? new Date(data.quotationDate).toLocaleDateString() : 'N/A');
+                        $('#SqValidUntil').text(data.validUntil ? new Date(data.validUntil).toLocaleDateString() : 'N/A');
+                        $('#SqPaymentTerms').text(data.paymentTerms || 'N/A');
+                        $('#SqStatus').text(data.status || 'N/A');
+                        $('#SqReference').text(data.customerReference || 'N/A');
+                        $('#SqNotes').text(data.notes || 'N/A');
+
+                        $('#SqSubTotal').text(Number(data.subTotal ?? 0).toFixed(2));
+                        $('#SqDiscount').text(Number(data.itemDiscountTotal ?? 0).toFixed(2));
+                        $('#SqTax').text(Number(data.totalTax ?? 0).toFixed(2));
+                        $('#SqOtherCharges').text(Number(data.otherCharges ?? 0).toFixed(2));
+                        $('#SqGrandTotal').text(Number(data.grandTotal ?? 0).toFixed(2));
+
+                        var body = $('#SqItemsBody').empty();
+
+                        $.each(data.salesQuotationItems || [], function (i, item) {
+                            var row = $('<tr>');
+                            row.append($('<td>').text(item.productName || ''));
+                            row.append($('<td>').text(item.unitName || ''));
+                            row.append($('<td class="text-right">').text(Number(item.quantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.orderedQuantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.remainingQuantity ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.unitPrice ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.discountAmount ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.taxAmount ?? 0).toFixed(2)));
+                            row.append($('<td class="text-right">').text(Number(item.lineTotal ?? 0).toFixed(2)));
+                            body.append(row);
+                        });
+
+                        $('#salesQuotationDetailModal').modal('show');
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 403) {
+                            window.location.href = '/Account/AccessDenied';
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Error!', text: 'Failed to load sales quotation details.' });
+                        }
+                    }
+                });
+            });
+        });
+
+        $(function () {
+
+            $('#salesQuotation').on('click', '.btn-send', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Send this quotation?',
+                    text: 'From now on the prices on it are being held until it expires.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#007bff',
+                    confirmButtonText: 'Yes, Send',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/SalesQuotation/SendSalesQuotation', { id: id }, 'Sent!');
+                    }
+                });
+            });
+
+            $('#salesQuotation').on('click', '.btn-accept', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Customer accepted this offer?',
+                    text: 'Once accepted it can be turned into a sales order.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    confirmButtonText: 'Yes, Accepted',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/SalesQuotation/AcceptSalesQuotation', { id: id }, 'Accepted!');
+                    }
+                });
+            });
+
+            $('#salesQuotation').on('click', '.btn-reject', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Customer rejected this offer?',
+                    input: 'text',
+                    inputLabel: 'Reason',
+                    inputPlaceholder: 'Price, delivery time, lost to a competitor...',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Rejected',
+                    cancelButtonText: 'Cancel',
+                    inputValidator: function (value) {
+                        if (!value) {
+                            return 'A reason is needed, so the loss can be understood later.';
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/SalesQuotation/RejectSalesQuotation', { id: id, reason: result.value }, 'Rejected!');
+                    }
+                });
+            });
+
+            $('#salesQuotation').on('click', '.btn-expire', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Mark this quotation expired?',
+                    text: 'The prices on it are no longer being held.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ffc107',
+                    confirmButtonText: 'Yes, Expired',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/SalesQuotation/ExpireSalesQuotation', { id: id }, 'Expired!');
+                    }
+                });
+            });
+
+            $('#salesQuotation').on('click', '.btn-cancel', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Cancel this quotation?',
+                    text: 'The offer is withdrawn and can no longer be accepted.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Cancel It',
+                    cancelButtonText: 'Keep It'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/SalesQuotation/CancelSalesQuotation', { id: id }, 'Cancelled!');
+                    }
+                });
+            });
+
+            $('#salesQuotation').on('click', '.show-bs-modal', function () {
+                let id = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to recover this sales quotation!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Delete',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        postAction('/Admin/SalesQuotation/DeleteSalesQuotation', { id: id }, 'Deleted!');
+                    }
+                });
+            });
+
+        });
+    </script>
+}

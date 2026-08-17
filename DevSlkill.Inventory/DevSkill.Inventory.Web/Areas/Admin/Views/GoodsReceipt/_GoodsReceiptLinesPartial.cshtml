@@ -1,0 +1,100 @@
+@model List<GoodsReceiptItemModel>
+
+@*
+    The receiving grid, shared by the create and update screens. Product, ordered
+    quantity and unit price all come from the purchase order and are read only;
+    only what actually arrived is typed.
+*@
+
+<div class="card">
+
+    <div class="card-header">
+        <h3 class="card-title">Received Products</h3>
+    </div>
+
+    <div class="card-body">
+
+        <div class="alert alert-warning">
+            <i class="fas fa-boxes"></i>
+            <strong>Received</strong> is the quantity that enters stock, and it does so only
+            when the receipt is set to <em>Received</em>. <strong>Rejected</strong> is recorded
+            for the supplier and never enters stock. Neither may take a line past what the
+            purchase order still has outstanding.
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th width="22%">Product</th>
+                        <th width="8%">Unit</th>
+                        <th width="9%">Ordered</th>
+                        <th width="10%">Already In</th>
+                        <th width="9%">Remaining</th>
+                        <th width="11%">Receiving Now</th>
+                        <th width="10%">Rejected</th>
+                        <th width="10%">Unit Price</th>
+                        <th width="11%">Line Value</th>
+                    </tr>
+                </thead>
+
+                <tbody id="receiptTableBody">
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Model[i].ProductName
+                                <input type="hidden" name="GoodsReceiptItems[@i].ProductId" value="@Model[i].ProductId" />
+                                <input type="hidden" name="GoodsReceiptItems[@i].ProductName" value="@Model[i].ProductName" />
+                                <input type="hidden" name="GoodsReceiptItems[@i].UnitName" value="@Model[i].UnitName" />
+                                <input type="hidden" name="GoodsReceiptItems[@i].OrderedQuantity" value="@Model[i].OrderedQuantity" />
+                                <input type="hidden" name="GoodsReceiptItems[@i].AlreadyReceivedQuantity" value="@Model[i].AlreadyReceivedQuantity" />
+                                <input type="hidden" name="GoodsReceiptItems[@i].RemainingQuantity" value="@Model[i].RemainingQuantity" class="remaining-qty" />
+                                <input type="hidden" name="GoodsReceiptItems[@i].UnitPrice" value="@Model[i].UnitPrice" class="unit-price" />
+                            </td>
+
+                            <td>@Model[i].UnitName</td>
+                            <td class="text-right">@Model[i].OrderedQuantity.ToString("N2")</td>
+                            <td class="text-right">@Model[i].AlreadyReceivedQuantity.ToString("N2")</td>
+                            <td class="text-right font-weight-bold">@Model[i].RemainingQuantity.ToString("N2")</td>
+
+                            <td>
+                                <input name="GoodsReceiptItems[@i].ReceivedQuantity" value="@Model[i].ReceivedQuantity"
+                                       type="number" step="1" min="0" class="form-control received-qty" />
+                            </td>
+
+                            <td>
+                                <input name="GoodsReceiptItems[@i].RejectedQuantity" value="@Model[i].RejectedQuantity"
+                                       type="number" step="0.01" min="0" class="form-control rejected-qty" />
+                            </td>
+
+                            <td class="text-right">@Model[i].UnitPrice.ToString("N2")</td>
+                            <td><input class="form-control line-value" value="0.00" readonly /></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.Count == 0)
+        {
+            <div class="alert alert-info mb-0">
+                <i class="fas fa-info-circle"></i>
+                Choose a purchase order above and its outstanding lines will appear here.
+            </div>
+        }
+
+        <div class="row justify-content-end">
+            <div class="col-md-4">
+                <table class="table table-sm">
+                    <tr class="bg-light">
+                        <th>Receipt Value</th>
+                        <th class="text-right" id="sumReceiptValue">0.00</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</div>

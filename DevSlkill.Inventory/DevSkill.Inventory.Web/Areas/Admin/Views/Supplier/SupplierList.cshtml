@@ -1,0 +1,283 @@
+@{
+    ViewData["Title"] = "Supplier List";
+}
+
+@section Styles {
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>All Supplier List</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Purchase</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">All supplier record are here!</h3>
+
+                        <a asp-area="Admin" asp-controller="Supplier" asp-action="CreateSupplier" class="btn btn-primary float-right">
+                            <i class="fas fa-plus"></i> Add Supplier
+                        </a>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <partial name="_ResponsePartial" />
+                        <partial name="_ModalPartial" />
+                        <table id="supplier" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Supplier Name</th>
+                                    <th>Contact Person</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th>Credit Limit</th>
+                                    <th>Outstanding</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tfoot>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Supplier Name</th>
+                                    <th>Contact Person</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th>Credit Limit</th>
+                                    <th>Outstanding</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+
+<partial name="_SupplierDetailsPartial" />
+
+<!-- /.content -->
+@section Scripts {
+    <!-- DataTables  & Plugins -->
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            try {
+                $("#supplier").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    responsive: true,
+                    lengthChange: true,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    autoWidth: false,
+                    ajax: {
+                        url: "/Admin/Supplier/GetSupplierJsonData",
+                        type: "POST",
+                        contentType: "application/json",
+                        dataType: "json",
+                        data: function (d) {
+                            return JSON.stringify(d);
+                        },
+                    },
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 8,
+                            render: function (data, type, row) {
+                                return `<a href="/Admin/Supplier/UpdateSupplier/${data}"
+                                           class="btn btn-info btn-sm mr-1">
+                                            <i class="fas fa-edit"></i> Edit
+                                         </a>
+                                        <button type="button" class="btn btn-warning btn-sm mr-1 toggle-status" data-id='${data}'>
+                                            <i class="fas fa-power-off"></i> Status
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-sm show-bs-modal" data-id='${data}'>
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>`;
+                            }
+                        },
+                        {
+                            targets: 7,
+                            render: function (data) {
+                                var cls = data === 'Active'
+                                    ? 'badge-success'
+                                    : (data === 'Blacklisted' ? 'badge-danger' : 'badge-secondary');
+                                return `<span class="badge ${cls}">${data}</span>`;
+                            }
+                        },
+                        ...[0, 1, 2, 3, 4, 5, 6].map(function (target) {
+                            return {
+                                targets: target,
+                                createdCell: function (td, cellData, rowData) {
+                                    $(td).addClass('table-row');
+                                    $(td).attr('data-id', rowData[8]);
+                                }
+                            };
+                        })
+                    ],
+                    dom: '<"row"<"col-sm-12 col-md-6"lB><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                }).buttons().container().appendTo('#supplier_wrapper .col-md-6:eq(0)');
+            } catch (e) {
+                console.error("DataTable init error:", e);
+            }
+        });
+
+        // Row click -> Supplier details modal
+        $(function () {
+            $('#supplier tbody').on('click', '.table-row', function () {
+                var id = $(this).data("id");
+
+                $.ajax({
+                    url: `/Admin/Supplier/GetSupplierDetails?id=${id}`,
+                    type: 'GET',
+                    success: function (data) {
+                        $('#SupplierCodeText').text(data.supplierCode || 'N/A');
+                        $('#SupplierNameText').text(data.supplierName || 'N/A');
+                        $('#SupplierContactPerson').text(data.contactPerson || 'N/A');
+                        $('#SupplierPhone').text(data.phone || 'N/A');
+                        $('#SupplierEmail').text(data.email || 'N/A');
+                        $('#SupplierAddress').text(data.address || 'N/A');
+                        $('#SupplierTaxNumber').text(data.taxNumber || 'N/A');
+                        $('#SupplierPaymentTerms').text(data.paymentTerms || 'N/A');
+                        $('#SupplierStatus').text(data.status || 'N/A');
+                        $('#SupplierCreditLimit').text(Number(data.creditLimit ?? 0).toFixed(2));
+                        $('#SupplierOpeningBalance').text(Number(data.openingBalance ?? 0).toFixed(2));
+                        $('#SupplierCurrentOutstanding').text(Number(data.currentOutstanding ?? 0).toFixed(2));
+                        $('#SupplierAvailableCredit').text(Number(data.availableCredit ?? 0).toFixed(2));
+                        $('#SupplierCreated').text(
+                            data.created ? new Date(data.created).toLocaleString('en-US', { hour12: true }) : 'N/A'
+                        );
+
+                        $('#supplierDetailModal').modal('show');
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 403) {
+                            window.location.href = '/Account/AccessDenied';
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Error!', text: 'Failed to load supplier details.' });
+                        }
+                    }
+                });
+            });
+        });
+
+        // Status toggle
+        $(function () {
+            $('#supplier').on('click', '.toggle-status', function () {
+                let id = $(this).data("id");
+
+                $.ajax({
+                    url: '/Admin/Supplier/ToggleSupplierStatus',
+                    type: 'POST',
+                    data: {
+                        id: id,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({ icon: 'success', title: 'Updated!', text: response.message, timer: 1500, showConfirmButton: false });
+                            $('#supplier').DataTable().ajax.reload(null, false);
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Failed!', text: response.message });
+                        }
+                    },
+                    error: function (error) {
+                        if (error.status === 403) {
+                            window.location.href = '/Account/AccessDenied';
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Error!', text: 'Status change failed.' });
+                        }
+                    }
+                });
+            });
+        });
+
+        // Delete handler
+        $(function () {
+            $('#supplier').on('click', '.show-bs-modal', function () {
+                let id = $(this).data("id");
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to recover this Supplier!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Delete',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/Admin/Supplier/DeleteSupplier',
+                            type: 'POST',
+                            data: {
+                                id: id,
+                                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire({ icon: 'success', title: 'Deleted!', text: response.message, timer: 2000, showConfirmButton: false });
+                                    $('#supplier').DataTable().ajax.reload(null, false);
+                                } else {
+                                    Swal.fire({ icon: 'error', title: 'Failed!', text: response.message });
+                                }
+                            },
+                            error: function (error) {
+                                if (error.status === 403) {
+                                    window.location.href = '/Account/AccessDenied';
+                                } else {
+                                    Swal.fire({ icon: 'error', title: 'Error!', text: 'There was an error deleting the Supplier!' });
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

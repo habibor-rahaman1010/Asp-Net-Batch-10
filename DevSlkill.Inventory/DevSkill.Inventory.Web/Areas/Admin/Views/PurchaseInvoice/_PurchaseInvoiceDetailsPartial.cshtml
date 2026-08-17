@@ -1,0 +1,116 @@
+<div class="modal fade" id="purchaseInvoiceDetailModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title">Purchase Invoice Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Invoice No</dt>
+                            <dd class="col-sm-7" id="PiNo"></dd>
+
+                            <dt class="col-sm-5">Supplier Invoice No</dt>
+                            <dd class="col-sm-7" id="PiSupplierInvoiceNo"></dd>
+
+                            <dt class="col-sm-5">Supplier</dt>
+                            <dd class="col-sm-7" id="PiSupplier"></dd>
+
+                            <dt class="col-sm-5">Purchase Order</dt>
+                            <dd class="col-sm-7" id="PiPoNo"></dd>
+
+                            <dt class="col-sm-5">Goods Receipt</dt>
+                            <dd class="col-sm-7" id="PiGrnNo"></dd>
+                        </dl>
+                    </div>
+
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-5">Invoice Date</dt>
+                            <dd class="col-sm-7" id="PiDate"></dd>
+
+                            <dt class="col-sm-5">Due Date</dt>
+                            <dd class="col-sm-7" id="PiDueDate"></dd>
+
+                            <dt class="col-sm-5">Payment Terms</dt>
+                            <dd class="col-sm-7" id="PiPaymentTerms"></dd>
+
+                            <dt class="col-sm-5">Status</dt>
+                            <dd class="col-sm-7" id="PiStatus"></dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Unit</th>
+                                <th class="text-right">Quantity</th>
+                                <th class="text-right">Unit Price</th>
+                                <th class="text-right">Discount</th>
+                                <th class="text-right">Tax</th>
+                                <th class="text-right">Line Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="PiItemsBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="row justify-content-end">
+                    <div class="col-md-5">
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Sub Total</th>
+                                <td class="text-right" id="PiSubTotal"></td>
+                            </tr>
+                            <tr>
+                                <th>Item Discount</th>
+                                <td class="text-right" id="PiItemDiscount"></td>
+                            </tr>
+                            <tr>
+                                <th>Tax / VAT</th>
+                                <td class="text-right" id="PiTotalTax"></td>
+                            </tr>
+                            <tr>
+                                <th>Other Charges</th>
+                                <td class="text-right" id="PiOtherCharges"></td>
+                            </tr>
+                            <tr class="bg-light">
+                                <th>Grand Total</th>
+                                <th class="text-right" id="PiGrandTotal"></th>
+                            </tr>
+                            <tr>
+                                <th>Paid</th>
+                                <td class="text-right" id="PiPaidAmount"></td>
+                            </tr>
+                            <tr>
+                                <th>Due</th>
+                                <th class="text-right text-danger" id="PiDueAmount"></th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-2">Notes</dt>
+                    <dd class="col-sm-10" id="PiNotes"></dd>
+                </dl>
+
+            </div>
+
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
