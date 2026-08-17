@@ -29,7 +29,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
         /// </summary>
         public decimal OrderedQuantity { get; set; }
 
-        public string Remarks { get; set; } = string.Empty;
+        public string? Remarks { get; set; } = string.Empty;
 
         public SalesQuotationItemModel()
         {

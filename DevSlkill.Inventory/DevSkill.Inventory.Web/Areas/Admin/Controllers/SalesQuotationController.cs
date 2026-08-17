@@ -105,6 +105,20 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
+
+                foreach (var state in ModelState)
+                {
+                    foreach (var error in state.Value.Errors)
+                    {
+                        _logger.LogWarning(
+                            "ModelState Error | Field: {Field} | Error: {Error} | Exception: {Exception}",
+                            state.Key,
+                            error.ErrorMessage,
+                            error.Exception?.Message
+                        );
+                    }
+                }
+
                 await PopulateAsync(model);
                 return View(model);
             }
