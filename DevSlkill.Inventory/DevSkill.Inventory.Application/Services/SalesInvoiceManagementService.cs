@@ -72,11 +72,13 @@ namespace DevSkill.Inventory.Application.Services
 
                 if (postImmediately)
                 {
-                    await ApplyPostingAsync(header, context.SalesOrder);
-
+                    // The header is still an unwritten insert here, so posting only sets
+                    // the status on it. Marking it modified would turn that insert into an
+                    // update of a row that does not exist yet, and the lines and the
+                    // commission would then be written against a missing invoice.
                     header.Status = SalesInvoiceStatus.Posted;
 
-                    await _salesInvoiceUnitOfWork.SalesInvoiceRepository.EditAsync(header);
+                    await ApplyPostingAsync(header, context.SalesOrder);
                 }
 
                 await _salesInvoiceUnitOfWork.CommitTransactionAsync();

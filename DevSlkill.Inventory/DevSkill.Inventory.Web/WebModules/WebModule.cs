@@ -340,6 +340,10 @@ namespace DevSkill.Inventory.Web.WebModules
                 .As<ISalesReportService>()
                 .InstancePerLifetimeScope();
 
+            builder.RegisterType<DashboardAnalyticsService>()
+                .As<IDashboardAnalyticsService>()
+                .InstancePerLifetimeScope();
+
             //Purchase Management module
             builder.RegisterType<SupplierRepository>()
                 .As<ISupplierRepository>()

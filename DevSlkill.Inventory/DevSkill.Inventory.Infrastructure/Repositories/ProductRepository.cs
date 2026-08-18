@@ -8,9 +8,11 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
 {
     public class ProductRepository : Repository<Product, Guid>, IProductRepository
     {
-        public ProductRepository(InventoryDbContext inventoryDbcontext) : base(inventoryDbcontext) 
-        {
+        private readonly InventoryDbContext _inventoryDbContext;
 
+        public ProductRepository(InventoryDbContext inventoryDbcontext) : base(inventoryDbcontext)
+        {
+            _inventoryDbContext = inventoryDbcontext;
         }
 
         public async Task<Product> GetProductByIdAsync(Guid id)
@@ -71,6 +73,23 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
             {
                 throw new ApplicationException("Exception Occured: ", ex);
             }
+        }
+
+        public async Task<(int unitsOnHand, int unitsReserved)> GetStockUnitTotalsAsync()
+        {
+            // One round trip, two sums. Reading the rows back only to add them up would
+            // grow with the catalogue for no gain.
+            var totals = await _inventoryDbContext.Products
+                .GroupBy(x => 1)
+                .Select(g => new
+                {
+                    OnHand = g.Sum(x => x.CurrentStock),
+                    Reserved = g.Sum(x => x.ReservedStock)
+                })
+                .FirstOrDefaultAsync();
+
+            // No products at all leaves nothing to group, so the empty shelf is zero.
+            return (totals?.OnHand ?? 0, totals?.Reserved ?? 0);
         }
     }
 }

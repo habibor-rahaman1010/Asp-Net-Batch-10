@@ -1,4 +1,6 @@
-﻿namespace DevSkill.Inventory.Web.Areas.Admin.Models
+using DevSkill.Inventory.Domain.Dtos;
+
+namespace DevSkill.Inventory.Web.Areas.Admin.Models
 {
     public class DashboardViewModel
     {
@@ -11,5 +13,18 @@
         public int UniqueVisitors { get; set; }
         public int TotalWarehouse { get; set; }
         public int TotalBrands { get; set; }
+
+        /// <summary>What the in-house stock chart draws.</summary>
+        public StockHealthDto StockHealth { get; set; } = new();
+
+        /// <summary>What the sales-against-purchase chart draws.</summary>
+        public SalesVsPurchaseDto SalesVsPurchase { get; set; } = new();
+
+        /// <summary>
+        /// The years the two year pickers list, newest first so the years somebody is
+        /// most likely to want are at the top. This reaches back further than the
+        /// invoices do, so a range can be picked before the data covers it.
+        /// </summary>
+        public IList<int> AvailableYears { get; set; } = new List<int>();
     }
 }

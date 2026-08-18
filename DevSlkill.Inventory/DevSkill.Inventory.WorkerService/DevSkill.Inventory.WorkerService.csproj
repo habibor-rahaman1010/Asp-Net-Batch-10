@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-DevSkill.Inventory.WorkerService-ffc0cb2f-76b6-4388-bfa5-23eb2d606692</UserSecretsId>
   </PropertyGroup>

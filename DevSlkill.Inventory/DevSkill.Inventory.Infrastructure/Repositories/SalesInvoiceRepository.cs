@@ -1,4 +1,5 @@
 using DevSkill.Inventory.Domain;
+using DevSkill.Inventory.Domain.Dtos;
 using DevSkill.Inventory.Domain.Entities.SalesEntities;
 using DevSkill.Inventory.Domain.Enums;
 using DevSkill.Inventory.Domain.RepositoryContracts;
@@ -108,6 +109,33 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
                 .Where(x => x.InvoiceDate >= fromDate && x.InvoiceDate <= toDate)
                 .OrderBy(x => x.InvoiceDate)
                 .ToListAsync();
+        }
+
+        public async Task<IList<MonthlyAmountDto>> GetMonthlyInvoicedTotalsAsync(DateTime fromDate, DateTime toDate,
+            params SalesInvoiceStatus[] statuses)
+        {
+            return await _inventoryDbContext.SalesInvoices
+                .Where(x => x.InvoiceDate >= fromDate
+                         && x.InvoiceDate <= toDate
+                         && statuses.Contains(x.Status))
+                .GroupBy(x => new { x.InvoiceDate.Year, x.InvoiceDate.Month })
+                .Select(g => new MonthlyAmountDto
+                {
+                    Year = g.Key.Year,
+                    Month = g.Key.Month,
+                    Total = g.Sum(x => x.GrandTotal)
+                })
+                .OrderBy(x => x.Year).ThenBy(x => x.Month)
+                .ToListAsync();
+        }
+
+        public async Task<DateTime?> GetEarliestInvoiceDateAsync(params SalesInvoiceStatus[] statuses)
+        {
+            return await _inventoryDbContext.SalesInvoices
+                .Where(x => statuses.Contains(x.Status))
+                .OrderBy(x => x.InvoiceDate)
+                .Select(x => (DateTime?)x.InvoiceDate)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<bool> IsInvoiceNoDuplicateAsync(string invoiceNo)

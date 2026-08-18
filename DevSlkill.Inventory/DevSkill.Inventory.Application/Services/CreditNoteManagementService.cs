@@ -66,11 +66,12 @@ namespace DevSkill.Inventory.Application.Services
 
                 if (issueImmediately)
                 {
-                    await MoveOutstandingAsync(header.CustomerId, -header.TotalAmount);
-
+                    // The header is still an unwritten insert here, so issuing only sets
+                    // the status on it. Marking it modified would turn that insert into an
+                    // update of a row that does not exist yet.
                     header.Status = CreditNoteStatus.Issued;
 
-                    await _creditNoteUnitOfWork.CreditNoteRepository.EditAsync(header);
+                    await MoveOutstandingAsync(header.CustomerId, -header.TotalAmount);
                 }
 
                 await _creditNoteUnitOfWork.CommitTransactionAsync();

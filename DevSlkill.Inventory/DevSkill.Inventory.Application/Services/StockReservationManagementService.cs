@@ -61,11 +61,12 @@ namespace DevSkill.Inventory.Application.Services
                 // to be put aside, not for a note saying it might be.
                 if (reserveImmediately)
                 {
-                    await ApplyHoldAsync(header);
-
+                    // The header is still an unwritten insert here, so holding only sets the
+                    // status on it. Marking it modified would turn that insert into an
+                    // update of a row that does not exist yet.
                     header.Status = StockReservationStatus.Reserved;
 
-                    await _stockReservationUnitOfWork.StockReservationRepository.EditAsync(header);
+                    await ApplyHoldAsync(header);
                 }
 
                 await _stockReservationUnitOfWork.CommitTransactionAsync();

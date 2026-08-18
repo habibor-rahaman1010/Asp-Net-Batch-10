@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-DevSkill.Inventory.Web-b07ec03f-9fd3-4bea-8a27-f830bd59ebaf</UserSecretsId>
   </PropertyGroup>

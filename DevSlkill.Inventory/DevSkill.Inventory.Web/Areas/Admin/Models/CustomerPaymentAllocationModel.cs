@@ -8,7 +8,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
     public class CustomerPaymentAllocationModel
     {
         public Guid SalesInvoiceId { get; set; }
-        public string InvoiceNo { get; set; } = string.Empty;
+        public string? InvoiceNo { get; set; } = string.Empty;
 
         public DateTime InvoiceDate { get; set; }
         public DateTime DueDate { get; set; }
@@ -31,6 +31,6 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
         /// <summary>Filled by the server so the stored allocation records what was owed.</summary>
         public decimal DueAmount { get; set; }
 
-        public string Remarks { get; set; } = string.Empty;
+        public string? Remarks { get; set; } = string.Empty;
     }
 }

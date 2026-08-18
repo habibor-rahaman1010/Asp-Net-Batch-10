@@ -62,11 +62,13 @@ namespace DevSkill.Inventory.Application.Services
 
                 if (receiveImmediately)
                 {
-                    await ApplyReceiptAsync(header);
-
+                    // The header is still an unwritten insert here, so receiving only sets
+                    // the status on it. Marking it modified would turn that insert into an
+                    // update of a row that does not exist yet, and anything written against
+                    // the payment would then point at a missing row.
                     header.Status = CustomerPaymentStatus.Received;
 
-                    await _customerPaymentUnitOfWork.CustomerPaymentRepository.EditAsync(header);
+                    await ApplyReceiptAsync(header);
                 }
 
                 await _customerPaymentUnitOfWork.CommitTransactionAsync();

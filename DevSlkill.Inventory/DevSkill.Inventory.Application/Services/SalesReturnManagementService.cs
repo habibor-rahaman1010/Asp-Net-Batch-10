@@ -62,11 +62,13 @@ namespace DevSkill.Inventory.Application.Services
 
                 if (confirmImmediately)
                 {
-                    await ApplyReturnAsync(header, context.SalesInvoice);
-
+                    // The header is still an unwritten insert here, so confirming only sets
+                    // the status on it. Marking it modified would turn that insert into an
+                    // update of a row that does not exist yet, and the lines would then be
+                    // written against a missing return.
                     header.Status = SalesReturnStatus.Returned;
 
-                    await _salesReturnUnitOfWork.SalesReturnRepository.EditAsync(header);
+                    await ApplyReturnAsync(header, context.SalesInvoice);
                 }
 
                 await _salesReturnUnitOfWork.CommitTransactionAsync();

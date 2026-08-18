@@ -198,6 +198,166 @@
         </div>
 
 
+
+        <!-- Analysis charts -->
+        <div class="row">
+
+            <!-- In-house stock health -->
+            <div class="col-lg-5">
+                <div class="card card-outline card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-warehouse mr-1"></i>
+                            In-House Stock Health
+                        </h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.StockHealth.TotalProducts == 0)
+                        {
+                            <p class="text-muted text-center my-5">
+                                No products in house yet, so there is nothing to chart.
+                            </p>
+                        }
+                        else
+                        {
+                            <div style="position: relative; height: 240px;">
+                                <canvas id="stockHealthChart"></canvas>
+                                <!-- The ring shows the split; the middle keeps the total readable -->
+                                <div class="text-center"
+                                     style="position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%); pointer-events: none;">
+                                    <div style="font-size: 28px; font-weight: 600; line-height: 1.1;">
+                                        @Model.StockHealth.TotalProducts
+                                    </div>
+                                    <div class="text-muted" style="font-size: 12px;">products</div>
+                                </div>
+                            </div>
+
+                            <!-- Legend carries the count beside the swatch, so no slice is read by colour alone -->
+                            <div class="row text-center mt-3">
+                                <div class="col-4">
+                                    <i class="fas fa-check-circle" style="color: #0ca30c;"></i>
+                                    <div class="text-muted" style="font-size: 12px;">Healthy</div>
+                                    <strong>@Model.StockHealth.HealthyProducts</strong>
+                                </div>
+                                <div class="col-4">
+                                    <i class="fas fa-exclamation-triangle" style="color: #fab219;"></i>
+                                    <div class="text-muted" style="font-size: 12px;">Low Stock</div>
+                                    <strong>@Model.StockHealth.LowStockProducts</strong>
+                                </div>
+                                <div class="col-4">
+                                    <i class="fas fa-times-circle" style="color: #d03b3b;"></i>
+                                    <div class="text-muted" style="font-size: 12px;">Out of Stock</div>
+                                    <strong>@Model.StockHealth.OutOfStockProducts</strong>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="text-muted" style="font-size: 12px;">Units On Hand</div>
+                                <strong>@Model.StockHealth.UnitsOnHand.ToString("N0")</strong>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-muted" style="font-size: 12px;">Reserved</div>
+                                <strong>@Model.StockHealth.UnitsReserved.ToString("N0")</strong>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-muted" style="font-size: 12px;">Available</div>
+                                <strong>@Model.StockHealth.UnitsAvailable.ToString("N0")</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales against purchases -->
+            <div class="col-lg-7">
+                <div class="card card-outline card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-bar mr-1"></i>
+                            Sales vs Purchase
+                        </h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- The filter sits in one row directly above the chart it drives -->
+                    <div class="card-body pb-0">
+                        <div class="form-row align-items-end">
+                            <div class="col-auto">
+                                <label for="salesVsPurchaseFromYear" class="text-muted mb-1"
+                                       style="font-size: 12px;">From Year</label>
+                                <select id="salesVsPurchaseFromYear" class="form-control form-control-sm">
+                                    @foreach (var year in Model.AvailableYears)
+                                    {
+                                        <option value="@year" selected="@(year == Model.SalesVsPurchase.FromYear)">@year</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <label for="salesVsPurchaseToYear" class="text-muted mb-1"
+                                       style="font-size: 12px;">To Year</label>
+                                <select id="salesVsPurchaseToYear" class="form-control form-control-sm">
+                                    @foreach (var year in Model.AvailableYears)
+                                    {
+                                        <option value="@year" selected="@(year == Model.SalesVsPurchase.ToYear)">@year</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <button type="button" id="salesVsPurchaseApply" class="btn btn-sm btn-info">
+                                    <i class="fas fa-filter mr-1"></i>
+                                    Apply
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="salesVsPurchaseError" class="alert alert-warning py-1 px-2 mt-2 mb-0"
+                             style="font-size: 12px; display: none;"></div>
+                    </div>
+
+                    <div class="card-body">
+                        <div style="position: relative; height: 300px;">
+                            <canvas id="salesVsPurchaseChart"></canvas>
+                        </div>
+                        <!-- Says which period one bar covers, so a wide range is never mistaken for a narrow one -->
+                        <p id="salesVsPurchaseCaption" class="text-muted mb-0 mt-2" style="font-size: 12px;"></p>
+                        <p class="text-muted mb-0" style="font-size: 12px;">
+                            Both sides are read off posted invoices only, so a draft or a
+                            cancelled document never shows up here.
+                        </p>
+                    </div>
+
+                    <div class="card-footer bg-transparent">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="text-muted" style="font-size: 12px;">Total Sales</div>
+                                <strong id="salesVsPurchaseTotalSales"></strong>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-muted" style="font-size: 12px;">Total Purchase</div>
+                                <strong id="salesVsPurchaseTotalPurchase"></strong>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-muted" style="font-size: 12px;">Sales &minus; Purchase</div>
+                                <strong id="salesVsPurchaseGap"></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Main row -->
         @* <div class="row">
             <!-- Left col -->
@@ -418,6 +578,192 @@
 
         updateClock();
         setInterval(updateClock, 1000);
+
+    </script>
+
+    <script>
+
+        // Chart chrome. Recessive grid and muted ink so the bars carry the reading.
+        const vizInk = { muted: '#898781', grid: '#e1e0d9', surface: '#ffffff' };
+
+        const formatAmount = value => Number(value).toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        // ---- In-house stock health ----------------------------------------------
+        const stockHealthCanvas = document.getElementById('stockHealthChart');
+
+        if (stockHealthCanvas) {
+            const stockHealth = {
+                healthy: @Model.StockHealth.HealthyProducts,
+                lowStock: @Model.StockHealth.LowStockProducts,
+                outOfStock: @Model.StockHealth.OutOfStockProducts
+            };
+
+            const stockTotal = stockHealth.healthy + stockHealth.lowStock + stockHealth.outOfStock;
+
+            new Chart(stockHealthCanvas.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Healthy', 'Low Stock', 'Out of Stock'],
+                    datasets: [{
+                        data: [stockHealth.healthy, stockHealth.lowStock, stockHealth.outOfStock],
+                        // Status colours, never reused as series colours. The legend below
+                        // pairs each one with an icon and a count.
+                        backgroundColor: ['#0ca30c', '#fab219', '#d03b3b'],
+                        borderColor: vizInk.surface,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutoutPercentage: 68,
+                    legend: { display: false },
+                    tooltips: {
+                        callbacks: {
+                            label: (item, data) => {
+                                const label = data.labels[item.index];
+                                const value = data.datasets[0].data[item.index];
+                                const share = stockTotal ? Math.round((value / stockTotal) * 100) : 0;
+
+                                return ' ' + label + ': ' + value + ' products (' + share + '%)';
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ---- Sales against purchases --------------------------------------------
+        const salesVsPurchaseCanvas = document.getElementById('salesVsPurchaseChart');
+
+        if (salesVsPurchaseCanvas) {
+            const fromYearSelect = document.getElementById('salesVsPurchaseFromYear');
+            const toYearSelect = document.getElementById('salesVsPurchaseToYear');
+            const applyButton = document.getElementById('salesVsPurchaseApply');
+            const errorBox = document.getElementById('salesVsPurchaseError');
+            const caption = document.getElementById('salesVsPurchaseCaption');
+            const totalSalesCell = document.getElementById('salesVsPurchaseTotalSales');
+            const totalPurchaseCell = document.getElementById('salesVsPurchaseTotalPurchase');
+            const gapCell = document.getElementById('salesVsPurchaseGap');
+
+            const salesVsPurchaseChart = new Chart(salesVsPurchaseCanvas.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        { label: 'Sales', data: [], backgroundColor: '#2a78d6' },
+                        { label: 'Purchase', data: [], backgroundColor: '#eb6834' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    // Both series are money, so they share one scale. Two axes here would
+                    // let any pair of bars be made to cross wherever we liked.
+                    scales: {
+                        xAxes: [{
+                            gridLines: { display: false, drawBorder: false },
+                            ticks: { fontColor: vizInk.muted, autoSkip: true, maxRotation: 45 },
+                            // Leaves a gap between the two bars of a period and a wider one
+                            // between periods, so the pairing is visible without a label.
+                            barPercentage: 0.9,
+                            categoryPercentage: 0.7
+                        }],
+                        yAxes: [{
+                            gridLines: { color: vizInk.grid, drawBorder: false, zeroLineColor: vizInk.grid },
+                            ticks: {
+                                beginAtZero: true,
+                                fontColor: vizInk.muted,
+                                callback: value => Number(value).toLocaleString('en-US')
+                            }
+                        }]
+                    },
+                    legend: {
+                        position: 'top',
+                        align: 'end',
+                        labels: { boxWidth: 12, fontColor: vizInk.muted, usePointStyle: true }
+                    },
+                    tooltips: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: (item, data) =>
+                                ' ' + data.datasets[item.datasetIndex].label + ': ' + formatAmount(item.yLabel)
+                        }
+                    }
+                }
+            });
+
+            // One render path for both the first paint and every filter change, so the
+            // two can never drift apart.
+            const renderSalesVsPurchase = chart => {
+                salesVsPurchaseChart.data.labels = chart.points.map(x => x.label);
+                salesVsPurchaseChart.data.datasets[0].data = chart.points.map(x => x.salesAmount);
+                salesVsPurchaseChart.data.datasets[1].data = chart.points.map(x => x.purchaseAmount);
+                salesVsPurchaseChart.update();
+
+                const perBar = chart.granularityName === 'Year' ? 'one year' : 'one month';
+                const runningNote = chart.endsOnRunningYear
+                    ? ' The last period is still running, so it is not a full one yet.'
+                    : '';
+
+                caption.textContent = 'One bar covers ' + perBar + ', ' +
+                    chart.fromYear + ' to ' + chart.toYear + '.' + runningNote;
+
+                totalSalesCell.textContent = formatAmount(chart.totalSales);
+                totalPurchaseCell.textContent = formatAmount(chart.totalPurchase);
+
+                // The arrow and the sign carry the direction; the colour only reinforces it.
+                const gapUp = chart.gap >= 0;
+                gapCell.style.color = gapUp ? '#006300' : '#d03b3b';
+                gapCell.innerHTML = '<i class="fas fa-arrow-' + (gapUp ? 'up' : 'down') + '"></i> ' +
+                    formatAmount(chart.gap);
+            };
+
+            const showError = message => {
+                errorBox.textContent = message;
+                errorBox.style.display = '';
+            };
+
+            const applyFilter = () => {
+                const fromYear = Number(fromYearSelect.value);
+                const toYear = Number(toYearSelect.value);
+
+                // Caught here as well as on the server, so an obvious mistake costs no
+                // round trip.
+                if (toYear < fromYear) {
+                    showError('The end year cannot be earlier than the start year.');
+                    return;
+                }
+
+                errorBox.style.display = 'none';
+                applyButton.disabled = true;
+
+                const url = '@Url.Action("SalesVsPurchase", "Dashboard", new { area = "Admin" })' +
+                    '?fromYear=' + fromYear + '&toYear=' + toYear;
+
+                fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(response => response.json())
+                    .then(payload => {
+                        if (payload.success) {
+                            renderSalesVsPurchase(payload.chart);
+                        } else {
+                            showError(payload.message);
+                        }
+                    })
+                    .catch(() => showError('The chart could not be loaded.'))
+                    .finally(() => { applyButton.disabled = false; });
+            };
+
+            applyButton.addEventListener('click', applyFilter);
+
+            // The model is handed over in the same shape the filter endpoint returns.
+            renderSalesVsPurchase(@Html.Raw(Json.Serialize(Model.SalesVsPurchase)));
+        }
+
 
     </script>
 }

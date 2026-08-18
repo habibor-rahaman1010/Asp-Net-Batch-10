@@ -1,4 +1,4 @@
-﻿using DevSkill.Inventory.Application.ServicesContract;
+using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Infrastructure.InventoryIdentity;
 using DevSkill.Inventory.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -16,24 +16,32 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         private readonly ApplicationUserManager _applicationUserManager;
         private readonly IBrandManagementService _brandManagementService;
         private readonly IBusinessLocationManagementService _businessLocationManagementService;
+        private readonly IDashboardAnalyticsService _dashboardAnalyticsService;
+        private readonly ILogger<DashboardController> _logger;
 
         public DashboardController(IUserActivityManagementService userActivityManagementService,
             IBrandManagementService brandManagementService,
             IBusinessLocationManagementService businessLocationManagementService,
             IProductManagementService productManagementService,
             ICategoryManagementService categoryManagementService,
-            ApplicationUserManager applicationUserManager)
+            IDashboardAnalyticsService dashboardAnalyticsService,
+            ApplicationUserManager applicationUserManager,
+            ILogger<DashboardController> logger)
         {
             _productManagementService = productManagementService;
             _brandManagementService = brandManagementService;
             _businessLocationManagementService = businessLocationManagementService;
             _categoryManagementService = categoryManagementService;
             _userActivityManagementService = userActivityManagementService;
+            _dashboardAnalyticsService = dashboardAnalyticsService;
             _applicationUserManager = applicationUserManager;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
         {
+            var yearOptions = await _dashboardAnalyticsService.GetYearOptionsAsync();
+
             var model = new DashboardViewModel
             {
                 TotalProducts = await _productManagementService.GetTotalProductCount(),
@@ -45,9 +53,44 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 UniqueVisitors = await _userActivityManagementService.GetUniqueVisitors(),
                 TotalBrands = await _brandManagementService.GetTotalBrandCount(),
                 TotalWarehouse = await _businessLocationManagementService.GetTotalWarehouseCount(),
+                StockHealth = await _dashboardAnalyticsService.GetStockHealthAsync(),
+                AvailableYears = yearOptions.OfferedYears
             };
 
+            // The chart opens on the years that hold invoices rather than on the whole
+            // list, most of which may well be empty.
+            model.SalesVsPurchase = await _dashboardAnalyticsService
+                .GetSalesVsPurchaseAsync(yearOptions.DefaultFromYear, yearOptions.DefaultToYear);
+
             return View(model);
+        }
+
+        /// <summary>
+        /// Redraws the sales-against-purchase chart for a year range. Only this chart is
+        /// re-read, so changing the filter does not recompute the whole dashboard.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> SalesVsPurchase(int fromYear, int toYear)
+        {
+            try
+            {
+                var report = await _dashboardAnalyticsService.GetSalesVsPurchaseAsync(fromYear, toYear);
+
+                // The whole report goes back as it stands, so the browser reads exactly the
+                // same shape on a filter change as it does on first load.
+                return Json(new { success = true, chart = report });
+            }
+            catch (InvalidOperationException ex)
+            {
+                // A range the user got wrong is worth saying out loud, unlike a fault.
+                return Json(new { success = false, message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "The sales against purchase chart could not be produced.");
+
+                return Json(new { success = false, message = "The chart could not be produced." });
+            }
         }
     }
 }

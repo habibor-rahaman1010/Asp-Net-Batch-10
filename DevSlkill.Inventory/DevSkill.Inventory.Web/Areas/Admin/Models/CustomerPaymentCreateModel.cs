@@ -9,7 +9,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
     public class CustomerPaymentCreateModel
     {
         [Display(Name = "Collection No")]
-        public string PaymentNo { get; set; } = string.Empty;
+        public string? PaymentNo { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Customer is required.")]
         public Guid CustomerId { get; set; }
