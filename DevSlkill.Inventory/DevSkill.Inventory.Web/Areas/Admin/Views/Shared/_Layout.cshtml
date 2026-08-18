@@ -220,8 +220,8 @@
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                         <!-- Add icons to the links using the .nav-icon class
                              with font-awesome or any other icon font library -->
-                        <li class="nav-item menu-open">
-                            <a class="nav-link active" asp-area="" asp-controller="Admin" asp-action="Dashboard">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Dashboard">
                                 <i class="nav-icon fas fa-tachometer-alt"></i>
                                 <p>
                                     Dashboard
@@ -853,6 +853,47 @@
             .catch(error => {
                 console.error(error);
             });
+    </script>
+
+    <!-- Keep the sidebar parent menu expanded for the current page -->
+    <script>
+        $(function () {
+            function segments(url) {
+                return url.split('?')[0].split('#')[0].replace(/\/+$/, '').toLowerCase().split('/').filter(Boolean);
+            }
+
+            var current = segments(window.location.pathname);
+            var best = null, bestScore = 0;
+
+            $('.nav-sidebar a.nav-link[href]').each(function () {
+                var href = this.getAttribute('href');
+                if (!href || href === '#' || href.charAt(0) === '#') return;
+
+                var link = segments(href);
+                if (!link.length) return;
+
+                var score;
+                if (link.join('/') === current.join('/')) {
+                    score = 1000;                       // exact page match
+                } else {
+                    var i = 0;
+                    while (i < link.length && i < current.length && link[i] === current[i]) i++;
+                    score = i >= 2 ? i : 0;             // same area + controller
+                }
+
+                if (score > bestScore) { bestScore = score; best = this; }
+            });
+
+            if (!best) return;
+
+            $(best).addClass('active');
+            $(best).parents('li.nav-item').each(function () {
+                var $li = $(this);
+                $li.addClass('menu-open');
+                $li.children('ul.nav-treeview').addClass('menu-open').css('display', 'block');
+                $li.children('a.nav-link').addClass('active');
+            });
+        });
     </script>
 
 </body>
