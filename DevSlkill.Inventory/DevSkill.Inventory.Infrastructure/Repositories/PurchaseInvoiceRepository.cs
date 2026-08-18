@@ -119,6 +119,32 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IList<SupplierPurchasePointDto>> GetSupplierInvoicedTotalsAsync(DateTime fromDate,
+            DateTime toDate, params PurchaseInvoiceStatus[] statuses)
+        {
+            return await _inventoryDbContext.PurchaseInvoices
+                .Where(x => x.InvoiceDate >= fromDate
+                         && x.InvoiceDate <= toDate
+                         && statuses.Contains(x.Status))
+                // Grouped on the key rather than the name, so two suppliers who happen
+                // to share a name are never added up into one bar.
+                .GroupBy(x => new
+                {
+                    x.SupplierId,
+                    Name = x.Supplier!.SupplierName,
+                    Code = x.Supplier!.SupplierCode
+                })
+                .Select(g => new SupplierPurchasePointDto
+                {
+                    SupplierName = g.Key.Name,
+                    SupplierCode = g.Key.Code,
+                    PurchasedAmount = g.Sum(x => x.GrandTotal),
+                    InvoiceCount = g.Count()
+                })
+                .OrderByDescending(x => x.PurchasedAmount)
+                .ToListAsync();
+        }
+
         public async Task<DateTime?> GetEarliestInvoiceDateAsync(params PurchaseInvoiceStatus[] statuses)
         {
             return await _inventoryDbContext.PurchaseInvoices

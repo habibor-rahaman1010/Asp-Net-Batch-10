@@ -11,6 +11,7 @@ using DevSkill.Inventory.Infrastructure;
 using DevSkill.Inventory.Domain;
 using DevSkill.Inventory.Infrastructure.MetricsServiceImplement;
 using DevSkill.Inventory.Application.MetricsServiceInterface;
+using DevSkill.Inventory.Web.SignalRHub;
 
 namespace DevSkill.Inventory.Web.WebModules
 {
@@ -455,6 +456,28 @@ namespace DevSkill.Inventory.Web.WebModules
 
             builder.RegisterType<SupplierQuotationManagementService>()
                 .As<ISupplierQuotationManagementService>()
+                .InstancePerLifetimeScope();
+
+            //Notification module. The publisher is the SignalR half and lives in this
+            //project, which is what keeps SignalR out of the application layer.
+            builder.RegisterType<NotificationRepository>()
+                .As<INotificationRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<NotificationRecipientRepository>()
+                .As<INotificationRecipientRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<NotificationSubscriptionRepository>()
+                .As<INotificationSubscriptionRepository>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<SignalRNotificationPublisher>()
+                .As<INotificationPublisher>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<NotificationService>()
+                .As<INotificationService>()
                 .InstancePerLifetimeScope();
 
             builder.RegisterType<EmailUtility>()

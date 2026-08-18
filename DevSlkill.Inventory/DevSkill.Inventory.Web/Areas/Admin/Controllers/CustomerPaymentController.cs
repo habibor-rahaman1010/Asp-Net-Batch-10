@@ -1,3 +1,4 @@
+using DevSkill.Inventory.Domain.Enums;
 using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Domain.Entities.SalesEntities;
 using DevSkill.Inventory.Infrastructure;
@@ -18,18 +19,21 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         private readonly ICustomerPaymentManagementService _customerPaymentManagementService;
         private readonly ISalesInvoiceManagementService _salesInvoiceManagementService;
         private readonly ICustomerManagementService _customerManagementService;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<CustomerPaymentController> _logger;
 
         public CustomerPaymentController(
             ICustomerPaymentManagementService customerPaymentManagementService,
             ISalesInvoiceManagementService salesInvoiceManagementService,
             ICustomerManagementService customerManagementService,
-            ILogger<CustomerPaymentController> logger)
+            ILogger<CustomerPaymentController> logger,
+            INotificationService notificationService)
         {
             _customerPaymentManagementService = customerPaymentManagementService;
             _salesInvoiceManagementService = salesInvoiceManagementService;
             _customerManagementService = customerManagementService;
             _logger = logger;
+            _notificationService = notificationService;
         }
 
         [Authorize(Policy = "ReadPermission")]
@@ -137,8 +141,19 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     CustomerPaymentAllocations = ToAllocationRequests(model.CustomerPaymentAllocations)
                 };
 
-                await _customerPaymentManagementService
+                var customerPaymentId = await _customerPaymentManagementService
                     .CreateCustomerPaymentAsync(payment, model.ReceiveImmediately);
+
+                // A draft collection has settled nothing, so only a received one is
+                // reported as money in.
+                if (model.ReceiveImmediately)
+                {
+                    await _notificationService.RaiseAsync(NotificationEvent.CustomerPaymentReceived,
+                        "Customer payment received",
+                        $"{model.Amount:N2} has been collected from a customer.",
+                        "/Admin/CustomerPayment/CustomerPaymentList",
+                        customerPaymentId, User.Identity?.Name);
+                }
 
                 TempData.Put("ResponseMessage", new ResponseModel
                 {

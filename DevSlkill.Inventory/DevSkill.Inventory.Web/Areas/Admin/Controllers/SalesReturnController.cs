@@ -1,3 +1,4 @@
+using DevSkill.Inventory.Domain.Enums;
 using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Domain.Entities.SalesEntities;
 using DevSkill.Inventory.Infrastructure;
@@ -17,16 +18,19 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
     {
         private readonly ISalesReturnManagementService _salesReturnManagementService;
         private readonly ISalesInvoiceManagementService _salesInvoiceManagementService;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<SalesReturnController> _logger;
 
         public SalesReturnController(
             ISalesReturnManagementService salesReturnManagementService,
             ISalesInvoiceManagementService salesInvoiceManagementService,
-            ILogger<SalesReturnController> logger)
+            ILogger<SalesReturnController> logger,
+            INotificationService notificationService)
         {
             _salesReturnManagementService = salesReturnManagementService;
             _salesInvoiceManagementService = salesInvoiceManagementService;
             _logger = logger;
+            _notificationService = notificationService;
         }
 
         [Authorize(Policy = "ReadPermission")]
@@ -121,7 +125,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     SalesReturnItems = ToLineRequests(model.SalesReturnItems)
                 };
 
-                await _salesReturnManagementService.CreateSalesReturnAsync(salesReturn, model.ConfirmImmediately);
+                var salesReturnId = await _salesReturnManagementService
+                    .CreateSalesReturnAsync(salesReturn, model.ConfirmImmediately);
+
+                await _notificationService.RaiseAsync(NotificationEvent.SalesReturnCreated,
+                    "Sales return raised",
+                    $"A customer has sent back {model.SalesReturnItems.Count} line(s).",
+                    $"/Admin/SalesReturn/UpdateSalesReturn/{salesReturnId}",
+                    salesReturnId, User.Identity?.Name);
 
                 TempData.Put("ResponseMessage", new ResponseModel
                 {

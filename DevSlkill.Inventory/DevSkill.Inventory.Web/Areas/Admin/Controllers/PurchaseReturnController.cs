@@ -14,16 +14,19 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
     {
         private readonly IPurchaseReturnManagementService _purchaseReturnManagementService;
         private readonly IGoodsReceiptManagementService _goodsReceiptManagementService;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<PurchaseReturnController> _logger;
 
         public PurchaseReturnController(
             IPurchaseReturnManagementService purchaseReturnManagementService,
             IGoodsReceiptManagementService goodsReceiptManagementService,
-            ILogger<PurchaseReturnController> logger)
+            ILogger<PurchaseReturnController> logger,
+            INotificationService notificationService)
         {
             _purchaseReturnManagementService = purchaseReturnManagementService;
             _goodsReceiptManagementService = goodsReceiptManagementService;
             _logger = logger;
+            _notificationService = notificationService;
         }
 
         [Authorize(Policy = "ReadPermission")]
@@ -112,7 +115,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     PurchaseReturnItems = ToLineRequests(model.PurchaseReturnItems)
                 };
 
-                await _purchaseReturnManagementService.CreatePurchaseReturnAsync(purchaseReturn);
+                var purchaseReturnId = await _purchaseReturnManagementService
+                    .CreatePurchaseReturnAsync(purchaseReturn);
+
+                await _notificationService.RaiseAsync(NotificationEvent.PurchaseReturnCreated,
+                    "Purchase return raised",
+                    $"{model.PurchaseReturnItems.Count} line(s) are going back to a supplier.",
+                    $"/Admin/PurchaseReturn/UpdatePurchaseReturn/{purchaseReturnId}",
+                    purchaseReturnId, User.Identity?.Name);
 
                 TempData.Put("ResponseMessage", new ResponseModel
                 {

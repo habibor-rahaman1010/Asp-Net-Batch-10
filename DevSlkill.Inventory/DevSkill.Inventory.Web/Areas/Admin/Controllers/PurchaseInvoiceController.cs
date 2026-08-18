@@ -17,6 +17,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         private readonly IPurchaseOrderManagementService _purchaseOrderManagementService;
         private readonly IGoodsReceiptManagementService _goodsReceiptManagementService;
         private readonly IPaymentTermManagementService _paymentTermManagementService;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<PurchaseInvoiceController> _logger;
 
         public PurchaseInvoiceController(
@@ -24,13 +25,15 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             IPurchaseOrderManagementService purchaseOrderManagementService,
             IGoodsReceiptManagementService goodsReceiptManagementService,
             IPaymentTermManagementService paymentTermManagementService,
-            ILogger<PurchaseInvoiceController> logger)
+            ILogger<PurchaseInvoiceController> logger,
+            INotificationService notificationService)
         {
             _purchaseInvoiceManagementService = purchaseInvoiceManagementService;
             _purchaseOrderManagementService = purchaseOrderManagementService;
             _goodsReceiptManagementService = goodsReceiptManagementService;
             _paymentTermManagementService = paymentTermManagementService;
             _logger = logger;
+            _notificationService = notificationService;
         }
 
         [Authorize(Policy = "ReadPermission")]
@@ -125,7 +128,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     PurchaseInvoiceItems = ToLineRequests(model.PurchaseInvoiceItems)
                 };
 
-                await _purchaseInvoiceManagementService.CreatePurchaseInvoiceAsync(invoice);
+                var purchaseInvoiceId = await _purchaseInvoiceManagementService
+                    .CreatePurchaseInvoiceAsync(invoice);
+
+                await _notificationService.RaiseAsync(NotificationEvent.PurchaseInvoicePosted,
+                    "Purchase invoice raised",
+                    $"A supplier invoice covering {model.PurchaseInvoiceItems.Count} line(s) has been entered.",
+                    $"/Admin/PurchaseInvoice/UpdatePurchaseInvoice/{purchaseInvoiceId}",
+                    purchaseInvoiceId, User.Identity?.Name);
 
                 TempData.Put("ResponseMessage", new ResponseModel
                 {
@@ -267,7 +277,16 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         public async Task<JsonResult> PostPurchaseInvoice(Guid id)
         {
             return await RunAsync(
-                () => _purchaseInvoiceManagementService.PostPurchaseInvoiceAsync(id),
+                async () =>
+                {
+                    await _purchaseInvoiceManagementService.PostPurchaseInvoiceAsync(id);
+
+                    await _notificationService.RaiseAsync(NotificationEvent.PurchaseInvoicePosted,
+                        "Purchase invoice posted",
+                        "A supplier invoice has been posted and is now payable.",
+                        "/Admin/PurchaseInvoice/PurchaseInvoiceList",
+                        id, User.Identity?.Name);
+                },
                 "Purchase invoice posted and the supplier balance was updated.",
                 "Purchase invoice posting failed.");
         }

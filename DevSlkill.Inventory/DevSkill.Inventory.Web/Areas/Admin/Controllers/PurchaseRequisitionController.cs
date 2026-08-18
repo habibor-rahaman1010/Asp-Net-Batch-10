@@ -20,6 +20,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         private readonly IBusinessLocationManagementService _businessLocationManagementService;
         private readonly IProductManagementService _productManagementService;
         private readonly ApplicationUserManager _applicationUserManager;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<PurchaseRequisitionController> _logger;
 
         public PurchaseRequisitionController(
@@ -27,13 +28,15 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             IBusinessLocationManagementService businessLocationManagementService,
             IProductManagementService productManagementService,
             ApplicationUserManager applicationUserManager,
-            ILogger<PurchaseRequisitionController> logger)
+            ILogger<PurchaseRequisitionController> logger,
+            INotificationService notificationService)
         {
             _purchaseRequisitionManagementService = purchaseRequisitionManagementService;
             _businessLocationManagementService = businessLocationManagementService;
             _productManagementService = productManagementService;
             _applicationUserManager = applicationUserManager;
             _logger = logger;
+            _notificationService = notificationService;
         }
 
         [Authorize(Policy = "ReadPermission")]
@@ -116,7 +119,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     PurchaseRequisitionItems = ToLineRequests(model.PurchaseRequisitionItems)
                 };
 
-                await _purchaseRequisitionManagementService.CreatePurchaseRequisitionAsync(requisition);
+                var purchaseRequisitionId = await _purchaseRequisitionManagementService
+                    .CreatePurchaseRequisitionAsync(requisition);
+
+                await _notificationService.RaiseAsync(NotificationEvent.PurchaseRequisitionCreated,
+                    "New purchase requisition",
+                    $"A requisition for {model.PurchaseRequisitionItems.Count} line(s) is waiting.",
+                    $"/Admin/PurchaseRequisition/UpdatePurchaseRequisition/{purchaseRequisitionId}",
+                    purchaseRequisitionId, User.Identity?.Name);
 
                 TempData.Put("ResponseMessage", new ResponseModel
                 {

@@ -358,6 +358,243 @@
             </div>
         </div>
 
+        <!-- Who sold what -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-outline card-success">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-user-tie mr-1"></i>
+                            Sales by Salesperson
+                        </h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- One year at a time: a bar is a person's whole year, so mixing two
+                         years into one bar would say nothing useful -->
+                    <div class="card-body pb-0">
+                        <div class="form-row align-items-end">
+                            <div class="col-auto">
+                                <label for="salespersonSalesYear" class="text-muted mb-1"
+                                       style="font-size: 12px;">Year</label>
+                                <select id="salespersonSalesYear" class="form-control form-control-sm">
+                                    @foreach (var year in Model.AvailableYears)
+                                    {
+                                        <option value="@year" selected="@(year == Model.SalespersonSales.Year)">@year</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <button type="button" id="salespersonSalesApply" class="btn btn-sm btn-success">
+                                    <i class="fas fa-filter mr-1"></i>
+                                    Apply
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="salespersonSalesError" class="alert alert-warning py-1 px-2 mt-2 mb-0"
+                             style="font-size: 12px; display: none;"></div>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Said out loud rather than left as a blank chart, because an empty
+                             plot area reads as a fault -->
+                        <p id="salespersonSalesEmpty" class="text-muted text-center my-5" style="display: none;">
+                            Nobody billed anything in this year, so there is nothing to chart.
+                        </p>
+
+                        <!-- Grows a row at a time, so a bar keeps the same thickness whether
+                             two people sold or twenty -->
+                        <div id="salespersonSalesScroll" style="max-height: 420px; overflow-y: auto;">
+                            <div id="salespersonSalesPlot" style="position: relative; height: 240px;">
+                                <canvas id="salespersonSalesChart"></canvas>
+                            </div>
+                        </div>
+
+                        <p id="salespersonSalesCaption" class="text-muted mb-0 mt-2" style="font-size: 12px;"></p>
+                        <p class="text-muted mb-0" style="font-size: 12px;">
+                            A bar is what that salesperson billed, not what has been collected
+                            from it. Only posted invoices count, the same ones the Sales vs
+                            Purchase chart reads.
+                        </p>
+                    </div>
+
+                    <div class="card-footer bg-transparent">
+                        <div class="row text-center">
+                            <div class="col-3">
+                                <div class="text-muted" style="font-size: 12px;">Total Sales</div>
+                                <strong id="salespersonSalesTotal"></strong>
+                            </div>
+                            <div class="col-3">
+                                <div class="text-muted" style="font-size: 12px;">Invoices</div>
+                                <strong id="salespersonSalesInvoices"></strong>
+                            </div>
+                            <div class="col-3">
+                                <div class="text-muted" style="font-size: 12px;">Sellers</div>
+                                <strong id="salespersonSalesSellers"></strong>
+                            </div>
+                            <div class="col-3">
+                                <div class="text-muted" style="font-size: 12px;">Top Seller</div>
+                                <strong id="salespersonSalesTop"></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Where we buy -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-outline card-warning">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-industry mr-1"></i>
+                            Purchases by Supplier
+                        </h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- One year at a time: a bar is a supplier's whole year, so mixing two
+                         years into one bar would say nothing useful -->
+                    <div class="card-body pb-0">
+                        <div class="form-row align-items-end">
+                            <div class="col-auto">
+                                <label for="supplierPurchaseYear" class="text-muted mb-1"
+                                       style="font-size: 12px;">Year</label>
+                                <select id="supplierPurchaseYear" class="form-control form-control-sm">
+                                    @foreach (var year in Model.AvailableYears)
+                                    {
+                                        <option value="@year" selected="@(year == Model.SupplierPurchase.Year)">@year</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <button type="button" id="supplierPurchaseApply" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-filter mr-1"></i>
+                                    Apply
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="supplierPurchaseError" class="alert alert-warning py-1 px-2 mt-2 mb-0"
+                             style="font-size: 12px; display: none;"></div>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Said out loud rather than left as a blank chart, because an empty
+                             plot area reads as a fault -->
+                        <p id="supplierPurchaseEmpty" class="text-muted text-center my-5" style="display: none;">
+                            Nothing was bought in this year, so there is nothing to chart.
+                        </p>
+
+                        <!-- Grows a row at a time, so a bar keeps the same thickness whether
+                             two suppliers billed or twenty -->
+                        <div id="supplierPurchaseScroll" style="max-height: 420px; overflow-y: auto;">
+                            <div id="supplierPurchasePlot" style="position: relative; height: 240px;">
+                                <canvas id="supplierPurchaseChart"></canvas>
+                            </div>
+                        </div>
+
+                        <p id="supplierPurchaseCaption" class="text-muted mb-0 mt-2" style="font-size: 12px;"></p>
+                        <p class="text-muted mb-0" style="font-size: 12px;">
+                            A bar is what that supplier billed us, not what has been paid to
+                            them. Only posted invoices count, the same ones the Sales vs
+                            Purchase chart reads.
+                        </p>
+                    </div>
+
+                    <div class="card-footer bg-transparent">
+                        <div class="row text-center">
+                            <div class="col-3">
+                                <div class="text-muted" style="font-size: 12px;">Total Purchase</div>
+                                <strong id="supplierPurchaseTotal"></strong>
+                            </div>
+                            <div class="col-3">
+                                <div class="text-muted" style="font-size: 12px;">Invoices</div>
+                                <strong id="supplierPurchaseInvoices"></strong>
+                            </div>
+                            <div class="col-3">
+                                <div class="text-muted" style="font-size: 12px;">Suppliers</div>
+                                <strong id="supplierPurchaseCount"></strong>
+                            </div>
+                            <div class="col-3">
+                                <!-- Everything coming from one place is a risk worth seeing,
+                                     so the biggest supplier carries its share of the spend -->
+                                <div class="text-muted" style="font-size: 12px;">Top Supplier</div>
+                                <strong id="supplierPurchaseTop"></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Where the goods sit -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-outline card-teal">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-warehouse mr-1"></i>
+                            Products by Warehouse
+                        </h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.WarehouseStock.TotalWarehouses == 0)
+                        {
+                            <p class="text-muted text-center my-5">
+                                No warehouses have been set up yet, so there is nothing to chart.
+                            </p>
+                        }
+                        else
+                        {
+                            <!-- Grows a row at a time, so a bar keeps the same thickness whether
+                                 there are three warehouses or thirty -->
+                            <div style="max-height: 420px; overflow-y: auto;">
+                                <div style="position: relative; height: @(Math.Max(200, Model.WarehouseStock.TotalWarehouses * 38))px;">
+                                    <canvas id="warehouseStockChart"></canvas>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-0 mt-2" style="font-size: 12px;">
+                                A bar counts the products stored at that warehouse, not the units on
+                                its shelves. Hover a bar for both figures.
+                            </p>
+                        }
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="text-muted" style="font-size: 12px;">Warehouses</div>
+                                <strong>@Model.WarehouseStock.TotalWarehouses</strong>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-muted" style="font-size: 12px;">Holding Products</div>
+                                <strong>@Model.WarehouseStock.WarehousesInUse</strong>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-muted" style="font-size: 12px;">Not Assigned</div>
+                                <strong>@Model.WarehouseStock.UnassignedProducts</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Main row -->
         @* <div class="row">
             <!-- Left col -->
@@ -541,7 +778,7 @@
 <!-- /.content -->
 
 @section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+    @* SignalR is loaded by the layout, which the notification bell needs on every page *@
     
     <script>
 
@@ -633,6 +870,79 @@
                         }
                     }
                 }
+            });
+        }
+
+        // ---- Where the goods sit -------------------------------------------------
+        const warehouseStockCanvas = document.getElementById('warehouseStockChart');
+
+        if (warehouseStockCanvas) {
+            const warehouses = @Html.Raw(Json.Serialize(Model.WarehouseStock.Warehouses));
+
+            // A long name would eat into the plot, so the axis carries a short form
+            // and the tooltip keeps the full one.
+            const shortWarehouseName = name => name.length > 24 ? name.slice(0, 23) + '\u2026' : name;
+
+            new Chart(warehouseStockCanvas.getContext('2d'), {
+                // Horizontal, because warehouse names read along the axis rather than
+                // rotated under it.
+                type: 'horizontalBar',
+                data: {
+                    labels: warehouses.map(x => shortWarehouseName(x.warehouseName)),
+                    datasets: [{
+                        label: 'Products',
+                        // One series, one hue. A colour per warehouse would encode
+                        // nothing the label does not already say.
+                        data: warehouses.map(x => x.productCount),
+                        backgroundColor: '#2a78d6'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    // Room at the right for the count that sits past the end of a bar
+                    layout: { padding: { right: 34 } },
+                    legend: { display: false },
+                    scales: {
+                        xAxes: [{
+                            gridLines: { color: vizInk.grid, drawBorder: false, zeroLineColor: vizInk.grid },
+                            ticks: { beginAtZero: true, fontColor: vizInk.muted, precision: 0 }
+                        }],
+                        yAxes: [{
+                            gridLines: { display: false, drawBorder: false },
+                            ticks: { fontColor: vizInk.muted },
+                            barPercentage: 0.7,
+                            categoryPercentage: 0.8
+                        }]
+                    },
+                    tooltips: {
+                        callbacks: {
+                            title: items => warehouses[items[0].index].warehouseName,
+                            label: item => {
+                                const row = warehouses[item.index];
+
+                                return ' ' + row.productCount + ' products, ' +
+                                    Number(row.unitsOnHand).toLocaleString('en-US') + ' units on hand';
+                            }
+                        }
+                    }
+                },
+                plugins: [{
+                    // The count sits at the end of its own bar, so no bar has to be
+                    // measured against the axis to be read.
+                    afterDatasetsDraw: chart => {
+                        const ctx = chart.ctx;
+
+                        ctx.font = '600 12px sans-serif';
+                        ctx.fillStyle = vizInk.muted;
+                        ctx.textAlign = 'left';
+                        ctx.textBaseline = 'middle';
+
+                        chart.getDatasetMeta(0).data.forEach((bar, index) => {
+                            ctx.fillText(warehouses[index].productCount, bar._model.x + 6, bar._model.y);
+                        });
+                    }
+                }]
             });
         }
 
@@ -762,6 +1072,317 @@
 
             // The model is handed over in the same shape the filter endpoint returns.
             renderSalesVsPurchase(@Html.Raw(Json.Serialize(Model.SalesVsPurchase)));
+        }
+
+        // ---- Who sold what -------------------------------------------------------
+        const salespersonSalesCanvas = document.getElementById('salespersonSalesChart');
+
+        if (salespersonSalesCanvas) {
+            const sellerYearSelect = document.getElementById('salespersonSalesYear');
+            const sellerApplyButton = document.getElementById('salespersonSalesApply');
+            const sellerErrorBox = document.getElementById('salespersonSalesError');
+            const sellerCaption = document.getElementById('salespersonSalesCaption');
+            const sellerEmptyNote = document.getElementById('salespersonSalesEmpty');
+            const sellerScroll = document.getElementById('salespersonSalesScroll');
+            const sellerPlot = document.getElementById('salespersonSalesPlot');
+            const sellerTotalCell = document.getElementById('salespersonSalesTotal');
+            const sellerInvoicesCell = document.getElementById('salespersonSalesInvoices');
+            const sellerCountCell = document.getElementById('salespersonSalesSellers');
+            const sellerTopCell = document.getElementById('salespersonSalesTop');
+
+            // Whatever the year holds, this is what the tooltip and the end-of-bar label
+            // read off, so the two can never disagree.
+            let sellerRows = [];
+
+            // A long name would eat into the plot, so the axis carries a short form and
+            // the tooltip keeps the full one.
+            const shortSellerName = name => name.length > 24 ? name.slice(0, 23) + '…' : name;
+
+            const salespersonSalesChart = new Chart(salespersonSalesCanvas.getContext('2d'), {
+                // Horizontal, because names read along the axis rather than rotated
+                // under it.
+                type: 'horizontalBar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Sales',
+                        // One series, one hue. A colour per person would encode nothing
+                        // the name beside the bar does not already say.
+                        data: [],
+                        backgroundColor: '#0ca30c'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    // Room at the right for the amount that sits past the end of a bar
+                    layout: { padding: { right: 90 } },
+                    legend: { display: false },
+                    scales: {
+                        xAxes: [{
+                            gridLines: { color: vizInk.grid, drawBorder: false, zeroLineColor: vizInk.grid },
+                            ticks: {
+                                beginAtZero: true,
+                                fontColor: vizInk.muted,
+                                callback: value => Number(value).toLocaleString('en-US')
+                            }
+                        }],
+                        yAxes: [{
+                            gridLines: { display: false, drawBorder: false },
+                            ticks: { fontColor: vizInk.muted },
+                            barPercentage: 0.7,
+                            categoryPercentage: 0.8
+                        }]
+                    },
+                    tooltips: {
+                        callbacks: {
+                            title: items => sellerRows[items[0].index].salespersonName,
+                            label: item => {
+                                const row = sellerRows[item.index];
+                                const invoices = row.invoiceCount === 1 ? ' invoice' : ' invoices';
+
+                                return ' ' + formatAmount(row.invoicedAmount) +
+                                    ' over ' + row.invoiceCount + invoices;
+                            }
+                        }
+                    }
+                },
+                plugins: [{
+                    // The amount sits at the end of its own bar, so no bar has to be
+                    // measured against the axis to be read.
+                    afterDatasetsDraw: chart => {
+                        const ctx = chart.ctx;
+
+                        ctx.font = '600 12px sans-serif';
+                        ctx.fillStyle = vizInk.muted;
+                        ctx.textAlign = 'left';
+                        ctx.textBaseline = 'middle';
+
+                        chart.getDatasetMeta(0).data.forEach((bar, index) => {
+                            ctx.fillText(formatAmount(sellerRows[index].invoicedAmount),
+                                bar._model.x + 6, bar._model.y);
+                        });
+                    }
+                }]
+            });
+
+            // One render path for both the first paint and every filter change, so the
+            // two can never drift apart.
+            const renderSalespersonSales = chart => {
+                sellerRows = chart.points;
+
+                const hasBars = sellerRows.length > 0;
+                sellerEmptyNote.style.display = hasBars ? 'none' : '';
+                sellerScroll.style.display = hasBars ? '' : 'none';
+
+                salespersonSalesChart.data.labels = sellerRows.map(x => shortSellerName(x.salespersonName));
+                salespersonSalesChart.data.datasets[0].data = sellerRows.map(x => x.invoicedAmount);
+
+                // Grown a row at a time, so the bars keep one thickness however many
+                // people sold that year.
+                sellerPlot.style.height = Math.max(200, sellerRows.length * 38) + 'px';
+                salespersonSalesChart.resize();
+                salespersonSalesChart.update();
+
+                const runningNote = chart.isRunningYear
+                    ? ' This year is still running, so it is not a full one yet.'
+                    : '';
+
+                sellerCaption.textContent = 'A bar covers the whole of ' + chart.year + '.' + runningNote;
+
+                sellerTotalCell.textContent = formatAmount(chart.totalSales);
+                sellerInvoicesCell.textContent = Number(chart.totalInvoices).toLocaleString('en-US');
+                sellerCountCell.textContent = chart.sellerCount;
+                sellerTopCell.textContent = hasBars ? chart.topSellerName : '—';
+            };
+
+            const showSellerError = message => {
+                sellerErrorBox.textContent = message;
+                sellerErrorBox.style.display = '';
+            };
+
+            const applySellerFilter = () => {
+                sellerErrorBox.style.display = 'none';
+                sellerApplyButton.disabled = true;
+
+                const url = '@Url.Action("SalesBySalesperson", "Dashboard", new { area = "Admin" })' +
+                    '?year=' + Number(sellerYearSelect.value);
+
+                fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(response => response.json())
+                    .then(payload => {
+                        if (payload.success) {
+                            renderSalespersonSales(payload.chart);
+                        } else {
+                            showSellerError(payload.message);
+                        }
+                    })
+                    .catch(() => showSellerError('The chart could not be loaded.'))
+                    .finally(() => { sellerApplyButton.disabled = false; });
+            };
+
+            sellerApplyButton.addEventListener('click', applySellerFilter);
+
+            // The model is handed over in the same shape the filter endpoint returns.
+            renderSalespersonSales(@Html.Raw(Json.Serialize(Model.SalespersonSales)));
+        }
+
+        // ---- Where we buy --------------------------------------------------------
+        const supplierPurchaseCanvas = document.getElementById('supplierPurchaseChart');
+
+        if (supplierPurchaseCanvas) {
+            const supplierYearSelect = document.getElementById('supplierPurchaseYear');
+            const supplierApplyButton = document.getElementById('supplierPurchaseApply');
+            const supplierErrorBox = document.getElementById('supplierPurchaseError');
+            const supplierCaption = document.getElementById('supplierPurchaseCaption');
+            const supplierEmptyNote = document.getElementById('supplierPurchaseEmpty');
+            const supplierScroll = document.getElementById('supplierPurchaseScroll');
+            const supplierPlot = document.getElementById('supplierPurchasePlot');
+            const supplierTotalCell = document.getElementById('supplierPurchaseTotal');
+            const supplierInvoicesCell = document.getElementById('supplierPurchaseInvoices');
+            const supplierCountCell = document.getElementById('supplierPurchaseCount');
+            const supplierTopCell = document.getElementById('supplierPurchaseTop');
+
+            // Whatever the year holds, this is what the tooltip and the end-of-bar label
+            // read off, so the two can never disagree.
+            let supplierRows = [];
+
+            // A long name would eat into the plot, so the axis carries a short form and
+            // the tooltip keeps the full one.
+            const shortSupplierName = name => name.length > 24 ? name.slice(0, 23) + '…' : name;
+
+            const supplierPurchaseChart = new Chart(supplierPurchaseCanvas.getContext('2d'), {
+                // Horizontal, because supplier names read along the axis rather than
+                // rotated under it.
+                type: 'horizontalBar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Purchase',
+                        // The same orange the Sales vs Purchase chart gives purchases, so
+                        // the buying side keeps one colour across the dashboard.
+                        data: [],
+                        backgroundColor: '#eb6834'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    // Room at the right for the amount that sits past the end of a bar
+                    layout: { padding: { right: 90 } },
+                    legend: { display: false },
+                    scales: {
+                        xAxes: [{
+                            gridLines: { color: vizInk.grid, drawBorder: false, zeroLineColor: vizInk.grid },
+                            ticks: {
+                                beginAtZero: true,
+                                fontColor: vizInk.muted,
+                                callback: value => Number(value).toLocaleString('en-US')
+                            }
+                        }],
+                        yAxes: [{
+                            gridLines: { display: false, drawBorder: false },
+                            ticks: { fontColor: vizInk.muted },
+                            barPercentage: 0.7,
+                            categoryPercentage: 0.8
+                        }]
+                    },
+                    tooltips: {
+                        callbacks: {
+                            title: items => supplierRows[items[0].index].supplierName,
+                            label: item => {
+                                const row = supplierRows[item.index];
+                                const invoices = row.invoiceCount === 1 ? ' invoice' : ' invoices';
+
+                                return ' ' + formatAmount(row.purchasedAmount) +
+                                    ' over ' + row.invoiceCount + invoices;
+                            }
+                        }
+                    }
+                },
+                plugins: [{
+                    // The amount sits at the end of its own bar, so no bar has to be
+                    // measured against the axis to be read.
+                    afterDatasetsDraw: chart => {
+                        const ctx = chart.ctx;
+
+                        ctx.font = '600 12px sans-serif';
+                        ctx.fillStyle = vizInk.muted;
+                        ctx.textAlign = 'left';
+                        ctx.textBaseline = 'middle';
+
+                        chart.getDatasetMeta(0).data.forEach((bar, index) => {
+                            ctx.fillText(formatAmount(supplierRows[index].purchasedAmount),
+                                bar._model.x + 6, bar._model.y);
+                        });
+                    }
+                }]
+            });
+
+            // One render path for both the first paint and every filter change, so the
+            // two can never drift apart.
+            const renderSupplierPurchase = chart => {
+                supplierRows = chart.points;
+
+                const hasBars = supplierRows.length > 0;
+                supplierEmptyNote.style.display = hasBars ? 'none' : '';
+                supplierScroll.style.display = hasBars ? '' : 'none';
+
+                supplierPurchaseChart.data.labels = supplierRows.map(x => shortSupplierName(x.supplierName));
+                supplierPurchaseChart.data.datasets[0].data = supplierRows.map(x => x.purchasedAmount);
+
+                // Grown a row at a time, so the bars keep one thickness however many
+                // suppliers billed that year.
+                supplierPlot.style.height = Math.max(200, supplierRows.length * 38) + 'px';
+                supplierPurchaseChart.resize();
+                supplierPurchaseChart.update();
+
+                const runningNote = chart.isRunningYear
+                    ? ' This year is still running, so it is not a full one yet.'
+                    : '';
+
+                supplierCaption.textContent = 'A bar covers the whole of ' + chart.year + '.' + runningNote;
+
+                supplierTotalCell.textContent = formatAmount(chart.totalPurchase);
+                supplierInvoicesCell.textContent = Number(chart.totalInvoices).toLocaleString('en-US');
+                supplierCountCell.textContent = chart.supplierCount;
+
+                // The share says whether the buying is spread about or leaning on one
+                // supplier, which the name on its own does not.
+                supplierTopCell.textContent = hasBars
+                    ? chart.topSupplierName + ' (' + chart.topSupplierShare + '%)'
+                    : '—';
+            };
+
+            const showSupplierError = message => {
+                supplierErrorBox.textContent = message;
+                supplierErrorBox.style.display = '';
+            };
+
+            const applySupplierFilter = () => {
+                supplierErrorBox.style.display = 'none';
+                supplierApplyButton.disabled = true;
+
+                const url = '@Url.Action("PurchasesBySupplier", "Dashboard", new { area = "Admin" })' +
+                    '?year=' + Number(supplierYearSelect.value);
+
+                fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(response => response.json())
+                    .then(payload => {
+                        if (payload.success) {
+                            renderSupplierPurchase(payload.chart);
+                        } else {
+                            showSupplierError(payload.message);
+                        }
+                    })
+                    .catch(() => showSupplierError('The chart could not be loaded.'))
+                    .finally(() => { supplierApplyButton.disabled = false; });
+            };
+
+            supplierApplyButton.addEventListener('click', applySupplierFilter);
+
+            // The model is handed over in the same shape the filter endpoint returns.
+            renderSupplierPurchase(@Html.Raw(Json.Serialize(Model.SupplierPurchase)));
         }
 
 

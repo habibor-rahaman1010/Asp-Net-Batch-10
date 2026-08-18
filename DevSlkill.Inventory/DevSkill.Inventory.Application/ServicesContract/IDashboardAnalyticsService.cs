@@ -11,6 +11,12 @@ namespace DevSkill.Inventory.Application.ServicesContract
         Task<StockHealthDto> GetStockHealthAsync();
 
         /// <summary>
+        /// Where those goods sit: how much of the catalogue each warehouse keeps, and
+        /// how much of it was never placed in one at all.
+        /// </summary>
+        Task<WarehouseStockDto> GetWarehouseStockAsync();
+
+        /// <summary>
         /// What the year filter lists, and which years it opens on. The list always
         /// reaches back a few years so a range like last year to this year can be picked
         /// even before there are invoices that old.
@@ -23,5 +29,19 @@ namespace DevSkill.Inventory.Application.ServicesContract
         /// the axis stays readable.
         /// </summary>
         Task<SalesVsPurchaseDto> GetSalesVsPurchaseAsync(int fromYear, int toYear);
+
+        /// <summary>
+        /// Who sold what over one calendar year, biggest seller first. Read off the
+        /// same invoices the sales-against-purchase chart uses, so the year's bars add
+        /// up to that chart's sales figure for the same year.
+        /// </summary>
+        Task<SalespersonSalesDto> GetSalesBySalespersonAsync(int year);
+
+        /// <summary>
+        /// Where the goods were bought over one calendar year, biggest supplier first.
+        /// Read off the same invoices the sales-against-purchase chart uses, so the
+        /// year's bars add up to that chart's purchase figure for the same year.
+        /// </summary>
+        Task<SupplierPurchaseDto> GetPurchasesBySupplierAsync(int year);
     }
 }

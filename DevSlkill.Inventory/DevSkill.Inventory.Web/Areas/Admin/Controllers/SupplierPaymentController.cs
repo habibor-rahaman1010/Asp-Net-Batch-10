@@ -14,16 +14,19 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
     {
         private readonly ISupplierPaymentManagementService _supplierPaymentManagementService;
         private readonly ISupplierManagementService _supplierManagementService;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<SupplierPaymentController> _logger;
 
         public SupplierPaymentController(
             ISupplierPaymentManagementService supplierPaymentManagementService,
             ISupplierManagementService supplierManagementService,
-            ILogger<SupplierPaymentController> logger)
+            ILogger<SupplierPaymentController> logger,
+            INotificationService notificationService)
         {
             _supplierPaymentManagementService = supplierPaymentManagementService;
             _supplierManagementService = supplierManagementService;
             _logger = logger;
+            _notificationService = notificationService;
         }
 
         [Authorize(Policy = "ReadPermission")]
@@ -116,7 +119,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     SupplierPaymentAllocations = ToAllocationRequests(model.SupplierPaymentAllocations)
                 };
 
-                await _supplierPaymentManagementService.CreateSupplierPaymentAsync(supplierPayment);
+                var supplierPaymentId = await _supplierPaymentManagementService
+                    .CreateSupplierPaymentAsync(supplierPayment);
+
+                await _notificationService.RaiseAsync(NotificationEvent.SupplierPaymentRecorded,
+                    "Supplier payment recorded",
+                    $"{model.Amount:N2} has been paid out to a supplier.",
+                    "/Admin/SupplierPayment/SupplierPaymentList",
+                    supplierPaymentId, User.Identity?.Name);
 
                 TempData.Put("ResponseMessage", new ResponseModel
                 {

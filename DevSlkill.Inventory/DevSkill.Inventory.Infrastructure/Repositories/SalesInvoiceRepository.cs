@@ -129,6 +129,32 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IList<SalespersonSalesPointDto>> GetSalespersonInvoicedTotalsAsync(DateTime fromDate,
+            DateTime toDate, params SalesInvoiceStatus[] statuses)
+        {
+            return await _inventoryDbContext.SalesInvoices
+                .Where(x => x.InvoiceDate >= fromDate
+                         && x.InvoiceDate <= toDate
+                         && statuses.Contains(x.Status))
+                // Grouped on the key rather than the name, so two salespeople who happen
+                // to share a name are never added up into one bar.
+                .GroupBy(x => new
+                {
+                    x.SalespersonId,
+                    Name = x.Salesperson!.SalespersonName,
+                    Code = x.Salesperson!.SalespersonCode
+                })
+                .Select(g => new SalespersonSalesPointDto
+                {
+                    SalespersonName = g.Key.Name ?? string.Empty,
+                    SalespersonCode = g.Key.Code ?? string.Empty,
+                    InvoicedAmount = g.Sum(x => x.GrandTotal),
+                    InvoiceCount = g.Count()
+                })
+                .OrderByDescending(x => x.InvoicedAmount)
+                .ToListAsync();
+        }
+
         public async Task<DateTime?> GetEarliestInvoiceDateAsync(params SalesInvoiceStatus[] statuses)
         {
             return await _inventoryDbContext.SalesInvoices

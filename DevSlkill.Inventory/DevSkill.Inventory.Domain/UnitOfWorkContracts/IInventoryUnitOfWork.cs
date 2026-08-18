@@ -69,6 +69,12 @@ namespace DevSkill.Inventory.Domain.UnitOfWorkContracts
         IRequestForQuotationItemRepository RequestForQuotationItemRepository { get; }
         ISupplierQuotationRepository SupplierQuotationRepository { get; }
         ISupplierQuotationItemRepository SupplierQuotationItemRepository { get; }
+
+        //Notification module repositories
+        INotificationRepository NotificationRepository { get; }
+        INotificationRecipientRepository NotificationRecipientRepository { get; }
+        INotificationSubscriptionRepository NotificationSubscriptionRepository { get; }
+
         Task<(IList<ProductDto> data, int total, int totalDisplay)> GetPagedProductUsingSPAsync(int pageIndex,
             int pageSize, ProductSearchDto search, string? order);
     }

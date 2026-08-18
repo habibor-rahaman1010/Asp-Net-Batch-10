@@ -54,6 +54,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 TotalBrands = await _brandManagementService.GetTotalBrandCount(),
                 TotalWarehouse = await _businessLocationManagementService.GetTotalWarehouseCount(),
                 StockHealth = await _dashboardAnalyticsService.GetStockHealthAsync(),
+                WarehouseStock = await _dashboardAnalyticsService.GetWarehouseStockAsync(),
                 AvailableYears = yearOptions.OfferedYears
             };
 
@@ -61,6 +62,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             // list, most of which may well be empty.
             model.SalesVsPurchase = await _dashboardAnalyticsService
                 .GetSalesVsPurchaseAsync(yearOptions.DefaultFromYear, yearOptions.DefaultToYear);
+
+            // Opens on the running year, which is the one somebody looking at a
+            // salesperson chart almost always wants.
+            model.SalespersonSales = await _dashboardAnalyticsService
+                .GetSalesBySalespersonAsync(yearOptions.DefaultToYear);
+
+            model.SupplierPurchase = await _dashboardAnalyticsService
+                .GetPurchasesBySupplierAsync(yearOptions.DefaultToYear);
 
             return View(model);
         }
@@ -88,6 +97,62 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "The sales against purchase chart could not be produced.");
+
+                return Json(new { success = false, message = "The chart could not be produced." });
+            }
+        }
+
+        /// <summary>
+        /// Redraws the who-sold-what chart for one year. Like the other filter, only
+        /// this chart is re-read rather than the whole dashboard.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> SalesBySalesperson(int year)
+        {
+            try
+            {
+                var report = await _dashboardAnalyticsService.GetSalesBySalespersonAsync(year);
+
+                // The whole report goes back as it stands, so the browser reads exactly the
+                // same shape on a filter change as it does on first load.
+                return Json(new { success = true, chart = report });
+            }
+            catch (InvalidOperationException ex)
+            {
+                // A year the user got wrong is worth saying out loud, unlike a fault.
+                return Json(new { success = false, message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "The sales by salesperson chart could not be produced.");
+
+                return Json(new { success = false, message = "The chart could not be produced." });
+            }
+        }
+
+        /// <summary>
+        /// Redraws the where-we-buy chart for one year, the same way the other two
+        /// filters work: only this chart is re-read.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> PurchasesBySupplier(int year)
+        {
+            try
+            {
+                var report = await _dashboardAnalyticsService.GetPurchasesBySupplierAsync(year);
+
+                // The whole report goes back as it stands, so the browser reads exactly the
+                // same shape on a filter change as it does on first load.
+                return Json(new { success = true, chart = report });
+            }
+            catch (InvalidOperationException ex)
+            {
+                // A year the user got wrong is worth saying out loud, unlike a fault.
+                return Json(new { success = false, message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "The purchases by supplier chart could not be produced.");
 
                 return Json(new { success = false, message = "The chart could not be produced." });
             }

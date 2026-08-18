@@ -14,16 +14,19 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
     {
         private readonly IGoodsReceiptManagementService _goodsReceiptManagementService;
         private readonly IPurchaseOrderManagementService _purchaseOrderManagementService;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<GoodsReceiptController> _logger;
 
         public GoodsReceiptController(
             IGoodsReceiptManagementService goodsReceiptManagementService,
             IPurchaseOrderManagementService purchaseOrderManagementService,
-            ILogger<GoodsReceiptController> logger)
+            ILogger<GoodsReceiptController> logger,
+            INotificationService notificationService)
         {
             _goodsReceiptManagementService = goodsReceiptManagementService;
             _purchaseOrderManagementService = purchaseOrderManagementService;
             _logger = logger;
+            _notificationService = notificationService;
         }
 
         [Authorize(Policy = "ReadPermission")]
@@ -114,7 +117,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     GoodsReceiptItems = ToLineRequests(model.GoodsReceiptItems)
                 };
 
-                await _goodsReceiptManagementService.CreateGoodsReceiptAsync(goodsReceipt);
+                var goodsReceiptId = await _goodsReceiptManagementService
+                    .CreateGoodsReceiptAsync(goodsReceipt);
+
+                await _notificationService.RaiseAsync(NotificationEvent.GoodsReceived,
+                    "Goods received",
+                    $"{model.GoodsReceiptItems.Count} line(s) have arrived from a supplier.",
+                    $"/Admin/GoodsReceipt/UpdateGoodsReceipt/{goodsReceiptId}",
+                    goodsReceiptId, User.Identity?.Name);
 
                 TempData.Put("ResponseMessage", new ResponseModel
                 {

@@ -28,6 +28,14 @@ namespace DevSkill.Inventory.Domain.RepositoryContracts
             params PurchaseInvoiceStatus[] statuses);
 
         /// <summary>
+        /// Billed value grouped by supplier over a period, added up in the database.
+        /// Says where the goods were bought rather than when, so it answers a
+        /// different question from the monthly totals above.
+        /// </summary>
+        Task<IList<SupplierPurchasePointDto>> GetSupplierInvoicedTotalsAsync(DateTime fromDate,
+            DateTime toDate, params PurchaseInvoiceStatus[] statuses);
+
+        /// <summary>
         /// The date of the oldest invoice that counts, so the year filter never offers a
         /// year with nothing behind it. Null when there is no such invoice at all.
         /// </summary>

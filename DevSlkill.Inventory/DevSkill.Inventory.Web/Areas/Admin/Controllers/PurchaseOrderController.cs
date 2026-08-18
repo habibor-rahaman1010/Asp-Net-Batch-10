@@ -23,6 +23,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         private readonly IPaymentTermManagementService _paymentTermManagementService;
         private readonly IProductManagementService _productManagementService;
         private readonly ApplicationUserManager _applicationUserManager;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<PurchaseOrderController> _logger;
 
         public PurchaseOrderController(
@@ -35,7 +36,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             IPaymentTermManagementService paymentTermManagementService,
             IProductManagementService productManagementService,
             ApplicationUserManager applicationUserManager,
-            ILogger<PurchaseOrderController> logger)
+            ILogger<PurchaseOrderController> logger,
+            INotificationService notificationService)
         {
             _purchaseOrderManagementService = purchaseOrderManagementService;
             _purchaseRequisitionManagementService = purchaseRequisitionManagementService;
@@ -47,6 +49,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _productManagementService = productManagementService;
             _applicationUserManager = applicationUserManager;
             _logger = logger;
+            _notificationService = notificationService;
         }
 
         [Authorize(Policy = "ReadPermission")]
@@ -146,7 +149,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     PurchaseOrderItems = ToLineRequests(model.PurchaseOrderItems)
                 };
 
-                await _purchaseOrderManagementService.CreatePurchaseOrderAsync(purchaseOrder);
+                var purchaseOrderId = await _purchaseOrderManagementService
+                    .CreatePurchaseOrderAsync(purchaseOrder);
+
+                await _notificationService.RaiseAsync(NotificationEvent.PurchaseOrderCreated,
+                    "New purchase order",
+                    $"An order for {model.PurchaseOrderItems.Count} line(s) has been placed with a supplier.",
+                    $"/Admin/PurchaseOrder/UpdatePurchaseOrder/{purchaseOrderId}",
+                    purchaseOrderId, User.Identity?.Name);
 
                 TempData.Put("ResponseMessage", new ResponseModel
                 {

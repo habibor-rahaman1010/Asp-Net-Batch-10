@@ -110,6 +110,7 @@ namespace DevSkill.Inventory.Web
                     app.UseHsts();
                 }
                 app.MapHub<PresenceUserHub>("/presenceUserHub");
+                app.MapHub<NotificationHub>("/notificationHub");
                 app.UseHttpsRedirection();
                 app.UseStaticFiles();
                 app.UseRouting();

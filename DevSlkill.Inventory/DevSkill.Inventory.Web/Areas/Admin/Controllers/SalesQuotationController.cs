@@ -24,6 +24,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         private readonly IPaymentTermManagementService _paymentTermManagementService;
         private readonly ISalespersonManagementService _salespersonManagementService;
         private readonly IProductManagementService _productManagementService;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<SalesQuotationController> _logger;
 
         public SalesQuotationController(
@@ -33,7 +34,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             IPaymentTermManagementService paymentTermManagementService,
             ISalespersonManagementService salespersonManagementService,
             IProductManagementService productManagementService,
-            ILogger<SalesQuotationController> logger)
+            ILogger<SalesQuotationController> logger,
+            INotificationService notificationService)
         {
             _salesQuotationManagementService = salesQuotationManagementService;
             _customerManagementService = customerManagementService;
@@ -42,6 +44,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _salespersonManagementService = salespersonManagementService;
             _productManagementService = productManagementService;
             _logger = logger;
+            _notificationService = notificationService;
         }
 
         [Authorize(Policy = "ReadPermission")]
@@ -141,7 +144,17 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     SalesQuotationItems = ToLineRequests(model.SalesQuotationItems)
                 };
 
-                await _salesQuotationManagementService.CreateSalesQuotationAsync(salesQuotation);
+                var salesQuotationId = await _salesQuotationManagementService
+                    .CreateSalesQuotationAsync(salesQuotation);
+
+                // Raised after the document is safely saved, so nobody is ever sent
+                // to something that does not exist. Only people assigned to this
+                // operation hear about it.
+                await _notificationService.RaiseAsync(NotificationEvent.SalesQuotationCreated,
+                    "New sales quotation",
+                    $"A quotation with {model.SalesQuotationItems.Count} line(s) has been raised.",
+                    $"/Admin/SalesQuotation/UpdateSalesQuotation/{salesQuotationId}",
+                    salesQuotationId, User.Identity?.Name);
 
                 TempData.Put("ResponseMessage", new ResponseModel
                 {

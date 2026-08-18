@@ -1,0 +1,293 @@
+@model NotificationAssignmentViewModel
+@using DevSkill.Inventory.Domain
+
+@{
+    ViewData["Title"] = "Notification Assignment";
+}
+
+@section Styles {
+    <style>
+        /* The picked person has to be obvious at a glance, so the row carries a bar
+           and a weight change rather than a colour alone. */
+        .assignment-user.active {
+            background-color: #eef4fc;
+            box-shadow: inset 3px 0 0 0 #2a78d6;
+            font-weight: 600;
+        }
+
+        .assignment-user {
+            cursor: pointer;
+        }
+
+        .assignment-row {
+            border-bottom: 1px solid #f0efe9;
+            padding: 10px 4px;
+        }
+
+        .assignment-row:last-child {
+            border-bottom: none;
+        }
+    </style>
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Notification Assignment</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Notifications</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+
+            <!-- Who is being assigned -->
+            <div class="col-lg-4">
+                <div class="card card-outline card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-users mr-1"></i> People</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        @if (Model.Users.Count == 0)
+                        {
+                            <p class="text-muted text-center my-4">
+                                There are no users to assign yet.
+                            </p>
+                        }
+                        else
+                        {
+                            <div class="list-group list-group-flush" style="max-height: 560px; overflow-y: auto;">
+                                @foreach (var user in Model.Users)
+                                {
+                                    <a href="#"
+                                       class="list-group-item list-group-item-action assignment-user @(user.Id == Model.SelectedUserId ? "active" : "")"
+                                       data-user-id="@user.Id" data-user-name="@user.DisplayName">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <div>@user.DisplayName</div>
+                                                <small class="text-muted">@user.Email</small>
+                                            </div>
+                                            @* Zero is shown too, so somebody covering nothing is visible *@
+                                            <span class="badge badge-@(user.AssignedCount > 0 ? "info" : "secondary") badge-pill">
+                                                @user.AssignedCount
+                                            </span>
+                                        </div>
+                                    </a>
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div class="card-footer bg-transparent text-muted" style="font-size: 12px;">
+                        The number is how many operations that person is currently told about.
+                    </div>
+                </div>
+            </div>
+
+            <!-- What they are assigned to -->
+            <div class="col-lg-8">
+                <div class="card card-outline card-success">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-bell mr-1"></i>
+                            Notifications for <span id="assignmentUserName">nobody yet</span>
+                        </h3>
+
+                        <button type="button" id="saveAssignments" class="btn btn-success btn-sm float-right">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                    </div>
+
+                    <div class="card-body">
+                        <p class="text-muted" style="font-size: 13px;">
+                            Tick an operation to have this person told when it happens. Nothing is
+                            implied by their role: an operation nobody is ticked for simply happens
+                            quietly.
+                        </p>
+
+                        <div id="assignmentError" class="alert alert-warning py-2 px-3" style="display: none;"></div>
+
+                        <div id="assignmentGroups"></div>
+                    </div>
+
+                    <div class="card-footer bg-transparent">
+                        <span class="text-muted" style="font-size: 12px;">
+                            <span id="assignmentSelectedCount">0</span> of
+                            @NotificationEventCatalog.All.Count operations selected.
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @Html.AntiForgeryToken()
+
+    <script type="text/javascript">
+
+        // Names come from the catalogue rather than from a user, but they are escaped
+        // all the same so this stays safe if the catalogue ever grows user-set text.
+        function escapeHtml(value) {
+            return $('<div>').text(value == null ? '' : value).html();
+        }
+
+        $(function () {
+
+            var selectedUserId = '@(Model.SelectedUserId?.ToString() ?? "")';
+
+            var groupIcons = {
+                'Sales': 'fa-shopping-cart',
+                'Purchase': 'fa-truck-loading',
+                'Inventory': 'fa-boxes'
+            };
+
+            function updateSelectedCount() {
+                $('#assignmentSelectedCount').text($('.assignment-check:checked').length);
+            }
+
+            // One render path for the first paint and for every person picked after,
+            // so the two can never drift apart.
+            function renderAssignments(assignments) {
+                var groups = {};
+
+                assignments.forEach(function (row) {
+                    (groups[row.group] = groups[row.group] || []).push(row);
+                });
+
+                var html = '';
+
+                Object.keys(groups).forEach(function (groupName) {
+                    var icon = groupIcons[groupName] || 'fa-bell';
+
+                    html += `<div class="mb-4">
+                                <h6 class="text-uppercase text-muted mb-2" style="font-size: 12px; letter-spacing: .04em;">
+                                    <i class="fas ${icon} mr-1"></i>${escapeHtml(groupName)}
+                                </h6>`;
+
+                    groups[groupName].forEach(function (row) {
+                        var checked = row.isAssigned ? 'checked' : '';
+
+                        // The total on the right says how many people cover this
+                        // operation, so a gap reads as a gap and not as a normal row.
+                        var coverage = row.subscriberCount > 0
+                            ? `<span class="badge badge-light border">${row.subscriberCount} assigned</span>`
+                            : '<span class="badge badge-warning">nobody assigned</span>';
+
+                        html += `<div class="assignment-row d-flex justify-content-between align-items-start">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input assignment-check"
+                                               id="evt-${row.event}" value="${row.event}" ${checked}>
+                                        <label class="custom-control-label" for="evt-${row.event}">
+                                            <i class="fas ${escapeHtml(row.icon)} text-${escapeHtml(row.colour)} mr-1"></i>
+                                            ${escapeHtml(row.name)}
+                                            <div class="text-muted" style="font-size: 12px;">${escapeHtml(row.description)}</div>
+                                        </label>
+                                    </div>
+                                    <div class="ml-3 text-nowrap">${coverage}</div>
+                                 </div>`;
+                    });
+
+                    html += '</div>';
+                });
+
+                $('#assignmentGroups').html(html);
+                updateSelectedCount();
+            }
+
+            function loadAssignments(userId, userName) {
+                selectedUserId = userId;
+                $('#assignmentUserName').text(userName);
+                $('#assignmentError').hide();
+
+                $.get('/Admin/Notification/GetAssignments', { userId: userId })
+                    .done(function (result) {
+                        if (result.success) {
+                            renderAssignments(result.assignments);
+                        } else {
+                            $('#assignmentError').text(result.message).show();
+                        }
+                    })
+                    .fail(function () {
+                        $('#assignmentError').text('The assignments could not be read.').show();
+                    });
+            }
+
+            $('.assignment-user').on('click', function (e) {
+                e.preventDefault();
+
+                var link = $(this);
+
+                $('.assignment-user').removeClass('active');
+                link.addClass('active');
+
+                loadAssignments(link.data('user-id'), link.data('user-name'));
+            });
+
+            $('#assignmentGroups').on('change', '.assignment-check', updateSelectedCount);
+
+            $('#saveAssignments').on('click', function () {
+                if (!selectedUserId) {
+                    $('#assignmentError').text('Pick somebody to assign first.').show();
+                    return;
+                }
+
+                var events = $('.assignment-check:checked').map(function () {
+                    return Number(this.value);
+                }).get();
+
+                var button = $(this);
+                button.prop('disabled', true);
+
+                $.ajax({
+                    url: '/Admin/Notification/SaveAssignments',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    data: JSON.stringify({ userId: selectedUserId, events: events })
+                })
+                    .done(function (result) {
+                        if (result.success) {
+                            Swal.fire({
+                                icon: 'success', title: 'Saved', text: result.message,
+                                timer: 2000, showConfirmButton: false
+                            });
+
+                            // The counts beside every person shift when one person is
+                            // saved, so the screen is re-read rather than patched.
+                            loadAssignments(selectedUserId, $('#assignmentUserName').text());
+                            $('.assignment-user.active .badge').text(events.length)
+                                .removeClass('badge-info badge-secondary')
+                                .addClass(events.length > 0 ? 'badge-info' : 'badge-secondary');
+                        } else {
+                            $('#assignmentError').text(result.message).show();
+                        }
+                    })
+                    .fail(function () {
+                        $('#assignmentError').text('The assignments could not be saved.').show();
+                    })
+                    .always(function () { button.prop('disabled', false); });
+            });
+
+            // First paint, off what the server already put in the model.
+            var initial = @Html.Raw(Json.Serialize(Model.Assignments));
+
+            if (initial.length > 0) {
+                $('#assignmentUserName').text($('.assignment-user.active').data('user-name') || 'nobody yet');
+                renderAssignments(initial);
+            }
+        });
+    </script>
+}

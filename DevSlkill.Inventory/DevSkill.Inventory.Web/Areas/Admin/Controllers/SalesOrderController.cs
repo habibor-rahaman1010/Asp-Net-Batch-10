@@ -24,6 +24,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         private readonly IPaymentTermManagementService _paymentTermManagementService;
         private readonly ISalespersonManagementService _salespersonManagementService;
         private readonly IProductManagementService _productManagementService;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<SalesOrderController> _logger;
 
         public SalesOrderController(
@@ -34,7 +35,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             IPaymentTermManagementService paymentTermManagementService,
             ISalespersonManagementService salespersonManagementService,
             IProductManagementService productManagementService,
-            ILogger<SalesOrderController> logger)
+            ILogger<SalesOrderController> logger,
+            INotificationService notificationService)
         {
             _salesOrderManagementService = salesOrderManagementService;
             _salesQuotationManagementService = salesQuotationManagementService;
@@ -44,6 +46,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _salespersonManagementService = salespersonManagementService;
             _productManagementService = productManagementService;
             _logger = logger;
+            _notificationService = notificationService;
         }
 
         [Authorize(Policy = "ReadPermission")]
@@ -137,7 +140,13 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     SalesOrderItems = ToLineRequests(model.SalesOrderItems)
                 };
 
-                await _salesOrderManagementService.CreateSalesOrderAsync(salesOrder);
+                var salesOrderId = await _salesOrderManagementService.CreateSalesOrderAsync(salesOrder);
+
+                await _notificationService.RaiseAsync(NotificationEvent.SalesOrderCreated,
+                    "New sales order",
+                    $"An order with {model.SalesOrderItems.Count} line(s) has been entered.",
+                    $"/Admin/SalesOrder/UpdateSalesOrder/{salesOrderId}",
+                    salesOrderId, User.Identity?.Name);
 
                 TempData.Put("ResponseMessage", new ResponseModel
                 {
@@ -293,7 +302,16 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         public async Task<JsonResult> ConfirmSalesOrder(Guid id)
         {
             return await RunAsync(
-                () => _salesOrderManagementService.ConfirmSalesOrderAsync(id),
+                async () =>
+                {
+                    await _salesOrderManagementService.ConfirmSalesOrderAsync(id);
+
+                    await _notificationService.RaiseAsync(NotificationEvent.SalesOrderConfirmed,
+                        "Sales order confirmed",
+                        "An order has been confirmed and can now be reserved and delivered against.",
+                        "/Admin/SalesOrder/SalesOrderList",
+                        id, User.Identity?.Name);
+                },
                 "Sales order confirmed. Stock can now be reserved and delivered against it.",
                 "Sales order confirmation failed.");
         }

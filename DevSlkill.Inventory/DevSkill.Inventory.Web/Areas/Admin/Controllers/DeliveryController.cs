@@ -1,3 +1,4 @@
+using DevSkill.Inventory.Domain.Enums;
 using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Domain.Entities.SalesEntities;
 using DevSkill.Inventory.Infrastructure;
@@ -12,13 +13,16 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
     public class DeliveryController : Controller
     {
         private readonly IDeliveryManagementService _deliveryManagementService;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<DeliveryController> _logger;
 
         public DeliveryController(IDeliveryManagementService deliveryManagementService,
-            ILogger<DeliveryController> logger)
+            ILogger<DeliveryController> logger,
+            INotificationService notificationService)
         {
             _deliveryManagementService = deliveryManagementService;
             _logger = logger;
+            _notificationService = notificationService;
         }
 
         [Authorize(Policy = "CreatePermission")]
@@ -100,7 +104,23 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     DeliveryItems = ToLineRequests(model.DeliveryItems)
                 };
 
-                await _deliveryManagementService.CreateDeliveryAsync(delivery, model.ConfirmImmediately);
+                var deliveryId = await _deliveryManagementService
+                    .CreateDeliveryAsync(delivery, model.ConfirmImmediately);
+
+                // A draft delivery has moved nothing yet, so only a confirmed one is
+                // reported as goods having left.
+                if (model.ConfirmImmediately)
+                {
+                    await _notificationService.RaiseAsync(NotificationEvent.DeliveryCompleted,
+                        "Goods delivered",
+                        $"A delivery of {model.DeliveryItems.Count} line(s) has left the warehouse.",
+                        $"/Admin/Delivery/UpdateDelivery/{deliveryId}",
+                        deliveryId, User.Identity?.Name);
+
+                    // Stock has just gone down, so anything that has fallen through
+                    // its alert line is worth saying now.
+                    await _notificationService.RaiseStockAlertsAsync();
+                }
 
                 TempData.Put("ResponseMessage", new ResponseModel
                 {
@@ -235,6 +255,16 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             try
             {
                 await _deliveryManagementService.ConfirmDeliveryAsync(id);
+
+                await _notificationService.RaiseAsync(NotificationEvent.DeliveryCompleted,
+                    "Goods delivered",
+                    "A delivery has been confirmed and the goods have left the warehouse.",
+                    "/Admin/Delivery/DeliveryList",
+                    id, User.Identity?.Name);
+
+                // Stock has just gone down, so anything that has fallen through its
+                // alert line is worth saying now.
+                await _notificationService.RaiseStockAlertsAsync();
 
                 return Json(new
                 {

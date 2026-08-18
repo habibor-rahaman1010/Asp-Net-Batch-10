@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DevSkill.Inventory.Domain.Enums;
 using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Domain;
 using DevSkill.Inventory.Domain.Entities.StockAdjustmentEntites;
@@ -19,6 +20,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         private readonly IUnitManagementService _unitManagementService;
         private readonly IApplicationTime _applicationTime;
         private readonly IMapper _mapper;
+        private readonly INotificationService _notificationService;
         private readonly ILogger _logger;
 
         public StockAdjustmentController(IStockAdjustmentManagementService stockAdjustmentManagementService,
@@ -28,7 +30,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             IUnitManagementService unitManagementService,
             IApplicationTime applicationTime,
             IMapper mapper,
-            ILogger<StockAdjustmentController> logger)
+            ILogger<StockAdjustmentController> logger,
+            INotificationService notificationService)
         {
             _stockAdjustmentManagementService = stockAdjustmentManagementService;
             _businessLocationManagementService = businessLocationManagementService;
@@ -38,6 +41,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             _applicationTime = applicationTime;
             _mapper = mapper;
             _logger = logger;
+            _notificationService = notificationService;
         }
 
         [Authorize(Policy = "ReadPermission")]
@@ -146,6 +150,15 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                 };
 
                 await _stockAdjustmentManagementService.AddStockAdjustmentAsync(stockAdjustment);
+
+                await _notificationService.RaiseAsync(NotificationEvent.StockAdjustmentPosted,
+                    "Stock adjustment posted",
+                    $"Stock on hand has been corrected by hand on {stockAdjustment.StockAdjustmentItems.Count} line(s).",
+                    $"/Admin/StockAdjustment/UpdateStockAdjustment/{stockAdjustmentId}",
+                    stockAdjustmentId, User.Identity?.Name);
+
+                // The correction may well have taken something under its alert line.
+                await _notificationService.RaiseStockAlertsAsync();
 
                 return RedirectToAction(nameof(StockAdjustmentList));
             }

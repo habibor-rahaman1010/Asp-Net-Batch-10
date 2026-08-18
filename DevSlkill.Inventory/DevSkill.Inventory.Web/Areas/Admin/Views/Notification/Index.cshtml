@@ -1,0 +1,224 @@
+@{
+    ViewData["Title"] = "My Notifications";
+}
+
+@section Styles {
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+
+    <style>
+        /* An unread row is marked by a bar down its side as well as by the bold
+           title, so it does not rely on weight alone to be spotted. */
+        #notifications tr.notification-unread td {
+            background-color: #fbfaf5;
+        }
+
+        #notifications tr.notification-unread td:first-child {
+            box-shadow: inset 3px 0 0 0 #2a78d6;
+        }
+
+        .notification-title {
+            font-weight: 600;
+        }
+
+        .notification-message {
+            font-size: 13px;
+        }
+    </style>
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>My Notifications</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Notifications</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            Only the operations you have been assigned to show up here.
+                        </h3>
+
+                        <button type="button" id="markAllRead" class="btn btn-secondary btn-sm float-right ml-2">
+                            <i class="fas fa-check-double"></i> Mark All Read
+                        </button>
+
+                        <div class="custom-control custom-switch float-right mt-1 mr-3">
+                            <input type="checkbox" class="custom-control-input" id="unreadOnly">
+                            <label class="custom-control-label" for="unreadOnly">Unread only</label>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <partial name="_ResponsePartial" />
+
+                        <table id="notifications" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px;"></th>
+                                    <th>Notification</th>
+                                    <th style="width: 180px;">Event</th>
+                                    <th style="width: 170px;">Raised By</th>
+                                    <th style="width: 160px;">When</th>
+                                    <th style="width: 110px;">Actions</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+
+    @Html.AntiForgeryToken()
+
+    <script type="text/javascript">
+
+        // Anything the message or the raiser's name carries is somebody else's text,
+        // so it is escaped before it goes anywhere near the table.
+        function escapeHtml(value) {
+            return $('<div>').text(value == null ? '' : value).html();
+        }
+
+        $(function () {
+
+            var table = $('#notifications').DataTable({
+                processing: true,
+                serverSide: true,
+                searching: true,
+                ordering: false,          // always newest first; a notification list has no other useful order
+                paging: true,
+                lengthChange: true,
+                autoWidth: false,
+                ajax: {
+                    url: '/Admin/Notification/GetNotificationJsonData',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    data: function (d) {
+                        d.unreadOnly = $('#unreadOnly').is(':checked');
+                        return JSON.stringify(d);
+                    }
+                },
+                columns: [
+                    {
+                        data: 'icon',
+                        render: function (data, type, row) {
+                            return `<i class="fas ${escapeHtml(data)} text-${escapeHtml(row.colour)}"></i>`;
+                        }
+                    },
+                    {
+                        data: 'title',
+                        render: function (data, type, row) {
+                            var title = escapeHtml(data);
+                            var message = escapeHtml(row.message);
+
+                            // Clicking the title goes to the document itself when the
+                            // event has one; otherwise the words are all there is.
+                            var heading = row.url
+                                ? `<a href="${escapeHtml(row.url)}" class="notification-open" data-id="${row.id}">${title}</a>`
+                                : title;
+
+                            return `<div class="notification-title">${heading}</div>
+                                    <div class="text-muted notification-message">${message}</div>`;
+                        }
+                    },
+                    { data: 'eventLabel', render: escapeHtml },
+                    {
+                        data: 'raisedBy',
+                        render: function (data) {
+                            return data ? escapeHtml(data) : '<span class="text-muted">System</span>';
+                        }
+                    },
+                    { data: 'created', render: escapeHtml },
+                    {
+                        data: 'id',
+                        render: function (data, type, row) {
+                            return row.isRead
+                                ? '<span class="badge badge-secondary">Read</span>'
+                                : `<button type="button" class="btn btn-sm btn-outline-primary mark-read"
+                                       data-id="${data}"><i class="fas fa-check"></i> Read</button>`;
+                        }
+                    }
+                ],
+                createdRow: function (row, data) {
+                    if (!data.isRead) {
+                        $(row).addClass('notification-unread');
+                    }
+                }
+            });
+
+            $('#unreadOnly').on('change', function () {
+                table.ajax.reload();
+            });
+
+            function post(url, data) {
+                data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+
+                return $.ajax({ url: url, type: 'POST', data: data });
+            }
+
+            $('#notifications').on('click', '.mark-read', function () {
+                post('/Admin/Notification/MarkAsRead', { id: $(this).data('id') })
+                    .done(function (result) {
+                        if (result.success) {
+                            table.ajax.reload(null, false);
+                            refreshNotificationBell();
+                        }
+                    });
+            });
+
+            // Opening a notification reads it. The click is left to follow the link,
+            // so the mark is sent alongside rather than the navigation being blocked.
+            $('#notifications').on('click', '.notification-open', function () {
+                post('/Admin/Notification/MarkAsRead', { id: $(this).data('id') });
+            });
+
+            $('#markAllRead').on('click', function () {
+                var button = $(this);
+                button.prop('disabled', true);
+
+                post('/Admin/Notification/MarkAllAsRead', {})
+                    .done(function (result) {
+                        if (result.success) {
+                            table.ajax.reload(null, false);
+                            refreshNotificationBell();
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Done',
+                                text: result.marked > 0
+                                    ? result.marked + ' notification(s) marked as read.'
+                                    : 'Nothing was waiting.',
+                                timer: 1800,
+                                showConfirmButton: false
+                            });
+                        }
+                    })
+                    .always(function () { button.prop('disabled', false); });
+            });
+        });
+    </script>
+}

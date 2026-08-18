@@ -17,8 +17,17 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
         /// <summary>What the in-house stock chart draws.</summary>
         public StockHealthDto StockHealth { get; set; } = new();
 
+        /// <summary>What the warehouse spread chart draws.</summary>
+        public WarehouseStockDto WarehouseStock { get; set; } = new();
+
         /// <summary>What the sales-against-purchase chart draws.</summary>
         public SalesVsPurchaseDto SalesVsPurchase { get; set; } = new();
+
+        /// <summary>What the who-sold-what chart draws, for the year it opens on.</summary>
+        public SalespersonSalesDto SalespersonSales { get; set; } = new();
+
+        /// <summary>What the where-we-buy chart draws, for the year it opens on.</summary>
+        public SupplierPurchaseDto SupplierPurchase { get; set; } = new();
 
         /// <summary>
         /// The years the two year pickers list, newest first so the years somebody is

@@ -112,6 +112,12 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
 
         public ISupplierQuotationItemRepository SupplierQuotationItemRepository { get; private set; }
 
+        public INotificationRepository NotificationRepository { get; private set; }
+
+        public INotificationRecipientRepository NotificationRecipientRepository { get; private set; }
+
+        public INotificationSubscriptionRepository NotificationSubscriptionRepository { get; private set; }
+
         public InventoryUnitOfWork(InventoryDbContext productDbContext,
             IProductRepository productRepository,
             ICategoryRepository categoryRepository,
@@ -171,7 +177,10 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
             IRequestForQuotationRepository requestForQuotationRepository,
             IRequestForQuotationItemRepository requestForQuotationItemRepository,
             ISupplierQuotationRepository supplierQuotationRepository,
-            ISupplierQuotationItemRepository supplierQuotationItemRepository)
+            ISupplierQuotationItemRepository supplierQuotationItemRepository,
+            INotificationRepository notificationRepository,
+            INotificationRecipientRepository notificationRecipientRepository,
+            INotificationSubscriptionRepository notificationSubscriptionRepository)
             : base(productDbContext)
         {
             ProductRepository = productRepository;
@@ -233,6 +242,9 @@ namespace DevSkill.Inventory.Infrastructure.UnitOfWork
             RequestForQuotationItemRepository = requestForQuotationItemRepository;
             SupplierQuotationRepository = supplierQuotationRepository;
             SupplierQuotationItemRepository = supplierQuotationItemRepository;
+            NotificationRepository = notificationRepository;
+            NotificationRecipientRepository = notificationRecipientRepository;
+            NotificationSubscriptionRepository = notificationSubscriptionRepository;
         }
 
         public async Task<(IList<ProductDto> data, int total, int totalDisplay)> GetPagedProductUsingSPAsync(int pageIndex, int pageSize, ProductSearchDto search, string? order)

@@ -34,6 +34,13 @@ namespace DevSkill.Inventory.Application.Services
         /// </summary>
         private const int MinimumYearsOffered = 5;
 
+        /// <summary>
+        /// What the bar for invoices raised without a salesperson is called. They are
+        /// kept on the chart rather than dropped, so the bars still add up to the
+        /// year's sales.
+        /// </summary>
+        private const string UnassignedSellerName = "Not Assigned";
+
         /// <summary>Only an invoice that was really claimed counts as sales.</summary>
         private static readonly SalesInvoiceStatus[] CountableSalesStatuses =
         {
@@ -78,6 +85,31 @@ namespace DevSkill.Inventory.Application.Services
                     OutOfStockProducts = outOfStock,
                     UnitsOnHand = unitsOnHand,
                     UnitsReserved = unitsReserved
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Exception Occured: ", ex);
+            }
+        }
+
+        public async Task<WarehouseStockDto> GetWarehouseStockAsync()
+        {
+            try
+            {
+                var warehouses = await _dashboardUnitOfWork.BusinessLocationRepository
+                    .GetWarehouseProductCountsAsync();
+
+                // Counted apart from the bars: these products exist but belong to no
+                // place, so adding them to a warehouse's figure would be a lie and
+                // dropping them altogether would leave the totals short.
+                var unassigned = await _dashboardUnitOfWork.ProductRepository
+                    .GetCountAsync(x => x.BusinessLocationId == null);
+
+                return new WarehouseStockDto
+                {
+                    Warehouses = warehouses,
+                    UnassignedProducts = unassigned
                 };
             }
             catch (Exception ex)
@@ -200,6 +232,80 @@ namespace DevSkill.Inventory.Application.Services
             {
                 throw new ApplicationException("Exception Occured: ", ex);
             }
+        }
+
+        public async Task<SalespersonSalesDto> GetSalesBySalespersonAsync(int year)
+        {
+            var (from, to) = WholeYear(year);
+
+            try
+            {
+                var sellers = await _dashboardUnitOfWork.SalesInvoiceRepository
+                    .GetSalespersonInvoicedTotalsAsync(from, to, CountableSalesStatuses);
+
+                // An invoice nobody was credited with still sold something. Naming the
+                // bar here rather than in the database keeps the wording in one place.
+                foreach (var seller in sellers.Where(x => string.IsNullOrWhiteSpace(x.SalespersonName)))
+                {
+                    seller.SalespersonName = UnassignedSellerName;
+                }
+
+                return new SalespersonSalesDto
+                {
+                    Year = year,
+                    Points = sellers,
+                    TotalSales = sellers.Sum(x => x.InvoicedAmount),
+                    TotalInvoices = sellers.Sum(x => x.InvoiceCount)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Exception Occured: ", ex);
+            }
+        }
+
+        public async Task<SupplierPurchaseDto> GetPurchasesBySupplierAsync(int year)
+        {
+            var (from, to) = WholeYear(year);
+
+            try
+            {
+                var suppliers = await _dashboardUnitOfWork.PurchaseInvoiceRepository
+                    .GetSupplierInvoicedTotalsAsync(from, to, CountablePurchaseStatuses);
+
+                return new SupplierPurchaseDto
+                {
+                    Year = year,
+                    Points = suppliers,
+                    TotalPurchase = suppliers.Sum(x => x.PurchasedAmount),
+                    TotalInvoices = suppliers.Sum(x => x.InvoiceCount)
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Exception Occured: ", ex);
+            }
+        }
+
+        /// <summary>
+        /// One calendar year as a window, both ends inclusive, so an invoice timed on
+        /// 31 December still counts. Rejects a year the charts cannot draw before any
+        /// reading is done, rather than letting it come back as an empty year that
+        /// reads like a quiet one.
+        /// </summary>
+        private static (DateTime From, DateTime To) WholeYear(int year)
+        {
+            var runningYear = DateTime.Today.Year;
+
+            if (year < MinimumYear || year > runningYear)
+            {
+                throw new InvalidOperationException(
+                    $"The year has to fall between {MinimumYear} and {runningYear}.");
+            }
+
+            var from = new DateTime(year, 1, 1);
+
+            return (from, from.AddYears(1).AddTicks(-1));
         }
 
         /// <summary>

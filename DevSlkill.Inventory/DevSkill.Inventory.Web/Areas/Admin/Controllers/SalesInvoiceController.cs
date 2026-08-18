@@ -1,3 +1,4 @@
+using DevSkill.Inventory.Domain.Enums;
 using DevSkill.Inventory.Application.ServicesContract;
 using DevSkill.Inventory.Domain.Entities.SalesEntities;
 using DevSkill.Inventory.Infrastructure;
@@ -19,18 +20,21 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         private readonly ISalesInvoiceManagementService _salesInvoiceManagementService;
         private readonly ISalesOrderManagementService _salesOrderManagementService;
         private readonly IPaymentTermManagementService _paymentTermManagementService;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<SalesInvoiceController> _logger;
 
         public SalesInvoiceController(
             ISalesInvoiceManagementService salesInvoiceManagementService,
             ISalesOrderManagementService salesOrderManagementService,
             IPaymentTermManagementService paymentTermManagementService,
-            ILogger<SalesInvoiceController> logger)
+            ILogger<SalesInvoiceController> logger,
+            INotificationService notificationService)
         {
             _salesInvoiceManagementService = salesInvoiceManagementService;
             _salesOrderManagementService = salesOrderManagementService;
             _paymentTermManagementService = paymentTermManagementService;
             _logger = logger;
+            _notificationService = notificationService;
         }
 
         [Authorize(Policy = "ReadPermission")]
@@ -130,7 +134,18 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                     SalesInvoiceItems = ToLineRequests(model.SalesInvoiceItems)
                 };
 
-                await _salesInvoiceManagementService.CreateSalesInvoiceAsync(invoice, model.PostImmediately);
+                var salesInvoiceId = await _salesInvoiceManagementService
+                    .CreateSalesInvoiceAsync(invoice, model.PostImmediately);
+
+                // A draft invoice owes nothing yet, so only a posted one is reported.
+                if (model.PostImmediately)
+                {
+                    await _notificationService.RaiseAsync(NotificationEvent.SalesInvoicePosted,
+                        "Sales invoice posted",
+                        "An invoice has been posted and the customer now owes it.",
+                        "/Admin/SalesInvoice/SalesInvoiceList",
+                        salesInvoiceId, User.Identity?.Name);
+                }
 
                 TempData.Put("ResponseMessage", new ResponseModel
                 {
@@ -253,7 +268,16 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         public async Task<JsonResult> PostSalesInvoice(Guid id)
         {
             return await RunAsync(
-                () => _salesInvoiceManagementService.PostSalesInvoiceAsync(id),
+                async () =>
+                {
+                    await _salesInvoiceManagementService.PostSalesInvoiceAsync(id);
+
+                    await _notificationService.RaiseAsync(NotificationEvent.SalesInvoicePosted,
+                        "Sales invoice posted",
+                        "An invoice has been posted and the customer now owes it.",
+                        "/Admin/SalesInvoice/SalesInvoiceList",
+                        id, User.Identity?.Name);
+                },
                 "Invoice posted. The customer now owes this amount.",
                 "Posting the invoice failed.");
         }

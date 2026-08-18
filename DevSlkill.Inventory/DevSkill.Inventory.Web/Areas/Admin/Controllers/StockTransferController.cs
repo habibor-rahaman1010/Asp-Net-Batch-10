@@ -19,6 +19,7 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
         private readonly IProductManagementService _productManagementService;
         private readonly IStockTransferManagementService _stockTransferManagementService;
         private readonly IMapper _mapper;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<StockTransferController> _logger;
 
         public StockTransferController(IBusinessLocationManagementService businessLocationManagementService,
@@ -26,13 +27,15 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
             IStockTransferManagementService stockAdjustmentManagementService,
             IMapper mapper,
             ILogger<StockTransferController> logger,
-            IUnitManagementService unitManagementService)
+            IUnitManagementService unitManagementService,
+            INotificationService notificationService)
         {
             _unitManagementService = unitManagementService;
             _productManagementService = productManagementService;
             _stockTransferManagementService = stockAdjustmentManagementService;
             _mapper = mapper;
             _logger = logger;
+            _notificationService = notificationService;
             _businessLocationManagementService = businessLocationManagementService;
         }
 
@@ -87,6 +90,12 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Controllers
                         }).ToList()
                 };
                 await _stockTransferManagementService.CreateStockTransferAsync(stockTransfer);
+
+                await _notificationService.RaiseAsync(NotificationEvent.StockTransferCompleted,
+                    "Stock transferred",
+                    "Goods have been moved from one warehouse to another.",
+                    "/Admin/StockTransfer/GetStockTransferList",
+                    stockTransfer.Id, User.Identity?.Name);
                 return RedirectToAction(nameof(GetStockTransferList));
             }
             catch (Exception ex)
