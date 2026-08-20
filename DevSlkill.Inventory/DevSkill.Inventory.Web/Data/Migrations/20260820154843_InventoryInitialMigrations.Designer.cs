@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevSkill.Inventory.Web.Data.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    [Migration("20260817141406_SalesModule")]
-    partial class SalesModule
+    [Migration("20260820154843_InventoryInitialMigrations")]
+    partial class InventoryInitialMigrations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,15 +32,13 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ApplicableTaxName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("TaxRate")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.HasKey("Id");
 
@@ -108,15 +106,12 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("BarcodeDescription")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BarcodeTypeCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BarcodeTypeName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -154,15 +149,12 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("BandOrigin")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BrandName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -200,15 +192,12 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("City")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Country")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -216,15 +205,12 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasDefaultValue(true);
 
                     b.Property<string>("LocationName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("State")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ZipCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -274,15 +260,12 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CategoryCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CategoryName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -311,6 +294,102 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                             CategoryName = "Clothing",
                             Description = ""
                         });
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.NotificationEntities.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Event")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Message")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("RaisedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid?>("ReferenceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Url")
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Created");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.NotificationEntities.NotificationRecipient", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("NotificationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NotificationId", "UserId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "IsRead");
+
+                    b.ToTable("NotificationRecipients");
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.NotificationEntities.NotificationSubscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AssignedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Event")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Event");
+
+                    b.HasIndex("UserId", "Event")
+                        .IsUnique();
+
+                    b.ToTable("NotificationSubscriptions");
                 });
 
             modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.Product", b =>
@@ -344,14 +423,12 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("ExciseTax")
                         .HasColumnType("float");
 
                     b.Property<string>("IMEI")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("InclusiveTax")
@@ -361,25 +438,21 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("Position")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
                     b.Property<string>("ProductImage")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProductName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("ProductTypeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Rack")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Ratings")
@@ -389,11 +462,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Row")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SKU")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("SellingPrice")
@@ -455,15 +526,12 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProductTypeCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProductTypeName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -521,7 +589,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -531,7 +598,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -542,7 +608,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ReceivedBy")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -550,7 +615,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("SupplierChallanNo")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -596,7 +660,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Remarks")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -626,7 +689,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -654,7 +716,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -680,7 +741,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("SupplierInvoiceNo")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -756,7 +816,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ApprovedByName")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -770,7 +829,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -784,7 +842,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -806,7 +863,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("RejectionReason")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -904,7 +960,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ApprovedByName")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -918,7 +973,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -926,12 +980,10 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("RejectionReason")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -939,7 +991,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("RequestedByName")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -994,7 +1045,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Remarks")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -1021,7 +1071,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -1029,12 +1078,10 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Reason")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -1091,7 +1138,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Remarks")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -1124,12 +1170,10 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -1183,7 +1227,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Remarks")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -1207,12 +1250,10 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("ContactPerson")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -1226,7 +1267,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
@@ -1237,7 +1277,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
@@ -1255,7 +1294,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("TaxNumber")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -1290,12 +1328,10 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -1311,7 +1347,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("ReferenceNo")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -1350,7 +1385,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Remarks")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -1377,7 +1411,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -1391,7 +1424,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -1422,7 +1454,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("SupplierQuotationNo")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -1468,7 +1499,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Remarks")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -1501,7 +1531,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -1517,12 +1546,10 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Reason")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -1575,7 +1602,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -1613,7 +1639,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -1640,7 +1665,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
@@ -1648,7 +1672,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
@@ -1684,7 +1707,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -1695,7 +1717,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -1711,7 +1732,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("ReferenceNo")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -1749,7 +1769,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Remarks")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -1779,7 +1798,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -1795,7 +1813,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -1803,7 +1820,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ReceivedBy")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -1934,7 +1950,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
@@ -2096,7 +2111,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -2110,7 +2124,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -2132,7 +2145,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("SalespersonName")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -2159,6 +2171,8 @@ namespace DevSkill.Inventory.Web.Data.Migrations
 
                     b.HasIndex("ProformaNo")
                         .IsUnique();
+
+                    b.HasIndex("SalespersonId");
 
                     b.HasIndex("CustomerId", "ProformaDate");
 
@@ -2229,7 +2243,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -2271,7 +2284,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -2302,7 +2314,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -2409,7 +2420,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -2417,7 +2427,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CustomerReference")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -2431,7 +2440,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -2546,7 +2554,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -2554,7 +2561,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CustomerReference")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -2565,7 +2571,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -2641,7 +2646,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Remarks")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -2680,7 +2684,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -2688,12 +2691,10 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Reason")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -2747,7 +2748,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Remarks")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -2792,7 +2792,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
@@ -2800,7 +2799,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
@@ -2846,7 +2844,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -2857,7 +2854,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
@@ -2910,7 +2906,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Remarks")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -2937,15 +2932,13 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SellingPriceTaxName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("TaxRate")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.HasKey("Id");
 
@@ -2982,11 +2975,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AdjustmentTypeName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Sign")
@@ -3020,7 +3011,6 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AddedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("AdjustmentDate")
@@ -3033,11 +3023,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Reason")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReferenceNo")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("TotalAmount")
@@ -3071,10 +3059,10 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.HasKey("Id");
 
@@ -3128,7 +3116,7 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<Guid>("StockTransferId")
                         .HasColumnType("uniqueidentifier");
@@ -3149,15 +3137,12 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CategoryCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SubCategoryName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -3198,11 +3183,9 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ShortName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UnitName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -3319,15 +3302,12 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("WarrantyDuration")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -3356,6 +3336,17 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                             Name = "",
                             WarrantyDuration = "3 Years"
                         });
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.NotificationEntities.NotificationRecipient", b =>
+                {
+                    b.HasOne("DevSkill.Inventory.Domain.Entities.NotificationEntities.Notification", "Notification")
+                        .WithMany("Recipients")
+                        .HasForeignKey("NotificationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Notification");
                 });
 
             modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.Product", b =>
@@ -3980,11 +3971,18 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                         .HasForeignKey("PaymentTermId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("DevSkill.Inventory.Domain.Entities.SalesEntities.Salesperson", "Salesperson")
+                        .WithMany()
+                        .HasForeignKey("SalespersonId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("BusinessLocation");
 
                     b.Navigation("Customer");
 
                     b.Navigation("PaymentTerm");
+
+                    b.Navigation("Salesperson");
                 });
 
             modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.SalesEntities.ProformaInvoiceItem", b =>
@@ -4369,6 +4367,11 @@ namespace DevSkill.Inventory.Web.Data.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("StockTransfer");
+                });
+
+            modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.NotificationEntities.Notification", b =>
+                {
+                    b.Navigation("Recipients");
                 });
 
             modelBuilder.Entity("DevSkill.Inventory.Domain.Entities.PurchaseEntities.GoodsReceipt", b =>
