@@ -111,6 +111,11 @@ namespace DevSkill.Inventory.Application.Services
             await _customerUnitOfWork.SaveAsync();
         }
 
+        public async Task<int> GetTotalCustomerCount()
+        {
+            return await _customerUnitOfWork.CustomerRepository.GetCountAsync();
+        }
+
         public async Task<string> GenerateCustomerCodeAsync()
         {
             var count = await _customerUnitOfWork.CustomerRepository.GetCountAsync();

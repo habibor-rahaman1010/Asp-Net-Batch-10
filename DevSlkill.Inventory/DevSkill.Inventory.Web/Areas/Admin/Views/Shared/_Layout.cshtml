@@ -7,7 +7,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Devskill Inventory</title>
+    <title>Stock Nexus</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -81,7 +81,7 @@
                 </li>
 
                 <!-- Messages Dropdown Menu -->
-                <li class="nav-item dropdown">
+                @* <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="far fa-comments"></i>
                         <span class="badge badge-danger navbar-badge">3</span>
@@ -137,14 +137,16 @@
                         <div class="dropdown-divider"></div>
                         <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
                     </div>
-                </li>
+                </li> *@
+
+
                 <!-- Notifications Dropdown Menu -->
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#" id="notificationBell">
                         <i class="far fa-bell"></i>
                         <!-- Hidden rather than showing a zero, so the badge only ever
                              means "something is waiting" -->
-                        <span class="badge badge-warning navbar-badge" id="notificationCount" style="display: none;">0</span>
+                        <span class="badge badge-danger navbar-badge" id="notificationCount" style="display: none;">0</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                         <span class="dropdown-item dropdown-header" id="notificationHeader">No notifications</span>
@@ -180,7 +182,7 @@
             <!-- Brand Logo -->
             <a class="brand-link" asp-area="" asp-controller="Admin" asp-action="Dashboard">
                 <img src="~/adminlte/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-                <span class="brand-text font-weight-light">Inventory System</span>
+                <span class="brand-text font-weight-light">Stock Nexus</span>
             </a>
 
             <!-- Sidebar -->

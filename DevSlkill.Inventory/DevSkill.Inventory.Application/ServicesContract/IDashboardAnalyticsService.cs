@@ -31,11 +31,26 @@ namespace DevSkill.Inventory.Application.ServicesContract
         Task<SalesVsPurchaseDto> GetSalesVsPurchaseAsync(int fromYear, int toYear);
 
         /// <summary>
+        /// Revenue against the cost of the goods behind it, month by month over one
+        /// calendar year. The goods are costed at their weighted average purchase
+        /// price, so this is a gross profit and never a bottom line: no wage, rent or
+        /// freight is held anywhere in the system to take off it.
+        /// </summary>
+        Task<ProfitCostDto> GetProfitAndCostAsync(int year);
+
+        /// <summary>
         /// Who sold what over one calendar year, biggest seller first. Read off the
         /// same invoices the sales-against-purchase chart uses, so the year's bars add
         /// up to that chart's sales figure for the same year.
         /// </summary>
         Task<SalespersonSalesDto> GetSalesBySalespersonAsync(int year);
+
+        /// <summary>
+        /// What sold best over one calendar year, biggest earner first. Only the
+        /// leading few products get a slice of their own; everything else is carried
+        /// as one lumped slice, so a catalogue of hundreds still reads as a pie.
+        /// </summary>
+        Task<TopSellingProductDto> GetTopSellingProductsAsync(int year);
 
         /// <summary>
         /// Where the goods were bought over one calendar year, biggest supplier first.

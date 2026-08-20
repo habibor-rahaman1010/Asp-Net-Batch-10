@@ -195,6 +195,38 @@
                 </div>
             </div>
             <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-purple">
+                    <div class="inner">
+                        <h3>@Model.TotalCustomers</h3>
+
+                        <p>Customers</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-navy">
+                    <div class="inner">
+                        <h3>@Model.TotalSuppliers</h3>
+
+                        <p>Suppliers</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+
+            <!-- ./col -->
         </div>
 
 
@@ -358,6 +390,99 @@
             </div>
         </div>
 
+        <!-- What was left after the goods -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-outline card-danger">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-balance-scale mr-1"></i>
+                            Profit &amp; Cost Analysis
+                        </h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- One year at a time, drawn month by month: a margin is only worth
+                         anything against the months either side of it -->
+                    <div class="card-body pb-0">
+                        <div class="form-row align-items-end">
+                            <div class="col-auto">
+                                <label for="profitCostYear" class="text-muted mb-1"
+                                       style="font-size: 12px;">Year</label>
+                                <select id="profitCostYear" class="form-control form-control-sm">
+                                    @foreach (var year in Model.AvailableYears)
+                                    {
+                                        <option value="@year" selected="@(year == Model.ProfitCost.Year)">@year</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <button type="button" id="profitCostApply" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-filter mr-1"></i>
+                                    Apply
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="profitCostError" class="alert alert-warning py-1 px-2 mt-2 mb-0"
+                             style="font-size: 12px; display: none;"></div>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Said out loud rather than left as a blank chart, because an empty
+                             plot area reads as a fault -->
+                        <p id="profitCostEmpty" class="text-muted text-center my-5" style="display: none;">
+                            Nothing was sold in this year, so there is no margin to chart.
+                        </p>
+
+                        <div id="profitCostPlot" style="position: relative; height: 340px;">
+                            <canvas id="profitCostChart"></canvas>
+                        </div>
+
+                        <!-- Where the costing came from, said on the chart rather than left
+                             for the reader to assume -->
+                        <div id="profitCostFallback" class="alert alert-warning py-1 px-2 mt-2 mb-0"
+                             style="font-size: 12px; display: none;"></div>
+
+                        <p id="profitCostCaption" class="text-muted mb-0 mt-2" style="font-size: 12px;"></p>
+                        <p class="text-muted mb-0" style="font-size: 12px;">
+                            Goods are costed at their weighted average purchase price, and
+                            anything returned comes off both the revenue and the cost of the
+                            month it was invoiced in. Only the goods are costed: there is no
+                            wage, rent or freight held anywhere in the system, so this is a
+                            gross margin and not a bottom line.
+                        </p>
+                    </div>
+
+                    <div class="card-footer bg-transparent">
+                        <div class="row text-center">
+                            <div class="col-3">
+                                <div class="text-muted" style="font-size: 12px;">Revenue</div>
+                                <strong id="profitCostRevenue"></strong>
+                            </div>
+                            <div class="col-3">
+                                <div class="text-muted" style="font-size: 12px;">Cost of Goods</div>
+                                <strong id="profitCostCogs"></strong>
+                            </div>
+                            <div class="col-3">
+                                <div class="text-muted" style="font-size: 12px;">Gross Profit</div>
+                                <strong id="profitCostProfit"></strong>
+                            </div>
+                            <div class="col-3">
+                                <div class="text-muted" style="font-size: 12px;">Gross Margin</div>
+                                <strong id="profitCostMargin"></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <!-- Who sold what -->
         <div class="row">
             <div class="col-12">
@@ -446,6 +571,114 @@
                 </div>
             </div>
         </div>
+
+        <!-- What sells best -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-outline card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-chart-pie mr-1"></i>
+                            Top Selling Products
+                        </h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- One year at a time: a slice is a product's share of that year, so
+                         two years in one pie would say nothing useful -->
+                    <div class="card-body pb-0">
+                        <div class="form-row align-items-end">
+                            <div class="col-auto">
+                                <label for="topProductsYear" class="text-muted mb-1"
+                                       style="font-size: 12px;">Year</label>
+                                <select id="topProductsYear" class="form-control form-control-sm">
+                                    @foreach (var year in Model.AvailableYears)
+                                    {
+                                        <option value="@year" selected="@(year == Model.TopSellingProducts.Year)">@year</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <button type="button" id="topProductsApply" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-filter mr-1"></i>
+                                    Apply
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="topProductsError" class="alert alert-warning py-1 px-2 mt-2 mb-0"
+                             style="font-size: 12px; display: none;"></div>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Said out loud rather than left as a blank chart, because an empty
+                             plot area reads as a fault -->
+                        <p id="topProductsEmpty" class="text-muted text-center my-5" style="display: none;">
+                            Nothing was billed in this year, so there is nothing to chart.
+                        </p>
+
+                        <div class="row" id="topProductsContent">
+                            <div class="col-lg-6">
+                                <div style="position: relative; height: 320px;">
+                                    <canvas id="topProductsChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- The slices are named beside the pie rather than around it,
+                                 because a product name will not fit on a sliver -->
+                            <div class="col-lg-6">
+                                <div style="max-height: 320px; overflow-y: auto;">
+                                    <table class="table table-sm mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th style="font-size: 12px;">Product</th>
+                                                <th class="text-right" style="font-size: 12px;">Sales</th>
+                                                <th class="text-right" style="font-size: 12px;">Share</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="topProductsLegend"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p id="topProductsCaption" class="text-muted mb-0 mt-2" style="font-size: 12px;"></p>
+                        <p class="text-muted mb-0" style="font-size: 12px;">
+                            A slice is what that product was billed for, not what has been
+                            collected from it. Only posted invoices count, and only their
+                            lines, so freight and other invoice-level charges sit outside
+                            this chart and it reads a little under the Sales vs Purchase total.
+                        </p>
+                    </div>
+
+                    <div class="card-footer bg-transparent">
+                        <div class="row text-center">
+                            <div class="col-3">
+                                <div class="text-muted" style="font-size: 12px;">Billed on Lines</div>
+                                <strong id="topProductsTotal"></strong>
+                            </div>
+                            <div class="col-3">
+                                <div class="text-muted" style="font-size: 12px;">Units Sold</div>
+                                <strong id="topProductsUnits"></strong>
+                            </div>
+                            <div class="col-3">
+                                <div class="text-muted" style="font-size: 12px;">Products Sold</div>
+                                <strong id="topProductsCount"></strong>
+                            </div>
+                            <div class="col-3">
+                                <div class="text-muted" style="font-size: 12px;">Best Seller</div>
+                                <strong id="topProductsTop"></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <!-- Where we buy -->
         <div class="row">
@@ -1074,6 +1307,215 @@
             renderSalesVsPurchase(@Html.Raw(Json.Serialize(Model.SalesVsPurchase)));
         }
 
+        // ---- What was left after the goods ---------------------------------------
+        const profitCostCanvas = document.getElementById('profitCostChart');
+
+        if (profitCostCanvas) {
+            const profitYearSelect = document.getElementById('profitCostYear');
+            const profitApplyButton = document.getElementById('profitCostApply');
+            const profitErrorBox = document.getElementById('profitCostError');
+            const profitFallbackBox = document.getElementById('profitCostFallback');
+            const profitCaption = document.getElementById('profitCostCaption');
+            const profitEmptyNote = document.getElementById('profitCostEmpty');
+            const profitPlot = document.getElementById('profitCostPlot');
+            const profitRevenueCell = document.getElementById('profitCostRevenue');
+            const profitCogsCell = document.getElementById('profitCostCogs');
+            const profitProfitCell = document.getElementById('profitCostProfit');
+            const profitMarginCell = document.getElementById('profitCostMargin');
+
+            // Whatever the year holds, this is what the bars, the line and the tooltip
+            // all read off, so the three can never disagree.
+            let profitRows = [];
+
+            // A month that lost money is the one thing on this chart worth spotting from
+            // across the room, so its point on the margin line turns red.
+            const marginPointInk = row => row.grossProfit < 0 ? '#d03b3b' : '#0ca30c';
+
+            const profitCostChart = new Chart(profitCostCanvas.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Revenue',
+                            // The same blue the Sales vs Purchase chart gives sales, so the
+                            // selling side keeps one colour across the dashboard.
+                            data: [],
+                            backgroundColor: '#2a78d6',
+                            yAxisID: 'money'
+                        },
+                        {
+                            label: 'Cost of Goods',
+                            // And the same orange the buying side keeps there.
+                            data: [],
+                            backgroundColor: '#eb6834',
+                            yAxisID: 'money'
+                        },
+                        {
+                            // The margin is a rate rather than an amount, so it is drawn as
+                            // a line on its own axis. Bars against bars would invite the two
+                            // to be added up, which a percentage never can be.
+                            label: 'Gross Margin %',
+                            type: 'line',
+                            data: [],
+                            borderColor: '#0ca30c',
+                            backgroundColor: 'transparent',
+                            pointBackgroundColor: [],
+                            pointBorderColor: [],
+                            borderWidth: 2,
+                            pointRadius: 3,
+                            lineTension: 0,
+                            yAxisID: 'margin'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        xAxes: [{
+                            gridLines: { display: false, drawBorder: false },
+                            ticks: { fontColor: vizInk.muted },
+                            barPercentage: 0.9,
+                            categoryPercentage: 0.7
+                        }],
+                        yAxes: [
+                            {
+                                id: 'money',
+                                position: 'left',
+                                gridLines: { color: vizInk.grid, drawBorder: false, zeroLineColor: vizInk.grid },
+                                ticks: {
+                                    beginAtZero: true,
+                                    fontColor: vizInk.muted,
+                                    callback: value => Number(value).toLocaleString('en-US')
+                                }
+                            },
+                            {
+                                id: 'margin',
+                                position: 'right',
+                                // No grid of its own: a second set of lines across the plot
+                                // would leave neither axis clearly belonging to anything.
+                                gridLines: { display: false, drawBorder: false },
+                                ticks: {
+                                    fontColor: vizInk.muted,
+                                    callback: value => value + '%'
+                                }
+                            }
+                        ]
+                    },
+                    legend: {
+                        position: 'top',
+                        align: 'end',
+                        labels: { boxWidth: 12, fontColor: vizInk.muted, usePointStyle: true }
+                    },
+                    tooltips: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            // Read off the row rather than off the dataset, so the profit
+                            // and the margin are the ones the server worked out.
+                            label: (item, data) => {
+                                const row = profitRows[item.index];
+                                const name = data.datasets[item.datasetIndex].label;
+
+                                if (name === 'Gross Margin %') {
+                                    return ' Gross Margin: ' + row.grossMargin + '%';
+                                }
+
+                                return name === 'Revenue'
+                                    ? ' Revenue: ' + formatAmount(row.revenue)
+                                    : ' Cost of Goods: ' + formatAmount(row.cost);
+                            },
+                            footer: items => 'Gross Profit: ' +
+                                formatAmount(profitRows[items[0].index].grossProfit)
+                        }
+                    }
+                }
+            });
+
+            // One render path for both the first paint and every filter change, so the
+            // two can never drift apart.
+            const renderProfitCost = chart => {
+                profitRows = chart.points;
+
+                const hasBars = chart.totalRevenue > 0 || chart.totalCost > 0;
+                profitEmptyNote.style.display = hasBars ? 'none' : '';
+                profitPlot.style.display = hasBars ? '' : 'none';
+
+                profitCostChart.data.labels = profitRows.map(x => x.label);
+                profitCostChart.data.datasets[0].data = profitRows.map(x => x.revenue);
+                profitCostChart.data.datasets[1].data = profitRows.map(x => x.cost);
+                profitCostChart.data.datasets[2].data = profitRows.map(x => x.grossMargin);
+                profitCostChart.data.datasets[2].pointBackgroundColor = profitRows.map(marginPointInk);
+                profitCostChart.data.datasets[2].pointBorderColor = profitRows.map(marginPointInk);
+                profitCostChart.update();
+
+                const runningNote = chart.isRunningYear
+                    ? ' The year is still running, so it stops at this month.'
+                    : '';
+
+                const bestNote = chart.bestMonthLabel
+                    ? ' ' + chart.bestMonthLabel + ' was the best month, at ' +
+                      formatAmount(chart.bestMonthProfit) + '.'
+                    : '';
+
+                profitCaption.textContent = 'Month by month across ' + chart.year + '.' +
+                    runningNote + bestNote;
+
+                // A margin costed off a price nobody actually paid is a guess, and the
+                // reader is owed the difference between a guess and a purchase.
+                if (chart.listPricedShare > 0) {
+                    profitFallbackBox.textContent = chart.listPricedShare + '% of this year’s ' +
+                        'revenue is costed from the product’s own price, because nothing has ' +
+                        'ever been bought against those products. That much of the margin is an ' +
+                        'estimate rather than a purchase.';
+                    profitFallbackBox.style.display = '';
+                } else {
+                    profitFallbackBox.style.display = 'none';
+                }
+
+                profitRevenueCell.textContent = formatAmount(chart.totalRevenue);
+                profitCogsCell.textContent = formatAmount(chart.totalCost);
+                profitProfitCell.textContent = formatAmount(chart.grossProfit);
+                profitMarginCell.textContent = chart.grossMargin + '%';
+
+                // A year that lost money should not read the same as one that made it.
+                profitProfitCell.className = chart.grossProfit < 0 ? 'text-danger' : '';
+                profitMarginCell.className = chart.grossProfit < 0 ? 'text-danger' : '';
+            };
+
+            const showProfitError = message => {
+                profitErrorBox.textContent = message;
+                profitErrorBox.style.display = '';
+            };
+
+            const applyProfitFilter = () => {
+                profitErrorBox.style.display = 'none';
+                profitApplyButton.disabled = true;
+
+                const url = '@Url.Action("ProfitAndCost", "Dashboard", new { area = "Admin" })' +
+                    '?year=' + Number(profitYearSelect.value);
+
+                fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(response => response.json())
+                    .then(payload => {
+                        if (payload.success) {
+                            renderProfitCost(payload.chart);
+                        } else {
+                            showProfitError(payload.message);
+                        }
+                    })
+                    .catch(() => showProfitError('The chart could not be loaded.'))
+                    .finally(() => { profitApplyButton.disabled = false; });
+            };
+
+            profitApplyButton.addEventListener('click', applyProfitFilter);
+
+            // The model is handed over in the same shape the filter endpoint returns.
+            renderProfitCost(@Html.Raw(Json.Serialize(Model.ProfitCost)));
+        }
+
+
         // ---- Who sold what -------------------------------------------------------
         const salespersonSalesCanvas = document.getElementById('salespersonSalesChart');
 
@@ -1226,6 +1668,175 @@
             // The model is handed over in the same shape the filter endpoint returns.
             renderSalespersonSales(@Html.Raw(Json.Serialize(Model.SalespersonSales)));
         }
+
+        // ---- What sells best -----------------------------------------------------
+        const topProductsCanvas = document.getElementById('topProductsChart');
+
+        if (topProductsCanvas) {
+            const productYearSelect = document.getElementById('topProductsYear');
+            const productApplyButton = document.getElementById('topProductsApply');
+            const productErrorBox = document.getElementById('topProductsError');
+            const productCaption = document.getElementById('topProductsCaption');
+            const productEmptyNote = document.getElementById('topProductsEmpty');
+            const productContent = document.getElementById('topProductsContent');
+            const productLegend = document.getElementById('topProductsLegend');
+            const productTotalCell = document.getElementById('topProductsTotal');
+            const productUnitsCell = document.getElementById('topProductsUnits');
+            const productCountCell = document.getElementById('topProductsCount');
+            const productTopCell = document.getElementById('topProductsTop');
+
+            // Whatever the year holds, this is what the pie, the legend and the tooltip
+            // all read off, so the three can never disagree.
+            let productRows = [];
+
+            // One hue per slice, none of them the status colours the stock chart uses.
+            // The lumped slice stands for no single product, so it is kept grey rather
+            // than given a colour of its own.
+            const productSliceInk = ['#2a78d6', '#eb6834', '#0ca30c', '#8a5cd6', '#fab219',
+                '#1f9d9d', '#d03b3b', '#6b8ea3'];
+            const otherSliceInk = '#c9c7bf';
+
+            const productSliceColour = (row, index) =>
+                row.isOthers ? otherSliceInk : productSliceInk[index % productSliceInk.length];
+
+            const formatUnits = value => Number(value).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            });
+
+            const topProductsChart = new Chart(topProductsCanvas.getContext('2d'), {
+                type: 'pie',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [],
+                        borderColor: vizInk.surface,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    // The names sit in the table beside the pie, where a long one fits.
+                    legend: { display: false },
+                    tooltips: {
+                        callbacks: {
+                            title: items => productRows[items[0].index].productName,
+                            label: item => {
+                                const row = productRows[item.index];
+
+                                return ' ' + formatAmount(row.invoicedAmount) +
+                                    ' (' + row.share + '%), ' + formatUnits(row.quantitySold) + ' units';
+                            }
+                        }
+                    }
+                }
+            });
+
+            // One render path for both the first paint and every filter change, so the
+            // two can never drift apart.
+            const renderTopProducts = chart => {
+                productRows = chart.points;
+
+                const hasSlices = productRows.length > 0;
+                productEmptyNote.style.display = hasSlices ? 'none' : '';
+                productContent.style.display = hasSlices ? '' : 'none';
+
+                topProductsChart.data.labels = productRows.map(x => x.productName);
+                topProductsChart.data.datasets[0].data = productRows.map(x => x.invoicedAmount);
+                topProductsChart.data.datasets[0].backgroundColor = productRows.map(productSliceColour);
+                topProductsChart.update();
+
+                // The table is rebuilt from the same rows the pie was drawn from, so a
+                // colour beside a name is always the colour of that slice.
+                productLegend.innerHTML = '';
+
+                productRows.forEach((row, index) => {
+                    const line = document.createElement('tr');
+
+                    const nameCell = document.createElement('td');
+                    nameCell.style.fontSize = '12px';
+
+                    const swatch = document.createElement('span');
+                    swatch.style.cssText = 'display: inline-block; width: 10px; height: 10px;' +
+                        'border-radius: 2px; margin-right: 6px;' +
+                        'background:' + productSliceColour(row, index) + ';';
+
+                    nameCell.appendChild(swatch);
+                    nameCell.appendChild(document.createTextNode(row.productName));
+
+                    // The code tells two products with near enough the same name apart.
+                    if (row.sku) {
+                        const code = document.createElement('span');
+                        code.className = 'text-muted ml-1';
+                        code.textContent = '(' + row.sku + ')';
+                        nameCell.appendChild(code);
+                    }
+
+                    const amountCell = document.createElement('td');
+                    amountCell.className = 'text-right';
+                    amountCell.style.fontSize = '12px';
+                    amountCell.textContent = formatAmount(row.invoicedAmount);
+
+                    const shareCell = document.createElement('td');
+                    shareCell.className = 'text-right';
+                    shareCell.style.fontSize = '12px';
+                    shareCell.textContent = row.share + '%';
+
+                    line.appendChild(nameCell);
+                    line.appendChild(amountCell);
+                    line.appendChild(shareCell);
+                    productLegend.appendChild(line);
+                });
+
+                const runningNote = chart.isRunningYear
+                    ? ' This year is still running, so it is not a full one yet.'
+                    : '';
+
+                productCaption.textContent = 'A slice covers the whole of ' + chart.year + '.' + runningNote;
+
+                productTotalCell.textContent = formatAmount(chart.totalSales);
+                productUnitsCell.textContent = formatUnits(chart.totalQuantity);
+                productCountCell.textContent = Number(chart.productCount).toLocaleString('en-US');
+
+                // The share says whether the selling is spread about or resting on one
+                // product, which the name on its own does not.
+                productTopCell.textContent = hasSlices
+                    ? chart.topProductName + ' (' + chart.topProductShare + '%)'
+                    : '—';
+            };
+
+            const showProductError = message => {
+                productErrorBox.textContent = message;
+                productErrorBox.style.display = '';
+            };
+
+            const applyProductFilter = () => {
+                productErrorBox.style.display = 'none';
+                productApplyButton.disabled = true;
+
+                const url = '@Url.Action("TopSellingProducts", "Dashboard", new { area = "Admin" })' +
+                    '?year=' + Number(productYearSelect.value);
+
+                fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(response => response.json())
+                    .then(payload => {
+                        if (payload.success) {
+                            renderTopProducts(payload.chart);
+                        } else {
+                            showProductError(payload.message);
+                        }
+                    })
+                    .catch(() => showProductError('The chart could not be loaded.'))
+                    .finally(() => { productApplyButton.disabled = false; });
+            };
+
+            productApplyButton.addEventListener('click', applyProductFilter);
+
+            // The model is handed over in the same shape the filter endpoint returns.
+            renderTopProducts(@Html.Raw(Json.Serialize(Model.TopSellingProducts)));
+        }
+
 
         // ---- Where we buy --------------------------------------------------------
         const supplierPurchaseCanvas = document.getElementById('supplierPurchaseChart');

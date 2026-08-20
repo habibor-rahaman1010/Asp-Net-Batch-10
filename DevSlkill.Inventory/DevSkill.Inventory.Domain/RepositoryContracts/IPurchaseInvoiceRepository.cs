@@ -36,6 +36,14 @@ namespace DevSkill.Inventory.Domain.RepositoryContracts
             DateTime toDate, params PurchaseInvoiceStatus[] statuses);
 
         /// <summary>
+        /// What every product has been bought for up to a date, added up in the
+        /// database. Dividing the two gives the weighted average cost, which is what
+        /// the goods sold are costed at.
+        /// </summary>
+        Task<IList<ProductAverageCostDto>> GetProductAverageCostsAsync(DateTime asOfDate,
+            params PurchaseInvoiceStatus[] statuses);
+
+        /// <summary>
         /// The date of the oldest invoice that counts, so the year filter never offers a
         /// year with nothing behind it. Null when there is no such invoice at all.
         /// </summary>

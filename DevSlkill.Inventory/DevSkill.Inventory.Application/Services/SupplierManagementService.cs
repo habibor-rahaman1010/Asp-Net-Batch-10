@@ -125,6 +125,11 @@ namespace DevSkill.Inventory.Application.Services
             await _supplierUnitOfWork.SaveAsync();
         }
 
+        public async Task<int> GetTotalSupplierCount()
+        {
+            return await _supplierUnitOfWork.SupplierRepository.GetCountAsync();
+        }
+
         public async Task<string> GenerateSupplierCodeAsync()
         {
             var count = await _supplierUnitOfWork.SupplierRepository.GetCountAsync();

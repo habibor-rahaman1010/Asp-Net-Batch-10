@@ -155,6 +155,68 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IList<TopSellingProductPointDto>> GetProductInvoicedTotalsAsync(DateTime fromDate,
+            DateTime toDate, params SalesInvoiceStatus[] statuses)
+        {
+            return await _inventoryDbContext.SalesInvoiceItems
+                .Where(x => x.SalesInvoice!.InvoiceDate >= fromDate
+                         && x.SalesInvoice!.InvoiceDate <= toDate
+                         && statuses.Contains(x.SalesInvoice!.Status))
+                // Grouped on the key rather than the name, so two products that happen
+                // to share a name are never added up into one slice.
+                .GroupBy(x => new
+                {
+                    x.ProductId,
+                    Name = x.Product!.ProductName,
+                    Code = x.Product!.SKU
+                })
+                .Select(g => new TopSellingProductPointDto
+                {
+                    ProductName = g.Key.Name ?? string.Empty,
+                    Sku = g.Key.Code ?? string.Empty,
+                    InvoicedAmount = g.Sum(x => x.LineTotal),
+                    QuantitySold = g.Sum(x => x.Quantity),
+                    // Counted over the invoices rather than the lines, so a product
+                    // billed twice on one invoice is still one invoice.
+                    InvoiceCount = g.Select(x => x.SalesInvoiceId).Distinct().Count()
+                })
+                .OrderByDescending(x => x.InvoicedAmount)
+                .ToListAsync();
+        }
+
+        public async Task<IList<MonthlyProductSalesDto>> GetMonthlyProductSalesAsync(DateTime fromDate,
+            DateTime toDate, params SalesInvoiceStatus[] statuses)
+        {
+            return await _inventoryDbContext.SalesInvoiceItems
+                .Where(x => x.SalesInvoice!.InvoiceDate >= fromDate
+                         && x.SalesInvoice!.InvoiceDate <= toDate
+                         && statuses.Contains(x.SalesInvoice!.Status))
+                // The product's own price rides along in the key, so a product that was
+                // never bought can still be costed without a second read.
+                .GroupBy(x => new
+                {
+                    x.SalesInvoice!.InvoiceDate.Year,
+                    x.SalesInvoice!.InvoiceDate.Month,
+                    x.ProductId,
+                    x.Product!.Price
+                })
+                .Select(g => new MonthlyProductSalesDto
+                {
+                    Year = g.Key.Year,
+                    Month = g.Key.Month,
+                    ProductId = g.Key.ProductId,
+                    ListUnitCost = g.Key.Price,
+
+                    // Goods that came back were never really sold, so they are taken off
+                    // both sides: the units here and the value below.
+                    Quantity = g.Sum(x => x.Quantity - x.ReturnedQuantity),
+                    Revenue = g.Sum(x => x.Quantity == 0
+                        ? 0
+                        : x.LineTotal * (x.Quantity - x.ReturnedQuantity) / x.Quantity)
+                })
+                .ToListAsync();
+        }
+
         public async Task<DateTime?> GetEarliestInvoiceDateAsync(params SalesInvoiceStatus[] statuses)
         {
             return await _inventoryDbContext.SalesInvoices

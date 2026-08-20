@@ -145,6 +145,25 @@ namespace DevSkill.Inventory.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IList<ProductAverageCostDto>> GetProductAverageCostsAsync(DateTime asOfDate,
+            params PurchaseInvoiceStatus[] statuses)
+        {
+            return await _inventoryDbContext.PurchaseInvoiceItems
+                .Where(x => x.PurchaseInvoice!.InvoiceDate <= asOfDate
+                         && statuses.Contains(x.PurchaseInvoice!.Status))
+                .GroupBy(x => x.ProductId)
+                .Select(g => new ProductAverageCostDto
+                {
+                    ProductId = g.Key,
+
+                    // Both sides come back rather than the average itself, so the caller
+                    // can tell a product that was never bought from one bought for nothing.
+                    PurchasedAmount = g.Sum(x => x.LineTotal),
+                    PurchasedQuantity = g.Sum(x => x.Quantity)
+                })
+                .ToListAsync();
+        }
+
         public async Task<DateTime?> GetEarliestInvoiceDateAsync(params PurchaseInvoiceStatus[] statuses)
         {
             return await _inventoryDbContext.PurchaseInvoices

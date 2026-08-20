@@ -36,6 +36,23 @@ namespace DevSkill.Inventory.Domain.RepositoryContracts
             DateTime toDate, params SalesInvoiceStatus[] statuses);
 
         /// <summary>
+        /// Billed value grouped by product over a period, added up in the database.
+        /// Read off the invoice lines rather than the invoice totals, so an
+        /// invoice-level charge belongs to no product and is simply left out.
+        /// </summary>
+        Task<IList<TopSellingProductPointDto>> GetProductInvoicedTotalsAsync(DateTime fromDate,
+            DateTime toDate, params SalesInvoiceStatus[] statuses);
+
+        /// <summary>
+        /// What each product sold for, month by month, net of what has since gone back
+        /// on a return. Left ungrouped by product on purpose: costing has to happen
+        /// product by product, so adding the products up here would throw away the one
+        /// key the cost is looked up on.
+        /// </summary>
+        Task<IList<MonthlyProductSalesDto>> GetMonthlyProductSalesAsync(DateTime fromDate,
+            DateTime toDate, params SalesInvoiceStatus[] statuses);
+
+        /// <summary>
         /// The date of the oldest invoice that counts, so the year filter never offers a
         /// year with nothing behind it. Null when there is no such invoice at all.
         /// </summary>

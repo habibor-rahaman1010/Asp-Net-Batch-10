@@ -41,6 +41,15 @@ namespace DevSkill.Inventory.Application.Services
         /// </summary>
         private const string UnassignedSellerName = "Not Assigned";
 
+        /// <summary>
+        /// How many products keep a slice of their own on the best-sellers pie before
+        /// the rest are lumped together. Past this the slices stop being readable.
+        /// </summary>
+        private const int TopProductSlices = 8;
+
+        /// <summary>What the slice standing for everything else is called.</summary>
+        private const string OtherProductsName = "Other products";
+
         /// <summary>Only an invoice that was really claimed counts as sales.</summary>
         private static readonly SalesInvoiceStatus[] CountableSalesStatuses =
         {
@@ -234,6 +243,90 @@ namespace DevSkill.Inventory.Application.Services
             }
         }
 
+        public async Task<ProfitCostDto> GetProfitAndCostAsync(int year)
+        {
+            var (from, to) = WholeYear(year);
+
+            try
+            {
+                var sales = await _dashboardUnitOfWork.SalesInvoiceRepository
+                    .GetMonthlyProductSalesAsync(from, to, CountableSalesStatuses);
+
+                // Costed as at the end of the year being looked at, so a purchase made
+                // afterwards never re-prices goods that had already gone out.
+                var purchases = await _dashboardUnitOfWork.PurchaseInvoiceRepository
+                    .GetProductAverageCostsAsync(to, CountablePurchaseStatuses);
+
+                // Weighted average cost: everything paid for a product over everything
+                // bought of it. A product bought at several prices is costed at what it
+                // really averaged rather than at whichever price came last.
+                var averageCost = purchases
+                    .Where(x => x.PurchasedQuantity > 0)
+                    .ToDictionary(x => x.ProductId, x => x.AverageUnitCost);
+
+                var report = new ProfitCostDto { Year = year };
+
+                // A year that is still running stops at the month we are in. Months that
+                // have not happened would draw as a collapse in both revenue and margin.
+                var lastMonth = year == DateTime.Today.Year ? DateTime.Today.Month : 12;
+
+                for (var month = 1; month <= lastMonth; month++)
+                {
+                    var point = new ProfitCostPointDto
+                    {
+                        Label = new DateTime(year, month, 1)
+                            .ToString("MMM", CultureInfo.InvariantCulture)
+                    };
+
+                    // Walked line by line rather than added up in one go, because each
+                    // product carries its own cost and they cannot share one.
+                    foreach (var row in sales.Where(x => x.Month == month))
+                    {
+                        point.Revenue += row.Revenue;
+
+                        if (averageCost.TryGetValue(row.ProductId, out var unitCost))
+                        {
+                            point.Cost += row.Quantity * unitCost;
+                        }
+                        else
+                        {
+                            // Nothing was ever bought against this product, so its own
+                            // price is all there is to cost it at. Carried separately, so
+                            // the chart can say how much of the margin rests on a figure
+                            // nobody actually paid.
+                            point.Cost += row.Quantity * (decimal)row.ListUnitCost;
+                            report.ListPricedRevenue += row.Revenue;
+                        }
+                    }
+
+                    point.GrossMargin = point.Revenue > 0
+                        ? Math.Round(point.GrossProfit / point.Revenue * 100, 1)
+                        : 0;
+
+                    report.Points.Add(point);
+                    report.TotalRevenue += point.Revenue;
+                    report.TotalCost += point.Cost;
+                }
+
+                var bestMonth = report.Points
+                    .OrderByDescending(x => x.GrossProfit)
+                    .FirstOrDefault();
+
+                // A year that only ever lost money has no best month worth naming.
+                if (bestMonth != null && bestMonth.GrossProfit > 0)
+                {
+                    report.BestMonthLabel = bestMonth.Label;
+                    report.BestMonthProfit = bestMonth.GrossProfit;
+                }
+
+                return report;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Exception Occured: ", ex);
+            }
+        }
+
         public async Task<SalespersonSalesDto> GetSalesBySalespersonAsync(int year)
         {
             var (from, to) = WholeYear(year);
@@ -257,6 +350,63 @@ namespace DevSkill.Inventory.Application.Services
                     TotalSales = sellers.Sum(x => x.InvoicedAmount),
                     TotalInvoices = sellers.Sum(x => x.InvoiceCount)
                 };
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Exception Occured: ", ex);
+            }
+        }
+
+        public async Task<TopSellingProductDto> GetTopSellingProductsAsync(int year)
+        {
+            var (from, to) = WholeYear(year);
+
+            try
+            {
+                var products = await _dashboardUnitOfWork.SalesInvoiceRepository
+                    .GetProductInvoicedTotalsAsync(from, to, CountableSalesStatuses);
+
+                var report = new TopSellingProductDto
+                {
+                    Year = year,
+                    TotalSales = products.Sum(x => x.InvoicedAmount),
+                    TotalQuantity = products.Sum(x => x.QuantitySold),
+                    ProductCount = products.Count,
+
+                    // The leading few keep a slice each. A slice per product would leave
+                    // a real catalogue as a ring of slivers nobody can read.
+                    Points = products.Take(TopProductSlices).ToList()
+                };
+
+                var rest = products.Skip(TopProductSlices).ToList();
+
+                // Everything else is carried as one slice rather than dropped, so the
+                // pie still stands for the whole year's billed lines.
+                if (rest.Count > 0)
+                {
+                    report.Points.Add(new TopSellingProductPointDto
+                    {
+                        ProductName = $"{OtherProductsName} ({rest.Count})",
+                        InvoicedAmount = rest.Sum(x => x.InvoicedAmount),
+                        QuantitySold = rest.Sum(x => x.QuantitySold),
+
+                        // Left alone: adding the counts up would count one invoice once
+                        // for every product on it. The name carries how many products
+                        // the slice stands for, which is what there is to say about it.
+                        IsOthers = true
+                    });
+                }
+
+                // Worked out here rather than in the browser, so the slice, the legend
+                // and the tooltip can never disagree about a share.
+                foreach (var point in report.Points)
+                {
+                    point.Share = report.TotalSales > 0
+                        ? Math.Round(point.InvoicedAmount / report.TotalSales * 100, 1)
+                        : 0;
+                }
+
+                return report;
             }
             catch (Exception ex)
             {

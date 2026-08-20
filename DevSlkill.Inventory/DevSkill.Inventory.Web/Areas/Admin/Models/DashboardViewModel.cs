@@ -13,6 +13,8 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
         public int UniqueVisitors { get; set; }
         public int TotalWarehouse { get; set; }
         public int TotalBrands { get; set; }
+        public int TotalCustomers { get; set; }
+        public int TotalSuppliers { get; set; }
 
         /// <summary>What the in-house stock chart draws.</summary>
         public StockHealthDto StockHealth { get; set; } = new();
@@ -23,8 +25,14 @@ namespace DevSkill.Inventory.Web.Areas.Admin.Models
         /// <summary>What the sales-against-purchase chart draws.</summary>
         public SalesVsPurchaseDto SalesVsPurchase { get; set; } = new();
 
+        /// <summary>What the profit and cost chart draws, for the year it opens on.</summary>
+        public ProfitCostDto ProfitCost { get; set; } = new();
+
         /// <summary>What the who-sold-what chart draws, for the year it opens on.</summary>
         public SalespersonSalesDto SalespersonSales { get; set; } = new();
+
+        /// <summary>What the best-sellers pie draws, for the year it opens on.</summary>
+        public TopSellingProductDto TopSellingProducts { get; set; } = new();
 
         /// <summary>What the where-we-buy chart draws, for the year it opens on.</summary>
         public SupplierPurchaseDto SupplierPurchase { get; set; } = new();

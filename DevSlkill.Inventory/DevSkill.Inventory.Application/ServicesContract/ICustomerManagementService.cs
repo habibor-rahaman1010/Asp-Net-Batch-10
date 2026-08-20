@@ -15,6 +15,9 @@ namespace DevSkill.Inventory.Application.ServicesContract
         Task<(IList<Customer> data, int total, int totalDisplay)> GetCustomersAsync(int pageIndex,
             int pageSize, DataTablesSearch search, string? order);
         Task ToggleCustomerStatusAsync(Guid id);
+
+        /// <summary>How many customers are on the books, for the dashboard card.</summary>
+        Task<int> GetTotalCustomerCount();
         Task<string> GenerateCustomerCodeAsync();
     }
 }
